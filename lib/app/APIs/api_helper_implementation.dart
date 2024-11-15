@@ -4,6 +4,7 @@ import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 
 import '../constant/app_config.dart';
+import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/register/models/register_model.dart';
@@ -48,5 +49,20 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
     // Use the `_convert` helper function to handle the parsing
     return _convert(response, LoginResponseModel.fromJson);
+  }
+   @override
+    Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
+    try {
+      final response = await get('job-circulars');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.body['data'];
+        final jobCirculars = data.map((json) => JobCircular.fromJson(json)).toList();
+        return Right(jobCirculars);
+      } else {
+        return Left(CustomError(response.statusCode, message: "${response.statusCode}"));
+      }
+    } catch (e) {
+      return Left(CustomError(500, message: 'An error occurred: $e'));
+    }
   }
 }
