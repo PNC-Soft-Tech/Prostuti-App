@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 
+import '../models/job-category-model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
@@ -13,6 +14,8 @@ abstract class ApiHelper {
 
   Future<Either<CustomError, Response>> register(RegisterRequestModel register);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
+  Future<Either<CustomError, List<JobCategory>>> getJobCategories();
   // Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
-  // Add other API methods as needed
+
+
 }

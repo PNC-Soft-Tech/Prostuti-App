@@ -4,6 +4,7 @@ import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 
 import '../constant/app_config.dart';
+import '../models/job-category-model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
@@ -65,4 +66,21 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'An error occurred: $e'));
     }
   }
+     @override
+  Future<Either<CustomError, List<JobCategory>>> getJobCategories() async {
+  final response = await get('job-categories');
+  if (response.statusCode == 200) {
+    try {
+      List<JobCategory> categories = (response.body['data'] as List)
+          .map((item) => JobCategory.fromJson(item))
+          .toList();
+      return Right(categories);
+    } catch (e) {
+      return Left(CustomError(response.statusCode, message: 'Parsing error: $e'));
+    }
+  } else {
+    return Left(CustomError(response.statusCode, message: response.statusText ?? 'Error'));
+  }
+}
+
 }
