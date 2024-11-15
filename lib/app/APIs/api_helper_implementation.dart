@@ -5,6 +5,7 @@ import 'package:prostuti/app/APIs/custom_error.dart';
 
 import '../constant/app_config.dart';
 import '../models/job-category-model.dart';
+import '../modules/exam-types/models/exam-type-model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
@@ -82,5 +83,22 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     return Left(CustomError(response.statusCode, message: response.statusText ?? 'Error'));
   }
 }
+     @override
+Future<Either<CustomError, List<ExamType>>> getExamTypes() async {
+  final response = await get('exam-types');
+  if (response.statusCode == 200) {
+    try {
+      List<ExamType> examTypes = (response.body['data'] as List)
+          .map((item) => ExamType.fromJson(item))
+          .toList();
+      return Right(examTypes);
+    } catch (e) {
+      return Left(CustomError(response.statusCode, message: 'Parsing error: $e'));
+    }
+  } else {
+    return Left(CustomError(response.statusCode, message: response.statusText ?? 'Error'));
+  }
+}
+
 
 }
