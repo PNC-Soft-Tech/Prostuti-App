@@ -9,6 +9,7 @@ class ContestController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
 
   var contests = <Contest>[].obs;
+    var contest = Rxn<Contest>();
   var isLoading = false.obs;
 
   @override
@@ -31,4 +32,5 @@ class ContestController extends GetxController {
     );
     isLoading(false);
   }
+
 }

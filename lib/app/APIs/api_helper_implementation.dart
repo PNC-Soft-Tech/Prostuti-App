@@ -14,6 +14,7 @@ import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/register/models/register_model.dart';
+import '../modules/single-contest/models/single_contest_model.dart';
 import 'api_helper.dart';
 
 class ApiHelperImpl extends GetConnect implements ApiHelper {
@@ -189,5 +190,22 @@ Future<Either<CustomError, List<Question>>> fetchAllQuestions() async {
     return Left(CustomError(500, message: 'Network error: $e'));
   }
 }
-
+@override
+Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId) async {
+  try {
+    final response = await get('contests/$contestId');
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      return Right(SingleContest.fromJson(response.body['data']));
+    } else {
+      return Left(
+        CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch contest',
+        ),
+      );
+    }
+  } catch (e) {
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
 }

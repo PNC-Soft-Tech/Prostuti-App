@@ -15,6 +15,8 @@ import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/single-contest/bindings/single_contest_bindings.dart';
+import '../modules/single-contest/views/single_contest_view.dart';
 
 class AppPages {
   static const initial = Routes.contests;
@@ -55,6 +57,11 @@ class AppPages {
       page: () => ContestView(),
       binding: ContestBinding(),
     ),
+        GetPage(
+      name: '/contest/:id',
+      page: () => SingleContestView(),
+      binding: SingleContestBinding(),
+    ),
     GetPage(
       name: '/questions',
       page: () => QuestionView(),
@@ -72,4 +79,7 @@ class Routes {
   static const examTypes = '/exam-types';
   static const questions = '/questions';
   static const contests = '/contests';
+    // Dynamic route generator for single contest
+  static String singleContest(String id) => '/contest/$id';
+
 }
