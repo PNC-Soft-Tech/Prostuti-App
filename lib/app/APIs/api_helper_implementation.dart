@@ -5,6 +5,8 @@ import 'package:get/get_connect/connect.dart';
 import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 
+import '../common/models/contest_model.dart';
+import '../common/models/question_model.dart';
 import '../constant/app_config.dart';
 import '../models/job-category-model.dart';
 import '../modules/exam-types/models/exam-type-model.dart';
@@ -152,4 +154,40 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
           message: response.statusText ?? 'Error'));
     }
   }
+
+@override
+Future<Either<CustomError, List<Contest>>> fetchAllContests() async {
+  try {
+    final response = await get('contests');
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      final List<dynamic> data = response.body['data'];
+      final contests = data.map((json) => Contest.fromJson(json)).toList();
+      return Right(contests);
+    } else {
+      return Left(CustomError(response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch contests'));
+    }
+  } catch (e) {
+    log('Error fetching contests: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+@override
+Future<Either<CustomError, List<Question>>> fetchAllQuestions() async {
+  try {
+    final response = await get('questions');
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      final List<dynamic> data = response.body['data'];
+      final questions = data.map((json) => Question.fromJson(json)).toList();
+      return Right(questions);
+    } else {
+      return Left(CustomError(response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch questions'));
+    }
+  } catch (e) {
+    log('Error fetching questions: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+
 }

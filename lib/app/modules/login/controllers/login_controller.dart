@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../APIs/api_helper_implementation.dart';
+import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
 import '../models/login_request_model.dart';
@@ -48,7 +49,7 @@ class LoginController extends GetxController {
             backgroundColor: Colors.green, colorText: Colors.white);
 
         // Navigate to the dashboard
-        Get.offAllNamed('/dashboard');
+        Get.offAllNamed(Routes.jobCircular);
       },
     );
 

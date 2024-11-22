@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import '../modules/contests/bindings/contest_binding.dart';
+import '../modules/contests/views/contest_view.dart';
 import '../modules/exam-types/bindings/exam-type-binding.dart';
 import '../modules/exam-types/views/exam-type-view.dart';
 import '../modules/home/binding/home_binding.dart';
@@ -9,11 +11,13 @@ import '../modules/job-circulars/bindings/job-circulars-binding.dart';
 import '../modules/job-circulars/views/job-circulars-view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/questions/bindings/question_bindings.dart';
+import '../modules/questions/views/question_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
 
 class AppPages {
-  static const initial = Routes.login;
+  static const initial = Routes.contests;
 
   static final routes = [
     GetPage(
@@ -46,6 +50,16 @@ class AppPages {
       page: () => ExamTypeView(),
       binding: ExamTypeBinding(),
     ),
+        GetPage(
+      name: '/contests',
+      page: () => ContestView(),
+      binding: ContestBinding(),
+    ),
+    GetPage(
+      name: '/questions',
+      page: () => QuestionView(),
+      binding: QuestionBinding(),
+    ),
   ];
 }
 
@@ -56,4 +70,6 @@ class Routes {
   static const jobCircular = '/job-circulars';
   static const jobCategories = '/job-categories';
   static const examTypes = '/exam-types';
+  static const questions = '/questions';
+  static const contests = '/contests';
 }

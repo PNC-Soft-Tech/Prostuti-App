@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 
+import '../common/models/contest_model.dart';
+import '../common/models/question_model.dart';
 import '../models/job-category-model.dart';
 import '../modules/exam-types/models/exam-type-model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
@@ -17,6 +19,9 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   Future<Either<CustomError, List<JobCategory>>> getJobCategories();
   Future<Either<CustomError, List<ExamType>>> getExamTypes();
+  Future<Either<CustomError, List<Contest>>> fetchAllContests();
+Future<Either<CustomError, List<Question>>> fetchAllQuestions();
+
   // Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
 
 
