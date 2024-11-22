@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/common/custom_appbar.dart';
 import '../controller/contest_controller.dart';
 import '../widgets/contest_widget.dart';
 
@@ -10,9 +11,7 @@ class ContestView extends GetView<ContestController> {
   
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Contests'),
-      ),
+      appBar: CustomAppBar.appBar(title: 'Contests', centerTitle: true),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());

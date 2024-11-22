@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../common/custom_appbar.dart';
 import '../controller/single_contest_controller.dart';
 
 
@@ -7,9 +8,7 @@ class SingleContestView extends GetView<SingleContestController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Contest Details'),
-      ),
+      appBar: CustomAppBar.appBar(title: "Contest Details", leadingIcon: Icons.backpack),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
