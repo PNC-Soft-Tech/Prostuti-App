@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../APIs/api_helper.dart';
 import '../../../APIs/api_helper_implementation.dart';
 import '../../../storage/storage_helper.dart';
 
@@ -9,7 +12,8 @@ import '../models/login_request_model.dart';
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final ApiHelperImpl apiHelper = ApiHelperImpl();
+  final ApiHelper _apiHelper = Get.find<ApiHelper>();
+
 
   var isLoading = false.obs;
 
@@ -30,10 +34,11 @@ class LoginController extends GetxController {
       password: password,
     );
 
-    final result = await apiHelper.login(loginRequest);
+    final result = await _apiHelper.login(loginRequest);
 
     result.fold(
       (error) {
+        log("log: ${error.message}");
         Get.snackbar("Login Failed", error.message ?? "Unknown error occurred",
             backgroundColor: Colors.redAccent, colorText: Colors.white);
       },

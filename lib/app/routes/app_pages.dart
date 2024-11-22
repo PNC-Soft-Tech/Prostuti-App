@@ -9,9 +9,11 @@ import '../modules/job-circulars/bindings/job-circulars-binding.dart';
 import '../modules/job-circulars/views/job-circulars-view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/register/bindings/register_binding.dart';
+import '../modules/register/views/register_view.dart';
 
 class AppPages {
-  static const initial = Routes.jobCategories;
+  static const initial = Routes.login;
 
   static final routes = [
     GetPage(
@@ -24,17 +26,22 @@ class AppPages {
       page: () => LoginView(),
       binding: LoginBinding(),
     ),
-        GetPage(
+    GetPage(
+      name: Routes.register,
+      page: () => RegisterView(),
+      binding: RegisterBinding(),
+    ),
+    GetPage(
       name: Routes.jobCircular,
       page: () => JobCircularView(),
       binding: JobCircularBinding(),
     ),
-        GetPage(
+    GetPage(
       name: Routes.jobCategories,
       page: () => JobCategoryView(),
       binding: JobCategoryBinding(),
     ),
-        GetPage(
+    GetPage(
       name: Routes.examTypes,
       page: () => ExamTypeView(),
       binding: ExamTypeBinding(),
@@ -45,8 +52,8 @@ class AppPages {
 class Routes {
   static const home = '/home';
   static const login = '/login';
+  static const register = '/register';
   static const jobCircular = '/job-circulars';
-    static const jobCategories = '/job-categories';
-      static const examTypes = '/exam-types';
-
+  static const jobCategories = '/job-categories';
+  static const examTypes = '/exam-types';
 }

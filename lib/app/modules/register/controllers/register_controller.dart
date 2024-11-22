@@ -6,7 +6,8 @@ import '../models/register_model.dart';
 
 
 class RegisterController extends GetxController {
-  final ApiHelper _apiHelper = ApiHelperImpl(); // Use ApiHelperImpl
+  final ApiHelper _apiHelper = Get.find<ApiHelper>();
+
   var isLoading = false.obs;
 
   Future<void> registerUser(RegisterRequestModel model) async {

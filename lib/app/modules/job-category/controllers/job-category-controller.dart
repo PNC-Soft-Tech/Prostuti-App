@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 
+import '../../../APIs/api_helper.dart';
 import '../../../APIs/api_helper_implementation.dart';
 import '../../../models/job-category-model.dart';
 
 
 class JobCategoryController extends GetxController {
-  final ApiHelperImpl _apiHelper = ApiHelperImpl();
+  final ApiHelper _apiHelper = Get.find<ApiHelper>();
+
   var jobCategories = <JobCategory>[].obs;
   var isLoading = true.obs;
 
@@ -16,8 +20,10 @@ class JobCategoryController extends GetxController {
   }
 
   void fetchJobCategories() async {
+     log('Fetching job categories...');
     isLoading.value = true;
     final response = await _apiHelper.getJobCategories();
+    log("res: ${response.toString()}");
     response.fold(
       (error) {
         isLoading.value = false;

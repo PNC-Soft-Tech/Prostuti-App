@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../APIs/api_helper.dart';
 import '../../../APIs/api_helper_implementation.dart';
 import '../models/job-circulars-model.dart';
 
 
 class JobCircularController extends GetxController {
-  final ApiHelperImpl apiHelper = ApiHelperImpl();
+  final ApiHelper _apiHelper = Get.find<ApiHelper>();
+
   var isLoading = false.obs;
   var jobCirculars = <JobCircular>[].obs;
 
@@ -17,7 +19,8 @@ class JobCircularController extends GetxController {
 
   Future<void> fetchJobCirculars() async {
     isLoading(true);
-    final result = await apiHelper.fetchJobCirculars();
+    final result = await 
+    _apiHelper.fetchJobCirculars();
     result.fold(
       (error) {
         Get.snackbar("Error", error.message ?? "Unknown error occurred",
