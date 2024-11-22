@@ -15,7 +15,9 @@ class ContestWidget extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(title: contest.name,description: contest.description,);
+    return GestureDetector(
+      onTap: ()=> Get.toNamed(Routes.singleContest(contest.id)),
+      child: CustomCard(title: contest.name,description: contest.description,));
     
     //  Card(
     //     elevation: 2.3,
