@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get_connect/connect.dart';
-import 'package:get/get_connect/http/src/response/response.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 
 import '../constant/app_config.dart';

@@ -10,6 +10,8 @@ dependencies:
   dartz: ^0.10.1
   flutter:
     sdk: flutter
+  flutter_screenutil: ^5.9.3
+  flutter_svg: ^2.0.16
   get: ^4.6.6
   google_fonts: ^6.2.1
   shared_preferences: ^2.3.3
@@ -21,3 +23,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  
+  assets:
+    - assets/splash/
+    - assets/onboarding/
