@@ -12,7 +12,7 @@ void showCustomDialog({
       title: Row(
         children: [
           Icon(icon, color: iconColor),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Text(title),
         ],
       ),
@@ -20,7 +20,7 @@ void showCustomDialog({
       actions: [
         TextButton(
           onPressed: () => Get.back(),
-          child: Text('OK'),
+          child: const Text('OK'),
         ),
       ],
     ),

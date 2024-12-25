@@ -6,17 +6,19 @@ import '../widgets/login_widget.dart';
 class LoginView extends StatelessWidget {
   final LoginController controller = Get.put(LoginController());
 
+  LoginView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: const Text("Login"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Obx(
           () => controller.isLoading.value
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,

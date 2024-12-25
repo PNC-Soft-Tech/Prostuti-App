@@ -13,7 +13,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   @override
   void onInit() {
     httpClient.baseUrl = AppConfig.baseUrl;
-    httpClient.timeout = Duration(seconds: AppConfig.timeoutDuration);
+    httpClient.timeout = const Duration(seconds: AppConfig.timeoutDuration);
   }
 
   Future<Either<CustomError, T>> _convert<T>(
@@ -22,10 +22,12 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       try {
         return Right(fromJson(response.body));
       } catch (e) {
-        return Left(CustomError(response.statusCode, message: 'Parsing error: $e'));
+        return Left(
+            CustomError(response.statusCode, message: 'Parsing error: $e'));
       }
     } else {
-      return Left(CustomError(response.statusCode, message: '${response.statusText}'));
+      return Left(
+          CustomError(response.statusCode, message: '${response.statusText}'));
     }
   }
 
@@ -37,11 +39,12 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     if (response.statusCode == 200) {
       return Right(response); // Return the raw response.
     } else {
-      return Left(CustomError(response.statusCode, message: '${response.statusText}'));
+      return Left(
+          CustomError(response.statusCode, message: '${response.statusText}'));
     }
   }
 
-    @override
+  @override
   Future<Either<CustomError, LoginResponseModel>> login(
       LoginRequestModel payload) async {
     final response = await post('users/login', payload.toJson());

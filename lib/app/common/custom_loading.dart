@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 void showLoadingDialog() {
   Get.dialog(
-    Center(
+    const Center(
       child: CircularProgressIndicator(),
     ),
     barrierDismissible: false,

@@ -12,6 +12,8 @@ class RegisterForm extends StatelessWidget {
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
 
+  RegisterForm({super.key});
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<RegisterController>();
@@ -22,49 +24,47 @@ class RegisterForm extends StatelessWidget {
         children: [
           TextFormField(
             controller: usernameController,
-            decoration: InputDecoration(labelText: 'Username'),
-            validator: (value) => value == null || value.isEmpty
-                ? 'Username is required'
-                : null,
+            decoration: const InputDecoration(labelText: 'Username'),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Username is required' : null,
           ),
           TextFormField(
             controller: fnameController,
-            decoration: InputDecoration(labelText: 'First Name'),
+            decoration: const InputDecoration(labelText: 'First Name'),
             validator: (value) => value == null || value.isEmpty
                 ? 'First name is required'
                 : null,
           ),
           TextFormField(
             controller: lnameController,
-            decoration: InputDecoration(labelText: 'Last Name'),
-            validator: (value) => value == null || value.isEmpty
-                ? 'Last name is required'
-                : null,
+            decoration: const InputDecoration(labelText: 'Last Name'),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Last name is required' : null,
           ),
           TextFormField(
             controller: emailController,
-            decoration: InputDecoration(labelText: 'Email'),
+            decoration: const InputDecoration(labelText: 'Email'),
             validator: (value) =>
                 value == null || !value.contains('@') ? 'Invalid email' : null,
           ),
           TextFormField(
             controller: phoneController,
-            decoration: InputDecoration(labelText: 'Phone'),
+            decoration: const InputDecoration(labelText: 'Phone'),
             validator: (value) =>
                 value == null || value.length != 10 ? 'Invalid phone' : null,
           ),
           TextFormField(
             controller: passwordController,
-            decoration: InputDecoration(labelText: 'Password'),
+            decoration: const InputDecoration(labelText: 'Password'),
             obscureText: true,
             validator: (value) => value == null || value.length < 6
                 ? 'Password must be at least 6 characters'
                 : null,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Obx(() {
             return controller.isLoading.value
-                ? CircularProgressIndicator()
+                ? const CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
@@ -79,7 +79,7 @@ class RegisterForm extends StatelessWidget {
                         controller.registerUser(model);
                       }
                     },
-                    child: Text('Register'),
+                    child: const Text('Register'),
                   );
           }),
         ],

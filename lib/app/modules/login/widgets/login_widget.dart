@@ -6,11 +6,11 @@ class LoginWidget extends StatelessWidget {
   final VoidCallback onLoginPressed;
 
   const LoginWidget({
-    Key? key,
+    super.key,
     required this.emailController,
     required this.passwordController,
     required this.onLoginPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,30 +18,30 @@ class LoginWidget extends StatelessWidget {
       children: [
         TextField(
           controller: emailController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: "Email",
             hintText: "Enter your email",
             border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.emailAddress,
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         TextField(
           controller: passwordController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: "Password",
             hintText: "Enter your password",
             border: OutlineInputBorder(),
           ),
           obscureText: true,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: onLoginPressed,
-          child: Text("Login"),
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
           ),
+          child: Text("Login"),
         ),
       ],
     );
