@@ -2,31 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'app/APIs/api_helper.dart';
+import 'app/APIs/api_helper_implementation.dart';
+import 'app/APIs/global-binding/global-binding.dart';
+import 'app/common/themes/theme_controller.dart';
 import 'app/constant/app_theme.dart';
 import 'app/routes/app_pages.dart';
 
 void main() {
-  runApp(const MainApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  MainApp({super.key});
+  final ThemeController themeController = Get.put(ThemeController());
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(428, 926),
-      minTextAdapt: true, // Automatically adjusts text sizes to screen size
-      splitScreenMode: true, // Optimizes layout for screens with large width
-      builder: (context, child) {
-        return GetMaterialApp(
-          title: 'Prostuti',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          initialRoute: AppPages.initial,
-          getPages: AppPages.routes,
-        );
-      },
+    return GetMaterialApp(
+      title: 'Prostuti',
+      debugShowCheckedModeBanner: false,
+      theme: themeController.currentTheme,
+      darkTheme: ThemeData.dark(),
+      themeMode:
+          themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
+      initialRoute: AppPages.initial,
+      getPages: AppPages.routes,
+      initialBinding: GlobalBinding(),
     );
   }
 }
