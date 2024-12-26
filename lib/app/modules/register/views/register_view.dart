@@ -4,13 +4,13 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/constant/app_color.dart';
-import '../controllers/login_controller.dart';
-import '../widgets/login_widget.dart';
+import '../controllers/register_controller.dart';
+import '../widgets/register_form.dart';
 
-class LoginView extends StatelessWidget {
-  final LoginController controller = Get.put(LoginController());
+class RegisterView extends StatelessWidget {
+  final RegisterController controller = Get.put(RegisterController());
 
-  LoginView({super.key});
+  RegisterView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,7 @@ class LoginView extends StatelessWidget {
                       ),
                       Center(
                         child: Text(
-                          'Welcome Back',
+                          'Create Your Prostuti Account',
                           style: CustomStyles.textStyle.copyWith(
                             fontSize: 24.sp,
                           ),
@@ -103,13 +103,9 @@ class LoginView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(
-                        height: 40,
+                        height: 20,
                       ),
-                      LoginWidget(
-                        emailController: controller.emailController,
-                        passwordController: controller.passwordController,
-                        onLoginPressed: controller.login,
-                      ),
+                      const RegisterForm(),
                       const SizedBox(
                         height: 20,
                       ),
@@ -149,7 +145,7 @@ class LoginView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(
-                        height: 50,
+                        height: 15,
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -157,7 +153,7 @@ class LoginView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Don't have an account? ",
+                              "Already have an account? ",
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 color: Colors.grey,
@@ -165,10 +161,10 @@ class LoginView extends StatelessWidget {
                             ),
                             TextButton(
                               onPressed: () {
-                                Get.toNamed('/register');
+                                Get.toNamed('/login');
                               },
                               child: Text(
-                                "Register Now",
+                                "Login",
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   color: Colors.blue,

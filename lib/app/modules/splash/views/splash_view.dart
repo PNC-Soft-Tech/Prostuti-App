@@ -28,16 +28,25 @@ class SplashView extends StatelessWidget {
             height: screenHeight - 20.h,
             decoration: BoxDecoration(
               color: AppColors.secondary, // White background
-              borderRadius: BorderRadius.circular(40.r), // Rounded corners
+              borderRadius: BorderRadius.circular(30.r), // Rounded corners
             ),
             child: Center(
-              child: Column(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
-                    'assets/splash/splash-logo.svg',
-                    width: 60.w,
-                    height: 60.h,
+                    'assets/main-logo.svg',
+                    width: 80.w,
+                    height: 80.h,
+                  ),
+                  SizedBox(width: 10.w),
+                  Text(
+                    'Prostuti',
+                    style: TextStyle(
+                      fontSize: 40.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.blueGray,
+                    ),
                   ),
                 ],
               ),
