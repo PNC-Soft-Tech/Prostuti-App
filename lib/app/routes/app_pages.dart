@@ -17,8 +17,6 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
-import '../modules/register/bindings/register_binding.dart';
-import '../modules/register/views/register_view.dart';
 import '../modules/single-contest/bindings/single_contest_bindings.dart';
 import '../modules/single-contest/views/single_contest_view.dart';
 
