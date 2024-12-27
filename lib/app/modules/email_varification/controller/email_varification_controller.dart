@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/models/contest_model.dart';
@@ -7,7 +8,10 @@ import '../../../common/models/contest_model.dart';
 
 class EmailVarificationController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-
+  final code1 = TextEditingController();
+  final code2 = TextEditingController();
+  final code3 = TextEditingController();
+  final code4 = TextEditingController();
   var contests = <Contest>[].obs;
     var contest = Rxn<Contest>();
   var isLoading = false.obs;
@@ -15,7 +19,7 @@ class EmailVarificationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchContests();
+
   }
 
   Future<void> fetchContests() async {

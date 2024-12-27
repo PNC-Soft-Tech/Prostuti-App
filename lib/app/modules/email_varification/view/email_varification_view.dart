@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
+import '../../../common/custom_text_input_field.dart';
+import '../../../common/widgets/header_curve_logo_widget.dart';
 import '../controller/email_varification_controller.dart';
 
 
@@ -30,65 +33,15 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                     // mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SizedBox(
-                        width: screenWidth,
-                        height: 120.h,
-                        // height: screenHeight - 40.h,
-                        child: Stack(
-                          children: [
-                            Container(
-                                width: screenWidth,
-                                height: 50.h,
-                                decoration:  BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(30.r),
-                                      topRight: Radius.circular(30.r)),
-                                ),
-                                child: null),
-                            Positioned(
-                              bottom: 0.h,
-                              child: SvgPicture.asset(
-                                'assets/blue-banner.svg',
-                                width: screenWidth,
-                              ),
-                            ),
-                            Positioned(
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/main-logo.svg',
-                                      width: 60.w,
-                                      height: 60.h,
-                                      colorFilter: const ColorFilter.mode(
-                                          Colors.white, BlendMode.srcIn),
-                                    ),
-                                    SizedBox(width: 10.w),
-                                    Text(
-                                      'Prostuti',
-                                      style: TextStyle(
-                                        fontSize: 32.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                     const   HeaderCurveLogoWidget(),
                       const SizedBox(
                         height: 20,
                       ),
                       Center(
                         child: Text(
-                          'Welcome Back',
+                          'Enter the 4 Digit Code we sent to',
                           style: CustomStyles.textStyle.copyWith(
-                            fontSize: 24.sp,
+                            fontSize: 18.sp, fontWeight: FontWeight.w600
                           ),
                         ),
                       ),
@@ -97,88 +50,38 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                       ),
                       Center(
                         child: Text(
-                          'Prepare, Perform, Progress',
+                          'rahat.cse5.bu@gmail.com',
                           style: CustomStyles.textStyle.copyWith(
                               color: AppColors.midnightBlue.withOpacity(0.7)),
                         ),
                       ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      // LoginWidget(
-                      //   emailController: controller.emailController,
-                      //   passwordController: controller.passwordController,
-                      //   onLoginPressed: controller.login,
-                      // ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Center(
+                      SizedBox(height: 50.h,),
+                 Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                   child: Row(children: [
+                    Expanded(child: CustomTextInput(borderRadius: 50, controller: controller.code1,)),
+                    SizedBox(width: 18.w),
+                      Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code2,)),
+                         SizedBox(width: 18.w),
+                      Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code3,)),
+                         SizedBox(width: 18.w),
+                       Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code4,)),
+                                 
+                                   ],),
+                 ), 
+                 Container(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                  child: CustomButton.button(text: "Submit", onPressed: (){})),
+                    
+                     SizedBox(height: 55.h,),
+               Center(
                         child: Text(
-                          'Or',
+                          'Send Code Again',
                           style: CustomStyles.textStyle.copyWith(
-                              color: AppColors.midnightBlue.withOpacity(0.7)),
+                            fontSize: 18.sp, fontWeight: FontWeight.w600, color:  AppColors.primary
+                          ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SocialButton(
-                            icon: 'assets/icons/google.png',
-                            onPressed: () {
-                              // Handle Google login
-                            },
-                          ),
-                          const SizedBox(width: 30),
-                          SocialButton(
-                            icon: 'assets/icons/facebook.png',
-                            onPressed: () {
-                              // Handle Facebook login
-                            },
-                          ),
-                          const SizedBox(width: 30),
-                          SocialButton(
-                            icon: 'assets/icons/apple.png',
-                            onPressed: () {
-                              // Handle Apple login
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 50,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Don't have an account? ",
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Get.toNamed('/register');
-                              },
-                              child: Text(
-                                "Register Now",
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
                     ],
                   ),
           ),
