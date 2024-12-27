@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../routes/app_pages.dart';
+import '../../../storage/storage_helper.dart';
 
 class EmailVarificationController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
@@ -89,12 +90,20 @@ class EmailVarificationController extends GetxController {
             snackPosition: SnackPosition.BOTTOM);
         isLoading(false);
       },
-      (response) {
+      (response) async {
         isLoading(false);
         // Handle success scenario
         print('Success: ${response.body}');
-        // Navigate to the next screen or perform an action
-        Get.toNamed(Routes.home, arguments: response.body);
+        // Extract token from response
+        final String? token = response.body['data']['token'];
+
+        if (token != null) {
+          // Save token using StorageHelper
+          await StorageHelper.setToken(token);
+          print('Token saved successfully.');
+          // Navigate to the next screen or perform an action
+          Get.toNamed(Routes.home, arguments: response.body);
+        }
       },
     );
   }
