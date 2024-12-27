@@ -59,13 +59,13 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                  Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                    child: Row(children: [
-                    Expanded(child: CustomTextInput(borderRadius: 50, controller: controller.code1,)),
+                    Expanded(child: CustomTextInput(borderRadius: 50, controller: controller.code1,textAlign: TextAlign.center,)),
                     SizedBox(width: 18.w),
-                      Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code2,)),
+                      Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code2,textAlign: TextAlign.center,)),
                          SizedBox(width: 18.w),
-                      Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code3,)),
+                      Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code3,textAlign: TextAlign.center,)),
                          SizedBox(width: 18.w),
-                       Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code4,)),
+                       Expanded(child: CustomTextInput(borderRadius: 50,controller: controller.code4,textAlign: TextAlign.center,)),
                                  
                                    ],),
                  ), 

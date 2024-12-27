@@ -20,6 +20,7 @@ class CustomTextInput extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
+  final TextAlign? textAlign;
 
   const CustomTextInput({
     Key? key,
@@ -42,6 +43,7 @@ class CustomTextInput extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onTap,
+    this.textAlign
   }) : super(key: key);
 
   @override
@@ -62,6 +64,7 @@ class CustomTextInput extends StatelessWidget {
           obscureText: obscureText,
           style: textStyle,
           onTap: onTap,
+          textAlign: textAlign?? TextAlign.start,
           decoration: InputDecoration(
             isDense: isDense,
             border: InputBorder.none,
