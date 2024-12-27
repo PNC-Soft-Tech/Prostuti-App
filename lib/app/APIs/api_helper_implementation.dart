@@ -208,4 +208,30 @@ Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId) 
     return Left(CustomError(500, message: 'Network error: $e'));
   }
 }
+
+ @override
+  Future<Either<CustomError, Response>> verifyOtp(Map<String,dynamic> data) async {
+    try {
+      // Construct the payload as a Map
+      final payload = data;
+
+      // Make the POST request
+      final Response response = await post('users/verify-otp', payload);
+
+      // Handle response based on status code
+      if (response.statusCode == 200) {
+        return Right(response); // Successful response
+      } else {
+        return Left(
+          CustomError(
+            response.statusCode ?? 500,
+            message: response.body['message'] ?? 'Error verifying OTP',
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle exceptions
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
 }

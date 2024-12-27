@@ -23,7 +23,7 @@ import '../modules/single-contest/bindings/single_contest_bindings.dart';
 import '../modules/single-contest/views/single_contest_view.dart';
 
 class AppPages {
-  static const initial = Routes.emailVarification;
+  static const initial = Routes.splash;
 
   static final routes = [
     GetPage(

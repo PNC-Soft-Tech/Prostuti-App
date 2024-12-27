@@ -23,7 +23,7 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<Contest>>> fetchAllContests();
 Future<Either<CustomError, List<Question>>> fetchAllQuestions();
 Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId);
-
+  Future<Either<CustomError, Response>> verifyOtp(Map<String,dynamic> data);
   // Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
 
 

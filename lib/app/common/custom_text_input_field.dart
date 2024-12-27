@@ -20,7 +20,9 @@ class CustomTextInput extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChange; // Updated type
   final TextAlign? textAlign;
+  final FocusNode? focusNode;
 
   const CustomTextInput({
     Key? key,
@@ -43,7 +45,9 @@ class CustomTextInput extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onTap,
-    this.textAlign
+    this.onChange,
+    this.textAlign,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -57,13 +61,15 @@ class CustomTextInput extends StatelessWidget {
       ),
       child: Padding(
         padding: padding,
-        child: TextField(
+        child: TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           textCapitalization: textCapitalization,
           obscureText: obscureText,
           style: textStyle,
           onTap: onTap,
+          focusNode: focusNode,
+          onChanged: onChange,
           textAlign: textAlign?? TextAlign.start,
           decoration: InputDecoration(
             isDense: isDense,
