@@ -62,7 +62,10 @@ class EmailVarificationController extends GetxController {
       code4.text = '';
     } else {
       // FocusScope.of(Get.context!).requestFocus(code2FocusNode);
-      isSubmitEnable.value = true;
+      if (code1.text.isNotEmpty &&
+          code2.text.isNotEmpty &&
+          code3.text.isNotEmpty &&
+          code4.text.isNotEmpty) isSubmitEnable.value = true;
     }
     print("Code4 changed to: $value");
   }
