@@ -39,11 +39,11 @@ class LoginView extends StatelessWidget {
                             Container(
                                 width: screenWidth,
                                 height: 50.h,
-                                decoration: const BoxDecoration(
+                                decoration:  BoxDecoration(
                                   color: AppColors.primary,
                                   borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(30),
-                                      topRight: Radius.circular(30)),
+                                      topLeft: Radius.circular(30.r),
+                                      topRight: Radius.circular(30.r)),
                                 ),
                                 child: null),
                             Positioned(
