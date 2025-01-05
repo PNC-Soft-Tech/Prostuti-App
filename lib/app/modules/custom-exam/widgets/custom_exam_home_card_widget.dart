@@ -23,7 +23,7 @@ class CustomExamHomeCardWidget extends GetWidget {
                 style: GoogleFonts.notoSansBengali(
                     textStyle: TextStyle(
                         fontSize: 16.sp,
-                        color: Colors.black54,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold)),
               ),
             ],
@@ -37,7 +37,7 @@ class CustomExamHomeCardWidget extends GetWidget {
               style: GoogleFonts.notoSansBengali(
                   textStyle: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.black54,
+                color: Color(0xFF212D40),
               )),
             ),
           ),
