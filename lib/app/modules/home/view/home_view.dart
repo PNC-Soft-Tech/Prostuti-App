@@ -4,32 +4,38 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../common/custom_appbar.dart';
 import '../../../common/custom_loading.dart';
+import '../../../common/widgets/bottom_nav_bar_widget.dart';
 import '../../contests/widgets/contest_card_home_page_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../controller/home_controller.dart';
+import '../widgets/home_main_widget.dart';
 
 class HomeView extends GetView<HomeController> {
-  const HomeView({super.key});
+  HomeView({super.key});
 
+  final List<Widget> _pages = [
+    HomeMainWidget(),
+    Center(child: Text('Search Page')),
+    Center(child: Text('Ranking Page')),
+    Center(child: Text('History Page')),
+    Center(child: Text('More Page')),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppBar.appBar(
+      appBar: CustomAppBar.appBar(
           title: '',
           backgroundColor: Colors.white,
           // leadingWidth: 100,
-         
-          name: "Rahat"
-        ),
-        body: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 19.w),
-          child: Column(
-            children: [
-              ContestHomeCardWidget(),
-              SizedBox(height: 23.h,),
-              ExamCategoriesWidget(), 
-            ],
-          ),
-        ));
+
+          name: "Rahat"),
+      body: Obx(()=> _pages[controller.currentIndex.value]),
+      bottomNavigationBar: Obx(()=>CustomBottomNavBar(
+        currentIndex: controller.currentIndex.value,
+        onTap: (value) {
+          controller.currentIndex.value = value;
+        },
+      )),
+    );
   }
 }
