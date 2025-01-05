@@ -5,15 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
-import 'package:prostuti/app/routes/app_pages.dart';
-
-import '../../../common/custom_card.dart';
-import '../../../common/models/contest_model.dart';
 
 class ContestHomeCardWidget extends GetWidget {
-  // final Contest contest;
-
-  // ContestHomeCardWidget(this.contest);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +14,7 @@ class ContestHomeCardWidget extends GetWidget {
         // onTap: ()=> Get.toNamed(Routes.singleContest(contest.id)),
         child: Container(
           padding:  EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          margin:  EdgeInsets.symmetric(horizontal: 19.w),
+          // margin:  EdgeInsets.symmetric(horizontal: 19.w),
           decoration: BoxDecoration(color: Color(0xFFE9F5FF), border: Border.all(width: 1,color: Color(0xFFE9F5FF) ), borderRadius: BorderRadius.circular(20.r)),
           child: Column(
             children: [

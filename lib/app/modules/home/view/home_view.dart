@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../common/custom_appbar.dart';
 import '../../../common/custom_loading.dart';
 import '../../contests/widgets/contest_card_home_page_widget.dart';
+import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -21,10 +22,12 @@ class HomeView extends GetView<HomeController> {
           name: "Rahat"
         ),
         body: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 19.w),
           child: Column(
             children: [
               ContestHomeCardWidget(),
+              SizedBox(height: 23.h,),
+              ExamCategoriesWidget(), 
             ],
           ),
         ));
