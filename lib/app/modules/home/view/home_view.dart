@@ -29,7 +29,7 @@ class HomeView extends GetView<HomeController> {
           // leadingWidth: 100,
 
           name: "Rahat"),
-      body: Obx(()=> _pages[controller.currentIndex.value]),
+      body: Obx(()=> SingleChildScrollView(child: _pages[controller.currentIndex.value])),
       bottomNavigationBar: Obx(()=>CustomBottomNavBar(
         currentIndex: controller.currentIndex.value,
         onTap: (value) {
