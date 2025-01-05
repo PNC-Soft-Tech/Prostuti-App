@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
@@ -37,18 +38,18 @@ class ContestHomeCardWidget extends GetWidget {
                                           SizedBox(width: 9.w,),
                     Expanded(
                         child: Text("বিসিএস কনটেস্ট-০১",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)))
+                            style: GoogleFonts.notoSansBengali(textStyle:TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600))))
                   ],
                 ),
               ),
               SizedBox(height: 11.h,),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                       child: Text("গনিত - জ্যামিতি",
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w500)))
+                          style: GoogleFonts.notoSansBengali(textStyle:TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600))))
                 ],
               ),
                Row(

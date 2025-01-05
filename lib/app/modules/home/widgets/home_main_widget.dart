@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../contests/widgets/contest_card_home_page_widget.dart';
+import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../controller/home_controller.dart';
 
@@ -20,6 +21,8 @@ class HomeMainWidget extends GetWidget {
           ContestHomeCardWidget(),
           SizedBox(height: 23.h),
           Expanded(child: ExamCategoriesWidget()),
+               SizedBox(height: 23.h),
+          Expanded(child: ExamTopicsWidget()),
         ],
       ),
     );

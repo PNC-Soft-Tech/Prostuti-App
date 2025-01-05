@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+
+class ExamTopicWidget extends GetWidget {
+  final String? title;
+  final String? image;
+  const ExamTopicWidget({super.key, this.title, this.image});
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+       
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 8.w),
+            decoration: ShapeDecoration(
+                shape: CircleBorder(
+                    side: BorderSide(
+              color: Colors.grey,
+            ))),
+            child: CircleAvatar(
+              radius: 50.r,
+              backgroundColor: Colors.transparent,
+              child:  Image.asset(image?? "assets/govt-bd.png", width: 38.w, height: 38.h,),
+            )),
+            SizedBox(height: 6.h ,),
+             Text(title??"BCS", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),),
+      ],
+    );
+  }
+}
