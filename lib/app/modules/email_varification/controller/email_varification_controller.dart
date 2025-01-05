@@ -22,6 +22,8 @@ class EmailVarificationController extends GetxController {
   @override
   void onInit() {
     final Map<String, dynamic> args = Get.arguments;
+          FocusScope.of(Get.context!).requestFocus(code1FocusNode);
+
     email.value = args['email'];
     isSubmitEnable.value = false;
     super.onInit();

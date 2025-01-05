@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../constant/app_color.dart';
+
 class CustomButton {
   // Static method to create a button
   static Widget button({
     required String text,
     required VoidCallback onPressed,
     bool isPrimary = true,
-    double borderRadius = 8.0,
+    double borderRadius = 50.0,
     double padding = 16.0,
     Color? backgroundColor,
     Color? textColor,
@@ -36,7 +38,7 @@ class CustomButton {
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.all(padding),
         backgroundColor:
-            backgroundColor ?? (isPrimary ? Colors.blue : Colors.grey[200]),
+            backgroundColor ?? (isPrimary ? AppColors.primary : Colors.grey[200]),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),

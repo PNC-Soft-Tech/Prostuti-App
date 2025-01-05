@@ -21,8 +21,8 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(
-            top: 40,
+          padding:  EdgeInsets.symmetric(
+           vertical: 40, horizontal: 10.w
           ),
           child: Obx(
             () => controller.isLoading.value
@@ -59,7 +59,7 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                         ),
                       ),
                       SizedBox(
-                        height: 50.h,
+                        height: 60.h,
                       ),
                       Container(
                         padding:
@@ -68,7 +68,7 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                           children: [
                             Expanded(
                                 child: CustomTextInput(
-                              borderRadius: 50,
+                              borderRadius: 10,
                               controller: controller.code1,
                               textAlign: TextAlign.center,
                               onChange: controller.onCode1Change,
@@ -76,7 +76,7 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                             SizedBox(width: 18.w),
                             Expanded(
                                 child: CustomTextInput(
-                              borderRadius: 50,
+                              borderRadius: 10,
                               controller: controller.code2,
                               textAlign: TextAlign.center,
                               onChange: controller.onCode2Change,
@@ -86,7 +86,7 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                             SizedBox(width: 18.w),
                             Expanded(
                                 child: CustomTextInput(
-                              borderRadius: 50,
+                              borderRadius: 10,
                               controller: controller.code3,
                               textAlign: TextAlign.center,
                               onChange: controller.onCode3Change,
@@ -95,7 +95,7 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                             SizedBox(width: 18.w),
                             Expanded(
                                 child: CustomTextInput(
-                              borderRadius: 50,
+                              borderRadius: 10,
                               controller: controller.code4,
                               textAlign: TextAlign.center,
                               onChange: controller.onCode4Change,
