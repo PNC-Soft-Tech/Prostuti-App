@@ -49,7 +49,7 @@ class LoginController extends GetxController {
             backgroundColor: Colors.green, colorText: Colors.white);
 
         // Navigate to the dashboard
-        Get.offAllNamed(Routes.jobCircular);
+        Get.offAllNamed(Routes.home);
       },
     );
 

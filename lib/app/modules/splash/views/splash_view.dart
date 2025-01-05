@@ -5,16 +5,24 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
-class SplashView extends StatelessWidget {
+import '../../../routes/app_pages.dart';
+import '../../../storage/storage_helper.dart';
+
+class SplashView extends GetView {
   const SplashView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Start the timer to navigate after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.offAllNamed('/onboarding');
+    Future.delayed(Duration.zero, () {
+      if (StorageHelper.getToken() != null) {
+        Get.offAllNamed(Routes.home);
+      } else {
+        // Start the timer to navigate after 3 seconds
+        Future.delayed(const Duration(seconds: 3), () {
+          Get.offAllNamed(Routes.onboarding);
+        });
+      }
     });
-
     double screenWidth = ScreenUtil().screenWidth;
     double screenHeight = ScreenUtil().screenHeight;
 

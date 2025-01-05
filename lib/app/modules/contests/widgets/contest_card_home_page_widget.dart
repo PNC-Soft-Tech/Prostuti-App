@@ -65,7 +65,7 @@ class ContestHomeCardWidget extends GetWidget {
                         children: [
                          Icon(Icons.alarm,color: AppColors.primary), 
                          SizedBox(width: 6.w,),
-                         Text("20: 30: 43", style: TextStyle(color: AppColors.primary),)
+                         Text("20: 30: 43", style: TextStyle(color: AppColors.primary, fontSize: 16.sp, fontWeight: FontWeight.w600),)
                         ],
                       )), CustomButton.button(text: "Register Now", onPressed: (){}, borderRadius: 50.r, isPrimary: true)
                 ],
