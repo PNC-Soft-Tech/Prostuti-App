@@ -25,7 +25,7 @@ class ModelTestHomeCard extends GetWidget {
         Container(
           width: 200.w,
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 13.h),
-          margin: EdgeInsets.symmetric(horizontal: 8.w),
+          margin: EdgeInsets.only(right: 8.w),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
               color: AppColors.primaryOpacity,
