@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'exam_topic_widget.dart';
-
 
 class ExamTopicsWidget extends GetWidget {
   @override
@@ -12,13 +12,17 @@ class ExamTopicsWidget extends GetWidget {
       children: [
         Row(
           children: [
-            const Text("Exam Topics"),
+            Text("Exam Topics",
+                style: GoogleFonts.inter(
+                  textStyle:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
+                )),
           ],
         ),
         SizedBox(
           height: 15.h,
         ),
-        SingleChildScrollView(
+     const   SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [

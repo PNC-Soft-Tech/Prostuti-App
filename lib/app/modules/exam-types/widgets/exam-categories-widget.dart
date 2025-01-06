@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controllers/exam-type-controller.dart';
 import 'exam-category-widget.dart';
 
@@ -12,29 +13,42 @@ class ExamCategoriesWidget extends GetWidget {
       children: [
         Row(
           children: [
-            const Text("Exam Categories"),
+            Text("Exam Categories",
+                style: GoogleFonts.inter(
+                  textStyle:
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
+                )),
           ],
         ),
         SizedBox(
           height: 15.h,
         ),
-        SingleChildScrollView(
+        const SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
+            child:  Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ExamCategoryWidget(
+                 ExamCategoryWidget(
                   title: "BCS",
                   image: 'assets/govt-bd.png',
                 ),
-                ExamCategoryWidget(
+                 ExamCategoryWidget(
                   title: "NTRCA",
                   image: 'assets/ntrca.png',
                 ),
-                ExamCategoryWidget(
+                 ExamCategoryWidget(
                   title: "PSEMHG",
                   image: 'assets/primary.png',
                 ),
-                ExamCategoryWidget(
+                 ExamCategoryWidget(
+                  title: "DPDC",
+                  image: 'assets/dpdc.png',
+                ),
+                 ExamCategoryWidget(
+                  title: "DPDC",
+                  image: 'assets/dpdc.png',
+                ),
+                 ExamCategoryWidget(
                   title: "DPDC",
                   image: 'assets/dpdc.png',
                 ),
