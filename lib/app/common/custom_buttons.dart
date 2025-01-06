@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../constant/app_color.dart';
 
@@ -48,11 +49,11 @@ class CustomButton {
               : Wrap(),
           Text(
             text,
-            style: TextStyle(
+            style: GoogleFonts.inter(textStyle: TextStyle(
               fontSize: fontSize,
               fontWeight: fontWeight,
-              color: textColor ?? (isPrimary ? Colors.white : Colors.black),
-            ),
+              color: textColor ?? ( textColor!=null?  textColor:Colors.white ),
+            ),)
           ),
           !isImageLeft && imageSpaing != null
               ? SizedBox(

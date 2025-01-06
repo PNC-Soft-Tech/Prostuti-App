@@ -48,10 +48,12 @@ class CustomExamHomeCardWidget extends GetWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CustomButton.button(
-             image: 'assets/give-custom-exam-button.svg',
-             isSvgImage: true, 
-
-                  text: "Give A Custom Exam Now", onPressed: () {}),
+                  image: 'assets/give-custom-exam-button.svg',
+                  isSvgImage: true,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                  text: "Give A Custom Exam Now",
+                  onPressed: () {}),
             ],
           )
         ],
