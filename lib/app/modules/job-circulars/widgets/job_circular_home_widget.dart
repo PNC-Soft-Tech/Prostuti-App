@@ -7,11 +7,15 @@ import 'package:prostuti/app/constant/app_color.dart';
 import 'job_circular_card_home_widget.dart';
 
 class JobCircularHomeWidget extends GetWidget {
+  const JobCircularHomeWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(20.w,15.h,20.w,28.h),
-       color: AppColors.primaryOpacity,
+      width: MediaQuery.of(context).size.width, // Full width
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.fromLTRB(20.w, 15.h, 20.w, 28.h),
+      color: AppColors.primaryOpacity,
       // decoration: BoxDecoration(
       //   color: AppColors.primaryOpacity,
       //     // borderRadius: BorderRadius.circular(20.r),
@@ -47,22 +51,21 @@ class JobCircularHomeWidget extends GetWidget {
                     type: "Government",
                     image: 'assets/govt-bd.png',
                     loation: "Barishal",
-                    eduationalQualification: "B.Com (Preferable - M.Com/MBA) with m...",
+                    eduationalQualification:
+                        "B.Com (Preferable - M.Com/MBA) with m...",
                     experience: "At least 5 year(s)",
                     deadline: "6 Jan, 2025",
-                 
                   ),
                   JobCircularHomeCard(
                     title: "Assistant Accounts Officer",
                     type: "Government",
                     image: 'assets/govt-bd.png',
                     loation: "Barishal",
-                    eduationalQualification: "B.Com (Preferable - M.Com/MBA) with m...",
+                    eduationalQualification:
+                        "B.Com (Preferable - M.Com/MBA) with m...",
                     experience: "At least 5 year(s)",
                     deadline: "6 Jan, 2025",
-                 
                   ),
-                 
                 ],
               ))
         ],
