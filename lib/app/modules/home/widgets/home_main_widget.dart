@@ -7,6 +7,7 @@ import '../../contests/widgets/contest_card_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
+import '../../model_tests/widgets/model_test_home_widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget {
@@ -24,6 +25,8 @@ class HomeMainWidget extends GetWidget {
           ExamCategoriesWidget(),
                SizedBox(height: 23.h),
           ExamTopicsWidget(),
+               SizedBox(height: 23.h),
+          ModelTestHomeWidget(),
                SizedBox(height: 23.h),
           CustomExamHomeCardWidget(),
         ],
