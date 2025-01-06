@@ -14,16 +14,14 @@ class ExamCategoryWidget extends GetWidget {
        
         Container(
           margin: EdgeInsets.symmetric(horizontal: 8.w),
-            decoration: ShapeDecoration(
-                shape: CircleBorder(
+            decoration: const ShapeDecoration(
+                shape: const CircleBorder(
                     side: BorderSide(
-              color: Colors.grey,
+              color: Colors.grey, width: 1
             ))),
-            child: CircleAvatar(
-              radius: 50.r,
-              backgroundColor: Colors.transparent,
-              child:  Image.asset(image?? "assets/govt-bd.png", width: 38.w, height: 38.h,),
-            )),
+            child: Container(
+              padding: EdgeInsets.all(16.r),
+              child: Image.asset(image?? "assets/govt-bd.png", width: 38.w, height: 38.h,))),
             SizedBox(height: 6.h ,),
              Text(title??"BCS", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),),
       ],
