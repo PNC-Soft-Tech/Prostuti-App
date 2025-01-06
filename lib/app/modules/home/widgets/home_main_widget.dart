@@ -7,14 +7,15 @@ import '../../contests/widgets/contest_card_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
+import '../../model_tests/widgets/model_test_home_widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget {
-  const HomeMainWidget({super.key});
+   HomeMainWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return  Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
       child: Column(
@@ -22,12 +23,16 @@ class HomeMainWidget extends GetWidget {
           ContestHomeCardWidget(),
           SizedBox(height: 23.h),
           ExamCategoriesWidget(),
-          SizedBox(height: 23.h),
+               SizedBox(height: 23.h),
           ExamTopicsWidget(),
-          SizedBox(height: 23.h),
+               SizedBox(height: 23.h),
+          ModelTestHomeWidget(),
+               SizedBox(height: 23.h),
           CustomExamHomeCardWidget(),
         ],
       ),
     );
-  }
+  } 
+
+
 }
