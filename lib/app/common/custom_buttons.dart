@@ -36,6 +36,7 @@ class CustomButton {
             )
           : const SizedBox.shrink(),
       label: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           isImageLeft! && image != null
               ? isNetworkImage!
