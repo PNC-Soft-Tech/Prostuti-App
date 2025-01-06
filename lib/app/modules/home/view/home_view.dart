@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/modules/home/widgets/ranking_view.dart';
 import '../../../common/custom_appbar.dart';
 import '../../../common/custom_loading.dart';
 import '../../../common/widgets/bottom_nav_bar_widget.dart';
@@ -15,10 +16,10 @@ class HomeView extends GetView<HomeController> {
 
   final List<Widget> _pages = [
     HomeMainWidget(),
-    Center(child: Text('Search Page')),
-    Center(child: Text('Ranking Page')),
-    Center(child: Text('History Page')),
-    Center(child: Text('More Page')),
+    const Center(child: Text('Search Page')),
+    const RankingView(),
+    const Center(child: Text('History Page')),
+    const Center(child: Text('More Page')),
   ];
   @override
   Widget build(BuildContext context) {
@@ -29,13 +30,14 @@ class HomeView extends GetView<HomeController> {
           // leadingWidth: 100,
 
           name: "Rahat"),
-      body: Obx(()=> SingleChildScrollView(child: _pages[controller.currentIndex.value])),
-      bottomNavigationBar: Obx(()=>CustomBottomNavBar(
-        currentIndex: controller.currentIndex.value,
-        onTap: (value) {
-          controller.currentIndex.value = value;
-        },
-      )),
+      body: Obx(() =>
+          SingleChildScrollView(child: _pages[controller.currentIndex.value])),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar(
+            currentIndex: controller.currentIndex.value,
+            onTap: (value) {
+              controller.currentIndex.value = value;
+            },
+          )),
     );
   }
 }

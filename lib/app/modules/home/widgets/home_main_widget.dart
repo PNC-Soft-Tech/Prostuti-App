@@ -10,11 +10,11 @@ import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget {
-   HomeMainWidget({super.key});
+  HomeMainWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
+    return Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
       child: Column(
@@ -22,14 +22,12 @@ class HomeMainWidget extends GetWidget {
           ContestHomeCardWidget(),
           SizedBox(height: 23.h),
           ExamCategoriesWidget(),
-               SizedBox(height: 23.h),
+          SizedBox(height: 23.h),
           ExamTopicsWidget(),
-               SizedBox(height: 23.h),
+          SizedBox(height: 23.h),
           CustomExamHomeCardWidget(),
         ],
       ),
     );
-  } 
-
-
+  }
 }
