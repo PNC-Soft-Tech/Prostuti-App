@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
 import '../../contests/widgets/contest_card_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
+import '../../job-circulars/widgets/job_circular_home_widget.dart';
 import '../../model_tests/widgets/model_test_home_widget.dart';
-import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget {
    HomeMainWidget({super.key});
@@ -29,6 +27,8 @@ class HomeMainWidget extends GetWidget {
           ModelTestHomeWidget(),
                SizedBox(height: 23.h),
           CustomExamHomeCardWidget(),
+               SizedBox(height: 23.h),
+          JobCircularHomeWidget(),
         ],
       ),
     );
