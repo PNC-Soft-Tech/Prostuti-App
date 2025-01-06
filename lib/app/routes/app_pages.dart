@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:prostuti/app/modules/contest-details/binding/contest_details_binding.dart';
+import 'package:prostuti/app/modules/contest-details/view/contest_details_view.dart';
 import 'package:prostuti/app/modules/onboarding/views/onboarding_view.dart';
 import 'package:prostuti/app/modules/register/bindings/register_binding.dart';
 import 'package:prostuti/app/modules/register/views/register_view.dart';
@@ -19,8 +21,6 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
-import '../modules/single-contest/bindings/single_contest_bindings.dart';
-import '../modules/single-contest/views/single_contest_view.dart';
 
 class AppPages {
   static const initial = Routes.splash;
@@ -75,9 +75,10 @@ class AppPages {
       binding: ContestBinding(),
     ),
     GetPage(
-      name: '/contest/:id',
-      page: () => SingleContestView(),
-      binding: SingleContestBinding(),
+      // name: '/contest/:id',
+      name: '/contest-details/',
+      page: () => ContestDetailsView(),
+      binding: ContestDetailsBinding(),
     ),
     GetPage(
       name: '/questions',
@@ -99,6 +100,7 @@ class Routes {
   static const examTypes = '/exam-types';
   static const questions = '/questions';
   static const contests = '/contests';
+  static const contestDetails = '/contest-details/';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
 }
