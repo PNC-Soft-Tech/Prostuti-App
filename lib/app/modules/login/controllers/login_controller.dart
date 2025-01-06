@@ -3,18 +3,15 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
-import '../../../APIs/api_helper_implementation.dart';
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
 import '../models/login_request_model.dart';
 
-
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-
 
   var isLoading = false.obs;
 

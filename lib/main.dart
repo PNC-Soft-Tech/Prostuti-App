@@ -17,21 +17,23 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  ScreenUtilInit(
-      designSize: Size(428, 926), // Set your design size
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) {
-        return GetMaterialApp(
-      title: 'Prostuti',
-      debugShowCheckedModeBanner: false,
-      theme: themeController.currentTheme,
-      darkTheme: ThemeData.dark(),
-      themeMode:
-          themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
-      initialRoute: AppPages.initial,
-      getPages: AppPages.routes,
-      initialBinding: GlobalBinding(),
-  );});
+    return ScreenUtilInit(
+        designSize: const Size(428, 926), // Set your design size
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          return GetMaterialApp(
+            title: 'Prostuti',
+            debugShowCheckedModeBanner: false,
+            theme: themeController.currentTheme,
+            darkTheme: ThemeData.dark(),
+            themeMode: themeController.isDarkMode.value
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            initialRoute: AppPages.initial,
+            getPages: AppPages.routes,
+            initialBinding: GlobalBinding(),
+          );
+        });
   }
 }

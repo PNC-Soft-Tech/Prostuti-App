@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/job-category-controller.dart';
 
-
 class JobCategoryView extends StatelessWidget {
+  const JobCategoryView({super.key});
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<JobCategoryController>();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Job Categories'),
+        title: const Text('Job Categories'),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (controller.jobCategories.isEmpty) {
-          return Center(child: Text('No categories found.'));
+          return const Center(child: Text('No categories found.'));
         }
         return ListView.builder(
           itemCount: controller.jobCategories.length,

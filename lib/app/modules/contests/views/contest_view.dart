@@ -4,12 +4,11 @@ import 'package:prostuti/app/common/custom_appbar.dart';
 import '../controller/contest_controller.dart';
 import '../widgets/contest_widget.dart';
 
-
 class ContestView extends GetView<ContestController> {
+  const ContestView({super.key});
+
   @override
   Widget build(BuildContext context) {
-  
-
     return Scaffold(
       appBar: CustomAppBar.appBar(title: 'Contests', centerTitle: true),
       body: Obx(() {

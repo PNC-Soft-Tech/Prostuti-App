@@ -4,7 +4,7 @@ import '../../../common/models/question_model.dart';
 class QuestionWidget extends StatelessWidget {
   final Question question;
 
-  QuestionWidget(this.question);
+  const QuestionWidget(this.question, {super.key});
 
   @override
   Widget build(BuildContext context) {

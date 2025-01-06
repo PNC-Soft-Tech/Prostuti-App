@@ -3,12 +3,14 @@ import 'package:get/get.dart';
 import '../../../common/custom_appbar.dart';
 import '../controller/single_contest_controller.dart';
 
-
 class SingleContestView extends GetView<SingleContestController> {
+  const SingleContestView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar.appBar(title: "Contest Details", leadingIcon: Icons.backpack),
+      appBar: CustomAppBar.appBar(
+          title: "Contest Details", leadingIcon: Icons.backpack),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -36,7 +38,7 @@ class SingleContestView extends GetView<SingleContestController> {
                   title: Text(question.title),
                   subtitle: Text('Answer: ${question.rightAnswer}'),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );

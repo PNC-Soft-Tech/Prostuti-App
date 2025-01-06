@@ -7,6 +7,8 @@ import '../controllers/exam-type-controller.dart';
 import 'exam-category-widget.dart';
 
 class ExamCategoriesWidget extends GetWidget {
+  const ExamCategoriesWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -25,30 +27,30 @@ class ExamCategoriesWidget extends GetWidget {
         ),
         const SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child:  Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                 ExamCategoryWidget(
+                ExamCategoryWidget(
                   title: "BCS",
                   image: 'assets/govt-bd.png',
                 ),
-                 ExamCategoryWidget(
+                ExamCategoryWidget(
                   title: "NTRCA",
                   image: 'assets/ntrca.png',
                 ),
-                 ExamCategoryWidget(
+                ExamCategoryWidget(
                   title: "PSEMHG",
                   image: 'assets/primary.png',
                 ),
-                 ExamCategoryWidget(
+                ExamCategoryWidget(
                   title: "DPDC",
                   image: 'assets/dpdc.png',
                 ),
-                 ExamCategoryWidget(
+                ExamCategoryWidget(
                   title: "DPDC",
                   image: 'assets/dpdc.png',
                 ),
-                 ExamCategoryWidget(
+                ExamCategoryWidget(
                   title: "DPDC",
                   image: 'assets/dpdc.png',
                 ),

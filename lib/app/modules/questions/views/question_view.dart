@@ -3,12 +3,11 @@ import 'package:get/get.dart';
 import '../controller/question_controller.dart';
 import '../widgets/question_widgets.dart';
 
-
 class QuestionView extends GetView<QuestionController> {
+  const QuestionView({super.key});
+
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Questions'),

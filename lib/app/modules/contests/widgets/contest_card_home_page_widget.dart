@@ -8,6 +8,8 @@ import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 class ContestHomeCardWidget extends GetWidget {
+  const ContestHomeCardWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -16,8 +18,8 @@ class ContestHomeCardWidget extends GetWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       // margin:  EdgeInsets.symmetric(horizontal: 19.w),
       decoration: BoxDecoration(
-          color: Color(0xFFE9F5FF),
-          border: Border.all(width: 1, color: Color(0xFFE9F5FF)),
+          color: const Color(0xFFE9F5FF),
+          border: Border.all(width: 1, color: const Color(0xFFE9F5FF)),
           borderRadius: BorderRadius.circular(20.r)),
       child: Column(
         children: [
@@ -26,7 +28,7 @@ class ContestHomeCardWidget extends GetWidget {
               Text(
                 "Upcomming Contest",
                 style: GoogleFonts.inter(
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w400,
                 )),
@@ -52,7 +54,7 @@ class ContestHomeCardWidget extends GetWidget {
                 Expanded(
                     child: Text("বিসিএস কনটেস্ট-০১",
                         style: GoogleFonts.notoSansBengali(
-                            textStyle: TextStyle(
+                            textStyle: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w600))))
               ],
             ),
@@ -65,7 +67,7 @@ class ContestHomeCardWidget extends GetWidget {
               Expanded(
                   child: Text("গনিত - জ্যামিতি",
                       style: GoogleFonts.notoSansBengali(
-                          textStyle: TextStyle(
+                          textStyle: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w600))))
             ],
           ),
@@ -74,22 +76,23 @@ class ContestHomeCardWidget extends GetWidget {
               Expanded(
                   child: Row(
                 children: [
-                 Image.asset('assets/countdown.png'),
+                  Image.asset('assets/countdown.png'),
                   SizedBox(
                     width: 6.w,
                   ),
                   Text(
                     "20: 30: 43",
-                    style: GoogleFonts.inter(textStyle: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600)),
+                    style: GoogleFonts.inter(
+                        textStyle: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600)),
                   )
                 ],
               )),
               CustomButton.button(
                   text: "Register Now",
-                      fontSize: 13.sp,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
                   onPressed: () {},
                   borderRadius: 50.r,

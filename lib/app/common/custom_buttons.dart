@@ -38,33 +38,37 @@ class CustomButton {
       label: Row(
         children: [
           isImageLeft! && image != null
-              ? isNetworkImage! && image != null
+              ? isNetworkImage!
                   ? Image.network(image)
-                  : !isSvgImage!? Image.asset(image): SvgPicture.asset(image)
-              : Wrap(),
+                  : !isSvgImage!
+                      ? Image.asset(image)
+                      : SvgPicture.asset(image)
+              : const Wrap(),
           isImageLeft && imageSpaing != null
               ? SizedBox(
                   width: imageSpaing,
                 )
-              : Wrap(),
-          Text(
-            text,
-            style: GoogleFonts.inter(textStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: fontWeight,
-              color: textColor ?? ( textColor!=null?  textColor:Colors.white ),
-            ),)
-          ),
+              : const Wrap(),
+          Text(text,
+              style: GoogleFonts.inter(
+                textStyle: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: fontWeight,
+                  color: textColor ?? (textColor ?? Colors.white),
+                ),
+              )),
           !isImageLeft && imageSpaing != null
               ? SizedBox(
                   width: imageSpaing,
                 )
-              : Wrap(),
-          !isImageLeft! && image != null
-              ? isNetworkImage! && image != null
+              : const Wrap(),
+          !isImageLeft && image != null
+              ? isNetworkImage!
                   ? Image.network(image)
-                  :   !isSvgImage!? Image.asset(image): SvgPicture.asset(image)
-              : Wrap(),
+                  : !isSvgImage!
+                      ? Image.asset(image)
+                      : SvgPicture.asset(image)
+              : const Wrap(),
         ],
       ),
       style: ElevatedButton.styleFrom(

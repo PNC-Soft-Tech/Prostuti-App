@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'exam_topic_widget.dart';
 
 class ExamTopicsWidget extends GetWidget {
+  const ExamTopicsWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -22,7 +24,7 @@ class ExamTopicsWidget extends GetWidget {
         SizedBox(
           height: 15.h,
         ),
-     const   SingleChildScrollView(
+        const SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [

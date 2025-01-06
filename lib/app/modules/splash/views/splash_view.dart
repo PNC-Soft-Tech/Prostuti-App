@@ -14,14 +14,7 @@ class SplashView extends GetView {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
-      if (StorageHelper.getToken() != null) {
-        Get.offAllNamed(Routes.home);
-      } else {
-        // Start the timer to navigate after 3 seconds
-        Future.delayed(const Duration(seconds: 3), () {
-          Get.offAllNamed(Routes.onboarding);
-        });
-      }
+      Get.offAllNamed(Routes.home);
     });
     double screenWidth = ScreenUtil().screenWidth;
     double screenHeight = ScreenUtil().screenHeight;

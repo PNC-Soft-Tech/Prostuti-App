@@ -7,18 +7,20 @@ import 'package:prostuti/app/routes/app_pages.dart';
 import '../../../common/custom_card.dart';
 import '../../../common/models/contest_model.dart';
 
-
 class ContestWidget extends GetWidget {
   final Contest contest;
 
-  ContestWidget(this.contest);
+  const ContestWidget(this.contest, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: ()=> Get.toNamed(Routes.singleContest(contest.id)),
-      child: CustomCard(title: contest.name,description: contest.description,));
-    
+        onTap: () => Get.toNamed(Routes.singleContest(contest.id)),
+        child: CustomCard(
+          title: contest.name,
+          description: contest.description,
+        ));
+
     //  Card(
     //     elevation: 2.3,
     //     margin: const EdgeInsets.all(8),
@@ -32,6 +34,5 @@ class ContestWidget extends GetWidget {
     //       },
     //     ),
     //   );
-    
   }
 }

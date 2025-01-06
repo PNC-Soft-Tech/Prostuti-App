@@ -3,9 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 
 import '../../../APIs/api_helper.dart';
-import '../../../APIs/api_helper_implementation.dart';
 import '../../../models/job-category-model.dart';
-
 
 class JobCategoryController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
@@ -20,7 +18,7 @@ class JobCategoryController extends GetxController {
   }
 
   void fetchJobCategories() async {
-     log('Fetching job categories...');
+    log('Fetching job categories...');
     isLoading.value = true;
     final response = await _apiHelper.getJobCategories();
     log("res: ${response.toString()}");

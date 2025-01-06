@@ -26,12 +26,12 @@ class RegisterView extends StatelessWidget {
           child: Obx(
             () => controller.isLoading.value
                 ? const Column(
-                   mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const Center(child: CircularProgressIndicator()),
-                  ],
-                )
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  )
                 : Column(
                     // mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -25,7 +25,7 @@ class CustomTextInput extends StatelessWidget {
   final FocusNode? focusNode;
 
   const CustomTextInput({
-    Key? key,
+    super.key,
     this.hintText,
     this.labelText,
     this.controller,
@@ -48,7 +48,7 @@ class CustomTextInput extends StatelessWidget {
     this.onChange,
     this.textAlign,
     this.focusNode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class CustomTextInput extends StatelessWidget {
           onTap: onTap,
           focusNode: focusNode,
           onChanged: onChange,
-          textAlign: textAlign?? TextAlign.start,
+          textAlign: textAlign ?? TextAlign.start,
           decoration: InputDecoration(
             isDense: isDense,
             border: InputBorder.none,

@@ -11,19 +11,25 @@ class ExamCategoryWidget extends GetWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-       
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 8.w),
+            margin: EdgeInsets.symmetric(horizontal: 8.w),
             decoration: const ShapeDecoration(
-                shape: const CircleBorder(
-                    side: BorderSide(
-              color: Colors.grey, width: 1
-            ))),
+                shape: CircleBorder(
+                    side: BorderSide(color: Colors.grey, width: 1))),
             child: Container(
-              padding: EdgeInsets.all(16.r),
-              child: Image.asset(image?? "assets/govt-bd.png", width: 38.w, height: 38.h,))),
-            SizedBox(height: 6.h ,),
-             Text(title??"BCS", style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),),
+                padding: EdgeInsets.all(16.r),
+                child: Image.asset(
+                  image ?? "assets/govt-bd.png",
+                  width: 38.w,
+                  height: 38.h,
+                ))),
+        SizedBox(
+          height: 6.h,
+        ),
+        Text(
+          title ?? "BCS",
+          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+        ),
       ],
     );
   }

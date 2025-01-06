@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
@@ -82,7 +81,7 @@ class LoginView extends StatelessWidget {
                       //     ],
                       //   ),
                       // ),
-                 const   HeaderCurveLogoWidget(),
+                      const HeaderCurveLogoWidget(),
                       const SizedBox(
                         height: 20,
                       ),

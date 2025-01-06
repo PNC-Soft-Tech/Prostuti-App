@@ -22,9 +22,9 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   void onInit() {
     super.onInit(); // Ensure this is called to properly set up GetConnect.
 
-    log("url: ${AppConfig.baseUrl + AppConfig.apiVersion + '/'}");
-    httpClient.baseUrl = AppConfig.baseUrl + AppConfig.apiVersion + '/';
-    httpClient.timeout = Duration(seconds: AppConfig.timeoutDuration);
+    log("url: ${'${AppConfig.baseUrl}${AppConfig.apiVersion}/'}");
+    httpClient.baseUrl = '${AppConfig.baseUrl}${AppConfig.apiVersion}/';
+    httpClient.timeout = const Duration(seconds: AppConfig.timeoutDuration);
     log("ApiHelperImpl initialized with baseUrl: ${httpClient.baseUrl}");
     httpClient.defaultContentType = 'application/json';
     httpClient.addRequestModifier<Object?>((request) {
@@ -73,21 +73,21 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       LoginRequestModel payload) async {
     final response = await post('users/login', payload.toJson());
 
-  if (response.statusCode == 200 && response.body['success'] == true) {
-    try {
-      return Right(LoginResponseModel.fromJson(response.body));
-    } catch (e) {
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      try {
+        return Right(LoginResponseModel.fromJson(response.body));
+      } catch (e) {
+        return Left(CustomError(
+          response.statusCode,
+          message: 'Parsing error: $e',
+        ));
+      }
+    } else {
       return Left(CustomError(
         response.statusCode,
-        message: 'Parsing error: $e',
+        message: response.body['message'] ?? 'Unknown error occurred',
       ));
     }
-  } else {
-    return Left(CustomError(
-      response.statusCode,
-      message: response.body['message'] ?? 'Unknown error occurred',
-    ));
-  }
   }
 
   @override
@@ -112,7 +112,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<JobCategory>>> getJobCategories() async {
     // final baseUrl = httpClient.baseUrl ?? 'unknown';
     // log('url: ${baseUrl}job-categories');
-     log("Base URL being used: ${httpClient.baseUrl}"); // Debugging
+    log("Base URL being used: ${httpClient.baseUrl}"); // Debugging
     // final baseUrl = httpClient.baseUrl ?? '${AppConfig.baseUrl}${AppConfig.apiVersion}/';
     try {
       // log('Making API call to: ${baseUrl}job-categories/');
@@ -156,61 +156,65 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     }
   }
 
-@override
-Future<Either<CustomError, List<Contest>>> fetchAllContests() async {
-  try {
-    final response = await get('contests');
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      final List<dynamic> data = response.body['data'];
-      final contests = data.map((json) => Contest.fromJson(json)).toList();
-      return Right(contests);
-    } else {
-      return Left(CustomError(response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch contests'));
+  @override
+  Future<Either<CustomError, List<Contest>>> fetchAllContests() async {
+    try {
+      final response = await get('contests');
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final contests = data.map((json) => Contest.fromJson(json)).toList();
+        return Right(contests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch contests'));
+      }
+    } catch (e) {
+      log('Error fetching contests: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    log('Error fetching contests: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-@override
-Future<Either<CustomError, List<Question>>> fetchAllQuestions() async {
-  try {
-    final response = await get('questions');
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      final List<dynamic> data = response.body['data'];
-      final questions = data.map((json) => Question.fromJson(json)).toList();
-      return Right(questions);
-    } else {
-      return Left(CustomError(response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch questions'));
-    }
-  } catch (e) {
-    log('Error fetching questions: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
-  }
-}
-@override
-Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId) async {
-  try {
-    final response = await get('contests/$contestId');
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      return Right(SingleContest.fromJson(response.body['data']));
-    } else {
-      return Left(
-        CustomError(
-          response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch contest',
-        ),
-      );
-    }
-  } catch (e) {
-    return Left(CustomError(500, message: 'Network error: $e'));
-  }
-}
 
- @override
-  Future<Either<CustomError, Response>> verifyOtp(Map<String,dynamic> data) async {
+  @override
+  Future<Either<CustomError, List<Question>>> fetchAllQuestions() async {
+    try {
+      final response = await get('questions');
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final questions = data.map((json) => Question.fromJson(json)).toList();
+        return Right(questions);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch questions'));
+      }
+    } catch (e) {
+      log('Error fetching questions: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, SingleContest>> fetchSingleContest(
+      String contestId) async {
+    try {
+      final response = await get('contests/$contestId');
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(SingleContest.fromJson(response.body['data']));
+      } else {
+        return Left(
+          CustomError(
+            response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch contest',
+          ),
+        );
+      }
+    } catch (e) {
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, Response>> verifyOtp(
+      Map<String, dynamic> data) async {
     try {
       // Construct the payload as a Map
       final payload = data;

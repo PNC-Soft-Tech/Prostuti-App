@@ -10,7 +10,7 @@ import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget {
-  HomeMainWidget({super.key});
+  const HomeMainWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

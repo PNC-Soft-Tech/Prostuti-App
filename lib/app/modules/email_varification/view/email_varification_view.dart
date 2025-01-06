@@ -11,7 +11,7 @@ import '../../../common/widgets/header_curve_logo_widget.dart';
 import '../controller/email_varification_controller.dart';
 
 class EmailVarificationView extends GetView<EmailVarificationController> {
-  EmailVarificationView({super.key});
+  const EmailVarificationView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +21,16 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding:  EdgeInsets.symmetric(
-           vertical: 40, horizontal: 10.w
-          ),
+          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 10.w),
           child: Obx(
             () => controller.isLoading.value
                 ? const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const Center(child: CircularProgressIndicator()),
-                  ],
-                )
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  )
                 : Column(
                     // mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,8 +60,8 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                         height: 60.h,
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 5),
                         child: Row(
                           children: [
                             Expanded(
@@ -106,7 +104,7 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                       ),
                       if (controller.isSubmitEnable.value)
                         Container(
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 vertical: 5, horizontal: 5),
                             child: CustomButton.button(
                                 text: "Submit",

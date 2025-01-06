@@ -5,13 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 
 class CustomExamHomeCardWidget extends GetWidget {
+  const CustomExamHomeCardWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20.sp),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: Color(0xFF212D404D))),
+          border: Border.all(color: const Color(0xff212d404d))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -37,7 +39,7 @@ class CustomExamHomeCardWidget extends GetWidget {
               style: GoogleFonts.notoSansBengali(
                   textStyle: TextStyle(
                 fontSize: 14.sp,
-                color: Color(0xFF212D40),
+                color: const Color(0xFF212D40),
               )),
             ),
           ),

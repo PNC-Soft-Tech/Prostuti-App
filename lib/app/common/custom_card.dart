@@ -15,7 +15,7 @@ class CustomCard extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
 
   const CustomCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     this.elevation,
@@ -27,7 +27,7 @@ class CustomCard extends StatelessWidget {
     this.margin,
     this.customShape,
     this.boxShadow,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +35,11 @@ class CustomCard extends StatelessWidget {
     final isDarkMode = Get.isDarkMode;
 
     return Container(
-      margin: margin ?? EdgeInsets.all(16),
-      padding: padding ?? EdgeInsets.all(16),
+      margin: margin ?? const EdgeInsets.all(16),
+      padding: padding ?? const EdgeInsets.all(16),
       decoration: ShapeDecoration(
-        color: backgroundColor ?? (isDarkMode ? Colors.grey[800] : Colors.white),
+        color:
+            backgroundColor ?? (isDarkMode ? Colors.grey[800] : Colors.white),
         shape: customShape ??
             RoundedRectangleBorder(
               borderRadius: borderRadius ?? BorderRadius.circular(12),
@@ -50,9 +51,10 @@ class CustomCard extends StatelessWidget {
         shadows: boxShadow ??
             [
               BoxShadow(
-                color: isDarkMode ? Colors.black54 : Colors.grey.withOpacity(0.5),
+                color:
+                    isDarkMode ? Colors.black54 : Colors.grey.withOpacity(0.5),
                 blurRadius: elevation ?? 8,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
       ),
@@ -66,7 +68,7 @@ class CustomCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(

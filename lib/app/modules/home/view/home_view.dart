@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/modules/home/widgets/ranking_view.dart';
 import '../../../common/custom_appbar.dart';
-import '../../../common/custom_loading.dart';
 import '../../../common/widgets/bottom_nav_bar_widget.dart';
-import '../../contests/widgets/contest_card_home_page_widget.dart';
-import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../controller/home_controller.dart';
 import '../widgets/home_main_widget.dart';
 

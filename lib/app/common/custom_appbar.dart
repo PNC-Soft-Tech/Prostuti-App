@@ -34,13 +34,12 @@ class CustomAppBar {
       actions: actions ??
           [
             Container(
-          
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                      decoration: ShapeDecoration(
+                      decoration: const ShapeDecoration(
                           shape: CircleBorder(
                               side: BorderSide(
                         color: Colors.grey,
@@ -51,7 +50,7 @@ class CustomAppBar {
                         child: SvgPicture.asset("assets/notification.svg"),
                       )),
                   Container(
-                      decoration: ShapeDecoration(
+                      decoration: const ShapeDecoration(
                           shape: CircleBorder(
                               side: BorderSide(
                         color: Colors.grey,
@@ -67,27 +66,26 @@ class CustomAppBar {
               ),
             )
           ],
-      leading: leadingWidget != null
-          ? leadingWidget
-          : Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    'assets/header-logo.svg',
-                    // height: 47.h,
-                    // width: 113.w,
-                  ),
-                  // SizedBox(
-                  //   height: 10.h,
-                  // ),
-                  Text(
-                    'Hi ${name ?? "Rahat"}!',
-                    style: TextStyle(fontSize: 16.sp),
-                  )
-                ],
-              ),
+      leading: leadingWidget ??
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            child: Column(
+              children: [
+                SvgPicture.asset(
+                  'assets/header-logo.svg',
+                  // height: 47.h,
+                  // width: 113.w,
+                ),
+                // SizedBox(
+                //   height: 10.h,
+                // ),
+                Text(
+                  'Hi ${name ?? "Rahat"}!',
+                  style: TextStyle(fontSize: 16.sp),
+                )
+              ],
             ),
+          ),
     );
   }
 }
