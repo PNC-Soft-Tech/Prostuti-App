@@ -26,9 +26,9 @@ class HomeMainWidget extends GetWidget {
                SizedBox(height: 23.h),
           ModelTestHomeWidget(),
                SizedBox(height: 23.h),
-          CustomExamHomeCardWidget(),
-               SizedBox(height: 23.h),
           JobCircularHomeWidget(),
+               SizedBox(height: 23.h),
+          CustomExamHomeCardWidget()
         ],
       ),
     );
