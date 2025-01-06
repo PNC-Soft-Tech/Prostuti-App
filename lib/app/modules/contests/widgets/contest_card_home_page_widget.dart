@@ -74,7 +74,7 @@ class ContestHomeCardWidget extends GetWidget {
               Expanded(
                   child: Row(
                 children: [
-                  Icon(Icons.alarm, color: AppColors.primary),
+                 Image.asset('assets/countdown.png'),
                   SizedBox(
                     width: 6.w,
                   ),
