@@ -6,7 +6,9 @@ import 'package:prostuti/app/common/custom_appbar.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
-class ContestDetailsView extends StatelessWidget {
+import '../controller/contest_details_controller.dart';
+
+class ContestDetailsView extends GetView<ContestDetailsController> {
   const ContestDetailsView({super.key});
 
   @override
@@ -70,30 +72,9 @@ class ContestDetailsView extends StatelessWidget {
                 SizedBox(
                   height: 16.h,
                 ),
-                Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(55.13.r),
-                    border: Border.all(color: AppColors.primary),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset('assets/countdown.png'),
-                      SizedBox(width: 9.w),
-                      Text(
-                        "23: 55 : 20 ",
-                        style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                          fontSize: 18.sp,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        )),
-                      ),
-                    ],
-                  ),
-                ),
+                controller.isContestRunning.value
+                    ? _alreadyRunning()
+                    : _contestCountdown(),
                 SizedBox(
                   height: 22.h,
                 ),
@@ -124,13 +105,75 @@ class ContestDetailsView extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
                     child: CustomButton.button(
-                        text: "Register Now", onPressed: () {}),
+                        text:  controller.isContestRunning.value?"Enter Now": "Register Now", onPressed: () {}),
                   ))),
         ],
       ),
     );
   }
 
+  Widget _alreadyRunning() => Row(
+        children: [
+          Text(
+            "Already Running",
+            style: GoogleFonts.inter(
+                textStyle: TextStyle(
+              fontSize: 15.sp,
+              // color: AppColors.primary,
+              fontWeight: FontWeight.w500,
+            )),
+          ),
+          SizedBox(
+            width: 22.w,
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(55.13.r),
+              border: Border.all(color: AppColors.primary),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset('assets/countdown.png'),
+                SizedBox(width: 9.w),
+                Text(
+                  "Time Left: 23: 55 : 20 ",
+                  style: GoogleFonts.inter(
+                      textStyle: TextStyle(
+                    fontSize: 15.sp,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+  Widget _contestCountdown() => Container(
+        padding: EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(55.13.r),
+          border: Border.all(color: AppColors.primary),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/countdown.png'),
+            SizedBox(width: 9.w),
+            Text(
+              "23: 55 : 20 ",
+              style: GoogleFonts.inter(
+                  textStyle: TextStyle(
+                fontSize: 18.sp,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              )),
+            ),
+          ],
+        ),
+      );
   Widget buildLeftColumnRow({required String img, required String title}) =>
       Container(
         padding: EdgeInsets.symmetric(vertical: 11.h),
