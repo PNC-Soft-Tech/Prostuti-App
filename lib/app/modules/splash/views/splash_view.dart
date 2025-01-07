@@ -14,7 +14,7 @@ class SplashView extends GetView {
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
       // Get.offAllNamed(Routes.home);
-      Get.offAllNamed(Routes.contestDetails);
+      Get.offAllNamed(Routes.customExam);
     });
     double screenWidth = ScreenUtil().screenWidth;
     double screenHeight = ScreenUtil().screenHeight;

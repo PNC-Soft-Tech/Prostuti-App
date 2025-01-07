@@ -7,6 +7,8 @@ import 'package:prostuti/app/modules/register/views/register_view.dart';
 import 'package:prostuti/app/modules/splash/views/splash_view.dart';
 import '../modules/contests/bindings/contest_binding.dart';
 import '../modules/contests/views/contest_view.dart';
+import '../modules/custom-exam/binding/custom_exam_binding.dart';
+import '../modules/custom-exam/view/custom_exam_view.dart';
 import '../modules/email_varification/binding/email_varification_binding.dart';
 import '../modules/email_varification/view/email_varification_view.dart';
 import '../modules/exam-types/bindings/exam-type-binding.dart';
@@ -70,6 +72,11 @@ class AppPages {
       binding: ExamTypeBinding(),
     ),
     GetPage(
+      name: Routes.customExam,
+      page: () => const CustomExamView(),
+      binding: CustomExamBinding(),
+    ),
+    GetPage(
       name: '/contests',
       page: () => const ContestView(),
       binding: ContestBinding(),
@@ -98,6 +105,7 @@ class Routes {
   static const jobCircular = '/job-circulars';
   static const jobCategories = '/job-categories';
   static const examTypes = '/exam-types';
+  static const customExam = '/custom-exam';
   static const questions = '/questions';
   static const contests = '/contests';
   static const contestDetails = '/contest-details/';
