@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/constant/app_color.dart';
@@ -53,17 +52,17 @@ class ModelTestHomeCard extends GetWidget {
               Text(
                 topics ?? '',
                 style: GoogleFonts.notoSansBengali(
-                        textStyle: TextStyle(
-                            fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    textStyle: TextStyle(
+                        fontSize: 15.sp, fontWeight: FontWeight.w600)),
               ),
               SizedBox(
                 height: 10.h,
               ),
               Text(
-                "${marks??''} মার্কস",
+                "${marks ?? ''} মার্কস",
                 style: GoogleFonts.notoSansBengali(
-                        textStyle: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.w600)),
+                    textStyle: TextStyle(
+                        fontSize: 16.sp, fontWeight: FontWeight.w600)),
               ),
               SizedBox(
                 height: 10.h,

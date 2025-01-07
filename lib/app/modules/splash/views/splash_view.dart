@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../routes/app_pages.dart';
-import '../../../storage/storage_helper.dart';
 
 class SplashView extends GetView {
   const SplashView({super.key});

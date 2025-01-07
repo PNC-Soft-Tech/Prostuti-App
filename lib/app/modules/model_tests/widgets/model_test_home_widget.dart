@@ -7,13 +7,15 @@ import 'package:prostuti/app/constant/app_color.dart';
 import 'model_test_home_card.dart';
 
 class ModelTestHomeWidget extends GetWidget {
+  const ModelTestHomeWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 23.w, vertical: 18.h),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: Color(0xFF212D404D), width: 1)),
+          border: Border.all(color: const Color(0xff212d404d), width: 1)),
       child: Column(
         children: [
           Row(

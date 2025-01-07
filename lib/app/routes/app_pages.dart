@@ -41,7 +41,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.emailVarification,
-      page: () => EmailVarificationView(),
+      page: () => const EmailVarificationView(),
       binding: EmailVarificationBinding(),
     ),
     GetPage(
@@ -51,7 +51,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.home,
-      page: () =>  HomeView(),
+      page: () => HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
@@ -61,28 +61,28 @@ class AppPages {
     ),
     GetPage(
       name: Routes.jobCategories,
-      page: () => JobCategoryView(),
+      page: () => const JobCategoryView(),
       binding: JobCategoryBinding(),
     ),
     GetPage(
       name: Routes.examTypes,
-      page: () => ExamTypeView(),
+      page: () => const ExamTypeView(),
       binding: ExamTypeBinding(),
     ),
     GetPage(
       name: '/contests',
-      page: () => ContestView(),
+      page: () => const ContestView(),
       binding: ContestBinding(),
     ),
     GetPage(
       // name: '/contest/:id',
       name: '/contest-details/',
-      page: () => ContestDetailsView(),
+      page: () => const ContestDetailsView(),
       binding: ContestDetailsBinding(),
     ),
     GetPage(
       name: '/questions',
-      page: () => QuestionView(),
+      page: () => const QuestionView(),
       binding: QuestionBinding(),
     ),
   ];

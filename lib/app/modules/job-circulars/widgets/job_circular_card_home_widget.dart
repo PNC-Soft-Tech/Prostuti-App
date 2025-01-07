@@ -75,7 +75,7 @@ class JobCircularHomeCard extends GetWidget {
                     width: 6.w,
                   ),
                   Text(
-                    "${loation ?? 'Barishal'}",
+                    loation ?? 'Barishal',
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.notoSansBengali(
                         textStyle: TextStyle(

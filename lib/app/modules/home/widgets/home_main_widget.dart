@@ -9,30 +9,28 @@ import '../../job-circulars/widgets/job_circular_home_widget.dart';
 import '../../model_tests/widgets/model_test_home_widget.dart';
 
 class HomeMainWidget extends GetWidget {
-   HomeMainWidget({super.key});
+  const HomeMainWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
+    return Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
       child: Column(
         children: [
-          ContestHomeCardWidget(),
+          const ContestHomeCardWidget(),
           SizedBox(height: 23.h),
-          ExamCategoriesWidget(),
-               SizedBox(height: 23.h),
-          ExamTopicsWidget(),
-               SizedBox(height: 23.h),
+          const ExamCategoriesWidget(),
+          SizedBox(height: 23.h),
+          const ExamTopicsWidget(),
+          SizedBox(height: 23.h),
           ModelTestHomeWidget(),
-               SizedBox(height: 23.h),
-          JobCircularHomeWidget(),
-               SizedBox(height: 23.h),
-          CustomExamHomeCardWidget()
+          SizedBox(height: 23.h),
+          const JobCircularHomeWidget(),
+          SizedBox(height: 23.h),
+          const CustomExamHomeCardWidget()
         ],
       ),
     );
-  } 
-
-
+  }
 }

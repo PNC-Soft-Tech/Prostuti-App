@@ -7,7 +7,11 @@ class ContestDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar.appBar(title: "Contest Details", actions: null, centerTitle: true, leadingWidget: Icon(Icons.arrow_back)),
+      appBar: CustomAppBar.appBar(
+          title: "Contest Details",
+          actions: null,
+          centerTitle: true,
+          leadingWidget: const Icon(Icons.arrow_back)),
     );
   }
 }
