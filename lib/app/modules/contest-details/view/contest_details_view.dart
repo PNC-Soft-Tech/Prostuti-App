@@ -6,6 +6,7 @@ import 'package:prostuti/app/common/custom_appbar.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
+import '../../../common/custom_simple_appbar.dart';
 import '../controller/contest_details_controller.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
@@ -14,21 +15,22 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar.appBar(
-          title: "Contest Details",
-          leadingWidth: 80,
-          titleColor: AppColors.textPrimaryColor,
-          backgroundColor: Colors.white,
-          actions: [],
-          centerTitle: true,
-          leadingWidget: Container(
-              decoration: ShapeDecoration(
-                  shape: CircleBorder(
-                      side: BorderSide(width: 1, color: AppColors.primary))),
-              child: Icon(
-                Icons.arrow_back,
-                color: AppColors.primary,
-              ))),
+      appBar: CustomSimpleAppBar.appBar(title: "Contest Details"),
+      // CustomAppBar.appBar(
+      //     title: "Contest Details",
+      //     leadingWidth: 80,
+      //     titleColor: AppColors.textPrimaryColor,
+      //     backgroundColor: Colors.white,
+      //     actions: [],
+      //     centerTitle: true,
+      //     leadingWidget: Container(
+      //         decoration: ShapeDecoration(
+      //             shape: CircleBorder(
+      //                 side: BorderSide(width: 1, color: AppColors.primary))),
+      //         child: Icon(
+      //           Icons.arrow_back,
+      //           color: AppColors.primary,
+      //         ))),
       body: Stack(
         children: [
           Container(
