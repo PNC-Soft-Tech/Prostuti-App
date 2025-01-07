@@ -169,21 +169,29 @@ class CustomExamView extends GetView<CustomExamController> {
                       SizedBox(height: 24.h),
 
                       // Add Subject Button
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          // Add Subject logic
-                        },
-                        icon: Icon(Icons.add, size: 20.w),
-                        label: Text(
-                          "Add Subject",
-                          style: TextStyle(fontSize: 16.sp),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          padding: EdgeInsets.symmetric(vertical: 14.h),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
+                   
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50.r),
+                            color: Color(0xFF50BDB4),
+                            border:
+                                Border.all(width: 1, color: Color(0xFF50BDB4))),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add, color: Colors.white,), 
+                            SizedBox(width: 5.w),
+                            Text(
+                              "Add Subject",
+                              style: GoogleFonts.inter(
+                                  textStyle: TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white)),
+                            ),
+                          ],
                         ),
                       ),
                     ],
