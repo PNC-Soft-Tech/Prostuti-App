@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_appbar.dart';
+import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/constant/app_color.dart';
 
 class ContestDetailsView extends StatelessWidget {
   const ContestDetailsView({super.key});
@@ -9,9 +14,203 @@ class ContestDetailsView extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar.appBar(
           title: "Contest Details",
-          actions: null,
+          leadingWidth: 80,
+          titleColor: Colors.black,
+          backgroundColor: Colors.white,
+          actions: [],
           centerTitle: true,
-          leadingWidget: const Icon(Icons.arrow_back)),
+          leadingWidget: Container(
+              decoration: ShapeDecoration(
+                  shape: CircleBorder(
+                      side: BorderSide(width: 1, color: AppColors.primary))),
+              child: Icon(
+                Icons.arrow_back,
+                color: AppColors.primary,
+              ))),
+      body: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(
+                      'assets/govt-bd.png',
+                      height: 34.r,
+                      width: 34.r,
+                    ),
+                    SizedBox(
+                      width: 12.w,
+                    ),
+                    Text(
+                      "বিসিএস কনটেস্ট-০১",
+                      style: GoogleFonts.notoSansBengali(
+                          textStyle: TextStyle(
+                        fontSize: 20.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      )),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 19.h,
+                ),
+                Text(
+                  "গনিত - জ্যামিতি",
+                  style: GoogleFonts.notoSansBengali(
+                      textStyle: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                  )),
+                ),
+                SizedBox(
+                  height: 16.h,
+                ),
+                Container(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(55.13.r),
+                    border: Border.all(color: AppColors.primary),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset('assets/countdown.png'),
+                      SizedBox(width: 9.w),
+                      Text(
+                        "23: 55 : 20 ",
+                        style: GoogleFonts.inter(
+                            textStyle: TextStyle(
+                          fontSize: 18.sp,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        )),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 22.h,
+                ),
+                Text(
+                  "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
+                  style: GoogleFonts.notoSansBengali(
+                      textStyle: TextStyle(
+                          fontSize: 15.sp,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400,
+                          height: 26.h / 15.sp)),
+                ),
+                SizedBox(
+                  height: 28.h,
+                ),
+                buildDetailsWidget(),
+              ],
+            ),
+          ),
+          Positioned.fill(
+              child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.r),
+                      color: Colors.grey.withOpacity(.1),
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
+                    child: CustomButton.button(
+                        text: "Register Now", onPressed: () {}),
+                  ))),
+        ],
+      ),
     );
   }
+
+  Widget buildLeftColumnRow({required String img, required String title}) =>
+      Container(
+        padding: EdgeInsets.symmetric(vertical: 11.h),
+        child: Row(
+          children: [
+            Image.asset(img),
+            SizedBox(
+              width: 12.53.w,
+            ),
+            Text("${title}",
+                style: GoogleFonts.notoSansBengali(
+                    textStyle: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400))),
+          ],
+        ),
+      );
+
+  Widget buildRightColumnRow({
+    required String value,
+  }) =>
+      Container(
+        padding: EdgeInsets.symmetric(vertical: 11.h),
+        child: Text("${value}",
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.notoSansBengali(
+                textStyle: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600))),
+      );
+  Widget buildDetailsWidget() => Container(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: Get.width / 3,
+                  child: Column(
+                    children: [
+                      buildLeftColumnRow(
+                        title: "বিষয়",
+                        img: 'assets/subject.png',
+                      ),
+                      buildLeftColumnRow(
+                        title: "সর্বমান",
+                        img: 'assets/total-marks.png',
+                      ),
+                      buildLeftColumnRow(
+                        title: "সময়",
+                        img: 'assets/total-time.png',
+                      ),
+                      buildLeftColumnRow(
+                        title: "প্রতিযোগী",
+                        img: 'assets/participiants.png',
+                      ),
+                      buildLeftColumnRow(
+                        title: "তারিখ",
+                        img: 'assets/contest-start.png',
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildRightColumnRow(value: "গনিত - জ্যামিতি"),
+                      buildRightColumnRow(value: "৫০ মার্কস"),
+                      buildRightColumnRow(value: "৩০ মিনিট"),
+                      buildRightColumnRow(value: "৩৬৫ জন"),
+                      buildRightColumnRow(
+                          value: "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM"),
+                    ],
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+      );
 }
