@@ -17,7 +17,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       appBar: CustomAppBar.appBar(
           title: "Contest Details",
           leadingWidth: 80,
-          titleColor: Colors.black,
+          titleColor: AppColors.textPrimaryColor,
           backgroundColor: Colors.white,
           actions: [],
           centerTitle: true,
@@ -51,7 +51,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                         fontSize: 20.sp,
-                        color: Colors.black,
+                        color: AppColors.textPrimaryColor,
                         fontWeight: FontWeight.w600,
                       )),
                     )
@@ -65,7 +65,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   style: GoogleFonts.notoSansBengali(
                       textStyle: TextStyle(
                     fontSize: 16.sp,
-                    color: Colors.black,
+                    color: AppColors.textPrimaryColor,
                     fontWeight: FontWeight.w500,
                   )),
                 ),
@@ -83,7 +83,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   style: GoogleFonts.notoSansBengali(
                       textStyle: TextStyle(
                           fontSize: 15.sp,
-                          color: Colors.black,
+                          color: AppColors.textPrimaryColor,
                           fontWeight: FontWeight.w400,
                           height: 26.h / 15.sp)),
                 ),
@@ -119,7 +119,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             style: GoogleFonts.inter(
                 textStyle: TextStyle(
               fontSize: 15.sp,
-              // color: AppColors.primary,
+              color: AppColors.textPrimaryColor,
               fontWeight: FontWeight.w500,
             )),
           ),
@@ -187,7 +187,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                 style: GoogleFonts.notoSansBengali(
                     textStyle: TextStyle(
                         fontSize: 16.sp,
-                        color: Colors.black,
+                        color: AppColors.textPrimaryColor,
                         fontWeight: FontWeight.w400))),
           ],
         ),
@@ -203,7 +203,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             style: GoogleFonts.notoSansBengali(
                 textStyle: TextStyle(
                     fontSize: 16.sp,
-                    color: Colors.black,
+                    color: AppColors.textPrimaryColor,
                     fontWeight: FontWeight.w600))),
       );
   Widget buildDetailsWidget() => Container(
