@@ -24,7 +24,7 @@ class HomeMainWidget extends GetWidget {
           SizedBox(height: 23.h),
           const ExamTopicsWidget(),
           SizedBox(height: 23.h),
-          ModelTestHomeWidget(),
+          const ModelTestHomeWidget(),
           SizedBox(height: 23.h),
           const JobCircularHomeWidget(),
           SizedBox(height: 23.h),

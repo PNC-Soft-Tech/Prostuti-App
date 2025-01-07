@@ -12,11 +12,6 @@ class ContestDetailsController extends GetxController {
     var contest = Rxn<Contest>();
   var isLoading = false.obs;
 RxBool isContestRunning= true.obs;
-  @override
-  void onInit() {
-    super.onInit();
-    // fetchContests();
-  }
 
   Future<void> fetchContests() async {
     isLoading(true);
