@@ -72,9 +72,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                 SizedBox(
                   height: 16.h,
                 ),
-                controller.isContestRunning.value
+                Obx(() => controller.isContestRunning.value
                     ? _alreadyRunning()
-                    : _contestCountdown(),
+                    : _contestCountdown()),
                 SizedBox(
                   height: 22.h,
                 ),
@@ -94,7 +94,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               ],
             ),
           ),
-          Positioned.fill(
+          Obx(() => Positioned.fill(
               child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -105,8 +105,11 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     padding:
                         EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
                     child: CustomButton.button(
-                        text:  controller.isContestRunning.value?"Enter Now": "Register Now", onPressed: () {}),
-                  ))),
+                        text: controller.isContestRunning.value
+                            ? "Enter Now"
+                            : "Register Now",
+                        onPressed: () {}),
+                  )))),
         ],
       ),
     );
