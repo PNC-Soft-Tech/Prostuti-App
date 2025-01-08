@@ -13,6 +13,13 @@ class AppController extends GetxController {
   var settings = {}.obs; // Storing app settings
    // Example global variable to store decoded JWT payload
   var decodedToken = <String, dynamic>{}.obs;
+
+
+    // New Rx variables for _id and userRole
+  var userId = ''.obs;
+  var userRole = ''.obs;
+
+
   // Example functions to manage data
   void updateUsername(String newName) {
     username.value = newName;
@@ -58,7 +65,17 @@ Map<String, dynamic> retrieveUserData() {
       final decodedBytes = base64.decode(normalized); // Decode the base64 string
       final decodedString = utf8.decode(decodedBytes); // Convert bytes to a UTF-8 string
       final payloadMap = json.decode(decodedString); // Parse JSON string to Map
+   // Store the decoded payload
+      decodedToken.value = payloadMap;
 
+      // Extract and save _id and userRole into Rx variables
+      if (payloadMap.containsKey('_id')) {
+        userId.value = payloadMap['_id'] ?? '';
+      }
+      if (payloadMap.containsKey('userRole')) {
+        userRole.value = payloadMap['userRole'] ?? '';
+      }
+      
       if (payloadMap is! Map<String, dynamic>) {
         throw Exception('Invalid payload');
       }

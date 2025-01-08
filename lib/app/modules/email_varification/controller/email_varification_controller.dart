@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/controller/app_controller.dart';
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
 class EmailVarificationController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AppController appController = Get.find<AppController>();
+
   final code1 = TextEditingController();
   final code2 = TextEditingController();
   final code3 = TextEditingController();
@@ -103,6 +106,8 @@ class EmailVarificationController extends GetxController {
         if (token != null) {
           // Save token using StorageHelper
           await StorageHelper.setToken(token);
+          appController.decodeJWT(
+              token); // saving the jwt payload ( id & userRole) into appcontroller variable
           print('Token saved successfully.');
           // Navigate to the next screen or perform an action
           Get.toNamed(Routes.home, arguments: response.body);

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/controller/app_controller.dart';
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
@@ -12,6 +13,7 @@ class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AppController appController = Get.find<AppController>();
 
   var isLoading = false.obs;
 
@@ -42,6 +44,8 @@ class LoginController extends GetxController {
       },
       (response) async {
         await StorageHelper.setToken(response.token);
+        appController.decodeJWT(response
+            .token); // saving the jwt payload ( id & userRole) into appcontroller variable
         Get.snackbar("Login Success", "Welcome back!",
             backgroundColor: Colors.green, colorText: Colors.white);
 
