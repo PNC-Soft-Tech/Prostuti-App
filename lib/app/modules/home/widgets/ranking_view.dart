@@ -1,132 +1,153 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
-import 'package:prostuti/app/modules/contest-details/view/contest_details_view.dart'; // For responsive sizing
 
 class RankingView extends StatelessWidget {
   const RankingView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 19.w),
-      margin: EdgeInsets.symmetric(vertical: 10.h),
-      child: Column(
-        children: [
-          contestDetailsWidget(),
-          SizedBox(height: 10.h),
-          // Profile Section
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Stack(
+      clipBehavior: Clip.hardEdge,
+      children: [
+        SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 14.h),
+            margin: EdgeInsets.symmetric(vertical: 10.h),
+            child: Column(
               children: [
-                RankProfileCard(
-                    rank: '2',
+                contestDetailsWidget(),
+                SizedBox(height: 10.h),
+                // Profile Section
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RankProfileCard(
+                          rank: '2',
+                          name: 'Tarikul Islam',
+                          city: 'Barishal',
+                          imageUrl: 'https://picsum.photos/200',
+                          rankIcon: 'assets/leaderboard/rank-2.svg'),
+                      RankProfileCard(
+                          rank: '1',
+                          name: 'Md Sayem',
+                          city: 'Dhaka',
+                          imageUrl: 'https://picsum.photos/200',
+                          rankIcon: 'assets/leaderboard/rank-1.svg'),
+                      RankProfileCard(
+                          rank: '3',
+                          name: 'Md Solayman',
+                          city: 'Khulna',
+                          imageUrl: 'https://picsum.photos/200',
+                          rankIcon: 'assets/leaderboard/rank-3.svg'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 5.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Leaderboard',
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    DropdownButton<String>(
+                      value: 'Overall Top 10',
+                      icon: Icon(Icons.arrow_drop_down, size: 20.sp),
+                      underline: Container(),
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14.sp,
+                      ),
+                      onChanged: (String? newValue) {
+                        print('Selected: $newValue');
+                      },
+                      items: <String>[
+                        'Overall Top 10',
+                        'Overall Top 20',
+                        'Top Weekly'
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5.h),
+                const LeaderBoardEntry(
+                  position: '1',
+                  name: 'Md Sayem',
+                  city: 'Dhaka',
+                  score: 92,
+                  institution: 'University of Barishal',
+                  avatarUrl: 'https://picsum.photos/100',
+                ),
+                const LeaderBoardEntry(
+                    position: '2',
                     name: 'Tarikul Islam',
                     city: 'Barishal',
-                    imageUrl: 'https://picsum.photos/200',
-                    rankIcon: 'assets/leaderboard/rank-2.svg'),
-                RankProfileCard(
-                    rank: '1',
-                    name: 'Md Sayem',
-                    city: 'Dhaka',
-                    imageUrl: 'https://picsum.photos/200',
-                    rankIcon: 'assets/leaderboard/rank-1.svg'),
-                RankProfileCard(
-                    rank: '3',
+                    score: 85,
+                    institution: 'University of Rajshahi',
+                    avatarUrl: 'https://picsum.photos/100'),
+                const LeaderBoardEntry(
+                    position: '3',
                     name: 'Md Solayman',
                     city: 'Khulna',
-                    imageUrl: 'https://picsum.photos/200',
-                    rankIcon: 'assets/leaderboard/rank-3.svg'),
+                    score: 84,
+                    institution: 'University of Dhaka',
+                    avatarUrl: 'https://picsum.photos/100'),
+                const LeaderBoardEntry(
+                    position: '4',
+                    name: 'Mohammad Salah',
+                    city: 'Barishal',
+                    score: 70,
+                    institution: 'BM College',
+                    avatarUrl: 'https://picsum.photos/100'),
+                const LeaderBoardEntry(
+                    position: '4',
+                    name: 'Mohammad Salah',
+                    city: 'Barishal',
+                    score: 70,
+                    institution: 'BM College',
+                    avatarUrl: 'https://picsum.photos/100'),
+                const LeaderBoardEntry(
+                    position: '4',
+                    name: 'Mohammad Salah',
+                    city: 'Barishal',
+                    score: 70,
+                    institution: 'BM College',
+                    avatarUrl: 'https://picsum.photos/100'),
+                const LeaderBoardEntry(
+                    position: '4',
+                    name: 'Mohammad Salah',
+                    city: 'Barishal',
+                    score: 70,
+                    institution: 'BM College',
+                    avatarUrl: 'https://picsum.photos/100'),
+                SizedBox(height: 20.h),
               ],
             ),
           ),
-          SizedBox(height: 5.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Leaderboard',
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              DropdownButton<String>(
-                value: 'Overall Top 10',
-                icon: Icon(Icons.arrow_drop_down, size: 20.sp),
-                underline: Container(),
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14.sp,
-                ),
-                onChanged: (String? newValue) {
-                  print('Selected: $newValue');
-                },
-                items: <String>[
-                  'Overall Top 10',
-                  'Overall Top 20',
-                  'Top Weekly'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-          SizedBox(height: 5.h),
-          const LeaderBoardEntry(
-            position: '1',
-            name: 'Md Sayem',
-            city: 'Dhaka',
-            score: 92,
-            institution: 'University of Barishal',
-            avatarUrl: 'https://picsum.photos/100',
-          ),
-          const LeaderBoardEntry(
-              position: '2',
-              name: 'Tarikul Islam',
-              city: 'Barishal',
-              score: 85,
-              institution: 'University of Rajshahi',
-              avatarUrl: 'https://picsum.photos/100'),
-          const LeaderBoardEntry(
-              position: '3',
-              name: 'Md Solayman',
-              city: 'Khulna',
-              score: 84,
-              institution: 'University of Dhaka',
-              avatarUrl: 'https://picsum.photos/100'),
-          const LeaderBoardEntry(
-              position: '4',
-              name: 'Mohammad Salah',
-              city: 'Barishal',
-              score: 70,
-              institution: 'BM College',
-              avatarUrl: 'https://picsum.photos/100'),
-          SizedBox(height: 20.h),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 60.w, vertical: 16.h),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.r)),
-              ),
-              child: Text('See My Position',
-                  style: TextStyle(fontSize: 16.sp, color: Colors.white)),
-            ),
-          ),
-        ],
-      ),
+        ),
+        Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              padding: EdgeInsets.only(bottom: 14.h),
+                child: CustomButton.button(
+                  mainAxisSize: MainAxisSize.min,
+                    text: "See My Position", onPressed: () {}))),
+      ],
     );
   }
 }

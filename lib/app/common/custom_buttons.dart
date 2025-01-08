@@ -24,6 +24,7 @@ class CustomButton {
     bool? isImageLeft = true,
     bool? isNetworkImage = false,
     double? imageSpaing = 5.0,
+    MainAxisSize? mainAxisSize = MainAxisSize.min,
   }) {
     return ElevatedButton.icon(
       onPressed: onPressed,
@@ -35,6 +36,7 @@ class CustomButton {
             )
           : const SizedBox.shrink(),
       label: Row(
+        mainAxisSize: mainAxisSize?? MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           isImageLeft! && image != null

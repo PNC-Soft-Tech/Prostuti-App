@@ -16,20 +16,22 @@ class HomeMainWidget extends GetWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
-      child: Column(
-        children: [
-          const ContestHomeCardWidget(),
-          SizedBox(height: 23.h),
-          const ExamCategoriesWidget(),
-          SizedBox(height: 23.h),
-          const ExamTopicsWidget(),
-          SizedBox(height: 23.h),
-          const ModelTestHomeWidget(),
-          SizedBox(height: 23.h),
-          const JobCircularHomeWidget(),
-          SizedBox(height: 23.h),
-          const CustomExamHomeCardWidget()
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            const ContestHomeCardWidget(),
+            SizedBox(height: 23.h),
+            const ExamCategoriesWidget(),
+            SizedBox(height: 23.h),
+            const ExamTopicsWidget(),
+            SizedBox(height: 23.h),
+            const ModelTestHomeWidget(),
+            SizedBox(height: 23.h),
+            const JobCircularHomeWidget(),
+            SizedBox(height: 23.h),
+            const CustomExamHomeCardWidget()
+          ],
+        ),
       ),
     );
   }
