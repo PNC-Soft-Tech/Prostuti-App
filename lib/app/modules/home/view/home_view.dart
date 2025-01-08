@@ -10,7 +10,7 @@ class HomeView extends GetView<HomeController> {
   HomeView({super.key});
 
   final List<Widget> _pages = [
-    HomeMainWidget(),
+    const HomeMainWidget(),
     const Center(child: Text('Search Page')),
     const RankingView(),
     const Center(child: Text('History Page')),

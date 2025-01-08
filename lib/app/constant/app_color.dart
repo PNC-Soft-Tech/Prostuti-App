@@ -6,6 +6,7 @@ class AppColors {
   static const secondary = Color(0xFFF5FBFF); //#F5FBFF
   static const error = Color(0xFFB00020);
   static const blueGray = Color(0xFF212d40);
+  static const lightGray = Color(0xFFBDC0C6);
   static const midnightBlue = Color(0xFF212D40);
   static const textPrimaryColor = Color(0xFF212D40); //#212D40
 }

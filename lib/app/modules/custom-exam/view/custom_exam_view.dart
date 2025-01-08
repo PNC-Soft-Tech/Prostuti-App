@@ -10,7 +10,7 @@ class CustomExamView extends GetView<CustomExamController> {
 
   @override
   Widget build(BuildContext context) {
-    Color txtColor = Color(0xFF7B7B7B);
+    Color txtColor = const Color(0xFF7B7B7B);
     return Scaffold(
       appBar: CustomSimpleAppBar.appBar(title: 'Custom Exam'),
       body: Obx(() {
@@ -53,7 +53,7 @@ class CustomExamView extends GetView<CustomExamController> {
                             borderRadius: BorderRadius.circular(50.r),
                           ),
                         ),
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                               value: "English", child: Text("English")),
                           DropdownMenuItem(value: "Math", child: Text("Math")),
@@ -147,16 +147,13 @@ class CustomExamView extends GetView<CustomExamController> {
                             horizontal: 16.w, vertical: 10.h),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
-                            color: Color(0xFFA1A1A1),
+                            color: const Color(0xFFA1A1A1),
                             border:
-                                Border.all(width: 1, color: Color(0xFFA1A1A1))),
+                                Border.all(width: 1, color: const Color(0xFFA1A1A1))),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
+                            const Icon(Icons.add, color: Colors.white,), 
                             SizedBox(width: 5.w),
                             Text(
                               "Add Topic",
@@ -183,17 +180,14 @@ class CustomExamView extends GetView<CustomExamController> {
                             horizontal: 16.w, vertical: 10.h),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
-                            color: Color(0xFF50BDB4),
+                            color: const Color(0xFF50BDB4),
                             border:
-                                Border.all(width: 1, color: Color(0xFF50BDB4))),
+                                Border.all(width: 1, color: const Color(0xFF50BDB4))),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
+                            const Icon(Icons.add, color: Colors.white,), 
                             SizedBox(width: 5.w),
                             Text(
                               "Add Subject",
@@ -210,7 +204,7 @@ class CustomExamView extends GetView<CustomExamController> {
                   ),
                 ),
               )
-            : Wrap();
+            : const Wrap();
       }),
     );
   }

@@ -132,7 +132,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             width: 22.w,
           ),
           Container(
-            padding: EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
+            padding:
+                const EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(55.13.r),
               border: Border.all(color: AppColors.primary),
@@ -157,7 +158,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
         ],
       );
   Widget _contestCountdown() => Container(
-        padding: EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
+        padding: const EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(55.13.r),
           border: Border.all(color: AppColors.primary),
@@ -188,7 +189,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             SizedBox(
               width: 12.53.w,
             ),
-            Text("${title}",
+            Text(title,
                 style: GoogleFonts.notoSansBengali(
                     textStyle: TextStyle(
                         fontSize: 16.sp,
@@ -203,7 +204,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
   }) =>
       Container(
         padding: EdgeInsets.symmetric(vertical: 11.h),
-        child: Text("${value}",
+        child: Text(value,
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.notoSansBengali(
                 textStyle: TextStyle(
@@ -216,7 +217,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           children: [
             Row(
               children: [
-                Container(
+                SizedBox(
                   width: Get.width / 3,
                   child: Column(
                     children: [

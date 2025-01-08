@@ -15,41 +15,35 @@ class CustomSimpleAppBar {
     IconData? leadingIcon,
     Widget? leadingWidget,
     double? leadingWidth,
-
     VoidCallback? onLeadingPressed,
   }) {
     return AppBar(
-      // leadingWidth: leadingWidth ?? 180,
-      title: Text(
-        title,
-        style: GoogleFonts.inter(textStyle: TextStyle(
-          color: titleColor ?? AppColors.textPrimaryColor,
-          fontSize: 18.0,
-          fontWeight: FontWeight.w600,
-        ),)
-      ),
-      centerTitle: centerTitle,
-      backgroundColor: backgroundColor ?? Colors.white,
-      automaticallyImplyLeading: true,
-      actions: actions ??
-          [
-           
-          ],
-      leading:
-         GestureDetector(
-          onTap: (){
+        // leadingWidth: leadingWidth ?? 180,
+        title: Text(title,
+            style: GoogleFonts.inter(
+              textStyle: TextStyle(
+                color: titleColor ?? AppColors.textPrimaryColor,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w600,
+              ),
+            )),
+        centerTitle: centerTitle,
+        backgroundColor: backgroundColor ?? Colors.white,
+        automaticallyImplyLeading: true,
+        actions: actions ?? [],
+        leading: GestureDetector(
+          onTap: () {
             Get.back();
           },
-           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 10.w),
-                decoration: ShapeDecoration(
-                    shape: CircleBorder(
-                        side: BorderSide(width: 1, color: AppColors.primary))),
-                child: Icon(
-                  Icons.arrow_back,
-                  color: AppColors.primary,
-                )),
-         )
-    );
+          child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              decoration: const ShapeDecoration(
+                  shape: CircleBorder(
+                      side: BorderSide(width: 1, color: AppColors.primary))),
+              child: const Icon(
+                Icons.arrow_back,
+                color: AppColors.primary,
+              )),
+        ));
   }
 }
