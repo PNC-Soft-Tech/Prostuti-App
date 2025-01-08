@@ -1,0 +1,75 @@
+import 'dart:convert';
+
+import 'package:get/get.dart';
+
+class AppController extends GetxController {
+  // Example of global variables
+  var username = ''.obs; // Reactive variable
+  var isLoggedIn = false.obs;
+  var appTheme = 'light'.obs; // Example: theme management
+
+  // Global data store
+  var userData = {}.obs; // Storing user-related data in a map
+  var settings = {}.obs; // Storing app settings
+   // Example global variable to store decoded JWT payload
+  var decodedToken = <String, dynamic>{}.obs;
+  // Example functions to manage data
+  void updateUsername(String newName) {
+    username.value = newName;
+  }
+
+  void setLoginStatus(bool status) {
+    isLoggedIn.value = status;
+  }
+
+  void toggleTheme() {
+    appTheme.value = appTheme.value == 'light' ? 'dark' : 'light';
+  }
+
+  void saveUserData(Map<String, dynamic> data) {
+    userData.value = data;
+  }
+Map<String, dynamic> retrieveUserData() {
+  return userData.value.cast<String, dynamic>();
+}
+
+  void updateSetting(String key, dynamic value) {
+    settings[key] = value;
+  }
+
+  dynamic getSetting(String key) {
+    return settings[key];
+  }
+
+
+
+  // Decode JWT function
+  Map<String, dynamic> decodeJWT(String token) {
+    try {
+      // Split the token into its parts
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        throw Exception('Invalid JWT token');
+      }
+
+      // Decode the payload
+      final payload = parts[1];
+      final normalized = base64.normalize(payload); // Normalize the base64 string
+      final decodedBytes = base64.decode(normalized); // Decode the base64 string
+      final decodedString = utf8.decode(decodedBytes); // Convert bytes to a UTF-8 string
+      final payloadMap = json.decode(decodedString); // Parse JSON string to Map
+
+      if (payloadMap is! Map<String, dynamic>) {
+        throw Exception('Invalid payload');
+      }
+
+      // Store the decoded payload
+      decodedToken.value = payloadMap;
+
+      return payloadMap;
+    } catch (e) {
+      print('Error decoding JWT: $e');
+      return {};
+    }
+  }
+}
