@@ -143,7 +143,8 @@ class CustomExamView extends GetView<CustomExamController> {
                       // Add Topic Button
 
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 10.h),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
                             color: Color(0xFFA1A1A1),
@@ -152,7 +153,10 @@ class CustomExamView extends GetView<CustomExamController> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.add, color: Colors.white,), 
+                            Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 5.w),
                             Text(
                               "Add Topic",
@@ -165,13 +169,18 @@ class CustomExamView extends GetView<CustomExamController> {
                           ],
                         ),
                       ),
-                   
-                      SizedBox(height: 24.h),
 
+                      SizedBox(height: 25.h),
+                      Divider(
+                        height: 1,
+                        color: Color(0xFF212D40),
+                      ),
+                        SizedBox(height: 25.h),
                       // Add Subject Button
-                   
+
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 10.h),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
                             color: Color(0xFF50BDB4),
@@ -181,7 +190,10 @@ class CustomExamView extends GetView<CustomExamController> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add, color: Colors.white,), 
+                            Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 5.w),
                             Text(
                               "Add Subject",

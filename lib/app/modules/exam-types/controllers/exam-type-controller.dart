@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
-import '../models/exam-type-model.dart';
+import '../models/exam_type_model.dart';
 
 class ExamTypeController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../common/models/contest_model.dart';
 import '../common/models/question_model.dart';
 import '../models/job-category-model.dart';
-import '../modules/exam-types/models/exam-type-model.dart';
+import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
