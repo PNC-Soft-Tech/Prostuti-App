@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
+
+import 'controller/app_controller.dart';
 
 class CustomAppBar {
   // Static method to create a custom app bar
@@ -18,6 +21,8 @@ class CustomAppBar {
     String? profilePicture,
     VoidCallback? onLeadingPressed,
   }) {
+      final AppController appController = Get.find<AppController>();
+
     return AppBar(
       leadingWidth: leadingWidth ?? 180,
       title: Text(
@@ -80,7 +85,7 @@ class CustomAppBar {
                 //   height: 10.h,
                 // ),
                 Text(
-                  'Hi ${name ?? "Rahat"}!',
+                  'Hi ${name ?? "Rahat"} ${appController.userData.length}!',
                   style: TextStyle(fontSize: 16.sp),
                 )
               ],
