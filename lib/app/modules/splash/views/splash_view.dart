@@ -6,14 +6,22 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../../storage/storage_helper.dart';
 
 class SplashView extends GetView {
   const SplashView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration.zero, () {
-      Get.offAllNamed(Routes.home);
+    Future.delayed(Duration.zero, () async {
+        // await StorageHelper.removeToken();
+        var isLogged = await StorageHelper.hasToken();
+        if(isLogged){
+Get.offAllNamed(Routes.home);
+        }
+        else{
+      Get.offAllNamed(Routes.login);
+        }
       // Get.offAllNamed(Routes.customExam);
     });
     double screenWidth = ScreenUtil().screenWidth;
