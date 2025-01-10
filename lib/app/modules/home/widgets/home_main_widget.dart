@@ -7,7 +7,7 @@ import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import '../../../common/controller/app_controller.dart';
 import '../../../storage/storage_helper.dart';
-import '../../contests/widgets/contest_card_home_page_widget.dart';
+import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
@@ -34,7 +34,7 @@ class HomeMainWidget extends GetWidget<HomeController> {
                 CustomButton.button(text: "Logout", onPressed: (){
                   Utils.logoutUser();
                 }),
-            const ContestHomeCardWidget(),
+            const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),
             SizedBox(height: 23.h),

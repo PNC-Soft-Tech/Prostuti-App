@@ -1,104 +1,85 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prostuti/app/common/custom_buttons.dart';
-import 'package:prostuti/app/constant/app_color.dart';
 
-class ContestHomeCardWidget extends GetWidget {
-  const ContestHomeCardWidget({super.key});
+import '../../../common/custom_buttons.dart';
+import '../../../constant/app_color.dart';
+import '../controller/contest_controller.dart';
+import '../models/register_contest_model.dart';
+
+class ContestCardHome extends GetWidget<ContestController> {
+  final RegisterContest contest;
+  const ContestCardHome({super.key, required this.contest});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        // onTap: ()=> Get.toNamed(Routes.singleContest(contest.id)),
-        child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-      // margin:  EdgeInsets.symmetric(horizontal: 19.w),
-      decoration: BoxDecoration(
-          color: const Color(0xFFE9F5FF),
-          border: Border.all(width: 1, color: const Color(0xFFE9F5FF)),
-          borderRadius: BorderRadius.circular(20.r)),
-      child: Column(
-        children: [
-          Row(
+    return Column(
+      children: [
+        Container(
+          // color: Colors.green,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                "Upcomming Contest",
-                style: GoogleFonts.inter(
-                    textStyle: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                )),
+              contest.imageUrl != null && contest.imageUrl!.contains('http')
+                  ? Image.network(
+                      controller.upcomingContests.first.imageUrl ?? '')
+                  : Image.asset(
+                      'assets/govt-bd.png',
+                      height: 28,
+                      width: 28,
+                    ),
+              SizedBox(
+                width: 9.w,
               ),
+              Text("${contest.name}",
+                  style: GoogleFonts.notoSansBengali(
+                      textStyle: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600)))
             ],
           ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Container(
-            // color: Colors.green,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+        ),
+        SizedBox(
+          height: 11.h,
+        ),
+        Row(
+          children: [
+            Expanded(
+                child: Text(contest.topics ?? "গনিত - জ্যামিতি",
+                    style: GoogleFonts.notoSansBengali(
+                        textStyle: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600))))
+          ],
+        ),
+        Row(
+          children: [
+            Expanded(
+                child: Row(
               children: [
-                Image.asset(
-                  'assets/govt-bd.png',
-                  height: 28,
-                  width: 28,
-                ),
+                Image.asset('assets/countdown.png'),
                 SizedBox(
-                  width: 9.w,
+                  width: 6.w,
                 ),
-                Expanded(
-                    child: Text("বিসিএস কনটেস্ট-০১",
-                        style: GoogleFonts.notoSansBengali(
-                            textStyle: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600))))
+                Text(
+                  "20: 30: 43",
+                  style: GoogleFonts.inter(
+                      textStyle: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600)),
+                )
               ],
-            ),
-          ),
-          SizedBox(
-            height: 11.h,
-          ),
-          Row(
-            children: [
-              Expanded(
-                  child: Text("গনিত - জ্যামিতি",
-                      style: GoogleFonts.notoSansBengali(
-                          textStyle: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600))))
-            ],
-          ),
-          Row(
-            children: [
-              Expanded(
-                  child: Row(
-                children: [
-                  Image.asset('assets/countdown.png'),
-                  SizedBox(
-                    width: 6.w,
-                  ),
-                  Text(
-                    "20: 30: 43",
-                    style: GoogleFonts.inter(
-                        textStyle: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600)),
-                  )
-                ],
-              )),
-              CustomButton.button(
-                  text: "Register Now",
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                  onPressed: () {},
-                  borderRadius: 50.r,
-                  isPrimary: true)
-            ],
-          ),
-        ],
-      ),
-    ));
+            )),
+            CustomButton.button(
+                text: "Register Now",
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                onPressed: () {},
+                borderRadius: 50.r,
+                isPrimary: true)
+          ],
+        ),
+      ],
+    );
   }
 }
