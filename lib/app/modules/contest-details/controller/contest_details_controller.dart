@@ -3,22 +3,42 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/models/contest_model.dart';
-
+import '../models/contest_details_model.dart';
 
 class ContestDetailsController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-var contestId= ''.obs;
+  var contestId = ''.obs;
   var contests = <Contest>[].obs;
-    var contest = Rxn<Contest>();
-  var isLoading = false.obs;
-RxBool isContestRunning= true.obs;
-@override 
-void onInit() {
-  super.onInit();
-    final Map<String, dynamic> arguments = Get.arguments;
-     contestId.value = arguments["contestId"]; // Retrieve contestId
+  var contest = Rxn<Contest>();
+  var contestDetails = Rxn<ContestDetailsResponse>();
 
-}
+  var isLoading = false.obs;
+  RxBool isContestRunning = true.obs;
+  @override
+  void onInit() {
+    super.onInit();
+    final Map<String, dynamic> arguments = Get.arguments;
+    contestId.value = arguments["contestId"]; // Retrieve contestId
+    fetchContestDetails(contestId.value);
+  }
+
+  void fetchContestDetails(String contestId) async {
+    isLoading.value = true;
+
+    final result = await _apiHelper.fetchSingleContest(contestId);
+
+    result.fold(
+      (error) {
+        isLoading.value = false;
+        log('Error fetching contest details: ${error.message}');
+      },
+      (data) {
+        contestDetails.value = data;
+        isLoading.value = false;
+      },
+    );
+  }
+
   Future<void> fetchContests() async {
     isLoading(true);
     final result = await _apiHelper.fetchAllContests();
@@ -33,5 +53,4 @@ void onInit() {
     );
     isLoading(false);
   }
-
 }

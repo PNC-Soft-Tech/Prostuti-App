@@ -1,4 +1,4 @@
-import '../../../common/models/contest_model.dart';
+import '../../contests/models/contest_model.dart';
 import 'registered_user_model.dart';
 
 class ContestDetailsResponse {

@@ -1,4 +1,5 @@
-import '../../../common/models/question_model.dart';
+
+import '../../questions/models/question_model.dart';
 
 class Contest {
   final String id;
