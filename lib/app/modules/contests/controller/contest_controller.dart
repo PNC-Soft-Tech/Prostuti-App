@@ -22,9 +22,15 @@ class ContestController extends GetxController {
     final result = await _apiHelper.registerContest(contestId);
 
     result.fold(
-      (error) => log('Failed to register contest: ${error.message}'),
+      (error) {
+        log('Failed to register contest: ${error.message}');
+        Utils.showSnackbar(
+            message: "Failed to register contest", isSuccess: false);
+      },
       (response) {
-        Utils.showSnackbar(message: "Successfully registered for contest: ${response.body}", isSuccess: true);
+        Utils.showSnackbar(
+            message: "Successfully registered for contest: ${response.body}",
+            isSuccess: true);
         log('Successfully registered for contest: ${response.body}');
       },
     );
