@@ -8,6 +8,7 @@ import '../common/models/contest_model.dart';
 import '../common/models/question_model.dart';
 import '../constant/app_config.dart';
 import '../models/job-category-model.dart';
+import '../modules/contests/models/register_contest_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
@@ -275,6 +276,30 @@ Future<Either<CustomError, Response>> registerContest(String contestId) async {
   } catch (e) {
     // Handle exceptions
     log('Error registering contest: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+@override
+Future<Either<CustomError, List<RegisterContest>>> fetchRecentContests({String contestType="recent"}) async {
+  try {
+    // Make the GET request to fetch recent contests
+    final response = await get('contests/upcoming-running-recent?type=$contestType');
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      // Parse the response data into a list of Contest models
+      final List<dynamic> data = response.body['data'];
+      final contests = data.map((json) => RegisterContest.fromJson(json)).toList();
+      return Right(contests); // Return the list of contests
+    } else {
+      // Handle API errors
+      return Left(CustomError(
+        response.statusCode,
+        message: response.body['message'] ?? 'Failed to fetch recent contests',
+      ));
+    }
+  } catch (e) {
+    // Handle any network or parsing errors
+    log('Error fetching recent contests: $e');
     return Left(CustomError(500, message: 'Network error: $e'));
   }
 }
