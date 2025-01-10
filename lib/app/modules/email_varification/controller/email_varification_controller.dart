@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/controller/app_controller.dart';
+import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
 class EmailVarificationController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-  final AppController appController = Get.find<AppController>();
+  final AppController appController = Utils.getAppController();
 
   final code1 = TextEditingController();
   final code2 = TextEditingController();

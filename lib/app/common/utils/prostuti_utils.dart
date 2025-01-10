@@ -6,7 +6,7 @@ class Utils {
   static Future<void> logoutUser() async {
     try {
       // Get AppController instance
-      final AppController appController = Get.find<AppController>();
+      final AppController appController = getAppController();
 
       // Clear reactive variables in AppController
       appController.userId.value = '';
@@ -26,5 +26,12 @@ class Utils {
     } catch (e) {
       print("Error during logout: $e");
     }
+  }
+
+
+    static AppController getAppController() {
+    return Get.isRegistered<AppController>()
+        ? Get.find<AppController>()
+        : Get.put(AppController());
   }
 }

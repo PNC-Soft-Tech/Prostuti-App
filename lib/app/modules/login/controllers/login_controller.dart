@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/controller/app_controller.dart';
+import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
@@ -13,7 +14,7 @@ class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-  final AppController appController = Get.find<AppController>();
+  final AppController appController =Utils.getAppController();
 
   var isLoading = false.obs;
 

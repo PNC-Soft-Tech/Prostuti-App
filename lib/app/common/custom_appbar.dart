@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import 'controller/app_controller.dart';
+import 'utils/prostuti_utils.dart';
 
 class CustomAppBar {
   // Static method to create a custom app bar
@@ -21,7 +22,7 @@ class CustomAppBar {
     String? profilePicture,
     VoidCallback? onLeadingPressed,
   }) {
-      final AppController appController = Get.find<AppController>();
+      final AppController appController = Utils.getAppController();
 
     return AppBar(
       leadingWidth: leadingWidth ?? 180,

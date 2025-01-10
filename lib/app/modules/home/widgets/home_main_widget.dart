@@ -20,7 +20,6 @@ class HomeMainWidget extends GetWidget<HomeController> {
 
   @override
   Widget build(BuildContext context)  {
-          final AppController appController = Get.find<AppController>();
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
