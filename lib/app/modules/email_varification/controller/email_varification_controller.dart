@@ -102,8 +102,12 @@ class EmailVarificationController extends GetxController {
         print('Success: ${response.body}');
         // Extract token from response
         final String? token = response.body['data']['token'];
+        final Map<String, dynamic> userData = response.body['data']['user'];
 
         if (token != null) {
+          await StorageHelper.setUserData(userData);
+          await StorageHelper.setUserId(userData['_id']);
+
           // Save token using StorageHelper
           await StorageHelper.setToken(token);
           appController.decodeJWT(
