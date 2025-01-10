@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/models/contest_model.dart';
+import '../../../common/utils/prostuti_utils.dart';
 
 class ContestController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
@@ -23,7 +24,7 @@ class ContestController extends GetxController {
     result.fold(
       (error) => log('Failed to register contest: ${error.message}'),
       (response) {
-        
+        Utils.showSnackbar(message: "Successfully registered for contest: ${response.body}", isSuccess: true);
         log('Successfully registered for contest: ${response.body}');
       },
     );
