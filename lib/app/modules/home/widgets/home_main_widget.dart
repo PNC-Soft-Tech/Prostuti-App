@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import '../../../common/controller/app_controller.dart';
 import '../../../storage/storage_helper.dart';
 import '../../contests/widgets/contest_card_home_page_widget.dart';
@@ -27,9 +29,12 @@ class HomeMainWidget extends GetWidget<HomeController> {
         child: Column(
           children: [
                Obx(()  =>     Text(
-                  'Hi  ${jsonDecode(jsonEncode(controller.user.value))}',
+                  'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
                   style: TextStyle(fontSize: 16.sp),
                 )),
+                CustomButton.button(text: "Logout", onPressed: (){
+                  Utils.logoutUser();
+                }),
             const ContestHomeCardWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),

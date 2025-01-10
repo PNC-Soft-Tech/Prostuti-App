@@ -12,14 +12,12 @@ class AppController extends GetxController {
   // Global data store
   var userData = {}.obs; // Storing user-related data in a map
   var settings = {}.obs; // Storing app settings
-   // Example global variable to store decoded JWT payload
+  // Example global variable to store decoded JWT payload
   var decodedToken = <String, dynamic>{}.obs;
 
-
-    // New Rx variables for _id and userRole
+  // New Rx variables for _id and userRole
   var userId = ''.obs;
   var userRole = ''.obs;
-
 
   // Example functions to manage data
   void updateUsername(String newName) {
@@ -37,9 +35,10 @@ class AppController extends GetxController {
   void saveUserData(Map<String, dynamic> data) {
     userData.value = data;
   }
-Map<String, dynamic> retrieveUserData() {
-  return userData.value.cast<String, dynamic>();
-}
+
+  Map<String, dynamic> retrieveUserData() {
+    return userData.value.cast<String, dynamic>();
+  }
 
   void updateSetting(String key, dynamic value) {
     settings[key] = value;
@@ -48,8 +47,6 @@ Map<String, dynamic> retrieveUserData() {
   dynamic getSetting(String key) {
     return settings[key];
   }
-
-
 
   // Decode JWT function
   Map<String, dynamic> decodeJWT(String token) {
@@ -62,13 +59,16 @@ Map<String, dynamic> retrieveUserData() {
 
       // Decode the payload
       final payload = parts[1];
-      final normalized = base64.normalize(payload); // Normalize the base64 string
-      final decodedBytes = base64.decode(normalized); // Decode the base64 string
-      final decodedString = utf8.decode(decodedBytes); // Convert bytes to a UTF-8 string
+      final normalized =
+          base64.normalize(payload); // Normalize the base64 string
+      final decodedBytes =
+          base64.decode(normalized); // Decode the base64 string
+      final decodedString =
+          utf8.decode(decodedBytes); // Convert bytes to a UTF-8 string
       final payloadMap = json.decode(decodedString); // Parse JSON string to Map
-   // Store the decoded payload
+      // Store the decoded payload
       decodedToken.value = payloadMap;
-log("payload map: ${payloadMap}");
+      log("payload map: ${payloadMap}");
       // Extract and save _id and userRole into Rx variables
       if (payloadMap.containsKey('_id')) {
         userId.value = payloadMap['_id'] ?? '';
@@ -76,8 +76,8 @@ log("payload map: ${payloadMap}");
       if (payloadMap.containsKey('userRole')) {
         userRole.value = payloadMap['userRole'] ?? '';
       }
-log(" user id: ${userId.value}");
-log(" user role: ${userRole.value}");
+      log(" user id: ${userId.value}");
+      log(" user role: ${userRole.value}");
       if (payloadMap is! Map<String, dynamic>) {
         throw Exception('Invalid payload');
       }
@@ -91,4 +91,5 @@ log(" user role: ${userRole.value}");
       return {};
     }
   }
+
 }
