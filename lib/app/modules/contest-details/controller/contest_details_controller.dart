@@ -7,12 +7,18 @@ import '../../../common/models/contest_model.dart';
 
 class ContestDetailsController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-
+var contestId= ''.obs;
   var contests = <Contest>[].obs;
     var contest = Rxn<Contest>();
   var isLoading = false.obs;
 RxBool isContestRunning= true.obs;
+@override 
+void onInit() {
+  super.onInit();
+    final Map<String, dynamic> arguments = Get.arguments;
+     contestId.value = arguments["contestId"]; // Retrieve contestId
 
+}
   Future<void> fetchContests() async {
     isLoading(true);
     final result = await _apiHelper.fetchAllContests();

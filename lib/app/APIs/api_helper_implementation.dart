@@ -8,6 +8,7 @@ import '../common/models/contest_model.dart';
 import '../common/models/question_model.dart';
 import '../constant/app_config.dart';
 import '../models/job-category-model.dart';
+import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/register_contest_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
@@ -300,6 +301,29 @@ Future<Either<CustomError, List<RegisterContest>>> fetchRecentContests({String c
   } catch (e) {
     // Handle any network or parsing errors
     log('Error fetching recent contests: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+@override
+Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(String contestId) async {
+  try {
+    // Make GET request
+    final response = await get('contests/$contestId');
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      // Parse the response into SingleContestResponse
+      final data = ContestDetailsResponse.fromJson(response.body['data']);
+      return Right(data);
+    } else {
+      // Handle API error
+      return Left(CustomError(
+        response.statusCode,
+        message: response.body['message'] ?? 'Failed to fetch contest details',
+      ));
+    }
+  } catch (e) {
+    // Handle network or parsing errors
+    log('Error fetching single contest: $e');
     return Left(CustomError(500, message: 'Network error: $e'));
   }
 }
