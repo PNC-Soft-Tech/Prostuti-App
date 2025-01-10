@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:get/get.dart';
 
@@ -67,7 +68,7 @@ Map<String, dynamic> retrieveUserData() {
       final payloadMap = json.decode(decodedString); // Parse JSON string to Map
    // Store the decoded payload
       decodedToken.value = payloadMap;
-
+log("payload map: ${payloadMap}");
       // Extract and save _id and userRole into Rx variables
       if (payloadMap.containsKey('_id')) {
         userId.value = payloadMap['_id'] ?? '';
@@ -75,7 +76,8 @@ Map<String, dynamic> retrieveUserData() {
       if (payloadMap.containsKey('userRole')) {
         userRole.value = payloadMap['userRole'] ?? '';
       }
-      
+log(" user id: ${userId.value}");
+log(" user role: ${userRole.value}");
       if (payloadMap is! Map<String, dynamic>) {
         throw Exception('Invalid payload');
       }

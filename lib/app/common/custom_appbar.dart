@@ -84,10 +84,10 @@ class CustomAppBar {
                 // SizedBox(
                 //   height: 10.h,
                 // ),
-                Text(
-                  'Hi ${name ?? "Rahat"} ${appController.userData.length}!',
+           Obx(()=>     Text(
+                  'Hi ${name ?? "Rahat"} ${appController.userId.value}!',
                   style: TextStyle(fontSize: 16.sp),
-                )
+                ))
               ],
             ),
           ),

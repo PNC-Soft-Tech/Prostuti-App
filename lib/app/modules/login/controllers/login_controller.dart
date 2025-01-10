@@ -44,6 +44,9 @@ class LoginController extends GetxController {
       },
       (response) async {
         await StorageHelper.setToken(response.token);
+        await StorageHelper.setUserData({
+          "_id": response.userId,
+        });
         appController.decodeJWT(response
             .token); // saving the jwt payload ( id & userRole) into appcontroller variable
         Get.snackbar("Login Success", "Welcome back!",

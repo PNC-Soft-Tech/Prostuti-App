@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../common/controller/app_controller.dart';
 import '../../contests/widgets/contest_card_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
@@ -13,12 +14,18 @@ class HomeMainWidget extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
+          final AppController appController = Get.find<AppController>();
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
       child: SingleChildScrollView(
         child: Column(
           children: [
+               Obx(()=>     Text(
+                  'Hi  ${appController.userId.value}!',
+                  style: TextStyle(fontSize: 16.sp),
+                )),
             const ContestHomeCardWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),
