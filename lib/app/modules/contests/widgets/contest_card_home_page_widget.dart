@@ -74,7 +74,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                 text: "Register Now",
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
-                onPressed: () {},
+                onPressed:()=>controller.registerForContest(contest.id),
                 borderRadius: 50.r,
                 isPrimary: true)
           ],
