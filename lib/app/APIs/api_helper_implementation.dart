@@ -13,6 +13,7 @@ import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/register/models/register_model.dart';
+import '../storage/storage_helper.dart';
 import 'api_helper.dart';
 
 class ApiHelperImpl extends GetConnect implements ApiHelper {
@@ -25,7 +26,11 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     httpClient.timeout = const Duration(seconds: AppConfig.timeoutDuration);
     log("ApiHelperImpl initialized with baseUrl: ${httpClient.baseUrl}");
     httpClient.defaultContentType = 'application/json';
-    httpClient.addRequestModifier<Object?>((request) {
+    httpClient.addRequestModifier<Object?>((request) async {
+         final token = await StorageHelper.getToken(); // Fetch token
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token'; // Add Bearer token
+      }
       log('Request: ${request.method} ${request.url}');
       log('Headers: ${request.headers}');
       log('Body: ${request.bodyBytes}');
@@ -236,4 +241,42 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+  @override
+Future<Either<CustomError, Response>> registerContest(String contestId) async {
+  try {
+    // Fetch the Bearer token from storage
+    final token = await StorageHelper.getToken();
+
+    // Ensure the token is not null
+    if (token == null) {
+      return Left(CustomError(401, message: 'Unauthorized: No token found'));
+    }
+
+    // Set up the payload
+    final payload = {"contest": contestId};
+
+    // Add Authorization header
+    final headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    // Make the POST request
+    final response = await post('register-contests', payload, headers: headers);
+
+    // Handle the response
+    if (response.statusCode == 200) {
+      return Right(response); // Successful response
+    } else {
+      return Left(CustomError(
+        response.statusCode ?? 500,
+        message: response.body['message'] ?? 'Error registering contest',
+      ));
+    }
+  } catch (e) {
+    // Handle exceptions
+    log('Error registering contest: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+
 }
