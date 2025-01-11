@@ -16,7 +16,8 @@ class ContestCardHome extends GetWidget<ContestController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:()=> Get.toNamed(Routes.contestDetails, arguments: {"contestId": contest.id}),
+      onTap: () => Get.toNamed(Routes.contestDetails,
+          arguments: {"contestId": contest.id}),
       child: Column(
         children: [
           Container(
@@ -26,11 +27,15 @@ class ContestCardHome extends GetWidget<ContestController> {
               children: [
                 contest.imageUrl != null && contest.imageUrl!.contains('http')
                     ? Image.network(
-                        controller.upcomingContests.first.imageUrl ?? '')
+                        controller.upcomingContests.first.imageUrl ?? '',
+                        height: 28.h,
+                        width: 28.h,
+                      fit: BoxFit.cover,
+                      )
                     : Image.asset(
                         'assets/govt-bd.png',
-                        height: 28,
-                        width: 28,
+                        height: 28.h,
+                        width: 28.w,
                       ),
                 SizedBox(
                   width: 9.w,
@@ -77,7 +82,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                   text: "Register Now",
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  onPressed:()=>controller.registerForContest(contest.id),
+                  onPressed: () => controller.registerForContest(contest.id),
                   borderRadius: 50.r,
                   isPrimary: true)
             ],

@@ -3,7 +3,7 @@ import 'registered_user_model.dart';
 
 class ContestDetailsResponse {
   final Contest contest;
-  final List<RegisteredUser> registeredUsers;
+  final List<RegisteredUser>? registeredUsers;
 
   ContestDetailsResponse({required this.contest, required this.registeredUsers});
 

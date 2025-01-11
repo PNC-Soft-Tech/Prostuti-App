@@ -44,16 +44,28 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   children: [
                     Row(
                       children: [
-                        Image.asset(
-                          'assets/govt-bd.png',
-                          height: 34.r,
-                          width: 34.r,
-                        ),
+                        controller.contestDetails.value?.contest.imageUrl !=
+                                    null &&
+                                controller
+                                    .contestDetails.value!.contest.imageUrl!
+                                    .contains('http')
+                            ? Image.network(
+                                controller.contestDetails.value?.contest
+                                        .imageUrl ??
+                                    '',
+                                height: 34.r,
+                                width: 34.r,
+                              )
+                            : Image.asset(
+                                'assets/govt-bd.png',
+                                height: 34.r,
+                                width: 34.r,
+                              ),
                         SizedBox(
                           width: 12.w,
                         ),
                         Text(
-                          "বিসিএস কনটেস্ট-০১ ${controller.contestDetails.value?.contest.name}",
+                          "${controller.contestDetails.value?.contest.name ?? "বিসিএস কনটেস্ট-০১"}",
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
                             fontSize: 20.sp,
@@ -67,7 +79,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 19.h,
                     ),
                     Text(
-                      "গনিত - জ্যামিতি",
+                      " ${controller.contestDetails.value?.contest.topics ?? 'গনিত - জ্যামিতি'}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                         fontSize: 16.sp,
@@ -85,7 +97,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 22.h,
                     ),
                     Text(
-                      "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
+                      "${controller.contestDetails.value?.contest.description}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                               fontSize: 15.sp,
@@ -93,6 +105,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               fontWeight: FontWeight.w400,
                               height: 26.h / 15.sp)),
                     ),
+                    // Text(
+                    //   "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
+                    //   style: GoogleFonts.notoSansBengali(
+                    //       textStyle: TextStyle(
+                    //           fontSize: 15.sp,
+                    //           color: AppColors.textPrimaryColor,
+                    //           fontWeight: FontWeight.w400,
+                    //           height: 26.h / 15.sp)),
+                    // ),
                     SizedBox(
                       height: 28.h,
                     ),
@@ -254,10 +275,18 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      buildRightColumnRow(value: "গনিত - জ্যামিতি"),
-                      buildRightColumnRow(value: "৫০ মার্কস"),
-                      buildRightColumnRow(value: "৩০ মিনিট"),
-                      buildRightColumnRow(value: "৩৬৫ জন"),
+                      buildRightColumnRow(
+                          value:
+                              "${controller.contestDetails.value?.contest.topics}"),
+                      buildRightColumnRow(
+                          value:
+                              "${controller.contestDetails.value?.contest.totalMarks} মার্কস"),
+                      buildRightColumnRow(
+                          value:
+                              "${controller.contestDetails.value?.contest.totalTime} মিনিট"),
+                      buildRightColumnRow(
+                          value:
+                              "${controller.contestDetails.value?.contest.registeredCount} জন"),
                       buildRightColumnRow(
                           value: "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM"),
                     ],
