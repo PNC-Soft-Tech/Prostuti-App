@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -17,125 +18,142 @@ class ContestCardHome extends GetWidget<ContestController> {
 
   @override
   Widget build(BuildContext context) {
-    var isScheduled = Utils.getContestStatus(contest.startContest, contest.endContest).isScheduled;
-    var isRunning = Utils.getContestStatus(contest.startContest, contest.endContest).isRunning;
-    var isDone = Utils.getContestStatus(contest.startContest, contest.endContest).isDone;
+    var isScheduled =
+        Utils.getContestStatus(contest.startContest, contest.endContest)
+            .isScheduled;
+    var isRunning =
+        Utils.getContestStatus(contest.startContest, contest.endContest)
+            .isRunning;
+    // var isDone =
+    //     Utils.getContestStatus(contest.startContest, contest.endContest).isDone;
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.contestDetails,
           arguments: {"contestId": contest.id}),
-      child: Column(
-        children: [
-          Container(
-            // color: Colors.green,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                contest.imageUrl != null && contest.imageUrl!.contains('http')
-                    ? Image.network(
-                        controller.upcomingContests.first.imageUrl ?? '',
-                        height: 28.h,
-                        width: 28.h,
-                      fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/govt-bd.png',
-                        height: 28.h,
-                        width: 28.w,
-                      ),
-                SizedBox(
-                  width: 9.w,
+      child: InkWell(
+        onTap: () => Get.toNamed(Routes.contestDetails,
+            arguments: {"contestId": contest.id}),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () => Get.toNamed(Routes.contestDetails,
+                  arguments: {"contestId": contest.id}),
+              child: Container(
+                // color: Colors.green,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    contest.imageUrl != null &&
+                            contest.imageUrl!.contains('http')
+                        ? Image.network(
+                            controller.upcomingContests.first.imageUrl ?? '',
+                            height: 28.h,
+                            width: 28.h,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            'assets/govt-bd.png',
+                            height: 28.h,
+                            width: 28.w,
+                          ),
+                    SizedBox(
+                      width: 9.w,
+                    ),
+                    Text(contest.name ?? '',
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)))
+                  ],
                 ),
-                Text(contest.name??'',
-                    style: GoogleFonts.notoSansBengali(
-                        textStyle: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)))
+              ),
+            ),
+            SizedBox(
+              height: 11.h,
+            ),
+            Row(
+              children: [
+                Expanded(
+                    child: Text(contest.stringTopics ?? "গনিত - জ্যামিতি",
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600))))
               ],
             ),
-          ),
-          SizedBox(
-            height: 11.h,
-          ),
-          Row(
-            children: [
-              Expanded(
-                  child: Text(contest.stringTopics ?? "গনিত - জ্যামিতি",
-                      style: GoogleFonts.notoSansBengali(
-                          textStyle: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w600))))
-            ],
-          ),
-      isScheduled ? _scheduleContest(): isRunning? _runningContest():Text('Completed'),
-        ],
+            isScheduled
+                ? _scheduleContest()
+                : isRunning
+                    ? _runningContest()
+                    : Text('Completed'),
+          ],
+        ),
       ),
     );
   }
-  Widget _scheduleContest()=>  Row(
+
+  Widget _scheduleContest() => Row(
+        children: [
+          Expanded(
+              child: Row(
             children: [
-              Expanded(
-                  child: Row(
-                children: [
-                  Image.asset('assets/countdown.png'),
-                  SizedBox(
-                    width: 6.w,
-                  ),
-                     CountdownTimer(
-              startContest:
-                  contest.startContest,
-              endContest: contest.endContest,
-                    fontSize: 14.sp,
-            ),
-                  // Text(
-                  //   "20: 30: 43",
-                  //   style: GoogleFonts.inter(
-                  //       textStyle: TextStyle(
-                  //           color: AppColors.primary,
-                  //           fontSize: 16.sp,
-                  //           fontWeight: FontWeight.w600)),
-                  // )
-                ],
-              )),
-              CustomButton.button(
-                  text: "Register Now",
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                  onPressed: () => controller.registerForContest(contest.id),
-                  borderRadius: 50.r,
-                  isPrimary: true)
+              Image.asset('assets/countdown.png'),
+              SizedBox(
+                width: 6.w,
+              ),
+              CountdownTimer(
+                startContest: contest.startContest,
+                endContest: contest.endContest,
+                fontSize: 14.sp,
+              ),
+              // Text(
+              //   "20: 30: 43",
+              //   style: GoogleFonts.inter(
+              //       textStyle: TextStyle(
+              //           color: AppColors.primary,
+              //           fontSize: 16.sp,
+              //           fontWeight: FontWeight.w600)),
+              // )
             ],
-          );
-  Widget _runningContest()=>  Row(
+          )),
+          CustomButton.button(
+              text: "Register Now",
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+              onPressed: () => controller.registerForContest(contest.id),
+              borderRadius: 50.r,
+              isPrimary: true)
+        ],
+      );
+  Widget _runningContest() => Row(
+        children: [
+          Expanded(
+              child: Row(
             children: [
-              Expanded(
-                  child: Row(
-                children: [
-                  Image.asset('assets/countdown.png'),
-                  SizedBox(
-                    width: 6.w,
-                  ),
-                     CountdownTimer(
-              startContest:
-                  contest.startContest,
-              endContest: contest.endContest,
-                    fontSize: 12.sp,
-            ),
-                  // Text(
-                  //   "20: 30: 43",
-                  //   style: GoogleFonts.inter(
-                  //       textStyle: TextStyle(
-                  //           color: AppColors.primary,
-                  //           fontSize: 16.sp,
-                  //           fontWeight: FontWeight.w600)),
-                  // )
-                ],
-              )),
-              CustomButton.button(
-                  text: "Enter Now",
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w600,
-                  // onPressed: () => controller.registerForContest(contest.id),
-                  onPressed: () => {},
-                  borderRadius: 50.r,
-                  isPrimary: true)
+              Image.asset('assets/countdown.png'),
+              SizedBox(
+                width: 6.w,
+              ),
+              CountdownTimer(
+                startContest: contest.startContest,
+                endContest: contest.endContest,
+                fontSize: 12.sp,
+              ),
+              // Text(
+              //   "20: 30: 43",
+              //   style: GoogleFonts.inter(
+              //       textStyle: TextStyle(
+              //           color: AppColors.primary,
+              //           fontSize: 16.sp,
+              //           fontWeight: FontWeight.w600)),
+              // )
             ],
-          );
+          )),
+          CustomButton.button(
+              text: "Enter Now",
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+              // onPressed: () => controller.registerForContest(contest.id),
+              onPressed: () => {},
+              borderRadius: 50.r,
+              isPrimary: true)
+        ],
+      );
 }
