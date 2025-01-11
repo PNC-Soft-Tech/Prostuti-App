@@ -15,13 +15,12 @@ class JobCircularController extends GetxController {
     fetchJobCirculars();
   }
 
-  Future<void> fetchJobCirculars() async {
+ void fetchJobCirculars() async {
     isLoading(true);
     final result = await _apiHelper.fetchJobCirculars();
     result.fold(
       (error) {
-        Get.snackbar("Error", error.message ?? "Unknown error occurred",
-            backgroundColor: Colors.redAccent, colorText: Colors.white);
+        Get.snackbar('Error', error.message ?? 'Failed to load job circulars');
       },
       (data) {
         jobCirculars.assignAll(data);

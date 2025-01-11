@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class JobCircularHomeCard extends GetWidget {
+import '../controllers/job-circulars-controller.dart';
+
+class JobCircularHomeCard extends GetWidget<JobCircularController> {
   final String? title;
   final String? type;
   final String? loation;
@@ -38,11 +40,17 @@ class JobCircularHomeCard extends GetWidget {
             children: [
               Row(
                 children: [
-                  Image.asset(
-                    image ?? '',
-                    width: 28.w,
-                    height: 28.w,
-                  ),
+                  image != null && image!.contains('http')
+                      ? Image.network(
+                          image ?? '',
+                          width: 28.w,
+                          height: 28.w,
+                        )
+                      : Image.asset(
+                          image ?? '',
+                          width: 28.w,
+                          height: 28.w,
+                        ),
                   SizedBox(
                     width: 8.w,
                   ),
@@ -129,12 +137,18 @@ class JobCircularHomeCard extends GetWidget {
                   SizedBox(
                     width: 6.w,
                   ),
-                  Text(
-                    'Deadline: $deadline',
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.notoSansBengali(
-                        textStyle: TextStyle(
-                            fontSize: 13.sp, fontWeight: FontWeight.w400)),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
+                        'Deadline: $deadline',
+                        overflow: TextOverflow.ellipsis,
+                         
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: TextStyle(
+                                fontSize: 13.sp, fontWeight: FontWeight.w400)),
+                      ),
+                    ),
                   ),
                 ],
               ),

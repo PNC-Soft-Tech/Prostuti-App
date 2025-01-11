@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prostuti/app/common/custom_buttons.dart';
-import 'package:prostuti/app/constant/app_color.dart';
-
 import '../controller/contest_controller.dart';
+import '../models/contest_model.dart';
 import '../models/register_contest_model.dart';
 import 'contest_card_home_page_widget.dart';
 
@@ -52,8 +50,8 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
                   scrollDirection: Axis.horizontal,
                   itemCount: controller.upcomingContests.length,
                   itemBuilder: (context, index) {
-                    RegisterContest contest =
-                        controller.upcomingContests.value[index];
+                    Contest contest =
+                        controller.upcomingContests[index];
                     return Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: 8.w), // Spacing between cards

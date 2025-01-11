@@ -3,9 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../common/custom_simple_appbar.dart';
+import '../../../common/widgets/countdown_timer.dart';
+import '../../contests/controller/contest_controller.dart';
 import '../controller/contest_details_controller.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
@@ -78,7 +81,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 19.h,
                     ),
                     Text(
-                      " ${controller.contestDetails.value?.contest.topics ?? 'গনিত - জ্যামিতি'}",
+                      " ${controller.contestDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                         fontSize: 16.sp,
@@ -89,9 +92,24 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     SizedBox(
                       height: 16.h,
                     ),
-                    Obx(() => controller.isContestRunning.value
-                        ? _alreadyRunning()
-                        : _contestCountdown()),
+                    Obx(() {
+                      final status = Utils.getContestStatus(
+                        controller.contestDetails.value?.contest.startContest ??
+                            DateTime.now(),
+                        controller.contestDetails.value?.contest.endContest ??
+                            DateTime.now(),
+                      );
+
+                      if (status.isRunning) {
+                        return _alreadyRunning();
+                      } else if (status.isScheduled) {
+                        return _contestCountdown();
+                      } else {
+                        // return _contestEnded();
+                        return Text(
+                            "Ended on: ${controller.contestDetails.value?.contest?.endContest}");
+                      }
+                    }),
                     SizedBox(
                       height: 22.h,
                     ),
@@ -122,22 +140,36 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               );
             }
           }),
-          Obx(() => Positioned.fill(
-              child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      color: Colors.grey.withOpacity(.1),
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
-                    child: CustomButton.button(
-                        text: controller.isContestRunning.value
-                            ? "Enter Now"
-                            : "Register Now",
-                        onPressed: () {}),
-                  )))),
+          Obx(() {
+            // controller.isContestRunning.value
+            final status = Utils.getContestStatus(
+              controller.contestDetails.value?.contest.startContest ??
+                  DateTime.now(),
+              controller.contestDetails.value?.contest.endContest ??
+                  DateTime.now(),
+            );
+            return Positioned.fill(
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.r),
+                        color: Colors.grey.withOpacity(.1),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 24.h, horizontal: 19.w),
+                      child: CustomButton.button(
+                          mainAxisSize: MainAxisSize.max,
+                          text: status.isRunning
+                              ? "Enter Now"
+                              : status.isScheduled
+                                  ? "Register Now"
+                                  : "Completed",
+                          onPressed: () => Get.find<ContestController>()
+                              .registerForContest(
+                                  controller.contestDetails.value!.contest.id)),
+                    )));
+          }),
         ],
       ),
     );
@@ -164,21 +196,32 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               borderRadius: BorderRadius.circular(55.13.r),
               border: Border.all(color: AppColors.primary),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset('assets/countdown.png'),
-                SizedBox(width: 9.w),
-                Text(
-                  "Time Left: 23: 55 : 20 ",
-                  style: GoogleFonts.inter(
-                      textStyle: TextStyle(
-                    fontSize: 15.sp,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  )),
-                ),
-              ],
+            child: SingleChildScrollView(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset('assets/countdown.png'),
+                  SizedBox(width: 9.w),
+                  CountdownTimer(
+                    startContest:
+                        controller.contestDetails.value?.contest.startContest ??
+                            DateTime.now(),
+                    endContest:
+                        controller.contestDetails.value?.contest.endContest ??
+                            DateTime.now(),
+                            fontSize: 12.sp,
+                  ),
+                  // Text(
+                  //   "Time Left: 23: 55 : 20 ",
+                  //   style: GoogleFonts.inter(
+                  //       textStyle: TextStyle(
+                  //     fontSize: 15.sp,
+                  //     color: AppColors.primary,
+                  //     fontWeight: FontWeight.w600,
+                  //   )),
+                  // ),
+                ],
+              ),
             ),
           ),
         ],
@@ -194,15 +237,23 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           children: [
             Image.asset('assets/countdown.png'),
             SizedBox(width: 9.w),
-            Text(
-              "23: 55 : 20 ",
-              style: GoogleFonts.inter(
-                  textStyle: TextStyle(
-                fontSize: 18.sp,
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              )),
+            CountdownTimer(
+              startContest:
+                  controller.contestDetails.value?.contest.startContest ??
+                      DateTime.now(),
+              endContest: controller.contestDetails.value?.contest.endContest ??
+                  DateTime.now(),
+                    fontSize: 18.sp,
             ),
+            // Text(
+            //   "23: 55 : 20 ",
+            //   style: GoogleFonts.inter(
+            //       textStyle: TextStyle(
+            //     fontSize: 18.sp,
+            //     color: AppColors.primary,
+            //     fontWeight: FontWeight.w600,
+            //   )),
+            // ),
           ],
         ),
       );
@@ -276,18 +327,19 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.topics}"),
+                              "${controller.contestDetails.value?.contest?.stringTopics}"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.totalMarks} মার্কস"),
+                              "${controller.contestDetails.value?.contest?.totalMarks} মার্কস"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.totalTime} মিনিট"),
+                              "${controller.contestDetails.value?.contest?.totalTime} মিনিট"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.registeredCount} জন"),
+                              "${controller.contestDetails.value?.contest?.registeredCount} জন"),
                       buildRightColumnRow(
-                          value: "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM"),
+                          value:
+                              "${Utils.formatDateToBangla(controller.contestDetails.value!.contest.endContest)}"),
                     ],
                   ),
                 )
