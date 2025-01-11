@@ -18,8 +18,8 @@ abstract class ApiHelper {
   Future<Either<CustomError, LoginResponseModel>> login(LoginRequestModel payload);
 
   Future<Either<CustomError, Response>> register(RegisterRequestModel register);
-  Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
-  Future<Either<CustomError, List<JobCategory>>> getJobCategories();
+  // Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
+  // Future<Either<CustomError, List<JobCategory>>> getJobCategories();
   Future<Either<CustomError, List<ExamType>>> getExamTypes();
   Future<Either<CustomError, List<Contest>>> fetchAllContests();
 Future<Either<CustomError, List<Question>>> fetchAllQuestions();
@@ -29,6 +29,7 @@ Future<Either<CustomError, List<Question>>> fetchAllQuestions();
 Future<Either<CustomError, Response>> registerContest(String contestId);
 Future<Either<CustomError, List<Contest>>> fetchRecentContests();
 Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(String contestId);
+Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
 
 
 }

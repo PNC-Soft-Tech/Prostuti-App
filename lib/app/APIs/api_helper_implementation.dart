@@ -95,52 +95,36 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     }
   }
 
-  @override
-  Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
-    try {
-      final response = await get('job-circulars');
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.body['data'];
-        final jobCirculars =
-            data.map((json) => JobCircular.fromJson(json)).toList();
-        return Right(jobCirculars);
-      } else {
-        return Left(CustomError(response.statusCode,
-            message: "${response.statusCode}"));
-      }
-    } catch (e) {
-      return Left(CustomError(500, message: 'An error occurred: $e'));
-    }
-  }
+  
 
-  @override
-  Future<Either<CustomError, List<JobCategory>>> getJobCategories() async {
-    // final baseUrl = httpClient.baseUrl ?? 'unknown';
-    // log('url: ${baseUrl}job-categories');
-    log("Base URL being used: ${httpClient.baseUrl}"); // Debugging
-    // final baseUrl = httpClient.baseUrl ?? '${AppConfig.baseUrl}${AppConfig.apiVersion}/';
-    try {
-      // log('Making API call to: ${baseUrl}job-categories/');
-      Response response = await get('job-categories/');
-      log('API response status: 1 ${response.statusCode}, body: ${response.body}');
-      if (response.statusCode == null) response = await get("job-categories/");
-      if (response.statusCode == null) response = await get("job-categories/");
-      if (response.statusCode == null) response = await get("job-categories/");
-      log('API response status: ${response.statusCode}, body: ${response.body}');
-      if (response.statusCode == 200) {
-        List<JobCategory> categories = (response.body['data'] as List)
-            .map((item) => JobCategory.fromJson(item))
-            .toList();
-        return Right(categories);
-      } else {
-        return Left(CustomError(response.statusCode,
-            message: response.statusText ?? 'Error'));
-      }
-    } catch (e) {
-      log('API error: $e');
-      return Left(CustomError(500, message: 'Network error: $e'));
-    }
-  }
+  // @override
+  // Future<Either<CustomError, List<JobCategory>>> getJobCategories() async {
+  //   // final baseUrl = httpClient.baseUrl ?? 'unknown';
+  //   // log('url: ${baseUrl}job-categories');
+  //   log("Base URL being used: ${httpClient.baseUrl}"); // Debugging
+  //   // final baseUrl = httpClient.baseUrl ?? '${AppConfig.baseUrl}${AppConfig.apiVersion}/';
+  //   try {
+  //     // log('Making API call to: ${baseUrl}job-categories/');
+  //     Response response = await get('job-categories/');
+  //     log('API response status: 1 ${response.statusCode}, body: ${response.body}');
+  //     if (response.statusCode == null) response = await get("job-categories/");
+  //     if (response.statusCode == null) response = await get("job-categories/");
+  //     if (response.statusCode == null) response = await get("job-categories/");
+  //     log('API response status: ${response.statusCode}, body: ${response.body}');
+  //     if (response.statusCode == 200) {
+  //       List<JobCategory> categories = (response.body['data'] as List)
+  //           .map((item) => JobCategory.fromJson(item))
+  //           .toList();
+  //       return Right(categories);
+  //     } else {
+  //       return Left(CustomError(response.statusCode,
+  //           message: response.statusText ?? 'Error'));
+  //     }
+  //   } catch (e) {
+  //     log('API error: $e');
+  //     return Left(CustomError(500, message: 'Network error: $e'));
+  //   }
+  // }
 
   @override
   Future<Either<CustomError, List<ExamType>>> getExamTypes() async {
@@ -325,6 +309,27 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(String co
   } catch (e) {
     // Handle network or parsing errors
     log('Error fetching single contest: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+@override
+Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
+  try {
+    final response = await get('job-circulars');
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      final List<dynamic> data = response.body['data'];
+      final jobCirculars =
+          data.map((json) => JobCircular.fromJson(json)).toList();
+      return Right(jobCirculars);
+    } else {
+      return Left(CustomError(
+        response.statusCode,
+        message: response.body['message'] ?? 'Failed to fetch job circulars',
+      ));
+    }
+  } catch (e) {
+    log('Error fetching job circulars: $e');
     return Left(CustomError(500, message: 'Network error: $e'));
   }
 }

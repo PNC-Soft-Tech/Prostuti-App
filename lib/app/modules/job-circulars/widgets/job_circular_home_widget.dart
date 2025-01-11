@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
+import '../controllers/job-circulars-controller.dart';
+import '../models/job-circulars-model.dart';
 import 'job_circular_card_home_widget.dart';
 
-class JobCircularHomeWidget extends GetWidget {
+class JobCircularHomeWidget extends GetWidget<JobCircularController> {
   const JobCircularHomeWidget({super.key});
 
   @override
@@ -42,32 +45,27 @@ class JobCircularHomeWidget extends GetWidget {
           SizedBox(
             height: 18.h,
           ),
-          const SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  JobCircularHomeCard(
-                    title: "Assistant Accounts Officer",
-                    type: "Government",
-                    image: 'assets/govt-bd.png',
-                    loation: "Barishal",
-                    eduationalQualification:
-                        "B.Com (Preferable - M.Com/MBA) with m...",
-                    experience: "At least 5 year(s)",
-                    deadline: "6 Jan, 2025",
-                  ),
-                  JobCircularHomeCard(
-                    title: "Assistant Accounts Officer",
-                    type: "Government",
-                    image: 'assets/govt-bd.png',
-                    loation: "Barishal",
-                    eduationalQualification:
-                        "B.Com (Preferable - M.Com/MBA) with m...",
-                    experience: "At least 5 year(s)",
-                    deadline: "6 Jan, 2025",
-                  ),
-                ],
-              ))
+          Obx(() => SizedBox(
+            height: 235.h,
+            child: ListView.builder(
+                  reverse: false,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.jobCirculars.length,
+                  itemBuilder: (context, index) {
+                    JobCircular jobCircular = controller.jobCirculars[index];
+                    return JobCircularHomeCard(
+                      title: jobCircular.title,
+                      type: "Government",
+                      image: jobCircular.image,
+                      loation: jobCircular.address,
+                      eduationalQualification:
+                          jobCircular.educationalQualification,
+                      experience: jobCircular.experience,
+                      deadline: Utils.formatDateToBangla(jobCircular.deadline),
+                    );
+                  },
+                ),
+          ))
         ],
       ),
     );

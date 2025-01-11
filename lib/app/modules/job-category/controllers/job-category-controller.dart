@@ -13,24 +13,25 @@ class JobCategoryController extends GetxController {
 
   @override
   void onInit() {
-    fetchJobCategories();
+    // fetchJobCategories();
     super.onInit();
   }
 
-  void fetchJobCategories() async {
-    log('Fetching job categories...');
-    isLoading.value = true;
-    final response = await _apiHelper.getJobCategories();
-    log("res: ${response.toString()}");
-    response.fold(
-      (error) {
-        isLoading.value = false;
-        Get.snackbar("Error", error.message);
-      },
-      (categories) {
-        jobCategories.value = categories;
-        isLoading.value = false;
-      },
-    );
-  }
+  // void fetchJobCategories() async {
+  //   log('Fetching job categories...');
+  //   isLoading.value = true;
+  //   final response = await _apiHelper.getJobCategories();
+  //   log("res: ${response.toString()}");
+  //   response.fold(
+  //     (error) {
+  //       isLoading.value = false;
+  //       Get.snackbar("Error", error.message);
+  //     },
+  //     (categories) {
+  //       jobCategories.value = categories;
+  //       isLoading.value = false;
+  //     },
+  //   );
+  // }
+
 }
