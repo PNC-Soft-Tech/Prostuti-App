@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../common/controller/app_controller.dart';
 import '../../constant/app_color.dart';
+import '../../modules/contests/models/contest_status.dart';
 import '../../storage/storage_helper.dart';
 
 class Utils {
@@ -59,5 +60,20 @@ class Utils {
     return Get.isRegistered<AppController>()
         ? Get.find<AppController>()
         : Get.put(AppController());
+  }
+
+   static ContestStatus contestStatus(DateTime contestStart, DateTime contestEnd) {
+    DateTime now = DateTime.now();
+    if (contestStart.isAfter(now)) {
+      return ContestStatus(isScheduled: true, isDone: false, isRunning: false);
+    } else {
+      if (contestEnd.isBefore(now)) {
+        return ContestStatus(
+            isScheduled: false, isRunning: false, isDone: true);
+      } else {
+        return ContestStatus(isScheduled: false, isRunning: true, isDone: false);
+      }
+    }
+    
   }
 }

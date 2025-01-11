@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../models/contest_model.dart';
-import '../models/register_contest_model.dart';
 
 class ContestController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
@@ -21,6 +20,8 @@ class ContestController extends GetxController {
     // fetchContests();
     displayRecentContests();
   }
+
+
 
   Future<void> displayRecentContests() async {
     isLoadingUpcomingContest.value = true;
