@@ -2,8 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 
 import '../../../common/custom_buttons.dart';
+import '../../../common/widgets/countdown_timer.dart';
 import '../../../constant/app_color.dart';
 import '../../../routes/app_pages.dart';
 import '../controller/contest_controller.dart';
@@ -15,6 +17,9 @@ class ContestCardHome extends GetWidget<ContestController> {
 
   @override
   Widget build(BuildContext context) {
+    var isScheduled = Utils.getContestStatus(contest.startContest, contest.endContest).isScheduled;
+    var isRunning = Utils.getContestStatus(contest.startContest, contest.endContest).isRunning;
+    var isDone = Utils.getContestStatus(contest.startContest, contest.endContest).isDone;
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.contestDetails,
           arguments: {"contestId": contest.id}),
@@ -59,7 +64,12 @@ class ContestCardHome extends GetWidget<ContestController> {
                               fontSize: 16, fontWeight: FontWeight.w600))))
             ],
           ),
-          Row(
+      isScheduled ? _scheduleContest(): isRunning? _runningContest():Text('Completed'),
+        ],
+      ),
+    );
+  }
+  Widget _scheduleContest()=>  Row(
             children: [
               Expanded(
                   child: Row(
@@ -68,14 +78,20 @@ class ContestCardHome extends GetWidget<ContestController> {
                   SizedBox(
                     width: 6.w,
                   ),
-                  Text(
-                    "20: 30: 43",
-                    style: GoogleFonts.inter(
-                        textStyle: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600)),
-                  )
+                     CountdownTimer(
+              startContest:
+                  contest.startContest,
+              endContest: contest.endContest,
+                    fontSize: 14.sp,
+            ),
+                  // Text(
+                  //   "20: 30: 43",
+                  //   style: GoogleFonts.inter(
+                  //       textStyle: TextStyle(
+                  //           color: AppColors.primary,
+                  //           fontSize: 16.sp,
+                  //           fontWeight: FontWeight.w600)),
+                  // )
                 ],
               )),
               CustomButton.button(
@@ -86,9 +102,40 @@ class ContestCardHome extends GetWidget<ContestController> {
                   borderRadius: 50.r,
                   isPrimary: true)
             ],
-          ),
-        ],
-      ),
-    );
-  }
+          );
+  Widget _runningContest()=>  Row(
+            children: [
+              Expanded(
+                  child: Row(
+                children: [
+                  Image.asset('assets/countdown.png'),
+                  SizedBox(
+                    width: 6.w,
+                  ),
+                     CountdownTimer(
+              startContest:
+                  contest.startContest,
+              endContest: contest.endContest,
+                    fontSize: 12.sp,
+            ),
+                  // Text(
+                  //   "20: 30: 43",
+                  //   style: GoogleFonts.inter(
+                  //       textStyle: TextStyle(
+                  //           color: AppColors.primary,
+                  //           fontSize: 16.sp,
+                  //           fontWeight: FontWeight.w600)),
+                  // )
+                ],
+              )),
+              CustomButton.button(
+                  text: "Enter Now",
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                  // onPressed: () => controller.registerForContest(contest.id),
+                  onPressed: () => {},
+                  borderRadius: 50.r,
+                  isPrimary: true)
+            ],
+          );
 }
