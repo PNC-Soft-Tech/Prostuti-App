@@ -51,7 +51,7 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
                   itemCount: controller.upcomingContests.length,
                   itemBuilder: (context, index) {
                     Contest contest =
-                        controller.upcomingContests.value[index];
+                        controller.upcomingContests[index];
                     return Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: 8.w), // Spacing between cards

@@ -45,7 +45,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                     contest.imageUrl != null &&
                             contest.imageUrl!.contains('http')
                         ? Image.network(
-                            controller.upcomingContests.first.imageUrl ?? '',
+                            contest.imageUrl ?? '',
                             height: 28.h,
                             width: 28.h,
                             fit: BoxFit.cover,
