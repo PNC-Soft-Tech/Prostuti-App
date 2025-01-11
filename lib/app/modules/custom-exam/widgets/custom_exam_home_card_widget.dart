@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/routes/app_pages.dart';
 
 class CustomExamHomeCardWidget extends GetWidget {
   const CustomExamHomeCardWidget({super.key});
@@ -55,7 +56,7 @@ class CustomExamHomeCardWidget extends GetWidget {
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
                   text: "Give A Custom Exam Now",
-                  onPressed: () {}),
+                  onPressed: ()=>Get.toNamed(Routes.customExam)),
             ],
           )
         ],
