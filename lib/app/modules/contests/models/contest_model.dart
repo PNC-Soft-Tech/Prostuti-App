@@ -30,16 +30,7 @@ class Contest {
   });
 
   factory Contest.fromJson(Map<String, dynamic> json) {
-        final dateFormat = DateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z (zzzz)");
-
-    DateTime parseDate(String dateStr) {
-      try {
-        return dateFormat.parse(dateStr);
-      } catch (e) {
-        log('Invalid date format: $dateStr');
-        return DateTime.now(); // Fallback date
-      }
-    }
+ 
     return Contest(
       id: json['_id'],
       name: json['name'],
@@ -58,6 +49,18 @@ class Contest {
       totalTime: json['totalTime'] ?? 0,
     );
   }
+      static DateTime parseDate(String dateStr) {
+    try {
+      // Remove extraneous timezone information
+      final cleanedDateStr = dateStr.split('GMT')[0].trim();
+      final dateFormat = DateFormat("EEE MMM dd yyyy HH:mm:ss");
+
+      return dateFormat.parse(cleanedDateStr);
+    } catch (e) {
+      log('Invalid date format: $dateStr');
+      return DateTime.now(); // Fallback date
+    }
+  }
 }
 
 class Topic {
@@ -72,4 +75,6 @@ class Topic {
       name: json['name'],
     );
   }
+
+
 }
