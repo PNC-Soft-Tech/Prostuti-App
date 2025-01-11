@@ -318,7 +318,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           value:
                               "${controller.contestDetails.value?.contest?.registeredCount} জন"),
                       buildRightColumnRow(
-                          value: "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM"),
+                          value: "${Utils.formatDateToBangla(controller.contestDetails.value!.contest.endContest)}"),
                     ],
                   ),
                 )
