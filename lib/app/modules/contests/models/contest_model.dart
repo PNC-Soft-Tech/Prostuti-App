@@ -1,5 +1,6 @@
+import 'dart:developer';
 
-import '../../questions/models/question_model.dart';
+import 'package:intl/intl.dart';
 
 class Contest {
   final String id;
@@ -8,7 +9,7 @@ class Contest {
   final String? description;
   final String? stringTopics;
   final String? imageUrl;
-  final List<Question>? questions;
+  final List<Topic>? topics;
   final DateTime startContest;
   final DateTime endContest;
   final int totalMarks;
@@ -16,12 +17,12 @@ class Contest {
 
   Contest({
     required this.id,
-     this.name,
-     this.imageUrl,
-     this.registeredCount,
-     this.description,
-     this.stringTopics,
-     this.questions,
+    this.name,
+    this.imageUrl,
+    this.registeredCount,
+    this.description,
+    this.stringTopics,
+    this.topics,
     required this.startContest,
     required this.endContest,
     required this.totalMarks,
@@ -29,20 +30,46 @@ class Contest {
   });
 
   factory Contest.fromJson(Map<String, dynamic> json) {
+        final dateFormat = DateFormat("EEE MMM dd yyyy HH:mm:ss 'GMT'Z (zzzz)");
+
+    DateTime parseDate(String dateStr) {
+      try {
+        return dateFormat.parse(dateStr);
+      } catch (e) {
+        log('Invalid date format: $dateStr');
+        return DateTime.now(); // Fallback date
+      }
+    }
     return Contest(
       id: json['_id'],
       name: json['name'],
       imageUrl: json['imageUrl'],
-      registeredCount: json['registeredCount'],
+      registeredCount: json['registeredCount'] ?? 0,
       description: json['description'],
       stringTopics: json['stringTopics'],
-      questions: (json['questions'] as List)
-          .map((q) => Question.fromJson(q))
-          .toList(),
-      startContest: DateTime.parse(json['startContest']),
-      endContest: DateTime.parse(json['endContest']),
-      totalMarks: json['totalMarks'],
-      totalTime: json['totalTime'],
+      topics: (json['topics'] as List).isNotEmpty
+          ? (json['topics'] as List).map((t) => Topic.fromJson(t)).toList()
+          : [],
+      // startContest: DateTime.parse(json['startContest']),
+      // endContest: DateTime.parse(json['endContest']),
+        startContest: parseDate(json['startContest']),
+      endContest: parseDate(json['endContest']),
+      totalMarks: json['totalMarks'] ?? 0,
+      totalTime: json['totalTime'] ?? 0,
+    );
+  }
+}
+
+class Topic {
+  final String id;
+  final String name;
+
+  Topic({required this.id, required this.name});
+
+  factory Topic.fromJson(Map<String, dynamic> json) {
+    return Topic(
+      id: json['_id'],
+      name: json['name'],
     );
   }
 }
