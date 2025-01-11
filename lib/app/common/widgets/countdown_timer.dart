@@ -6,11 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 class CountdownTimer extends StatefulWidget {
   final DateTime startContest;
   final DateTime endContest;
+  final double? fontSize;
 
   const CountdownTimer({
     Key? key,
     required this.startContest,
-    required this.endContest,
+    required this.endContest, this.fontSize
   }) : super(key: key);
 
   @override
@@ -88,7 +89,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
       countdownText,
       style: GoogleFonts.inter(
         textStyle: TextStyle(
-          fontSize: 12.sp,
+          fontSize: widget.fontSize?? 12.sp,
           color: Colors.blue, // Replace with AppColors.primary if needed
           fontWeight: FontWeight.w600,
         ),

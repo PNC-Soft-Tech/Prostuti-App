@@ -46,13 +46,13 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   children: [
                     Row(
                       children: [
-                        controller.contestDetails.value?.contest?.imageUrl !=
+                        controller.contestDetails.value?.contest.imageUrl !=
                                     null &&
                                 controller
-                                    .contestDetails.value!.contest!.imageUrl!
+                                    .contestDetails.value!.contest.imageUrl!
                                     .contains('http')
                             ? Image.network(
-                                controller.contestDetails.value?.contest!
+                                controller.contestDetails.value?.contest
                                         .imageUrl ??
                                     '',
                                 height: 34.r,
@@ -67,7 +67,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           width: 12.w,
                         ),
                         Text(
-                          "${controller.contestDetails.value?.contest?.name ?? "বিসিএস কনটেস্ট-০১3"}",
+                          "${controller.contestDetails.value?.contest.name ?? "বিসিএস কনটেস্ট-০১"}",
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
                             fontSize: 20.sp,
@@ -81,7 +81,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 19.h,
                     ),
                     Text(
-                      " ${controller.contestDetails.value?.contest?.stringTopics ?? 'গনিত - জ্যামিতি'}",
+                      " ${controller.contestDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                         fontSize: 16.sp,
@@ -94,10 +94,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     ),
                     Obx(() {
                       final status = Utils.getContestStatus(
-                        controller
-                                .contestDetails.value?.contest?.startContest ??
+                        controller.contestDetails.value?.contest.startContest ??
                             DateTime.now(),
-                        controller.contestDetails.value?.contest?.endContest ??
+                        controller.contestDetails.value?.contest.endContest ??
                             DateTime.now(),
                       );
 
@@ -115,7 +114,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 22.h,
                     ),
                     Text(
-                      "${controller.contestDetails.value?.contest?.description}",
+                      "${controller.contestDetails.value?.contest.description}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                               fontSize: 15.sp,
@@ -144,9 +143,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           Obx(() {
             // controller.isContestRunning.value
             final status = Utils.getContestStatus(
-              controller.contestDetails.value?.contest?.startContest ??
+              controller.contestDetails.value?.contest.startContest ??
                   DateTime.now(),
-              controller.contestDetails.value?.contest?.endContest ??
+              controller.contestDetails.value?.contest.endContest ??
                   DateTime.now(),
             );
             return Positioned.fill(
@@ -167,9 +166,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   ? "Register Now"
                                   : "Completed",
                           onPressed: () => Get.find<ContestController>()
-                              .registerForContest(controller
-                                      .contestDetails.value!.contest?.id ??
-                                  '')),
+                              .registerForContest(
+                                  controller.contestDetails.value!.contest.id)),
                     )));
           }),
         ],
@@ -211,6 +209,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     endContest:
                         controller.contestDetails.value?.contest.endContest ??
                             DateTime.now(),
+                            fontSize: 12.sp,
                   ),
                   // Text(
                   //   "Time Left: 23: 55 : 20 ",
@@ -238,15 +237,23 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           children: [
             Image.asset('assets/countdown.png'),
             SizedBox(width: 9.w),
-            Text(
-              "23: 55 : 20 ",
-              style: GoogleFonts.inter(
-                  textStyle: TextStyle(
-                fontSize: 18.sp,
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              )),
+            CountdownTimer(
+              startContest:
+                  controller.contestDetails.value?.contest.startContest ??
+                      DateTime.now(),
+              endContest: controller.contestDetails.value?.contest.endContest ??
+                  DateTime.now(),
+                    fontSize: 18.sp,
             ),
+            // Text(
+            //   "23: 55 : 20 ",
+            //   style: GoogleFonts.inter(
+            //       textStyle: TextStyle(
+            //     fontSize: 18.sp,
+            //     color: AppColors.primary,
+            //     fontWeight: FontWeight.w600,
+            //   )),
+            // ),
           ],
         ),
       );
