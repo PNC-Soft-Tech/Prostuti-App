@@ -6,6 +6,7 @@ import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../common/custom_simple_appbar.dart';
+import '../../contests/controller/contest_controller.dart';
 import '../controller/contest_details_controller.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
@@ -89,7 +90,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     SizedBox(
                       height: 16.h,
                     ),
-                    Obx(() => controller.isContestRunning.value
+                    Obx(() => DateTime.now().isBefore(controller
+                            .contestDetails.value!.contest.startContest)
                         ? _alreadyRunning()
                         : _contestCountdown()),
                     SizedBox(
@@ -133,10 +135,16 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     padding:
                         EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
                     child: CustomButton.button(
-                        text: controller.isContestRunning.value
-                            ? "Enter Now"
-                            : "Register Now",
-                        onPressed: () {}),
+                        mainAxisSize: MainAxisSize.max,
+                        text:
+                            // controller.isContestRunning.value
+                            DateTime.now().isBefore(controller
+                                    .contestDetails.value!.contest.startContest)
+                                ? "Enter Now"
+                                : "Register Now",
+                        onPressed: () => Get.find<ContestController>()
+                            .registerForContest(
+                                controller.contestDetails.value!.contest.id)),
                   )))),
         ],
       ),
