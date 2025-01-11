@@ -25,7 +25,7 @@ import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
 
 class AppPages {
-  static const initial = Routes.splash;
+  static const initial = Routes.home;
 
   static final routes = [
     GetPage(

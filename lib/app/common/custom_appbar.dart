@@ -22,7 +22,7 @@ class CustomAppBar {
     String? profilePicture,
     VoidCallback? onLeadingPressed,
   }) {
-      final AppController appController = Utils.getAppController();
+    final AppController appController = Utils.getAppController();
 
     return AppBar(
       leadingWidth: leadingWidth ?? 180,
@@ -39,23 +39,26 @@ class CustomAppBar {
       automaticallyImplyLeading: true,
       actions: actions ??
           [
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                      decoration: const ShapeDecoration(
-                          shape: CircleBorder(
-                              side: BorderSide(
-                        color: Colors.grey,
-                      ))),
-                      child: CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.transparent,
-                        child: SvgPicture.asset("assets/notification.svg"),
-                      )),
-                  Container(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                    decoration: const ShapeDecoration(
+                        shape: CircleBorder(
+                            side: BorderSide(
+                      color: Colors.grey,
+                    ))),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.transparent,
+                      child: SvgPicture.asset("assets/notification.svg"),
+                    )),
+                GestureDetector(
+                  onTap: () {
+                    // Get.toNamed('page');
+                  },
+                  child: Container(
                       decoration: const ShapeDecoration(
                           shape: CircleBorder(
                               side: BorderSide(
@@ -68,8 +71,8 @@ class CustomAppBar {
                             ? Image.network(profilePicture)
                             : SvgPicture.asset("assets/default-male.svg"),
                       )),
-                ],
-              ),
+                ),
+              ],
             )
           ],
       leading: leadingWidget ??
@@ -85,10 +88,10 @@ class CustomAppBar {
                 // SizedBox(
                 //   height: 10.h,
                 // ),
-           Obx(()=>     Text(
-                  'Hi ${name ?? "Rahat"} ${appController.userId.value}!',
-                  style: TextStyle(fontSize: 16.sp),
-                ))
+                Obx(() => Text(
+                      'Hi ${name ?? "Rahat"} ${appController.userId.value}!',
+                      style: TextStyle(fontSize: 16.sp),
+                    ))
               ],
             ),
           ),
