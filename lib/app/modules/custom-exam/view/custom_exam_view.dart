@@ -148,12 +148,15 @@ class CustomExamView extends GetView<CustomExamController> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
                             color: const Color(0xFFA1A1A1),
-                            border:
-                                Border.all(width: 1, color: const Color(0xFFA1A1A1))),
+                            border: Border.all(
+                                width: 1, color: const Color(0xFFA1A1A1))),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.add, color: Colors.white,), 
+                            const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 5.w),
                             Text(
                               "Add Topic",
@@ -168,11 +171,11 @@ class CustomExamView extends GetView<CustomExamController> {
                       ),
 
                       SizedBox(height: 25.h),
-                      Divider(
+                      const Divider(
                         height: 1,
                         color: Color(0xFF212D40),
                       ),
-                        SizedBox(height: 25.h),
+                      SizedBox(height: 25.h),
                       // Add Subject Button
 
                       Container(
@@ -181,13 +184,16 @@ class CustomExamView extends GetView<CustomExamController> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50.r),
                             color: const Color(0xFF50BDB4),
-                            border:
-                                Border.all(width: 1, color: const Color(0xFF50BDB4))),
+                            border: Border.all(
+                                width: 1, color: const Color(0xFF50BDB4))),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.add, color: Colors.white,), 
+                            const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
                             SizedBox(width: 5.w),
                             Text(
                               "Add Subject",

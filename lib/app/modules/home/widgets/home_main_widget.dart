@@ -5,8 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
-import '../../../common/controller/app_controller.dart';
-import '../../../storage/storage_helper.dart';
 import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
@@ -19,19 +17,20 @@ class HomeMainWidget extends GetWidget<HomeController> {
   const HomeMainWidget({super.key});
 
   @override
-  Widget build(BuildContext context)  {
-
+  Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
       child: SingleChildScrollView(
         child: Column(
           children: [
-               Obx(()  =>     Text(
+            Obx(() => Text(
                   'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
                   style: TextStyle(fontSize: 16.sp),
                 )),
-                CustomButton.button(text: "Logout", onPressed: (){
+            CustomButton.button(
+                text: "Logout",
+                onPressed: () {
                   Utils.logoutUser();
                 }),
             const ContestHomeCardsWrapperWidget(),

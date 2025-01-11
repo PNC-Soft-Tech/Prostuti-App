@@ -40,7 +40,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                 SizedBox(
                   width: 9.w,
                 ),
-                Text("${contest.name}",
+                Text(contest.name,
                     style: GoogleFonts.notoSansBengali(
                         textStyle: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)))
