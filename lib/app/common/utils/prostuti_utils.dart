@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../common/controller/app_controller.dart';
 import '../../constant/app_color.dart';
 import '../../modules/contests/models/contest_status.dart';
@@ -64,5 +65,12 @@ class Utils {
 
   static ContestStatus getContestStatus(DateTime start, DateTime end) {
     return ContestStatus.fromDates(start, end);
+  }
+
+    /// Formats a [DateTime] into "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM" format
+  static String formatDateToBangla(DateTime date) {
+    // Define the formatter with Bangla locale
+    final DateFormat formatter = DateFormat('EEEE, dd MMMM, yy hh:mm a', 'bn_BD');
+    return formatter.format(date);
   }
 }
