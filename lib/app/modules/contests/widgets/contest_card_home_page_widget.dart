@@ -16,7 +16,8 @@ class ContestCardHome extends GetWidget<ContestController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:()=> Get.toNamed(Routes.contestDetails, arguments: {"contestId": contest.id}),
+      onTap: () => Get.toNamed(Routes.contestDetails,
+          arguments: {"contestId": contest.id}),
       child: Column(
         children: [
           Container(
@@ -35,7 +36,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                 SizedBox(
                   width: 9.w,
                 ),
-                Text("${contest.name}",
+                Text(contest.name,
                     style: GoogleFonts.notoSansBengali(
                         textStyle: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)))
@@ -77,7 +78,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                   text: "Register Now",
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w600,
-                  onPressed:()=>controller.registerForContest(contest.id),
+                  onPressed: () => controller.registerForContest(contest.id),
                   borderRadius: 50.r,
                   isPrimary: true)
             ],

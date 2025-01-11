@@ -18,7 +18,7 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
       // onTap: ()=> Get.toNamed(Routes.singleContest(contest.id)),
       child: Obx(() {
         if (controller.isLoadingUpcomingContest.value == true) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }

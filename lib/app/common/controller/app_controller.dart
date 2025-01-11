@@ -68,7 +68,7 @@ class AppController extends GetxController {
       final payloadMap = json.decode(decodedString); // Parse JSON string to Map
       // Store the decoded payload
       decodedToken.value = payloadMap;
-      log("payload map: ${payloadMap}");
+      log("payload map: $payloadMap");
       // Extract and save _id and userRole into Rx variables
       if (payloadMap.containsKey('_id')) {
         userId.value = payloadMap['_id'] ?? '';
@@ -91,5 +91,4 @@ class AppController extends GetxController {
       return {};
     }
   }
-
 }
