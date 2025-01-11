@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../common/custom_simple_appbar.dart';
@@ -44,13 +45,13 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   children: [
                     Row(
                       children: [
-                        controller.contestDetails.value?.contest.imageUrl !=
+                        controller.contestDetails.value?.contest?.imageUrl !=
                                     null &&
                                 controller
-                                    .contestDetails.value!.contest.imageUrl!
-                                    .contains('http')
+                                    .contestDetails.value!.contest!.imageUrl
+                                    !.contains('http')
                             ? Image.network(
-                                controller.contestDetails.value?.contest
+                                controller.contestDetails.value?.contest !
                                         .imageUrl ??
                                     '',
                                 height: 34.r,
@@ -65,7 +66,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           width: 12.w,
                         ),
                         Text(
-                          "${controller.contestDetails.value?.contest.name ?? "বিসিএস কনটেস্ট-০১3"}",
+                          "${controller.contestDetails.value?.contest?.name ?? "বিসিএস কনটেস্ট-০১3"}",
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
                             fontSize: 20.sp,
@@ -79,7 +80,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 19.h,
                     ),
                     Text(
-                      " ${controller.contestDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}",
+                      " ${controller.contestDetails.value?.contest?.stringTopics ?? 'গনিত - জ্যামিতি'}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                         fontSize: 16.sp,
@@ -90,15 +91,29 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     SizedBox(
                       height: 16.h,
                     ),
-                    Obx(() => DateTime.now().isBefore(controller
-                            .contestDetails.value!.contest.startContest)
-                        ? _alreadyRunning()
-                        : _contestCountdown()),
+                    Obx(() {
+                      final status = Utils.getContestStatus(
+                        controller.contestDetails.value?.contest?.startContest ??
+                            DateTime.now(),
+                        controller.contestDetails.value?.contest?.endContest ??
+                            DateTime.now(),
+                      );
+
+                      if (status.isRunning) {
+                        return _alreadyRunning();
+                      } else if (status.isScheduled) {
+                        return _contestCountdown();
+                      } else {
+                        // return _contestEnded();
+                        return Text(
+                            "Ended on: ${controller.contestDetails.value?.contest?.endContest}");
+                      }
+                    }),
                     SizedBox(
                       height: 22.h,
                     ),
                     Text(
-                      "${controller.contestDetails.value?.contest.description}",
+                      "${controller.contestDetails.value?.contest?.description}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                               fontSize: 15.sp,
@@ -124,28 +139,36 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               );
             }
           }),
-          Obx(() => Positioned.fill(
-              child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      color: Colors.grey.withOpacity(.1),
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
-                    child: CustomButton.button(
-                        mainAxisSize: MainAxisSize.max,
-                        text:
-                            // controller.isContestRunning.value
-                            DateTime.now().isBefore(controller
-                                    .contestDetails.value!.contest.startContest)
-                                ? "Enter Now"
-                                : "Register Now",
-                        onPressed: () => Get.find<ContestController>()
-                            .registerForContest(
-                                controller.contestDetails.value!.contest.id)),
-                  )))),
+          Obx(() {
+            // controller.isContestRunning.value
+            final status = Utils.getContestStatus(
+              controller.contestDetails.value?.contest?.startContest ??
+                  DateTime.now(),
+              controller.contestDetails.value?.contest?.endContest ??
+                  DateTime.now(),
+            );
+            return Positioned.fill(
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.r),
+                        color: Colors.grey.withOpacity(.1),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 24.h, horizontal: 19.w),
+                      child: CustomButton.button(
+                          mainAxisSize: MainAxisSize.max,
+                          text: status.isRunning
+                              ? "Enter Now"
+                              : status.isScheduled
+                                  ? "Register Now"
+                                  : "Completed",
+                          onPressed: () => Get.find<ContestController>()
+                              .registerForContest(
+                                  controller.contestDetails.value!.contest?.id??'')),
+                    )));
+          }),
         ],
       ),
     );
@@ -284,16 +307,16 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.stringTopics}"),
+                              "${controller.contestDetails.value?.contest?.stringTopics}"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.totalMarks} মার্কস"),
+                              "${controller.contestDetails.value?.contest?.totalMarks} মার্কস"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.totalTime} মিনিট"),
+                              "${controller.contestDetails.value?.contest?.totalTime} মিনিট"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.registeredCount} জন"),
+                              "${controller.contestDetails.value?.contest?.registeredCount} জন"),
                       buildRightColumnRow(
                           value: "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM"),
                     ],

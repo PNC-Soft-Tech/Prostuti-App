@@ -62,18 +62,7 @@ class Utils {
         : Get.put(AppController());
   }
 
-   static ContestStatus contestStatus(DateTime contestStart, DateTime contestEnd) {
-    DateTime now = DateTime.now();
-    if (contestStart.isAfter(now)) {
-      return ContestStatus(isScheduled: true, isDone: false, isRunning: false);
-    } else {
-      if (contestEnd.isBefore(now)) {
-        return ContestStatus(
-            isScheduled: false, isRunning: false, isDone: true);
-      } else {
-        return ContestStatus(isScheduled: false, isRunning: true, isDone: false);
-      }
-    }
-    
+  static ContestStatus getContestStatus(DateTime start, DateTime end) {
+    return ContestStatus.fromDates(start, end);
   }
 }
