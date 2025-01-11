@@ -7,6 +7,7 @@ import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../common/custom_simple_appbar.dart';
+import '../../../common/widgets/countdown_timer.dart';
 import '../../contests/controller/contest_controller.dart';
 import '../controller/contest_details_controller.dart';
 
@@ -48,10 +49,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         controller.contestDetails.value?.contest?.imageUrl !=
                                     null &&
                                 controller
-                                    .contestDetails.value!.contest!.imageUrl
-                                    !.contains('http')
+                                    .contestDetails.value!.contest!.imageUrl!
+                                    .contains('http')
                             ? Image.network(
-                                controller.contestDetails.value?.contest !
+                                controller.contestDetails.value?.contest!
                                         .imageUrl ??
                                     '',
                                 height: 34.r,
@@ -93,7 +94,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     ),
                     Obx(() {
                       final status = Utils.getContestStatus(
-                        controller.contestDetails.value?.contest?.startContest ??
+                        controller
+                                .contestDetails.value?.contest?.startContest ??
                             DateTime.now(),
                         controller.contestDetails.value?.contest?.endContest ??
                             DateTime.now(),
@@ -165,8 +167,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   ? "Register Now"
                                   : "Completed",
                           onPressed: () => Get.find<ContestController>()
-                              .registerForContest(
-                                  controller.contestDetails.value!.contest?.id??'')),
+                              .registerForContest(controller
+                                      .contestDetails.value!.contest?.id ??
+                                  '')),
                     )));
           }),
         ],
@@ -195,21 +198,31 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               borderRadius: BorderRadius.circular(55.13.r),
               border: Border.all(color: AppColors.primary),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset('assets/countdown.png'),
-                SizedBox(width: 9.w),
-                Text(
-                  "Time Left: 23: 55 : 20 ",
-                  style: GoogleFonts.inter(
-                      textStyle: TextStyle(
-                    fontSize: 15.sp,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  )),
-                ),
-              ],
+            child: SingleChildScrollView(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset('assets/countdown.png'),
+                  SizedBox(width: 9.w),
+                  CountdownTimer(
+                    startContest:
+                        controller.contestDetails.value?.contest.startContest ??
+                            DateTime.now(),
+                    endContest:
+                        controller.contestDetails.value?.contest.endContest ??
+                            DateTime.now(),
+                  ),
+                  // Text(
+                  //   "Time Left: 23: 55 : 20 ",
+                  //   style: GoogleFonts.inter(
+                  //       textStyle: TextStyle(
+                  //     fontSize: 15.sp,
+                  //     color: AppColors.primary,
+                  //     fontWeight: FontWeight.w600,
+                  //   )),
+                  // ),
+                ],
+              ),
             ),
           ),
         ],
@@ -318,7 +331,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           value:
                               "${controller.contestDetails.value?.contest?.registeredCount} জন"),
                       buildRightColumnRow(
-                          value: "${Utils.formatDateToBangla(controller.contestDetails.value!.contest.endContest)}"),
+                          value:
+                              "${Utils.formatDateToBangla(controller.contestDetails.value!.contest.endContest)}"),
                     ],
                   ),
                 )

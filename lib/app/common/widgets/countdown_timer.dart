@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 class CountdownTimer extends StatefulWidget {
   final DateTime startContest;
@@ -59,10 +59,21 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return "$hours:$minutes:$seconds";
+
+    final months = (duration.inDays ~/ 30); // Approximate months
+    final days = (duration.inDays % 30); // Remaining days
+    final hours = duration.inHours % 24;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+
+    List<String> parts = [];
+
+    if (months > 0) parts.add("$months month${months > 1 ? 's' : ''}");
+    if (days > 0) parts.add("$days day${days > 1 ? 's' : ''}");
+    if (hours > 0) parts.add("${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}");
+    else if (minutes > 0 || seconds > 0) parts.add("${twoDigits(minutes)}:${twoDigits(seconds)}");
+
+    return parts.join(", ");
   }
 
   @override
@@ -77,8 +88,8 @@ class _CountdownTimerState extends State<CountdownTimer> {
       countdownText,
       style: GoogleFonts.inter(
         textStyle: TextStyle(
-          fontSize: 18,
-          color: Colors.blue, // Change to AppColors.primary
+          fontSize: 12.sp,
+          color: Colors.blue, // Replace with AppColors.primary if needed
           fontWeight: FontWeight.w600,
         ),
       ),
