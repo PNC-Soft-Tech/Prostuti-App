@@ -7,10 +7,10 @@ import '../../../common/custom_buttons.dart';
 import '../../../constant/app_color.dart';
 import '../../../routes/app_pages.dart';
 import '../controller/contest_controller.dart';
-import '../models/register_contest_model.dart';
+import '../models/contest_model.dart';
 
 class ContestCardHome extends GetWidget<ContestController> {
-  final RegisterContest contest;
+  final Contest contest;
   const ContestCardHome({super.key, required this.contest});
 
   @override
@@ -40,7 +40,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                 SizedBox(
                   width: 9.w,
                 ),
-                Text(contest.name,
+                Text(contest.name??'',
                     style: GoogleFonts.notoSansBengali(
                         textStyle: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)))
@@ -53,7 +53,7 @@ class ContestCardHome extends GetWidget<ContestController> {
           Row(
             children: [
               Expanded(
-                  child: Text(contest.topics ?? "গনিত - জ্যামিতি",
+                  child: Text(contest.stringTopics ?? "গনিত - জ্যামিতি",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w600))))

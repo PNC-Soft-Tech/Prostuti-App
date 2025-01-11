@@ -1,4 +1,5 @@
-import '../../../common/models/question_model.dart';
+
+import 'option_model.dart';
 
 class Question {
   final String id;

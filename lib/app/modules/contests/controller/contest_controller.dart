@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
-import '../../../common/models/contest_model.dart';
 import '../../../common/utils/prostuti_utils.dart';
+import '../models/contest_model.dart';
 import '../models/register_contest_model.dart';
 
 class ContestController extends GetxController {
@@ -11,7 +11,7 @@ class ContestController extends GetxController {
 
   var contests = <Contest>[].obs;
   var contest = Rxn<Contest>();
-  var upcomingContests = <RegisterContest>[].obs;
+  var upcomingContests = <Contest>[].obs;
   var isLoading = false.obs;
   var isLoadingUpcomingContest = false.obs;
 

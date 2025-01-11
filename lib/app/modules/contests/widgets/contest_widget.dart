@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 
 import '../../../common/custom_card.dart';
-import '../../../common/models/contest_model.dart';
+import '../models/contest_model.dart';
 
 class ContestWidget extends GetWidget {
   final Contest contest;
@@ -15,8 +15,8 @@ class ContestWidget extends GetWidget {
     return GestureDetector(
         onTap: () => Get.toNamed(Routes.singleContest(contest.id)),
         child: CustomCard(
-          title: contest.name,
-          description: contest.description,
+          title: contest.name??'',
+          description: contest.description??'',
         ));
 
     //  Card(

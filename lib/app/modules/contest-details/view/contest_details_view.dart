@@ -78,7 +78,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       height: 19.h,
                     ),
                     Text(
-                      " ${controller.contestDetails.value?.contest.topics ?? 'গনিত - জ্যামিতি'}",
+                      " ${controller.contestDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}",
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
                         fontSize: 16.sp,
@@ -276,7 +276,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest.topics}"),
+                              "${controller.contestDetails.value?.contest.stringTopics}"),
                       buildRightColumnRow(
                           value:
                               "${controller.contestDetails.value?.contest.totalMarks} মার্কস"),

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
-import '../../../common/models/question_model.dart';
+import '../models/question_model.dart';
 
 class QuestionController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();

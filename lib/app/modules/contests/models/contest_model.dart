@@ -6,7 +6,7 @@ class Contest {
   final String? name;
   final int? registeredCount;
   final String? description;
-  final String? topics;
+  final String? stringTopics;
   final String? imageUrl;
   final List<Question>? questions;
   final DateTime startContest;
@@ -20,7 +20,7 @@ class Contest {
      this.imageUrl,
      this.registeredCount,
      this.description,
-     this.topics,
+     this.stringTopics,
      this.questions,
     required this.startContest,
     required this.endContest,
@@ -35,7 +35,7 @@ class Contest {
       imageUrl: json['imageUrl'],
       registeredCount: json['registeredCount'],
       description: json['description'],
-      topics: json['topics'],
+      stringTopics: json['stringTopics'],
       questions: (json['questions'] as List)
           .map((q) => Question.fromJson(q))
           .toList(),
