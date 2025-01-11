@@ -49,13 +49,18 @@ class Contest {
       totalTime: json['totalTime'] ?? 0,
     );
   }
-      static DateTime parseDate(String dateStr) {
+  static DateTime parseDate(String dateStr) {
     try {
-      // Remove extraneous timezone information
-      final cleanedDateStr = dateStr.split('GMT')[0].trim();
-      final dateFormat = DateFormat("EEE MMM dd yyyy HH:mm:ss");
-
-      return dateFormat.parse(cleanedDateStr);
+      // Check if the date contains 'GMT'
+      if (dateStr.contains('GMT')) {
+        // Remove extraneous timezone information
+        final cleanedDateStr = dateStr.split('GMT')[0].trim();
+        final dateFormat = DateFormat("EEE MMM dd yyyy HH:mm:ss");
+        return dateFormat.parse(cleanedDateStr);
+      } else {
+        // Handle ISO 8601 format directly
+        return DateTime.parse(dateStr);
+      }
     } catch (e) {
       log('Invalid date format: $dateStr');
       return DateTime.now(); // Fallback date

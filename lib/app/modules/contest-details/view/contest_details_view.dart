@@ -64,7 +64,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           width: 12.w,
                         ),
                         Text(
-                          "${controller.contestDetails.value?.contest.name ?? "বিসিএস কনটেস্ট-০১"}",
+                          "${controller.contestDetails.value?.contest.name ?? "বিসিএস কনটেস্ট-০১3"}",
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
                             fontSize: 20.sp,
