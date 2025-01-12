@@ -5,10 +5,8 @@ import 'package:get/get_connect/connect.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 
 import '../constant/app_config.dart';
-import '../models/job-category-model.dart';
 import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/contest_model.dart';
-import '../modules/contests/models/register_contest_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
@@ -29,7 +27,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     log("ApiHelperImpl initialized with baseUrl: ${httpClient.baseUrl}");
     httpClient.defaultContentType = 'application/json';
     httpClient.addRequestModifier<Object?>((request) async {
-         final token = await StorageHelper.getToken(); // Fetch token
+      final token = await StorageHelper.getToken(); // Fetch token
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token'; // Add Bearer token
       }
@@ -94,8 +92,6 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       ));
     }
   }
-
-  
 
   // @override
   // Future<Either<CustomError, List<JobCategory>>> getJobCategories() async {
@@ -227,111 +223,119 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+
   @override
-Future<Either<CustomError, Response>> registerContest(String contestId) async {
-  try {
-    // Fetch the Bearer token from storage
-    final token = await StorageHelper.getToken();
+  Future<Either<CustomError, Response>> registerContest(
+      String contestId) async {
+    try {
+      // Fetch the Bearer token from storage
+      final token = await StorageHelper.getToken();
 
-    // Ensure the token is not null
-    if (token == null) {
-      return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      // Ensure the token is not null
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      // Set up the payload
+      final payload = {"contest": contestId};
+
+      // Add Authorization header
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      // Make the POST request
+      final response =
+          await post('register-contests', payload, headers: headers);
+
+      // Handle the response
+      if (response.statusCode == 200) {
+        return Right(response); // Successful response
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Error registering contest',
+        ));
+      }
+    } catch (e) {
+      // Handle exceptions
+      log('Error registering contest: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-
-    // Set up the payload
-    final payload = {"contest": contestId};
-
-    // Add Authorization header
-    final headers = {
-      'Authorization': 'Bearer $token',
-    };
-
-    // Make the POST request
-    final response = await post('register-contests', payload, headers: headers);
-
-    // Handle the response
-    if (response.statusCode == 200) {
-      return Right(response); // Successful response
-    } else {
-      return Left(CustomError(
-        response.statusCode ?? 500,
-        message: response.body['message'] ?? 'Error registering contest',
-      ));
-    }
-  } catch (e) {
-    // Handle exceptions
-    log('Error registering contest: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-@override
-Future<Either<CustomError, List<Contest>>> fetchRecentContests({String contestType = "recent"}) async {
-  try {
-    // Make the GET request to fetch recent contests
-    final response = await get('contests/?contestType=$contestType');
 
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      // Parse the response data into a list of Contest models
-      final List<dynamic> data = response.body['data'];
-      final contests = data.map((json) => Contest.fromJson(json)).toList();
-      return Right(contests); // Return the list of contests
-    } else {
-      // Handle API errors
-      return Left(CustomError(
-        response.statusCode,
-        message: response.body['message'] ?? 'Failed to fetch recent contests',
-      ));
+  @override
+  Future<Either<CustomError, List<Contest>>> fetchRecentContests(
+      {String contestType = "recent"}) async {
+    try {
+      // Make the GET request to fetch recent contests
+      final response = await get('contests/?contestType=$contestType');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // Parse the response data into a list of Contest models
+        final List<dynamic> data = response.body['data'];
+        final contests = data.map((json) => Contest.fromJson(json)).toList();
+        return Right(contests); // Return the list of contests
+      } else {
+        // Handle API errors
+        return Left(CustomError(
+          response.statusCode,
+          message:
+              response.body['message'] ?? 'Failed to fetch recent contests',
+        ));
+      }
+    } catch (e) {
+      // Handle any network or parsing errors
+      log('Error fetching recent contests: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    // Handle any network or parsing errors
-    log('Error fetching recent contests: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
 
-@override
-Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(String contestId) async {
-  try {
-    // Make GET request
-    final response = await get('contests/$contestId');
+  @override
+  Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
+      String contestId) async {
+    try {
+      // Make GET request
+      final response = await get('contests/$contestId');
 
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      // Parse the response into SingleContestResponse
-      final data = ContestDetailsResponse.fromJson(response.body['data']);
-      return Right(data);
-    } else {
-      // Handle API error
-      return Left(CustomError(
-        response.statusCode,
-        message: response.body['message'] ?? 'Failed to fetch contest details',
-      ));
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // Parse the response into SingleContestResponse
+        final data = ContestDetailsResponse.fromJson(response.body['data']);
+        return Right(data);
+      } else {
+        // Handle API error
+        return Left(CustomError(
+          response.statusCode,
+          message:
+              response.body['message'] ?? 'Failed to fetch contest details',
+        ));
+      }
+    } catch (e) {
+      // Handle network or parsing errors
+      log('Error fetching single contest: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    // Handle network or parsing errors
-    log('Error fetching single contest: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-@override
-Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
-  try {
-    final response = await get('job-circulars');
 
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      final List<dynamic> data = response.body['data'];
-      final jobCirculars =
-          data.map((json) => JobCircular.fromJson(json)).toList();
-      return Right(jobCirculars);
-    } else {
-      return Left(CustomError(
-        response.statusCode,
-        message: response.body['message'] ?? 'Failed to fetch job circulars',
-      ));
+  @override
+  Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
+    try {
+      final response = await get('job-circulars');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final jobCirculars =
+            data.map((json) => JobCircular.fromJson(json)).toList();
+        return Right(jobCirculars);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch job circulars',
+        ));
+      }
+    } catch (e) {
+      log('Error fetching job circulars: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    log('Error fetching job circulars: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-
 }

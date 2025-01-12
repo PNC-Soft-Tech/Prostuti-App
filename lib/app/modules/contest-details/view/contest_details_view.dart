@@ -67,7 +67,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           width: 12.w,
                         ),
                         Text(
-                          "${controller.contestDetails.value?.contest.name ?? "বিসিএস কনটেস্ট-০১"}",
+                          controller.contestDetails.value?.contest.name ??
+                              "বিসিএস কনটেস্ট-০১",
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
                             fontSize: 20.sp,
@@ -107,7 +108,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       } else {
                         // return _contestEnded();
                         return Text(
-                            "Ended on: ${controller.contestDetails.value?.contest?.endContest}");
+                            "Ended on: ${controller.contestDetails.value?.contest.endContest}");
                       }
                     }),
                     SizedBox(
@@ -209,7 +210,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     endContest:
                         controller.contestDetails.value?.contest.endContest ??
                             DateTime.now(),
-                            fontSize: 12.sp,
+                    fontSize: 12.sp,
                   ),
                   // Text(
                   //   "Time Left: 23: 55 : 20 ",
@@ -243,7 +244,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       DateTime.now(),
               endContest: controller.contestDetails.value?.contest.endContest ??
                   DateTime.now(),
-                    fontSize: 18.sp,
+              fontSize: 18.sp,
             ),
             // Text(
             //   "23: 55 : 20 ",
@@ -327,19 +328,19 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest?.stringTopics}"),
+                              "${controller.contestDetails.value?.contest.stringTopics}"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest?.totalMarks} মার্কস"),
+                              "${controller.contestDetails.value?.contest.totalMarks} মার্কস"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest?.totalTime} মিনিট"),
+                              "${controller.contestDetails.value?.contest.totalTime} মিনিট"),
                       buildRightColumnRow(
                           value:
-                              "${controller.contestDetails.value?.contest?.registeredCount} জন"),
+                              "${controller.contestDetails.value?.contest.registeredCount} জন"),
                       buildRightColumnRow(
-                          value:
-                              "${Utils.formatDateToBangla(controller.contestDetails.value!.contest.endContest)}"),
+                          value: Utils.formatDateToBangla(controller
+                              .contestDetails.value!.contest.endContest)),
                     ],
                   ),
                 )

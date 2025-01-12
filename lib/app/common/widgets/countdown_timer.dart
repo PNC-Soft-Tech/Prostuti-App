@@ -8,11 +8,11 @@ class CountdownTimer extends StatefulWidget {
   final DateTime endContest;
   final double? fontSize;
 
-  const CountdownTimer({
-    Key? key,
-    required this.startContest,
-    required this.endContest, this.fontSize
-  }) : super(key: key);
+  const CountdownTimer(
+      {super.key,
+      required this.startContest,
+      required this.endContest,
+      this.fontSize});
 
   @override
   _CountdownTimerState createState() => _CountdownTimerState();
@@ -71,8 +71,11 @@ class _CountdownTimerState extends State<CountdownTimer> {
 
     if (months > 0) parts.add("$months month${months > 1 ? 's' : ''}");
     if (days > 0) parts.add("$days day${days > 1 ? 's' : ''}");
-    if (hours > 0) parts.add("${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}");
-    else if (minutes > 0 || seconds > 0) parts.add("${twoDigits(minutes)}:${twoDigits(seconds)}");
+    if (hours > 0) {
+      parts.add(
+          "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}");
+    } else if (minutes > 0 || seconds > 0)
+      parts.add("${twoDigits(minutes)}:${twoDigits(seconds)}");
 
     return parts.join(", ");
   }
@@ -89,7 +92,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
       countdownText,
       style: GoogleFonts.inter(
         textStyle: TextStyle(
-          fontSize: widget.fontSize?? 12.sp,
+          fontSize: widget.fontSize ?? 12.sp,
           color: Colors.blue, // Replace with AppColors.primary if needed
           fontWeight: FontWeight.w600,
         ),

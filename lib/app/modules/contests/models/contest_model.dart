@@ -1,7 +1,5 @@
 import 'dart:developer';
 
-import 'package:intl/intl.dart';
-
 import '../../contest-details/models/registered_user_model.dart';
 import '../../questions/models/question_model.dart';
 import 'topics_model.dart';

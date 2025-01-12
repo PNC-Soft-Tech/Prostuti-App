@@ -82,7 +82,7 @@ class ContestCardHome extends GetWidget<ContestController> {
                 ? _scheduleContest()
                 : isRunning
                     ? _runningContest()
-                    : Text('Completed'),
+                    : const Text('Completed'),
           ],
         ),
       ),

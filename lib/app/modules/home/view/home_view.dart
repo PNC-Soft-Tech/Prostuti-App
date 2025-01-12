@@ -27,21 +27,19 @@ class HomeView extends GetView<HomeController> {
 
           name: "Rahat"),
       body: Obx(() => Container(
-        color: Colors.white,
-        child: _pages[controller.currentIndex.value])),
+          color: Colors.white, child: _pages[controller.currentIndex.value])),
       bottomNavigationBar: Obx(() => CustomBottomNavBar(
             currentIndex: controller.currentIndex.value,
             onTap: (value) {
               if (value == 4) {
                 Get.bottomSheet(
-                  HomeBottomNavMoreBottomSheet(),
+                  const HomeBottomNavMoreBottomSheet(),
                   isScrollControlled:
                       false, // Optional, to allow for full-screen or scrollable content
                   backgroundColor: Colors
                       .white, // Optional, background color for the bottom sheet
-                      ignoreSafeArea: false, 
-                   isDismissible: true, 
-
+                  ignoreSafeArea: false,
+                  isDismissible: true,
                 );
               } else {
                 controller.currentIndex.value = value;

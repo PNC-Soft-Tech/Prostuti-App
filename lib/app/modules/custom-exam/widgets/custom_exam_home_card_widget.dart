@@ -56,7 +56,7 @@ class CustomExamHomeCardWidget extends GetWidget {
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
                   text: "Give A Custom Exam Now",
-                  onPressed: ()=>Get.toNamed(Routes.customExam)),
+                  onPressed: () => Get.toNamed(Routes.customExam)),
             ],
           )
         ],

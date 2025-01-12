@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../models/job-circulars-model.dart';
@@ -15,7 +14,7 @@ class JobCircularController extends GetxController {
     fetchJobCirculars();
   }
 
- void fetchJobCirculars() async {
+  void fetchJobCirculars() async {
     isLoading(true);
     final result = await _apiHelper.fetchJobCirculars();
     result.fold(

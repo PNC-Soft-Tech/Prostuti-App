@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 
 import '../../../APIs/api_helper.dart';
@@ -33,5 +31,4 @@ class JobCategoryController extends GetxController {
   //     },
   //   );
   // }
-
 }
