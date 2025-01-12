@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/custom_bottom_fixed_button.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
@@ -149,27 +150,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               controller.contestDetails.value?.contest.endContest ??
                   DateTime.now(),
             );
-            return Positioned.fill(
-                child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20.r),
-                        color: Colors.grey.withOpacity(.1),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 24.h, horizontal: 19.w),
-                      child: CustomButton.button(
-                          mainAxisSize: MainAxisSize.max,
-                          text: status.isRunning
-                              ? "Enter Now"
-                              : status.isScheduled
-                                  ? "Register Now"
-                                  : "Completed",
-                          onPressed: () => Get.find<ContestController>()
-                              .registerForContest(
-                                  controller.contestDetails.value!.contest.id)),
-                    )));
+            return CustomBottomFixedButton(
+                buttonText: status.isRunning
+                    ? "Enter Now"
+                    : status.isScheduled
+                        ? "Register Now"
+                        : "Completed",
+                onPressed: () => Get.find<ContestController>()
+                    .registerForContest(
+                        controller.contestDetails.value!.contest.id));
           }),
         ],
       ),
