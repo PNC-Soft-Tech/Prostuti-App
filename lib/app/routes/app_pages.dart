@@ -3,6 +3,7 @@ import 'package:prostuti/app/modules/contest-details/binding/contest_details_bin
 import 'package:prostuti/app/modules/contest-details/view/contest_details_view.dart';
 import 'package:prostuti/app/modules/onboarding/views/onboarding_view.dart';
 import 'package:prostuti/app/modules/profile/bindings/profile_binding.dart';
+import 'package:prostuti/app/modules/profile/view/profile_edit_view.dart';
 import 'package:prostuti/app/modules/profile/view/profile_view.dart';
 import 'package:prostuti/app/modules/register/bindings/register_binding.dart';
 import 'package:prostuti/app/modules/register/views/register_view.dart';
@@ -25,6 +26,26 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
+
+class Routes {
+  static const splash = '/splash';
+  static const onboarding = '/onboarding';
+  static const register = '/register';
+  static const emailVarification = '/email-varification';
+  static const login = '/login';
+  static const profile = '/profile';
+  static const profileEdit = '/profile-edit';
+  static const home = '/home';
+  static const jobCircular = '/job-circulars';
+  static const jobCategories = '/job-categories';
+  static const examTypes = '/exam-types';
+  static const customExam = '/custom-exam';
+  static const questions = '/questions';
+  static const contests = '/contests';
+  static const contestDetails = '/contest-details/';
+  // Dynamic route generator for single contest
+  static String singleContest(String id) => '/contest/$id';
+}
 
 class AppPages {
   static const initial = Routes.home;
@@ -57,6 +78,11 @@ class AppPages {
         name: Routes.profile,
         page: () => const ProfileView(),
         binding: ProfileBinding()),
+    GetPage(
+      name: Routes.profileEdit,
+      page: () => const ProfileEditView(),
+      binding: ProfileBinding(),
+    ),
     GetPage(
       name: Routes.home,
       page: () => HomeView(),
@@ -99,23 +125,4 @@ class AppPages {
       binding: QuestionBinding(),
     ),
   ];
-}
-
-class Routes {
-  static const splash = '/splash';
-  static const onboarding = '/onboarding';
-  static const register = '/register';
-  static const emailVarification = '/email-varification';
-  static const login = '/login';
-  static const profile = '/profile';
-  static const home = '/home';
-  static const jobCircular = '/job-circulars';
-  static const jobCategories = '/job-categories';
-  static const examTypes = '/exam-types';
-  static const customExam = '/custom-exam';
-  static const questions = '/questions';
-  static const contests = '/contests';
-  static const contestDetails = '/contest-details/';
-  // Dynamic route generator for single contest
-  static String singleContest(String id) => '/contest/$id';
 }

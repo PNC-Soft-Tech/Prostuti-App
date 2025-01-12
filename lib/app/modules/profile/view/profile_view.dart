@@ -7,6 +7,7 @@ import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/common/widgets/bottom_nav_bar_widget.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/home/widgets/home_bottom_nav_more_bottom_sheet.dart';
+import 'package:prostuti/app/routes/app_pages.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -41,7 +42,9 @@ class ProfileView extends GetView<ProfileController> {
               title: 'Edit Profile',
               svgIcon: 'assets/profile/profile.svg',
               isProfileCompletionPercentageVisible: true,
-              onTap: () {},
+              onTap: () {
+                Get.toNamed(Routes.profileEdit);
+              },
             ),
             SizedBox(
               height: 15.h,
