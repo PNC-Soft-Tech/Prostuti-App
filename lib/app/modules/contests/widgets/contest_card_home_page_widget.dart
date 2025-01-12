@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +6,6 @@ import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 
 import '../../../common/custom_buttons.dart';
 import '../../../common/widgets/countdown_timer.dart';
-import '../../../constant/app_color.dart';
 import '../../../routes/app_pages.dart';
 import '../controller/contest_controller.dart';
 import '../models/contest_model.dart';
@@ -37,33 +35,29 @@ class ContestCardHome extends GetWidget<ContestController> {
             InkWell(
               onTap: () => Get.toNamed(Routes.contestDetails,
                   arguments: {"contestId": contest.id}),
-              child: Container(
-                // color: Colors.green,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    contest.imageUrl != null &&
-                            contest.imageUrl!.contains('http')
-                        ? Image.network(
-                            contest.imageUrl ?? '',
-                            height: 28.h,
-                            width: 28.h,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.asset(
-                            'assets/govt-bd.png',
-                            height: 28.h,
-                            width: 28.w,
-                          ),
-                    SizedBox(
-                      width: 9.w,
-                    ),
-                    Text(contest.name ?? '',
-                        style: GoogleFonts.notoSansBengali(
-                            textStyle: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)))
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  contest.imageUrl != null && contest.imageUrl!.contains('http')
+                      ? Image.network(
+                          contest.imageUrl ?? '',
+                          height: 28.h,
+                          width: 28.h,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          'assets/govt-bd.png',
+                          height: 28.h,
+                          width: 28.w,
+                        ),
+                  SizedBox(
+                    width: 9.w,
+                  ),
+                  Text(contest.name ?? '',
+                      style: GoogleFonts.notoSansBengali(
+                          textStyle: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600)))
+                ],
               ),
             ),
             SizedBox(

@@ -14,14 +14,13 @@ class SplashView extends GetView {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () async {
-        // await StorageHelper.removeToken();
-        var isLogged = await StorageHelper.hasToken();
-        if(isLogged){
-Get.offAllNamed(Routes.home);
-        }
-        else{
-      Get.offAllNamed(Routes.login);
-        }
+      // await StorageHelper.removeToken();
+      var isLogged = await StorageHelper.hasToken();
+      if (isLogged) {
+        Get.offAllNamed(Routes.home);
+      } else {
+        Get.offAllNamed(Routes.login);
+      }
       // Get.offAllNamed(Routes.customExam);
     });
     double screenWidth = ScreenUtil().screenWidth;

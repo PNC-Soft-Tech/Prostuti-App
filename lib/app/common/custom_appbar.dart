@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
+import 'package:prostuti/app/routes/app_pages.dart';
 
 import 'controller/app_controller.dart';
 import 'utils/prostuti_utils.dart';
@@ -50,22 +51,23 @@ class CustomAppBar {
                       color: Colors.grey,
                     ))),
                     child: CircleAvatar(
-                      radius: 50,
+                      radius: 25,
                       backgroundColor: Colors.transparent,
                       child: SvgPicture.asset("assets/notification.svg"),
                     )),
                 GestureDetector(
                   onTap: () {
-                    // Get.toNamed('page');
+                    Get.offAllNamed(Routes.profile);
                   },
                   child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
                       decoration: const ShapeDecoration(
                           shape: CircleBorder(
                               side: BorderSide(
                         color: Colors.grey,
                       ))),
                       child: CircleAvatar(
-                        radius: 50,
+                        radius: 25,
                         backgroundColor: Colors.transparent,
                         child: profilePicture != null
                             ? Image.network(profilePicture)
@@ -77,17 +79,18 @@ class CustomAppBar {
           ],
       leading: leadingWidget ??
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SvgPicture.asset(
                   'assets/header-logo.svg',
                   // height: 47.h,
                   // width: 113.w,
                 ),
-                // SizedBox(
-                //   height: 10.h,
-                // ),
+                SizedBox(
+                  height: 5.h,
+                ),
                 Obx(() => Text(
                       'Hi ${name ?? "Rahat"} ${appController.userId.value}!',
                       style: TextStyle(fontSize: 16.sp),

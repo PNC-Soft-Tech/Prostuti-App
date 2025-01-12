@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/modules/contest-details/binding/contest_details_binding.dart';
 import 'package:prostuti/app/modules/contest-details/view/contest_details_view.dart';
 import 'package:prostuti/app/modules/onboarding/views/onboarding_view.dart';
+import 'package:prostuti/app/modules/profile/bindings/profile_binding.dart';
+import 'package:prostuti/app/modules/profile/view/profile_view.dart';
 import 'package:prostuti/app/modules/register/bindings/register_binding.dart';
 import 'package:prostuti/app/modules/register/views/register_view.dart';
 import 'package:prostuti/app/modules/splash/views/splash_view.dart';
@@ -52,6 +54,10 @@ class AppPages {
       binding: LoginBinding(),
     ),
     GetPage(
+        name: Routes.profile,
+        page: () => ProfileView(),
+        binding: ProfileBinding()),
+    GetPage(
       name: Routes.home,
       page: () => HomeView(),
       binding: HomeBinding(),
@@ -101,6 +107,7 @@ class Routes {
   static const register = '/register';
   static const emailVarification = '/email-varification';
   static const login = '/login';
+  static const profile = '/profile';
   static const home = '/home';
   static const jobCircular = '/job-circulars';
   static const jobCategories = '/job-categories';
