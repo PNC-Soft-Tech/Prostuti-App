@@ -9,4 +9,5 @@ class AppColors {
   static const lightGray = Color(0xFFBDC0C6);
   static const midnightBlue = Color(0xFF212D40);
   static const textPrimaryColor = Color(0xFF212D40); //#212D40
+  static const vividOrange = Color(0xFFFF8143); //#FF8143
 }
