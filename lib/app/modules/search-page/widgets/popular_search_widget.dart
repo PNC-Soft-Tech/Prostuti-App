@@ -21,32 +21,35 @@ class PopularSearchWidget extends StatelessWidget {
                     color: Colors.black)),
           ),
           SizedBox(height: 11.h),
-          GridView.builder(
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              return popularSearchItem(text: "BCS Preliminary");
-            },
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
+            children: [
+              popularSearchItem(text: "BCS Preliminary"),
+              popularSearchItem(text: "PSEMHG Bangla"),
+              popularSearchItem(text: "Mathematics"),
+              popularSearchItem(text: "Global Science"),
+              popularSearchItem(text: "DPDC English"),
+            ],
           )
         ],
       ),
     );
   }
 
-  Widget popularSearchItem({required String text}) => Container(
-        margin: EdgeInsets.fromLTRB(0, 0, 8.h, 8.h),
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
-        decoration: BoxDecoration(
-            color: AppColors.primaryOpacity,
-            borderRadius: BorderRadius.circular(50.r)),
-        child: Text(
-          "${text}",
-          style: GoogleFonts.inter(
-              textStyle: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.black)),
+  Widget popularSearchItem({required String text}) => Chip(
+        backgroundColor: AppColors.primaryOpacity,
+        shadowColor: AppColors.primaryOpacity,
+        label: Container(
+          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
+          child: Text(
+            "${text}",
+            style: GoogleFonts.inter(
+                textStyle: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black)),
+          ),
         ),
       );
 }
