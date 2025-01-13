@@ -6,8 +6,8 @@ import 'package:prostuti/app/common/custom_appbar.dart';
 import 'package:prostuti/app/common/widgets/bottom_nav_bar_widget.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/home/widgets/home_bottom_nav_more_bottom_sheet.dart';
-import 'package:prostuti/app/modules/profile/widgets/circular_progress.dart';
 import 'package:prostuti/app/modules/profile/widgets/profile_settings_item.dart';
+import 'package:prostuti/app/modules/profile/widgets/progress_circle.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 import '../controllers/profile_controller.dart';
 
@@ -137,58 +137,6 @@ class BorderedCircleAvatar extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class ProgressCircle extends StatelessWidget {
-  final double progress;
-
-  const ProgressCircle({
-    super.key,
-    required this.progress,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            CurvedCircularProgress(
-              color: AppColors.vividOrange,
-              progress: progress,
-              strokeWidth: 5.w,
-            ),
-          ],
-        ),
-        SizedBox(width: 10.w),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Completed!',
-              style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.vividOrange,
-              ),
-            ),
-            SizedBox(width: 5.w),
-            Text(
-              'Share all details for the best experience',
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.vividOrange,
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.vividOrange,
-                  decorationStyle: TextDecorationStyle.solid),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

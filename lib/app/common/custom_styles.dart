@@ -41,4 +41,22 @@ class CustomStyles {
       ),
     );
   }
+
+  static InputDecoration profileInputDecoration(String hintText) {
+    return inputDecoration(hintText, hintText).copyWith(
+      hintStyle: TextStyle(fontSize: 14.sp),
+      labelStyle: TextStyle(fontSize: 14.sp),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(Radius.circular(30)),
+        borderSide:
+            BorderSide(color: AppColors.blueGray.withOpacity(0.4), width: 0.5),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(30)),
+        borderSide: BorderSide(color: AppColors.primary, width: 0.5), //
+      ),
+    );
+  }
 }

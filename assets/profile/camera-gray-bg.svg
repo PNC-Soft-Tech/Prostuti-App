@@ -1,0 +1,17 @@
+<svg width="100" height="40" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_b_131_5446)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M99.1137 22.5992C85.7049 33.4801 68.6139 40.0001 50.0001 40.0001C31.3863 40.0001 14.2953 33.4801 0.886475 22.5992C13.6168 8.8807 30.9278 0.44458 50.0001 0.44458C69.0725 0.44458 86.3834 8.8807 99.1137 22.5992Z" fill="#111111" fill-opacity="0.4"/>
+<path d="M49.3999 24.5385C51.2889 24.5385 52.8202 23.0072 52.8202 21.1181C52.8202 19.2291 51.2889 17.6978 49.3999 17.6978C47.5108 17.6978 45.9795 19.2291 45.9795 21.1181C45.9795 23.0072 47.5108 24.5385 49.3999 24.5385Z" stroke="white" stroke-width="1.92593" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M49.3998 10.8569H47.1196C46.8172 10.8569 46.5272 10.9771 46.3134 11.1909C46.0995 11.4047 45.9794 11.6947 45.9794 11.9971C45.9794 12.6018 45.7392 13.1818 45.3116 13.6094C44.8839 14.0371 44.3039 14.2773 43.6992 14.2773H41.4189C40.8142 14.2773 40.2342 14.5176 39.8065 14.9452C39.3789 15.3728 39.1387 15.9528 39.1387 16.5576V26.8187C39.1387 27.4235 39.3789 28.0034 39.8065 28.4311C40.2342 28.8587 40.8142 29.0989 41.4189 29.0989H57.3807C57.9854 29.0989 58.5654 28.8587 58.9931 28.4311C59.4207 28.0034 59.6609 27.4235 59.6609 26.8187V18.8378" stroke="white" stroke-width="1.92593" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M52.8203 13.1372H59.6611" stroke="white" stroke-width="1.92593" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M56.2407 9.7168V16.5576" stroke="white" stroke-width="1.92593" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<filter id="filter0_b_131_5446" x="-3.11353" y="-3.55542" width="106.227" height="47.5554" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feGaussianBlur in="BackgroundImageFix" stdDeviation="2"/>
+<feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_131_5446"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_131_5446" result="shape"/>
+</filter>
+</defs>
+</svg>

@@ -80,7 +80,7 @@ class AppPages {
         binding: ProfileBinding()),
     GetPage(
       name: Routes.profileEdit,
-      page: () => const ProfileEditView(),
+      page: () => ProfileEditView(),
       binding: ProfileBinding(),
     ),
     GetPage(

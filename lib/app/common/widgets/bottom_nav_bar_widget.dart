@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -11,21 +12,7 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.r), // Rounded top-left corner
-          topRight: Radius.circular(30.r), // Rounded top-right corner
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 0,
-            blurRadius: 8,
-            offset: const Offset(0, -2), // Shadow position
-          ),
-        ],
-      ),
+      decoration: navDecoration(),
       child: BottomNavigationBar(
         backgroundColor:
             Colors.transparent, // Set the background to transparent
@@ -63,4 +50,42 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
     );
   }
+}
+
+class CustomBottomNavButton extends StatelessWidget {
+  final String buttonText;
+  final VoidCallback onPressed;
+  const CustomBottomNavButton(
+      {super.key, required this.buttonText, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
+      decoration: navDecoration(),
+      child: CustomButton.button(
+        mainAxisSize: MainAxisSize.max,
+        text: buttonText,
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+BoxDecoration navDecoration() {
+  return BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(30.r), // Rounded top-left corner
+      topRight: Radius.circular(30.r), // Rounded top-right corner
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.2),
+        spreadRadius: 0,
+        blurRadius: 8,
+        offset: const Offset(0, -2), // Shadow position
+      ),
+    ],
+  );
 }
