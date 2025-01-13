@@ -19,7 +19,7 @@ class HomeMainWidget extends GetWidget<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 19.w),
+      // padding: EdgeInsets.symmetric(horizontal: 19.w),
       margin: EdgeInsets.symmetric(vertical: 10.h),
       child: SingleChildScrollView(
         child: Column(

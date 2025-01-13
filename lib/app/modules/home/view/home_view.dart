@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/modules/home/widgets/ranking_view.dart';
 import '../../../common/custom_appbar.dart';
 import '../../../common/widgets/bottom_nav_bar_widget.dart';
+import '../../search-page/view/search_view.dart';
 import '../controller/home_controller.dart';
 import '../widgets/home_bottom_nav_more_bottom_sheet.dart';
 import '../widgets/home_main_widget.dart';
@@ -12,7 +14,7 @@ class HomeView extends GetView<HomeController> {
 
   final List<Widget> _pages = [
     const HomeMainWidget(),
-    const Center(child: Text('Search Page')),
+    const SearchView(),
     const RankingView(),
     const Center(child: Text('History Page')),
     const Center(child: Text('More Page')),
@@ -27,6 +29,7 @@ class HomeView extends GetView<HomeController> {
 
           name: "Rahat"),
       body: Obx(() => Container(
+        padding: EdgeInsets.fromLTRB(19.w, 12.h, 19.w,12.h),
           color: Colors.white, child: _pages[controller.currentIndex.value])),
       bottomNavigationBar: Obx(() => CustomBottomNavBar(
             currentIndex: controller.currentIndex.value,

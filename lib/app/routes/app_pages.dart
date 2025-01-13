@@ -26,6 +26,8 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
+import '../modules/search-page/binding/search_binding.dart';
+import '../modules/search-page/view/search_view.dart';
 
 class Routes {
   static const splash = '/splash';
@@ -36,6 +38,7 @@ class Routes {
   static const profile = '/profile';
   static const profileEdit = '/profile-edit';
   static const home = '/home';
+  static const search = '/search';
   static const jobCircular = '/job-circulars';
   static const jobCategories = '/job-categories';
   static const examTypes = '/exam-types';
@@ -87,6 +90,11 @@ class AppPages {
       name: Routes.home,
       page: () => HomeView(),
       binding: HomeBinding(),
+    ),
+    GetPage(
+      name: Routes.search,
+      page: () => SearchView(),
+      binding: SearchBinding(),
     ),
     GetPage(
       name: Routes.jobCircular,
