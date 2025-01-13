@@ -52,7 +52,7 @@ class SearchInputWidget extends GetWidget<SearchPageController> {
                         textStyle: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w300,
-                            color: AppColors.lightGray)),
+                            color: AppColors.primary)),
                   ),
                 ),
               ],
