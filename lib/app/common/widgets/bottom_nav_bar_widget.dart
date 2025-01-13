@@ -64,10 +64,10 @@ class CustomBottomNavButton extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
       decoration: navDecoration(),
       child: CustomButton.button(
-        mainAxisSize: MainAxisSize.max,
-        text: buttonText,
-        onPressed: onPressed,
-      ),
+          mainAxisSize: MainAxisSize.max,
+          text: buttonText,
+          onPressed: onPressed,
+          fontSize: 14),
     );
   }
 }

@@ -15,20 +15,20 @@ class ProfileEditView extends StatefulWidget {
 }
 
 class _ProfileEditViewState extends State<ProfileEditView> {
-  TextEditingController fullNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController dobController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
-  TextEditingController divisionController = TextEditingController();
-  TextEditingController districtController = TextEditingController();
-  TextEditingController upazillaController = TextEditingController();
-  TextEditingController postCodeController = TextEditingController();
-  TextEditingController presentAddressController = TextEditingController();
-  TextEditingController parmanentAddressController = TextEditingController();
-  TextEditingController institutionTypeController = TextEditingController();
-  TextEditingController cgpaController = TextEditingController();
-  TextEditingController institutionNameController = TextEditingController();
+  final fullNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final dobController = TextEditingController();
+  final genderController = TextEditingController();
+  final divisionController = TextEditingController();
+  final districtController = TextEditingController();
+  final upazillaController = TextEditingController();
+  final postCodeController = TextEditingController();
+  final presentAddressController = TextEditingController();
+  final parmanentAddressController = TextEditingController();
+  final institutionTypeController = TextEditingController();
+  final cgpaController = TextEditingController();
+  final institutionNameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +72,8 @@ class _ProfileEditViewState extends State<ProfileEditView> {
             SizedBox(
               height: 20.h,
             ),
-            // Wrapping the Row widget with Expanded to ensure space is allocated properly
             Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween, // Optionally adjust alignment
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: datePickerField(
@@ -95,7 +93,108 @@ class _ProfileEditViewState extends State<ProfileEditView> {
                       onChanged: (newValue) => print(newValue)),
                 ),
               ],
-            )
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: dropdownField(
+                      labelText: 'Division',
+                      hintText: 'Select',
+                      value: 'Barishal',
+                      items: ['Barishal', 'Dhaka', 'Rangpur'],
+                      onChanged: (newValue) => print(newValue)),
+                ),
+                SizedBox(
+                  width: 20.w,
+                ),
+                Expanded(
+                  child: dropdownField(
+                      labelText: 'District',
+                      hintText: 'Select',
+                      value: 'Barishal',
+                      items: ['Barishal', 'Patuakhali', 'Barguna'],
+                      onChanged: (newValue) => print(newValue)),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20.w,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: dropdownField(
+                      labelText: 'Upazilla',
+                      hintText: 'Select',
+                      value: 'Barishal Sadar',
+                      items: ['Barishal Sadar', 'Bakerganj', 'Babuganj'],
+                      onChanged: (newValue) => print(newValue)),
+                ),
+                SizedBox(
+                  width: 20.w,
+                ),
+                Expanded(
+                  child: profileTextField(
+                      labelText: 'Post Code',
+                      hintText: 'ex: 8200',
+                      controller: postCodeController),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20.w,
+            ),
+            profileTextField(
+                labelText: 'Present Address',
+                hintText: 'ex: 49 Ranipukur Street, Kajipara',
+                controller: presentAddressController),
+            SizedBox(
+              height: 20.w,
+            ),
+            profileTextField(
+                labelText: 'Parmanent Address',
+                hintText: 'ex: 49 Ranipukur Street, Kajipara',
+                controller: parmanentAddressController),
+            SizedBox(
+              height: 20.w,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: dropdownField(
+                      labelText: 'Hon\'s Institution Type',
+                      hintText: 'Select',
+                      value: 'National',
+                      items: ['National', 'Public', 'Private'],
+                      onChanged: (newValue) => print(newValue)),
+                ),
+                SizedBox(
+                  width: 20.w,
+                ),
+                Expanded(
+                  child: profileTextField(
+                      labelText: 'Hon\'s CGPA',
+                      hintText: 'ex: 3.25',
+                      controller: cgpaController),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20.w,
+            ),
+            profileTextField(
+                labelText: 'Institution Name',
+                hintText: 'ex: University of Dhaka, Dhaka',
+                controller: institutionNameController),
+            SizedBox(
+              height: 20.w,
+            ),
           ]))),
       bottomNavigationBar:
           CustomBottomNavButton(buttonText: 'Save Details', onPressed: () {}),
@@ -112,23 +211,28 @@ class _ProfileEditViewState extends State<ProfileEditView> {
       children: [
         Text(
           labelText,
-          style: TextStyle(fontSize: 12.sp),
+          style: TextStyle(fontSize: 12.sp, color: AppColors.gray),
         ),
         SizedBox(
           height: 5.w,
         ),
         TextFormField(
           controller: controller,
-          decoration: !isPhoneNumber
-              ? CustomStyles.profileInputDecoration(hintText)
-              : CustomStyles.profileInputDecoration(hintText).copyWith(
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.asset(
-                      "assets/profile/flag-bd.png",
-                    ),
-                  ),
-                ),
+          style: TextStyle(
+              fontSize: 14.sp,
+              color: AppColors.charcoalGray,
+              fontWeight: FontWeight.normal),
+          decoration: // !isPhoneNumber ?
+              CustomStyles.profileInputDecoration(hintText),
+          // : CustomStyles.profileInputDecoration(hintText).copyWith(
+          //     prefixIcon: Padding(
+          //       padding: const EdgeInsets.all(0),
+          //       child: Image.asset(
+          //         "assets/profile/flag-bd.png",
+          //         height: 23,
+          //       ),
+          //     ),
+          //   )
           validator: (value) =>
               value == null || value.isEmpty ? 'Full Name is required' : null,
         ),
@@ -148,7 +252,7 @@ class _ProfileEditViewState extends State<ProfileEditView> {
       children: [
         Text(
           labelText,
-          style: TextStyle(fontSize: 12.sp),
+          style: TextStyle(fontSize: 12.sp, color: AppColors.gray),
         ),
         SizedBox(
           height: 5.w,
@@ -158,10 +262,19 @@ class _ProfileEditViewState extends State<ProfileEditView> {
           onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(fontSize: 12.sp),
-            labelStyle: TextStyle(fontSize: 12.sp),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            hintStyle: TextStyle(
+              fontSize: 12.sp,
+              color: AppColors.charcoalGray,
+              fontWeight: FontWeight.normal,
+            ),
+            labelStyle: TextStyle(
+              fontSize: 12.sp,
+              color: AppColors.charcoalGray,
+              fontWeight: FontWeight.normal,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 4), // Reduced padding to make the field more compact
             floatingLabelBehavior: FloatingLabelBehavior.never,
             enabledBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(30)),
@@ -176,9 +289,17 @@ class _ProfileEditViewState extends State<ProfileEditView> {
           items: items.map((item) {
             return DropdownMenuItem<String>(
               value: item,
-              child: Text(item, style: TextStyle(fontSize: 14.sp)),
+              child: Text(item,
+                  style: TextStyle(
+                      fontSize: 14.sp, color: AppColors.charcoalGray)),
             );
           }).toList(),
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: AppColors.charcoalGray,
+            fontWeight: FontWeight.normal,
+          ),
+          isDense: true, // Ensures that the input field itself is dense
         ),
       ],
     );
@@ -194,7 +315,7 @@ class _ProfileEditViewState extends State<ProfileEditView> {
       children: [
         Text(
           labelText,
-          style: TextStyle(fontSize: 12.sp),
+          style: TextStyle(fontSize: 12.sp, color: AppColors.gray),
         ),
         SizedBox(
           height: 5.w,
@@ -231,7 +352,7 @@ class _ProfileEditViewState extends State<ProfileEditView> {
             }
           },
           readOnly: true,
-          style: TextStyle(fontSize: 14.sp),
+          style: TextStyle(fontSize: 14.sp, color: AppColors.charcoalGray),
         ),
       ],
     );
