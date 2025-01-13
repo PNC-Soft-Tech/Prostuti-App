@@ -7,6 +7,7 @@ import 'package:prostuti/app/APIs/custom_error.dart';
 import '../constant/app_config.dart';
 import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/contest_model.dart';
+import '../modules/exam-topics/models/exam_topics_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
@@ -356,6 +357,26 @@ Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
     }
   } catch (e) {
     log('Error fetching categories: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+@override
+Future<Either<CustomError, List<SubjectTopics>>> fetchSubCategoriesByCategoryId(String categoryId) async {
+  try {
+    final response = await get('sub-categories/all-sub-category-by-id/$categoryId');
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      final List<dynamic> data = response.body['data'];
+      final subCategories = data.map((json) => SubjectTopics.fromJson(json)).toList();
+      return Right(subCategories);
+    } else {
+      return Left(CustomError(
+        response.statusCode,
+        message: response.body['message'] ?? 'Failed to fetch subcategories',
+      ));
+    }
+  } catch (e) {
+    log('Error fetching subcategories: $e');
     return Left(CustomError(500, message: 'Network error: $e'));
   }
 }
