@@ -9,6 +9,7 @@ import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/questions/models/question_model.dart';
 import '../modules/register/models/register_model.dart';
+import '../modules/subjects/models/subjects_model.dart';
 import 'custom_error.dart';
 
 abstract class ApiHelper {
@@ -30,4 +31,6 @@ abstract class ApiHelper {
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       String contestId);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
+  Future<Either<CustomError, List<Subjects>>> fetchSubjects();
+
 }

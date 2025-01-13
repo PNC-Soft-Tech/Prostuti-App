@@ -13,6 +13,7 @@ import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/questions/models/question_model.dart';
 import '../modules/register/models/register_model.dart';
+import '../modules/subjects/models/subjects_model.dart';
 import '../storage/storage_helper.dart';
 import 'api_helper.dart';
 
@@ -338,4 +339,25 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+  @override
+Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
+  try {
+    final response = await get('categories');
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      final List<dynamic> data = response.body['data'];
+      final categories = data.map((json) => Subjects.fromJson(json)).toList();
+      return Right(categories);
+    } else {
+      return Left(CustomError(
+        response.statusCode,
+        message: response.body['message'] ?? 'Failed to fetch categories',
+      ));
+    }
+  } catch (e) {
+    log('Error fetching categories: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+
 }

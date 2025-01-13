@@ -14,22 +14,8 @@ class CustomExamController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchContests();
+  
   }
 
-  Future<void> fetchContests() async {
-    isLoading(true);
-    final result = await _apiHelper.fetchAllContests();
-    result.fold(
-      (error) {
-        Get.snackbar('Error', error.message ?? 'Failed to load contests');
-      },
-      (data) {
-        contests.assignAll(data);
-        log("data: ${data.first.id}");
-      },
-    );
-    isLoading(false);
-  }
 
 }
