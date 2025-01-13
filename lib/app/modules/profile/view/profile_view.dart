@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_appbar.dart';
-import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/common/widgets/bottom_nav_bar_widget.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/home/widgets/home_bottom_nav_more_bottom_sheet.dart';
