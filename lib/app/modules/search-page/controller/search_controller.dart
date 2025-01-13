@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 
-class SearchController extends GetxController {
+class SearchPageController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
 
   // var questions = <Question>[].obs;
   var isLoading = false.obs;
-
+TextEditingController searchController = TextEditingController();
   @override
   void onInit() {
     super.onInit();
