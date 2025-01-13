@@ -40,6 +40,10 @@ class PopularSearchWidget extends StatelessWidget {
   Widget popularSearchItem({required String text}) => Chip(
         backgroundColor: AppColors.primaryOpacity,
         shadowColor: AppColors.primaryOpacity,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(50.0),
+          side: BorderSide(color: AppColors.primaryOpacity),
+        ),
         label: Container(
           padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
           child: Text(
