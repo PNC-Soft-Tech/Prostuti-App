@@ -343,7 +343,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   @override
 Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
   try {
-    final response = await get('categories');
+    final response = await get('subjects');
 
     if (response.statusCode == 200 && response.body['success'] == true) {
       final List<dynamic> data = response.body['data'];
@@ -363,7 +363,7 @@ Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
 @override
 Future<Either<CustomError, List<SubjectTopics>>> fetchSubCategoriesByCategoryId(String categoryId) async {
   try {
-    final response = await get('sub-categories/all-sub-category-by-id/$categoryId');
+    final response = await get('topics/all-topics-by-id/$categoryId');
 
     if (response.statusCode == 200 && response.body['success'] == true) {
       final List<dynamic> data = response.body['data'];

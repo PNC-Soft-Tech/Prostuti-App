@@ -44,7 +44,7 @@ class CustomExamView extends GetView<CustomExamController> {
                               buildSubjectDropdown(
                                   index: 1, txtColor: txtColor),
                               for (int i = 0;
-                                  i < (customExam.subjects!.length + 1);
+                                  i < (customExam.subjects!.length);
                                   i++) ...[
                                 buildTopicsAndQuestionForm(
                                     index: i, txtColor: txtColor),
