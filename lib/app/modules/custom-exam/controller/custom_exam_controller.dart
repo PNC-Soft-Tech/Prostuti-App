@@ -47,7 +47,8 @@ void addTopic({
 
   // Add the new subject
   customExamQuestions.value!.subjects!.add(sub);
-
+  // Update the reactive variable
+  customExamQuestions.refresh();
   // Log the updated length
   log("Topic added: ${sub.question}");
   log("Topic added qs: ${customExamQuestions.value?.subjects?.length}");

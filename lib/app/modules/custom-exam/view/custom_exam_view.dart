@@ -13,6 +13,8 @@ class CustomExamView extends GetView<CustomExamController> {
 
   @override
   Widget build(BuildContext context) {
+    Color txtColor = const Color(0xFF7B7B7B);
+
     return Scaffold(
       appBar: CustomSimpleAppBar.appBar(title: 'Custom Exam'),
       body: Obx(() {
@@ -37,55 +39,24 @@ class CustomExamView extends GetView<CustomExamController> {
                             .value; // Access the Rxn's value
                         if (customExam != null && customExam.subjects != null) {
                           return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              buildSubjectDropdown(
+                                  index: 1, txtColor: txtColor),
                               for (int i = 0;
                                   i < (customExam.subjects!.length + 1);
-                                  i++)
-                                buildTopicsForm(index: i),
+                                  i++) ...[
+                                buildTopicsAndQuestionForm(
+                                    index: i, txtColor: txtColor),
+                              ]
                             ],
                           );
                         } else {
-                          return buildTopicsForm(index: 1);
+                          return buildTopicsAndQuestionForm(
+                              index: 1, txtColor: txtColor);
                         }
                       }),
-
-                      GestureDetector(
-                        onTap: () {
-                          controller.addTopic(
-                              id: "jvjhvjh",
-                              question: 34,
-                              subName: "Bangla",
-                              topicId: "jkbhbhjbjb");
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 10.h),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50.r),
-                              color: const Color(0xFFA1A1A1),
-                              border: Border.all(
-                                  width: 1, color: const Color(0xFFA1A1A1))),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 5.w),
-                              Text(
-                                "Add Topic",
-                                style: GoogleFonts.inter(
-                                    textStyle: TextStyle(
-                                        fontSize: 13.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white)),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
+                      buildAddTopicButton(),
                       SizedBox(height: 25.h),
                       const Divider(
                         height: 1,
@@ -131,50 +102,107 @@ class CustomExamView extends GetView<CustomExamController> {
     );
   }
 
-  Widget buildTopicsForm({index = 1}) {
+  Widget buildSubjectDropdown({required index, required txtColor}) => Column(
+        children: [
+          // Subject Dropdown
+          Text(
+            "Subject ${index + 1}",
+            textAlign: TextAlign.start,
+            style: GoogleFonts.inter(
+                textStyle: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                    color: txtColor)),
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: "ex: English",
+                    hintStyle: GoogleFonts.inter(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14.sp,
+                            fontStyle: FontStyle.italic)),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 18.h, horizontal: 16.w),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
+                  ),
+                  items: [
+                    for (Subjects subject
+                        in controller.categoryController.subjects.value) ...[
+                      DropdownMenuItem(
+                          value: "${subject.name}",
+                          child: Text("${subject.name}")),
+                    ]
+                    // DropdownMenuItem(value: "Math", child: Text("Math")),
+                    // DropdownMenuItem(
+                    //     value: "Science", child: Text("Science")),
+                  ],
+                  onChanged: (value) {},
+                ),
+              ),
+              SizedBox(width: 10.w),
+              GestureDetector(
+                onTap: () {},
+                child: Icon(
+                  Icons.remove_circle_outline,
+                  color: Colors.red,
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 16.h),
+        ],
+      );
+  Widget buildAddTopicButton() => Column(
+        children: [
+          SizedBox(height: 16.h),
+          GestureDetector(
+            onTap: () {
+              controller.addTopic(
+                  id: "jvjhvjh",
+                  question: 34,
+                  subName: "Bangla",
+                  topicId: "jkbhbhjbjb");
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.r),
+                  color: const Color(0xFFA1A1A1),
+                  border: Border.all(width: 1, color: const Color(0xFFA1A1A1))),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 5.w),
+                  Text(
+                    "Add Topic",
+                    style: GoogleFonts.inter(
+                        textStyle: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+  Widget buildTopicsAndQuestionForm({index = 1, required txtColor}) {
     Color txtColor = const Color(0xFF7B7B7B);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Subject Dropdown
-        Text(
-          "Subject ${index+1}",
-          textAlign: TextAlign.start,
-          style: GoogleFonts.inter(
-              textStyle: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                  color: txtColor)),
-        ),
-        SizedBox(height: 8.h),
-        DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            hintText: "ex: English",
-            hintStyle: GoogleFonts.inter(
-                textStyle: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14.sp,
-                    fontStyle: FontStyle.italic)),
-            contentPadding:
-                EdgeInsets.symmetric(vertical: 18.h, horizontal: 16.w),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50.r),
-            ),
-          ),
-          items: [
-            for (Subjects subject
-                in controller.categoryController.subjects.value) ...[
-              DropdownMenuItem(
-                  value: "${subject.name}", child: Text("${subject.name}")),
-            ]
-            // DropdownMenuItem(value: "Math", child: Text("Math")),
-            // DropdownMenuItem(
-            //     value: "Science", child: Text("Science")),
-          ],
-          onChanged: (value) {},
-        ),
-        SizedBox(height: 16.h),
-
         // Topic and Questions Row
         Row(
           children: [
@@ -247,9 +275,18 @@ class CustomExamView extends GetView<CustomExamController> {
                 ],
               ),
             ),
+            SizedBox(
+              width: 10.w,
+            ),
+            GestureDetector(
+              onTap: () {},
+              child: Icon(
+                Icons.remove_circle_outline,
+                color: Colors.grey,
+              ),
+            )
           ],
         ),
-        SizedBox(height: 16.h),
       ],
     );
   }
