@@ -35,9 +35,9 @@ class HomeMainWidget extends GetWidget<HomeController> {
                   Utils.logoutUser();
                 }),
                 SizedBox(height: 10.h,),
-              CustomButton.button(text: "Loading", onPressed: (){
-                  CustomLoader.show();
-              }),
+              // CustomButton.button(text: "Loading", onPressed: (){
+              //     CustomLoader.show();
+              // }),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),
