@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
+import '../../../common/widgets/breathing_animation/custom_loader.dart';
 import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
@@ -33,6 +34,10 @@ class HomeMainWidget extends GetWidget<HomeController> {
                 onPressed: () {
                   Utils.logoutUser();
                 }),
+                SizedBox(height: 10.h,),
+              CustomButton.button(text: "Loading", onPressed: (){
+                  CustomLoader.show();
+              }),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),

@@ -1,16 +1,21 @@
-import 'dart:core';
-
 class CustomExamSubject {
   final String? id;
-  final String? subjectName;
-  final String? topic;
-  final int? question;
-  CustomExamSubject({this.id, this.question, this.subjectName, this.topic});
+   String? subjectName;
+  List<Map<String, dynamic>>? topics; // List to store multiple topics
+
+  CustomExamSubject({
+    this.id,
+    this.subjectName,
+    this.topics,
+  });
+
   factory CustomExamSubject.fromJson(Map<String, dynamic> json) {
     return CustomExamSubject(
-        id: json['id'],
-        question: json['question'],
-        subjectName: json['subjectName'],
-        topic: json['topic']);
+      id: json['id'],
+      subjectName: json['subjectName'],
+      topics: (json['topics'] as List<dynamic>?)
+          ?.map((topic) => topic as Map<String, dynamic>)
+          .toList(),
+    );
   }
 }
