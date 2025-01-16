@@ -15,6 +15,7 @@ class _CustomLoaderWidgetState extends State<CustomLoaderWidget>
   late Animation<double> _breathAnimation;
   String logoPath = "assets/logo/Logo-no-bg.png";
   double size = 120.0;
+
   @override
   void initState() {
     super.initState();
@@ -36,13 +37,21 @@ class _CustomLoaderWidgetState extends State<CustomLoaderWidget>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _breathAnimation,
-      child: Image.asset(
-        logoPath,
-        width: size,
-        height: size,
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Center(
+          child: ScaleTransition(
+            scale: _breathAnimation,
+            child: Image.asset(
+              logoPath,
+              width: size,
+              height: size,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

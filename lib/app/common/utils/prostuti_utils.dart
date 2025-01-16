@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../APIs/api_helper.dart';
+import '../../APIs/api_helper_implementation.dart';
 import '../../common/controller/app_controller.dart';
 import '../../constant/app_color.dart';
 import '../../modules/contests/models/contest_status.dart';
@@ -62,6 +64,11 @@ class Utils {
         ? Get.find<AppController>()
         : Get.put(AppController());
   }
+ static ApiHelper getApiHelperController() {
+  return Get.isRegistered<ApiHelper>()
+      ? Get.find<ApiHelper>()
+      : Get.put(ApiHelperImpl());
+}
 
   static ContestStatus getContestStatus(DateTime start, DateTime end) {
     return ContestStatus.fromDates(start, end);
