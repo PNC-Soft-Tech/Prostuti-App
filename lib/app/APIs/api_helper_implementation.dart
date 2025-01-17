@@ -340,45 +340,75 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+
   @override
-Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
-  try {
-    final response = await get('subjects');
+  Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
+    try {
+      final response = await get('subjects');
 
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      final List<dynamic> data = response.body['data'];
-      final categories = data.map((json) => Subjects.fromJson(json)).toList();
-      return Right(categories);
-    } else {
-      return Left(CustomError(
-        response.statusCode,
-        message: response.body['message'] ?? 'Failed to fetch categories',
-      ));
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final categories = data.map((json) => Subjects.fromJson(json)).toList();
+        return Right(categories);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch categories',
+        ));
+      }
+    } catch (e) {
+      log('Error fetching categories: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    log('Error fetching categories: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-@override
-Future<Either<CustomError, List<SubjectTopics>>> fetchSubCategoriesByCategoryId(String categoryId) async {
-  try {
-    final response = await get('topics/all-topics-by-id/$categoryId');
 
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      final List<dynamic> data = response.body['data'];
-      final subCategories = data.map((json) => SubjectTopics.fromJson(json)).toList();
-      return Right(subCategories);
-    } else {
-      return Left(CustomError(
-        response.statusCode,
-        message: response.body['message'] ?? 'Failed to fetch subcategories',
-      ));
+  @override
+  Future<Either<CustomError, List<SubjectTopics>>>
+      fetchSubCategoriesByCategoryId(String categoryId) async {
+    try {
+      final response = await get('topics/all-topics-by-id/$categoryId');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final subCategories =
+            data.map((json) => SubjectTopics.fromJson(json)).toList();
+        return Right(subCategories);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch subcategories',
+        ));
+      }
+    } catch (e) {
+      log('Error fetching subcategories: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    log('Error fetching subcategories: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
 
+  @override
+  Future<Either<CustomError, List<Contest>>> getLeaderboardRanks(
+      String contestId) async {
+    try {
+      // Make the GET request to fetch recent contests
+      final response = await get('contests/?contestType=$contestId');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // Parse the response data into a list of Contest models
+        final List<dynamic> data = response.body['data'];
+        final contests = data.map((json) => Contest.fromJson(json)).toList();
+        return Right(contests); // Return the list of contests
+      } else {
+        // Handle API errors
+        return Left(CustomError(
+          response.statusCode,
+          message:
+              response.body['message'] ?? 'Failed to fetch recent contests',
+        ));
+      }
+    } catch (e) {
+      // Handle any network or parsing errors
+      log('Error fetching recent contests: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
 }

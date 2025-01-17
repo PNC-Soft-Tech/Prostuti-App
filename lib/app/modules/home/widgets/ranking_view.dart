@@ -16,8 +16,6 @@ class RankingView extends StatelessWidget {
         SingleChildScrollView(
           child: Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 14.h),
-            margin: EdgeInsets.symmetric(vertical: 10.h),
             child: Column(
               children: [
                 contestDetailsWidget(),
@@ -143,10 +141,15 @@ class RankingView extends StatelessWidget {
         Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: EdgeInsets.only(bottom: 14.h),
+                padding: const EdgeInsets.only(bottom: 0),
                 child: CustomButton.button(
-                  mainAxisSize: MainAxisSize.min,
-                    text: "See My Position", onPressed: () {}))),
+                    mainAxisSize: MainAxisSize.min,
+                    text: "See My Position",
+                    fontSize: 14,
+                    padding: 10,
+                    isImageLeft: false,
+                    fontWeight: FontWeight.w500,
+                    onPressed: () {}))),
       ],
     );
   }

@@ -15,7 +15,7 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
   // final ApiHelper _apiHelper = Get.find<ApiHelper>();
   final ApiHelper _apiHelper = Utils.getApiHelperController();
-  final AppController appController =Utils.getAppController();
+  final AppController appController = Utils.getAppController();
 
   var isLoading = false.obs;
 
@@ -49,9 +49,7 @@ class LoginController extends GetxController {
         await StorageHelper.setUserData({
           "_id": response.userId,
         });
-        await StorageHelper.setUserId(
-           response.userId
-        );
+        await StorageHelper.setUserId(response.userId);
         appController.decodeJWT(response
             .token); // saving the jwt payload ( id & userRole) into appcontroller variable
         Get.snackbar("Login Success", "Welcome back!",

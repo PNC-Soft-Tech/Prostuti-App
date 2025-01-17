@@ -28,7 +28,8 @@ class Utils {
       await StorageHelper.removeUserId();
 
       // Navigate to login or splash screen
-      Get.offAllNamed('/login'); // Replace '/login' with your actual login route
+      Get.offAllNamed(
+          '/login'); // Replace '/login' with your actual login route
     } catch (e) {
       print("Error during logout: $e");
     }
@@ -51,7 +52,10 @@ class Utils {
       colorText: textColor, // Text color
       snackPosition: position,
       icon: Icon(
-        icon ?? (isSuccess ? Icons.check_circle : Icons.error), // Default icon based on `isSuccess`
+        icon ??
+            (isSuccess
+                ? Icons.check_circle
+                : Icons.error), // Default icon based on `isSuccess`
         color: Colors.white,
       ),
       duration: duration, // Duration of the Snackbar
@@ -59,25 +63,28 @@ class Utils {
       borderRadius: 8, // Rounded corners
     );
   }
-    static AppController getAppController() {
+
+  static AppController getAppController() {
     return Get.isRegistered<AppController>()
         ? Get.find<AppController>()
         : Get.put(AppController());
   }
- static ApiHelper getApiHelperController() {
-  return Get.isRegistered<ApiHelper>()
-      ? Get.find<ApiHelper>()
-      : Get.put(ApiHelperImpl());
-}
+
+  static ApiHelper getApiHelperController() {
+    return Get.isRegistered<ApiHelper>()
+        ? Get.find<ApiHelper>()
+        : Get.put(ApiHelperImpl());
+  }
 
   static ContestStatus getContestStatus(DateTime start, DateTime end) {
     return ContestStatus.fromDates(start, end);
   }
 
-    /// Formats a [DateTime] into "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM" format
+  /// Formats a [DateTime] into "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM" format
   static String formatDateToBangla(DateTime date) {
     // Define the formatter with Bangla locale
-    final DateFormat formatter = DateFormat('EEEE, dd MMMM, yy hh:mm a', 'bn_BD');
+    final DateFormat formatter =
+        DateFormat('EEEE, dd MMMM, yy hh:mm a', 'bn_BD');
     return formatter.format(date);
   }
 }

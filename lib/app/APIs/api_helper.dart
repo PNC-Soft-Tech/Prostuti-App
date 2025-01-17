@@ -33,7 +33,9 @@ abstract class ApiHelper {
       String contestId);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   Future<Either<CustomError, List<Subjects>>> fetchSubjects();
-  Future<Either<CustomError, List<SubjectTopics>>> fetchSubCategoriesByCategoryId(String categoryId);
+  Future<Either<CustomError, List<SubjectTopics>>>
+      fetchSubCategoriesByCategoryId(String categoryId);
 
-
+  Future<Either<CustomError, List<Contest>>> getLeaderboardRanks(
+      String contestId);
 }
