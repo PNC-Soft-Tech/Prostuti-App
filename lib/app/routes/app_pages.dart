@@ -83,7 +83,7 @@ class AppPages {
         binding: ProfileBinding()),
     GetPage(
       name: Routes.profileEdit,
-      page: () => ProfileEditView(),
+      page: () => const ProfileEditView(),
       binding: ProfileBinding(),
     ),
     GetPage(
@@ -93,7 +93,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.search,
-      page: () => SearchView(),
+      page: () => const SearchView(),
       binding: SearchBinding(),
     ),
     GetPage(

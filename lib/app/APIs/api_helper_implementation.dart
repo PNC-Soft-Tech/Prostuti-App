@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:get/get_connect/connect.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
+import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 
 import '../constant/app_config.dart';
 import '../modules/contest-details/models/contest_details_model.dart';
@@ -386,28 +388,29 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, List<Contest>>> getLeaderboardRanks(
+  Future<Either<CustomError, RankingInfo>> getLeaderboardRanks(
       String contestId) async {
     try {
-      // Make the GET request to fetch recent contests
-      final response = await get('contests/?contestType=$contestId');
+      final response = await get('leaderboard?contestId=$contestId');
+      inspect(response);
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        // Parse the response data into a list of Contest models
-        final List<dynamic> data = response.body['data'];
-        final contests = data.map((json) => Contest.fromJson(json)).toList();
-        return Right(contests); // Return the list of contests
+      if (response.statusCode == 200 && !response.hasError) {
+        print('---------------------into if');
+        final Map<String, dynamic> data = response.body['data'];
+        print(data);
+
+        final rankingData = RankingInfo.fromJson(data);
+        return Right(rankingData);
       } else {
-        // Handle API errors
+        print('---------------------into else');
         return Left(CustomError(
           response.statusCode,
           message:
-              response.body['message'] ?? 'Failed to fetch recent contests',
+              response.body['message'] ?? 'Failed to fetch recent leaderboard',
         ));
       }
     } catch (e) {
-      // Handle any network or parsing errors
-      log('Error fetching recent contests: $e');
+      log('Error fetching recent leaderboard: $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }

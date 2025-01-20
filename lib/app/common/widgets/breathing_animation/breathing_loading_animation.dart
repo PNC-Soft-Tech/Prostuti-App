@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
 class BreathLoadingAnimation extends StatefulWidget {
-  
-  const BreathLoadingAnimation({Key? key, }) : super(key: key);
+  const BreathLoadingAnimation({
+    super.key,
+  });
 
   @override
   State<BreathLoadingAnimation> createState() => _BreathLoadingAnimationState();
 }
 
-class _BreathLoadingAnimationState extends State<BreathLoadingAnimation> with SingleTickerProviderStateMixin {
+class _BreathLoadingAnimationState extends State<BreathLoadingAnimation>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _breathAnimation;
-//  String logoPath ="assets/icons/icon.jpg"; 
- String logoPath ="assets/logo/Logo-no-bg.png"; 
+//  String logoPath ="assets/icons/icon.jpg";
+  String logoPath = "assets/logo/Logo-no-bg.png";
   @override
   void initState() {
     super.initState();

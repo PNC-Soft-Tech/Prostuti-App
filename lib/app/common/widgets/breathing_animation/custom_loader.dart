@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'breathing_loading_animation.dart'; // Import your animation widget
 
 class CustomLoader {
-  static final _overlayEntry = Rx<OverlayEntry?>(null); // Observable for reactive control
+  static final _overlayEntry =
+      Rx<OverlayEntry?>(null); // Observable for reactive control
 
   static void show() {
     if (_overlayEntry.value != null) return; // Prevent multiple overlays
@@ -17,15 +18,15 @@ class CustomLoader {
             ),
           ),
           // Breath animation
-          BreathLoadingAnimation(),
+          const BreathLoadingAnimation(),
         ],
       ),
     );
 
-   // Insert overlay if context is available
+    // Insert overlay if context is available
     final overlayContext = Get.overlayContext;
     if (overlayContext != null) {
-      Overlay.of(overlayContext)?.insert(_overlayEntry.value!);
+      Overlay.of(overlayContext).insert(_overlayEntry.value!);
     }
   }
 
