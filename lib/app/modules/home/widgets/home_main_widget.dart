@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
+import '../../../common/custom_prostuti_dialog.dart';
 import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
@@ -36,9 +37,33 @@ class HomeMainWidget extends GetWidget<HomeController> {
             SizedBox(
               height: 10.h,
             ),
-            // CustomButton.button(text: "Loading", onPressed: (){
-            //     CustomLoader.show();
-            // }),
+            CustomButton.button(text: "Dialog", onPressed: (){
+                // Show a success modal with two buttons
+// PostutiDialog.success(
+//   "Operation completed successfully!",
+//   isBottomButton: true,
+//   noOfButtons: 2,
+//   buttonLabels: ["OK", "Cancel"],
+//   buttonActions: [
+//     () => print("OK pressed"),
+//     () => Get.back(),
+//   ],
+// );
+
+// Show a warning modal with centered text and three buttons
+PostutiDialog.warning(
+  "Are you sure you want to proceed?",
+  isBottomButton: true,
+ 
+  noOfButtons: 3,
+  buttonLabels: ["Yes", "No", "Cancel"],
+  buttonActions: [
+    () => print("Yes pressed"),
+    () => print("No pressed"),
+    () => Get.back(),
+  ],
+);
+            }),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),
