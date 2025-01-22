@@ -15,7 +15,7 @@ class SearchInputWidget extends GetWidget<SearchPageController> {
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50.r),
-          border: Border.all(color: Color(0xFFE9E9E9), width: 1)),
+          border: Border.all(color: const Color(0xFFE9E9E9), width: 1)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -62,7 +62,7 @@ class SearchInputWidget extends GetWidget<SearchPageController> {
               padding: EdgeInsets.symmetric(horizontal: 11.w, vertical: 11.w),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50.r),
-                  color: Color(0xFFA3A9B6)),
+                  color: const Color(0xFFA3A9B6)),
               child: Icon(
                 Icons.mic,
                 color: Colors.white,

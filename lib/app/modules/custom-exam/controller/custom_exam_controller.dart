@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../exam-topics/models/exam_topics_model.dart';
-import '../../subjects/controllers/subject_controller.dart';
 import '../models/custom_exam_model.dart';
 import '../models/custom_exam_subject_model.dart';
 import '../../subjects/models/subjects_model.dart';

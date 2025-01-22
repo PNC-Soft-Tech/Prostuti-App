@@ -26,6 +26,7 @@ class CustomAppBar {
     final AppController appController = Utils.getAppController();
 
     return AppBar(
+      scrolledUnderElevation: 0,
       leadingWidth: leadingWidth ?? 180,
       title: Text(
         title,

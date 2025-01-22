@@ -7,12 +7,7 @@ class SearchPageController extends GetxController {
 
   // var questions = <Question>[].obs;
   var isLoading = false.obs;
-TextEditingController searchController = TextEditingController();
-  @override
-  void onInit() {
-    super.onInit();
-    // fetchQuestions();
-  }
+  TextEditingController searchController = TextEditingController();
 
   // Future<void> fetchQuestions() async {
   //   isLoading(true);

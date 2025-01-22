@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/constant/app_color.dart';
-import '../../../common/widgets/breathing_animation/custom_loader.dart';
 import '../../../common/widgets/breathing_animation/custom_loader_widget.dart';
 import '../../../common/widgets/header_curve_logo_widget.dart';
 import '../controllers/login_controller.dart';
@@ -27,12 +26,12 @@ class LoginView extends StatelessWidget {
           ),
           child: Obx(
             () => controller.isLoading.value
-                ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(child: CustomLoaderWidget()),
-                  ],
-                )
+                ? const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(child: CustomLoaderWidget()),
+                    ],
+                  )
                 : Column(
                     // mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,

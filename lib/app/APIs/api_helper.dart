@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/modules/exam-topics/models/exam_topics_model.dart';
+import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 
 import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/contest_model.dart';
@@ -33,7 +34,9 @@ abstract class ApiHelper {
       String contestId);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   Future<Either<CustomError, List<Subjects>>> fetchSubjects();
-  Future<Either<CustomError, List<SubjectTopics>>> fetchSubCategoriesByCategoryId(String categoryId);
+  Future<Either<CustomError, List<SubjectTopics>>>
+      fetchSubCategoriesByCategoryId(String categoryId);
 
-
+  Future<Either<CustomError, RankingInfo>> getLeaderboardRanks(
+      String contestId);
 }

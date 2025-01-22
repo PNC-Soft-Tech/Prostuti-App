@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
+import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
 
-class RankingView extends StatelessWidget {
+class RankingView extends GetWidget<RankingController> {
   const RankingView({super.key});
 
   @override
@@ -16,8 +18,6 @@ class RankingView extends StatelessWidget {
         SingleChildScrollView(
           child: Container(
             color: Colors.white,
-            padding: EdgeInsets.symmetric(horizontal: 19.w, vertical: 14.h),
-            margin: EdgeInsets.symmetric(vertical: 10.h),
             child: Column(
               children: [
                 contestDetailsWidget(),
@@ -143,10 +143,15 @@ class RankingView extends StatelessWidget {
         Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: EdgeInsets.only(bottom: 14.h),
+                padding: const EdgeInsets.only(bottom: 0),
                 child: CustomButton.button(
-                  mainAxisSize: MainAxisSize.min,
-                    text: "See My Position", onPressed: () {}))),
+                    mainAxisSize: MainAxisSize.min,
+                    text: "See My Position",
+                    fontSize: 14,
+                    padding: 10,
+                    isImageLeft: false,
+                    fontWeight: FontWeight.w500,
+                    onPressed: () {}))),
       ],
     );
   }

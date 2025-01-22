@@ -11,7 +11,7 @@ class CustomExamView extends GetView<CustomExamController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Custom Exam")),
+      appBar: AppBar(title: const Text("Custom Exam")),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());

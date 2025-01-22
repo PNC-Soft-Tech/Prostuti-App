@@ -42,12 +42,12 @@ class PopularSearchWidget extends StatelessWidget {
         shadowColor: AppColors.primaryOpacity,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50.0),
-          side: BorderSide(color: AppColors.primaryOpacity),
+          side: const BorderSide(color: AppColors.primaryOpacity),
         ),
         label: Container(
           padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
           child: Text(
-            "${text}",
+            text,
             style: GoogleFonts.inter(
                 textStyle: TextStyle(
                     fontSize: 13.sp,
