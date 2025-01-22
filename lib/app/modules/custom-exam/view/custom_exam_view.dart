@@ -108,7 +108,7 @@ class CustomExamView extends GetView<CustomExamController> {
                         });
                       }
                     },
-                    hint: Text("Select Subject"),
+                    hint: const Text("Select Subject"),
                   ),
                 ),
                 SizedBox(width: 10.w),

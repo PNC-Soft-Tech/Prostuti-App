@@ -40,7 +40,7 @@ class RankingView extends GetWidget<RankingController> {
                   // Profile Section
                   if (firstThree != null && firstThree.length > 2)
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -48,19 +48,19 @@ class RankingView extends GetWidget<RankingController> {
                               rank: '2',
                               name: firstThree[1].userFullName,
                               city: 'Barishal',
-                              imageUrl: 'https://picsum.photos/200',
+                              imageUrl: '',
                               rankIcon: 'assets/leaderboard/rank-2.svg'),
                           RankProfileCard(
                               rank: '1',
                               name: firstThree[0].userFullName,
                               city: 'Dhaka',
-                              imageUrl: 'https://picsum.photos/200',
+                              imageUrl: '',
                               rankIcon: 'assets/leaderboard/rank-1.svg'),
                           RankProfileCard(
                               rank: '3',
                               name: firstThree[2].userFullName,
                               city: 'Khulna',
-                              imageUrl: 'https://picsum.photos/200',
+                              imageUrl: '',
                               rankIcon: 'assets/leaderboard/rank-3.svg'),
                         ],
                       ),
@@ -115,7 +115,7 @@ class RankingView extends GetWidget<RankingController> {
                           city: 'Dhaka',
                           score: result.points,
                           institution: 'University of Barishal',
-                          avatarUrl: 'https://picsum.photos/100',
+                          avatarUrl: '',
                         );
                       },
                     ),
@@ -245,11 +245,15 @@ class RankProfileCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Stack(
-          clipBehavior: Clip.none, // To allow the star to overflow
+          clipBehavior: Clip.none,
           children: [
             CircleAvatar(
               radius: rank == '1' ? 65.w : 40.w,
-              backgroundImage: NetworkImage(imageUrl),
+              backgroundColor: AppColors.lightGray,
+              child: SvgPicture.asset(
+                "assets/default-male.svg",
+                width: rank == '1' ? 65.w : 40.w,
+              ),
             ),
             Positioned(
               bottom: rank == '1' ? -25.w : -20.h,
@@ -297,7 +301,7 @@ class LeaderBoardEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 16.w),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
       margin: EdgeInsets.only(bottom: 15.h),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -314,9 +318,11 @@ class LeaderBoardEntry extends StatelessWidget {
                       TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
               SizedBox(width: 15.w),
               CircleAvatar(
-                radius: 20.w,
-                backgroundImage: NetworkImage(avatarUrl),
-              ),
+                  radius: 25.w,
+                  backgroundColor: AppColors.lightGray,
+                  child: SvgPicture.asset(
+                      "assets/default-male.svg") //Image.network(profilePicture)
+                  ),
               SizedBox(width: 15.w),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
