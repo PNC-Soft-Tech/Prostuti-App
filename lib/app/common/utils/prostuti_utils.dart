@@ -82,9 +82,55 @@ class Utils {
 
   /// Formats a [DateTime] into "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM" format
   static String formatDateToBangla(DateTime date) {
-    // Define the formatter with Bangla locale
     final DateFormat formatter =
         DateFormat('EEEE, dd MMMM, yy hh:mm a', 'bn_BD');
     return formatter.format(date);
+  }
+
+  static String formatDateToBanglaDDM(DateTime date) {
+    List<String> bengaliMonths = [
+      'জানুয়ারি',
+      'ফেব্রুয়ারি',
+      'মার্চ',
+      'এপ্রিল',
+      'মে',
+      'জুন',
+      'জুলাই',
+      'আগস্ট',
+      'সেপ্টেম্বর',
+      'অক্টোবর',
+      'নভেম্বর',
+      'ডিসেম্বর'
+    ];
+
+    String day = convertNumberToBengali(date.day);
+    String month = bengaliMonths[date.month - 1];
+
+    return '$day $month';
+  }
+
+  static String convertNumberToBengali(int number) {
+    List<String> bengaliDigits = [
+      '০',
+      '১',
+      '২',
+      '৩',
+      '৪',
+      '৫',
+      '৬',
+      '৭',
+      '৮',
+      '৯'
+    ];
+
+    String numberString = number.toString();
+    StringBuffer bengaliNumber = StringBuffer();
+
+    for (int i = 0; i < numberString.length; i++) {
+      int digit = int.parse(numberString[i]);
+      bengaliNumber.write(bengaliDigits[digit]);
+    }
+
+    return bengaliNumber.toString();
   }
 }

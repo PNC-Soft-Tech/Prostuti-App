@@ -4,160 +4,146 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
+import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 
 class RankingView extends GetWidget<RankingController> {
   const RankingView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.hardEdge,
-      children: [
-        SingleChildScrollView(
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              children: [
-                contestDetailsWidget(),
-                SizedBox(height: 10.h),
-                // Profile Section
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
+    return Obx(() {
+      if (controller.isRankLoading.value == true) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      ContestData? rankingData = controller.contestRankData.value;
+
+      RankingInfo? rankingInfo = rankingData?.info;
+      List<ContestResult>? firstThree = rankingInfo?.firstThreeResults;
+      List<ContestResult>? results = rankingData?.results;
+
+      return Stack(
+        clipBehavior: Clip.hardEdge,
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  contestDetailsWidget(rankingInfo),
+                  SizedBox(height: 10.h),
+                  // Profile Section
+                  if (firstThree != null && firstThree.length > 2)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RankProfileCard(
+                              rank: '2',
+                              name: firstThree[1].userFullName,
+                              city: 'Barishal',
+                              imageUrl: 'https://picsum.photos/200',
+                              rankIcon: 'assets/leaderboard/rank-2.svg'),
+                          RankProfileCard(
+                              rank: '1',
+                              name: firstThree[0].userFullName,
+                              city: 'Dhaka',
+                              imageUrl: 'https://picsum.photos/200',
+                              rankIcon: 'assets/leaderboard/rank-1.svg'),
+                          RankProfileCard(
+                              rank: '3',
+                              name: firstThree[2].userFullName,
+                              city: 'Khulna',
+                              imageUrl: 'https://picsum.photos/200',
+                              rankIcon: 'assets/leaderboard/rank-3.svg'),
+                        ],
+                      ),
+                    ),
+                  SizedBox(height: 5.h),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RankProfileCard(
-                          rank: '2',
-                          name: 'Tarikul Islam',
-                          city: 'Barishal',
-                          imageUrl: 'https://picsum.photos/200',
-                          rankIcon: 'assets/leaderboard/rank-2.svg'),
-                      RankProfileCard(
-                          rank: '1',
-                          name: 'Md Sayem',
-                          city: 'Dhaka',
-                          imageUrl: 'https://picsum.photos/200',
-                          rankIcon: 'assets/leaderboard/rank-1.svg'),
-                      RankProfileCard(
-                          rank: '3',
-                          name: 'Md Solayman',
-                          city: 'Khulna',
-                          imageUrl: 'https://picsum.photos/200',
-                          rankIcon: 'assets/leaderboard/rank-3.svg'),
+                      Text(
+                        'Leaderboard',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      DropdownButton<String>(
+                        value: 'Overall Top 10',
+                        icon: Icon(Icons.arrow_drop_down, size: 20.sp),
+                        underline: Container(),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14.sp,
+                        ),
+                        onChanged: (String? newValue) {
+                          print('Selected: $newValue');
+                        },
+                        items: <String>[
+                          'Overall Top 10',
+                          'Overall Top 20',
+                          'Top Weekly'
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                     ],
                   ),
-                ),
-                SizedBox(height: 5.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Leaderboard',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    DropdownButton<String>(
-                      value: 'Overall Top 10',
-                      icon: Icon(Icons.arrow_drop_down, size: 20.sp),
-                      underline: Container(),
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14.sp,
-                      ),
-                      onChanged: (String? newValue) {
-                        print('Selected: $newValue');
-                      },
-                      items: <String>[
-                        'Overall Top 10',
-                        'Overall Top 20',
-                        'Top Weekly'
-                      ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
+                  SizedBox(height: 5.h),
+
+                  if (results != null && results.isNotEmpty)
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: results.length,
+                      itemBuilder: (context, index) {
+                        ContestResult result = results[index];
+                        return LeaderBoardEntry(
+                          position: '${index + 1}',
+                          name: result.userFullName,
+                          city: 'Dhaka',
+                          score: result.points,
+                          institution: 'University of Barishal',
+                          avatarUrl: 'https://picsum.photos/100',
                         );
-                      }).toList(),
+                      },
                     ),
-                  ],
-                ),
-                SizedBox(height: 5.h),
-                const LeaderBoardEntry(
-                  position: '1',
-                  name: 'Md Sayem',
-                  city: 'Dhaka',
-                  score: 92,
-                  institution: 'University of Barishal',
-                  avatarUrl: 'https://picsum.photos/100',
-                ),
-                const LeaderBoardEntry(
-                    position: '2',
-                    name: 'Tarikul Islam',
-                    city: 'Barishal',
-                    score: 85,
-                    institution: 'University of Rajshahi',
-                    avatarUrl: 'https://picsum.photos/100'),
-                const LeaderBoardEntry(
-                    position: '3',
-                    name: 'Md Solayman',
-                    city: 'Khulna',
-                    score: 84,
-                    institution: 'University of Dhaka',
-                    avatarUrl: 'https://picsum.photos/100'),
-                const LeaderBoardEntry(
-                    position: '4',
-                    name: 'Mohammad Salah',
-                    city: 'Barishal',
-                    score: 70,
-                    institution: 'BM College',
-                    avatarUrl: 'https://picsum.photos/100'),
-                const LeaderBoardEntry(
-                    position: '4',
-                    name: 'Mohammad Salah',
-                    city: 'Barishal',
-                    score: 70,
-                    institution: 'BM College',
-                    avatarUrl: 'https://picsum.photos/100'),
-                const LeaderBoardEntry(
-                    position: '4',
-                    name: 'Mohammad Salah',
-                    city: 'Barishal',
-                    score: 70,
-                    institution: 'BM College',
-                    avatarUrl: 'https://picsum.photos/100'),
-                const LeaderBoardEntry(
-                    position: '4',
-                    name: 'Mohammad Salah',
-                    city: 'Barishal',
-                    score: 70,
-                    institution: 'BM College',
-                    avatarUrl: 'https://picsum.photos/100'),
-                SizedBox(height: 20.h),
-              ],
+
+                  SizedBox(height: 20.h),
+                ],
+              ),
             ),
           ),
-        ),
-        Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-                padding: const EdgeInsets.only(bottom: 0),
-                child: CustomButton.button(
-                    mainAxisSize: MainAxisSize.min,
-                    text: "See My Position",
-                    fontSize: 14,
-                    padding: 10,
-                    isImageLeft: false,
-                    fontWeight: FontWeight.w500,
-                    onPressed: () {}))),
-      ],
-    );
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                  padding: const EdgeInsets.only(bottom: 0),
+                  child: CustomButton.button(
+                      mainAxisSize: MainAxisSize.min,
+                      text: "See My Position",
+                      fontSize: 14,
+                      padding: 10,
+                      isImageLeft: false,
+                      fontWeight: FontWeight.w500,
+                      onPressed: () {}))),
+        ],
+      );
+    });
   }
 }
 
-Widget contestDetailsWidget() => Container(
+Widget contestDetailsWidget(RankingInfo? rankingData) => Container(
       margin: EdgeInsets.symmetric(vertical: 10.h),
       decoration: BoxDecoration(
         color: AppColors.primaryOpacity,
@@ -178,7 +164,7 @@ Widget contestDetailsWidget() => Container(
                 SizedBox(
                   width: 9.w,
                 ),
-                Text("বিসিএস কনটেস্ট-০১",
+                Text(rankingData?.contestTitle ?? '',
                     style: GoogleFonts.notoSansBengali(
                         textStyle: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600)))
@@ -190,13 +176,21 @@ Widget contestDetailsWidget() => Container(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   contestInfoItem(
-                      img: 'assets/participiants.png', title: '৩৬৫ জন'),
+                      img: 'assets/participiants.png',
+                      title:
+                          '${Utils.convertNumberToBengali(rankingData?.participants ?? 0)} জন'),
                   contestInfoItem(
-                      img: 'assets/total-marks.png', title: '৫০ মার্কস'),
+                      img: 'assets/total-marks.png',
+                      title:
+                          '${Utils.convertNumberToBengali(rankingData?.contestMark ?? 0)} মার্কস'),
                   contestInfoItem(
-                      img: 'assets/total-time.png', title: '৩০ মিনিট'),
+                      img: 'assets/total-time.png',
+                      title:
+                          '${Utils.convertNumberToBengali(rankingData?.contestTime ?? 0)} মিনিট'),
                   contestInfoItem(
-                      img: 'assets/contest-start.png', title: '২২ ডিসেম্বর'),
+                      img: 'assets/contest-start.png',
+                      title: Utils.formatDateToBanglaDDM(
+                          rankingData?.contestDate ?? DateTime(2025)))
                 ],
               ),
             )
@@ -209,6 +203,8 @@ Widget contestInfoItem({required String img, required String title}) =>
     Container(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 5.w),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             img,

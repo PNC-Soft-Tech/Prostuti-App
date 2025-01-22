@@ -32,7 +32,7 @@ class PostutiDialog {
               const SizedBox(height: 16),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -41,7 +41,7 @@ class PostutiDialog {
               const SizedBox(height: 8),
               Text(
                 message,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                 ),
                 textAlign: isCentered ? TextAlign.center : TextAlign.start,
@@ -55,10 +55,12 @@ class PostutiDialog {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: List.generate(noOfButtons, (index) {
                         return ElevatedButton(
-                          onPressed: buttonActions != null && buttonActions.length > index
+                          onPressed: buttonActions != null &&
+                                  buttonActions.length > index
                               ? buttonActions[index]
                               : () => Get.back(),
-                          child: Text(buttonLabels != null && buttonLabels.length > index
+                          child: Text(buttonLabels != null &&
+                                  buttonLabels.length > index
                               ? buttonLabels[index]
                               : "Button ${index + 1}"),
                         );
@@ -81,7 +83,11 @@ class PostutiDialog {
 
   /// Display a predefined error modal
   static void error(String message,
-      {String? title, bool isBottomButton = false, int noOfButtons = 1, List<String>? buttonLabels, List<VoidCallback>? buttonActions}) {
+      {String? title,
+      bool isBottomButton = false,
+      int noOfButtons = 1,
+      List<String>? buttonLabels,
+      List<VoidCallback>? buttonActions}) {
     show(
       title: title ?? "Error",
       message: message,
@@ -96,7 +102,11 @@ class PostutiDialog {
 
   /// Display a predefined success modal
   static void success(String message,
-      {String? title, bool isBottomButton = false, int noOfButtons = 1, List<String>? buttonLabels, List<VoidCallback>? buttonActions}) {
+      {String? title,
+      bool isBottomButton = false,
+      int noOfButtons = 1,
+      List<String>? buttonLabels,
+      List<VoidCallback>? buttonActions}) {
     show(
       title: title ?? "Success",
       message: message,
@@ -111,7 +121,11 @@ class PostutiDialog {
 
   /// Display a predefined info modal
   static void info(String message,
-      {String? title, bool isBottomButton = false, int noOfButtons = 1, List<String>? buttonLabels, List<VoidCallback>? buttonActions}) {
+      {String? title,
+      bool isBottomButton = false,
+      int noOfButtons = 1,
+      List<String>? buttonLabels,
+      List<VoidCallback>? buttonActions}) {
     show(
       title: title ?? "Info",
       message: message,
@@ -126,7 +140,11 @@ class PostutiDialog {
 
   /// Display a predefined warning modal
   static void warning(String message,
-      {String? title, bool isBottomButton = false, int noOfButtons = 1, List<String>? buttonLabels, List<VoidCallback>? buttonActions}) {
+      {String? title,
+      bool isBottomButton = false,
+      int noOfButtons = 1,
+      List<String>? buttonLabels,
+      List<VoidCallback>? buttonActions}) {
     show(
       title: title ?? "Warning",
       message: message,

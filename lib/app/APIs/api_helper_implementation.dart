@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
@@ -388,7 +387,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, RankingInfo>> getLeaderboardRanks(
+  Future<Either<CustomError, ContestData>> getLeaderboardRanks(
       String contestId) async {
     try {
       final response = await get('leaderboard?contestId=$contestId');
@@ -399,7 +398,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         final Map<String, dynamic> data = response.body['data'];
         print(data);
 
-        final rankingData = RankingInfo.fromJson(data);
+        final rankingData = ContestData.fromJson(data);
         return Right(rankingData);
       } else {
         print('---------------------into else');

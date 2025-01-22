@@ -6,7 +6,7 @@ import '../../../common/utils/prostuti_utils.dart';
 class RankingController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
 
-  var ranking = Rxn<RankingInfo>();
+  var contestRankData = Rxn<ContestData>();
   var isLoading = false.obs;
   var isRankLoading = false.obs;
 
@@ -32,9 +32,7 @@ class RankingController extends GetxController {
       (rankingData) {
         isRankLoading.value = false;
 
-        ranking.value = rankingData;
-        print('\n\n\n\nRank Contest Title: ');
-        print(ranking.value?.contestTitle);
+        contestRankData.value = rankingData;
       },
     );
   }

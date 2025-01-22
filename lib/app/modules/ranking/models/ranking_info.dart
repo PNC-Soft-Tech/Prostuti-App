@@ -17,12 +17,12 @@ class RankingInfo {
 
   factory RankingInfo.fromJson(Map<String, dynamic> json) {
     return RankingInfo(
-      participants: json['info']['Participants'] ?? 0,
-      contestMark: json['info']['contestMark'] ?? 0,
-      contestTime: json['info']['contestTime'] ?? 0,
-      contestDate: DateTime.parse(json['info']['contestDate']),
-      contestTitle: json['info']['ContestTitle'] ?? '',
-      firstThreeResults: (json['info']['firstThreeResults'] as List)
+      participants: json['Participants'] ?? 0,
+      contestMark: json['contestMark'] ?? 0,
+      contestTime: json['contestTime'] ?? 0,
+      contestDate: DateTime.parse(json['contestDate']),
+      contestTitle: json['ContestTitle'] ?? '',
+      firstThreeResults: (json['firstThreeResults'] as List)
           .map((result) => ContestResult.fromJson(result))
           .toList(),
     );
