@@ -41,16 +41,16 @@ class HomeMainWidget extends GetWidget<HomeController> {
                 text: "Dialog",
                 onPressed: () {
                   // Show a success modal with two buttons
-PostutiDialog.success(
-  "Operation completed successfully!",
-  isBottomButton: true,
-  noOfButtons: 2,
-  buttonLabels: ["OK", "Cancel"],
-  buttonActions: [
-    () => print("OK pressed"),
-    () => Get.back(),
-  ],
-);
+// PostutiDialog.success(
+//   "Operation completed successfully!",
+//   isBottomButton: true,
+//   noOfButtons: 2,
+//   buttonLabels: ["OK", "Cancel"],
+//   buttonActions: [
+//     () => print("OK pressed"),
+//     () => Get.back(),
+//   ],
+// );
 
 // Show a warning modal with centered text and three buttons
                   PostutiDialog.warning(
