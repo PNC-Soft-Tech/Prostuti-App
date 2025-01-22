@@ -37,33 +37,34 @@ class HomeMainWidget extends GetWidget<HomeController> {
             SizedBox(
               height: 10.h,
             ),
-            CustomButton.button(text: "Dialog", onPressed: (){
-                // Show a success modal with two buttons
-// PostutiDialog.success(
-//   "Operation completed successfully!",
-//   isBottomButton: true,
-//   noOfButtons: 2,
-//   buttonLabels: ["OK", "Cancel"],
-//   buttonActions: [
-//     () => print("OK pressed"),
-//     () => Get.back(),
-//   ],
-// );
-
-// Show a warning modal with centered text and three buttons
-PostutiDialog.warning(
-  "Are you sure you want to proceed?",
+            CustomButton.button(
+                text: "Dialog",
+                onPressed: () {
+                  // Show a success modal with two buttons
+PostutiDialog.success(
+  "Operation completed successfully!",
   isBottomButton: true,
- 
-  noOfButtons: 3,
-  buttonLabels: ["Yes", "No", "Cancel"],
+  noOfButtons: 2,
+  buttonLabels: ["OK", "Cancel"],
   buttonActions: [
-    () => print("Yes pressed"),
-    () => print("No pressed"),
+    () => print("OK pressed"),
     () => Get.back(),
   ],
 );
-            }),
+
+// Show a warning modal with centered text and three buttons
+                  PostutiDialog.warning(
+                    "Are you sure you want to proceed?",
+                    isBottomButton: true,
+                    noOfButtons: 3,
+                    buttonLabels: ["Yes", "No", "Cancel"],
+                    buttonActions: [
+                      () => print("Yes pressed"),
+                      () => print("No pressed"),
+                      () => Get.back(),
+                    ],
+                  );
+                }),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),
