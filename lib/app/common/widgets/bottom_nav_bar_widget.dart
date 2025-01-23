@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
@@ -19,27 +20,12 @@ class CustomBottomNavBar extends StatelessWidget {
         type: BottomNavigationBarType.fixed, // Ensures icons don't shift
         currentIndex: currentIndex ?? 0,
         onTap: onTap,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events),
-            label: 'Ranking',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz),
-            label: 'More',
-          ),
+        items: [
+          _buildNavItem('Home', 'assets/navigation/home.svg', 0),
+          _buildNavItem('Search', 'assets/navigation/search.svg', 1),
+          _buildNavItem('Ranking', 'assets/navigation/rank.svg', 2),
+          _buildNavItem('History', 'assets/navigation/history.svg', 3),
+          _buildNavItem('More', 'assets/navigation/more.svg', 4),
         ],
         selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
@@ -48,6 +34,44 @@ class CustomBottomNavBar extends StatelessWidget {
         selectedLabelStyle: TextStyle(fontSize: 13.sp),
         unselectedLabelStyle: TextStyle(fontSize: 13.sp),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+      String label, String iconPath, int index) {
+    return BottomNavigationBarItem(
+      icon: Padding(
+        padding: EdgeInsets.only(bottom: 5.w),
+        child: Stack(
+          clipBehavior: Clip.none, // Allow indicator to overflow if necessary
+          children: [
+            SvgPicture.asset(
+              iconPath,
+              width: 20.w,
+              colorFilter: currentIndex == index
+                  ? const ColorFilter.mode(
+                      AppColors.primary,
+                      BlendMode.srcIn,
+                    )
+                  : null,
+            ),
+            if (currentIndex == index)
+              Positioned(
+                top: -15,
+                left: 2.5,
+                child: Container(
+                  height: 5.w,
+                  width: 15.w,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+      label: label,
     );
   }
 }
