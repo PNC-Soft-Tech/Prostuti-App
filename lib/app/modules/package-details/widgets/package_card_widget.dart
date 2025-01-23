@@ -189,7 +189,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
         child: Row(
           children: [
             Icon(
-              Icons.check_box_rounded,
+              Icons.check_circle,
               color: Color(0xFFBDBDBD),
               size: 20.sp,
             ),
