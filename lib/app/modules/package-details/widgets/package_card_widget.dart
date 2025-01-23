@@ -33,7 +33,10 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
-            border: Border.all(width: 1, color: Color(0xFF50AFFF)),
+            border: Border.all(
+                width: 1,
+                color:
+                    isCurrentPackage ? Color(0xFF50AFFF) : Color(0xFFD9D9D9)),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.2),
@@ -84,7 +87,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                 ],
               ),
               for (var service in services) ...[
-                buildRowItem("${service}"),
+                buildRowItem(title: "${service}", isSelected: isCurrentPackage),
               ]
             ],
           ),
@@ -103,11 +106,12 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                 ),
               ),
               Positioned(
-                right: 0,
+                right: -8,
+                top: 7,
                 child: Transform.rotate(
                   angle: -3.14 / 2,
                   child: CustomPaint(
-                    size: Size(45.w, 46.h),
+                    size: Size(40.w, 26.h),
                     painter: TrianglePainter(color: Colors.white),
                   ),
                 ),
@@ -129,7 +133,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    name,
+                    name.toUpperCase(),
                     style: GoogleFonts.inter(
                       textStyle: TextStyle(
                         fontSize: 14.55.sp,
@@ -147,16 +151,18 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
     );
   }
 
-  Widget buildRowItem(String title) => Container(
+  Widget buildRowItem({String title = '', bool isSelected = false}) =>
+      Container(
         margin: EdgeInsets.symmetric(vertical: 12.h),
         child: Row(
           children: [
             Flexible(
               flex: 1,
               child: Icon(
-                Icons.check_circle,
-                color: Color(0xFFBDBDBD),
-                size: 20.sp,
+                Icons.check_circle_outlined,
+                color: isSelected ? AppColors.primary : Color(0xFFBDBDBD),
+                size: 20.w,
+                grade: 20,
               ),
             ),
             SizedBox(
