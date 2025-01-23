@@ -3,7 +3,12 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 
+import '../../APIs/api_helper.dart';
+import '../utils/prostuti_utils.dart';
+
 class AppController extends GetxController {
+    final ApiHelper _apiHelper = Utils.getApiHelperController();
+
   // Example of global variables
   var username = ''.obs; // Reactive variable
   var isLoggedIn = false.obs;
