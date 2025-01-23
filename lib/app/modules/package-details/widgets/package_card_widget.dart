@@ -29,10 +29,11 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
       children: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-          margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 20.w),
+          margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10.r),
+            border: Border.all(width: 1, color: Color(0xFF50AFFF)),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.2),
@@ -92,19 +93,19 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                           text: price,
                           style: GoogleFonts.inter(
                             textStyle: TextStyle(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF292D34),
+                              fontSize: 25.sp,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.black,
                             ),
                           ),
                         ),
                         TextSpan(
-                          text: "/ $period",
+                          text: " / $period",
                           style: GoogleFonts.inter(
                             textStyle: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF292D3499),
+                              color: Color(0xFF292D34),
                             ),
                           ),
                         ),
@@ -127,7 +128,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
           ),
         ),
         Positioned(
-          top: 20,
+          top: 24.h,
           left: 10,
           child: Stack(
             children: [
@@ -150,12 +151,12 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                 ),
               ),
                   Positioned(
-                left: 0,
-                bottom: 0,
+                left: -5,
+                bottom: -10,
                 child: Transform.rotate(
-                  angle: 360,
+                  angle: 180,
                   child: CustomPaint(
-                    size: Size(10.w, 10.h),
+                    size: Size(15.w, 15.h),
                     painter: TrianglePainter(color: Colors.black),
                   ),
                 ),
@@ -188,21 +189,27 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
     margin: EdgeInsets.symmetric(vertical: 12.h),
         child: Row(
           children: [
-            Icon(
-              Icons.check_circle,
-              color: Color(0xFFBDBDBD),
-              size: 20.sp,
+            Flexible(
+              flex: 1,
+              child: Icon(
+                Icons.check_circle,
+                color: Color(0xFFBDBDBD),
+                size: 20.sp,
+              ),
             ),
             SizedBox(
               width: 10.w,
             ),
-            Text(
-              title,
-              style: GoogleFonts.notoSansBengali(
-                textStyle: TextStyle(
-                  fontSize: 14.sp,
-                  color: Color(0xFF292D34),
-                  fontWeight: FontWeight.w500,
+            Flexible(
+              flex: 9,
+              child: Text(
+                title,
+                style: GoogleFonts.notoSansBengali(
+                  textStyle: TextStyle(
+                    fontSize: 14.sp,
+                    color: Color(0xFF292D34),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
