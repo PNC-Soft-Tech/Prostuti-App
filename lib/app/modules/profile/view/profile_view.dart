@@ -54,7 +54,9 @@ class ProfileView extends GetView<ProfileController> {
               title: 'Package',
               svgIcon: 'assets/profile/package.svg',
               isPackageInfoVisible: true,
-              onTap: () {},
+              onTap: () {
+                Get.toNamed(Routes.packageDetails);
+              },
             ),
             SizedBox(
               height: 15.h,
