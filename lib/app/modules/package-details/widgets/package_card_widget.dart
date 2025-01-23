@@ -47,44 +47,6 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // Stack(
-                  //   children: [
-                  //     Container(
-                  //       width: 174.w,
-                  //       height: 40.h,
-                  //       decoration: BoxDecoration(
-                  //         color: AppColors.primary,
-                  //         borderRadius: BorderRadius.circular(5),
-                  //       ),
-                  //     ),
-                  //     Positioned(
-                  //       right: 0,
-                  //       child: Transform.rotate(
-                  //         angle: -3.14 / 2,
-                  //         child: CustomPaint(
-                  //           size: Size(45.w, 46.h),
-                  //           painter: TrianglePainter(color: Colors.white),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     Positioned(
-                  //       top: 10.h,
-                  //       child: Align(
-                  //         alignment: Alignment.center,
-                  //         child: Text(
-                  //           name,
-                  //           style: GoogleFonts.inter(
-                  //             textStyle: TextStyle(
-                  //               fontSize: 14.55.sp,
-                  //               color: Colors.white,
-                  //               fontWeight: FontWeight.w600,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                   SizedBox(width: 16.w),
                   Text.rich(
                     TextSpan(
@@ -150,7 +112,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                   ),
                 ),
               ),
-                  Positioned(
+              Positioned(
                 left: -5,
                 bottom: -10,
                 child: Transform.rotate(
@@ -186,7 +148,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
   }
 
   Widget buildRowItem(String title) => Container(
-    margin: EdgeInsets.symmetric(vertical: 12.h),
+        margin: EdgeInsets.symmetric(vertical: 12.h),
         child: Row(
           children: [
             Flexible(

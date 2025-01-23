@@ -23,7 +23,7 @@ class PackageDetailsView extends GetView<PackageDetailsController> {
               children: [
                 PackageCardWidget(
                     isCurrentPackage: true,
-                    name: "Starter Plan",
+                    name: "STARTER PLAN",
                     period: "1 Month",
                     price: "৳15",
                     services: [
@@ -33,7 +33,7 @@ class PackageDetailsView extends GetView<PackageDetailsController> {
                     ]),
                 PackageCardWidget(
                   isCurrentPackage: false,
-                  name: "Growth Plan",
+                  name: "GROWTH PLAN",
                   period: "3 Months",
                   price: "৳90",
                   services: [
