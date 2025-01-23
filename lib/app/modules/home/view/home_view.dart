@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/modules/history/view/history_view.dart';
 import 'package:prostuti/app/modules/ranking/views/ranking_view.dart';
 import '../../../common/custom_appbar.dart';
 import '../../../common/widgets/bottom_nav_bar_widget.dart';
@@ -16,7 +17,7 @@ class HomeView extends GetView<HomeController> {
     const HomeMainWidget(),
     const SearchView(),
     const RankingView(),
-    const Center(child: Text('History Page')),
+    const HistoryView(),
     const Center(child: Text('More Page')),
   ];
   @override
