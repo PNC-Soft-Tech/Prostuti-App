@@ -41,15 +41,15 @@ class CustomExamController extends GetxController {
               CustomExamSubject(
                 id: firstSubject.id, // Use API-provided ID
                 subjectName: firstSubject.name, // Name of the first subject
-                topics: subjectTopicsMap[firstSubject.id]?.isNotEmpty ?? false
-                    ? [
-                        {
-                          'topicName':
-                              subjectTopicsMap[firstSubject.id]!.first.name,
-                          'questionCount': 1, // Default question count
-                        }
-                      ]
-                    : [], // No topics if the first subject has none
+                // topics: subjectTopicsMap[firstSubject.id]?.isNotEmpty ?? false
+                //     ? [
+                //         {
+                //           'topicName':
+                //               subjectTopicsMap[firstSubject.id]!.first.name,
+                //           'questionCount': 1, // Default question count
+                //         }
+                //       ]
+                //     : [], // No topics if the first subject has none
               ),
             ],
           );
@@ -109,15 +109,15 @@ class CustomExamController extends GetxController {
         CustomExamSubject(
           id: selectedSubject.id, // Use the API-provided id
           subjectName: selectedSubject.name,
-          topics: subjectTopicsMap[selectedSubject.id]?.isNotEmpty ?? false
-              ? [
-                  {
-                    'topicName':
-                        subjectTopicsMap[selectedSubject.id]!.first.name,
-                    'questionCount': 1, // Default question count
-                  }
-                ]
-              : [], // No topics if the subject's topics list is empty
+          // topics: subjectTopicsMap[selectedSubject.id]?.isNotEmpty ?? false
+          //     ? [
+          //         {
+          //           'topicName':
+          //               subjectTopicsMap[selectedSubject.id]!.first.name,
+          //           'questionCount': 1, // Default question count
+          //         }
+          //       ]
+          //     : [], // No topics if the subject's topics list is empty
         ),
       );
 

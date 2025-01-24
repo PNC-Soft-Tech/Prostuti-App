@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/custom_simple_appbar.dart';
 import '../../subjects/models/subjects_model.dart';
 import '../controller/custom_exam_controller.dart';
 
@@ -11,7 +14,7 @@ class CustomExamView extends GetView<CustomExamController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Custom Exam")),
+      appBar: CustomSimpleAppBar.appBar(title: "Custom Exam"),
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -91,7 +94,7 @@ class CustomExamView extends GetView<CustomExamController> {
                           final newTopics =
                               controller.subjectTopicsMap[selectedSubject.id] ??
                                   [];
-
+log(" new topic: ${newTopics.first.name}");
                           // Add only the first topic if available
                           subject.topics = newTopics.isNotEmpty
                               ? [
