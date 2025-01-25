@@ -64,6 +64,7 @@ class CustomExamView extends GetView<CustomExamController> {
                   child: DropdownButtonFormField<Subjects>(
                     isExpanded:
                         true, // Ensures the dropdown uses all available horizontal space
+
                     value: controller.subjects
                         .firstWhereOrNull((s) => s.name == subject.subjectName),
                     decoration: InputDecoration(
@@ -71,7 +72,9 @@ class CustomExamView extends GetView<CustomExamController> {
                       contentPadding: EdgeInsets.symmetric(
                           vertical: 12.h, horizontal: 16.w),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.r),
+                        borderSide:
+                            BorderSide(width: 0.5, color: Color(0xFF212D4066)),
+                        borderRadius: BorderRadius.circular(20.r),
                       ),
                     ),
                     items: controller.subjects
@@ -123,7 +126,7 @@ class CustomExamView extends GetView<CustomExamController> {
                 SizedBox(width: 10.w),
                 GestureDetector(
                   onTap: () => controller.removeSubject(index),
-                  child: const Icon(Icons.delete, color: Colors.red),
+                  child: const Icon(Icons.remove_circle_outline, color: Colors.red),
                 ),
               ],
             ),
@@ -139,6 +142,15 @@ class CustomExamView extends GetView<CustomExamController> {
                         Expanded(
                           flex: 2,
                           child: DropdownButtonFormField<String>(
+                            borderRadius: BorderRadius.circular(50.r),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 0.5, color: Color(0xFF212D4066)),
+                                borderRadius: BorderRadius.circular(20.r),
+                              ),
+                            ),
+
                             isExpanded:
                                 true, // Ensures the dropdown uses all available horizontal space
                             // value: subject.topics != null ? subject.topics![j]['topicName'] : null,
@@ -219,7 +231,9 @@ class CustomExamView extends GetView<CustomExamController> {
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 12.h, horizontal: 16.w),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.r),
+                                borderSide: BorderSide(
+                                    width: 0.5, color: Color(0xFF212D4066)),
+                                borderRadius: BorderRadius.circular(20.r),
                               ),
                             ),
                             keyboardType: TextInputType.number,
