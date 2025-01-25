@@ -62,6 +62,8 @@ class CustomExamView extends GetView<CustomExamController> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<Subjects>(
+                    isExpanded:
+                        true, // Ensures the dropdown uses all available horizontal space
                     value: controller.subjects
                         .firstWhereOrNull((s) => s.name == subject.subjectName),
                     decoration: InputDecoration(
@@ -137,10 +139,20 @@ class CustomExamView extends GetView<CustomExamController> {
                         Expanded(
                           flex: 2,
                           child: DropdownButtonFormField<String>(
-                    // value: subject.topics != null ? subject.topics![j]['topicName'] : null,
-value: (controller.subjectTopicsMap[controller.selectedSubjectId.value]?.length ?? 0) > j
-    ? controller.subjectTopicsMap[controller.selectedSubjectId.value]![j].name
-    : null,
+                            isExpanded:
+                                true, // Ensures the dropdown uses all available horizontal space
+                            // value: subject.topics != null ? subject.topics![j]['topicName'] : null,
+                            value: (controller
+                                            .subjectTopicsMap[controller
+                                                .selectedSubjectId.value]
+                                            ?.length ??
+                                        0) >
+                                    j
+                                ? controller
+                                    .subjectTopicsMap[
+                                        controller.selectedSubjectId.value]![j]
+                                    .name
+                                : null,
 
                             //       items:  [DropdownMenuItem(
                             //             value: 'Physics',
@@ -198,6 +210,7 @@ value: (controller.subjectTopicsMap[controller.selectedSubjectId.value]?.length 
                         ),
                         SizedBox(width: 10.w),
                         Expanded(
+                          flex: 1,
                           child: TextFormField(
                             initialValue:
                                 subject.topics![j]['questionCount']?.toString(),
@@ -242,6 +255,7 @@ value: (controller.subjectTopicsMap[controller.selectedSubjectId.value]?.length 
                   borderRadius: BorderRadius.circular(50.r),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(Icons.add, color: Colors.white),
