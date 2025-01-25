@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/custom_simple_appbar.dart';
 import '../../subjects/models/subjects_model.dart';
 import '../controller/custom_exam_controller.dart';
@@ -23,21 +24,34 @@ class CustomExamView extends GetView<CustomExamController> {
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (controller.customExamQuestions.value?.subjects != null) ...[
-                  for (int i = 0;
-                      i <
-                          controller
-                              .customExamQuestions.value!.subjects!.length;
-                      i++)
-                    buildSubjectCard(i),
-                ],
-                buildAddSubjectButton(),
-              ],
-            ),
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (controller.customExamQuestions.value?.subjects != null) ...[
+                      for (int i = 0;
+                          i <
+                              controller
+                                  .customExamQuestions.value!.subjects!.length;
+                          i++)
+                        buildSubjectCard(i),
+                    ],
+                    buildAddSubjectButton(),
+                    SizedBox(height: 80.h,)
+                  ],
+                ),
+              ),
+              Positioned(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CustomButton.button(text: "Continue", onPressed: (){
+                    Get.toNamed('/custom_exam');
+                  }, mainAxisSize: MainAxisSize.max),
+                ),
+              )
+            ],
           ),
         );
       }),
@@ -126,7 +140,8 @@ class CustomExamView extends GetView<CustomExamController> {
                 SizedBox(width: 10.w),
                 GestureDetector(
                   onTap: () => controller.removeSubject(index),
-                  child: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                  child: const Icon(Icons.remove_circle_outline,
+                      color: Colors.red),
                 ),
               ],
             ),
