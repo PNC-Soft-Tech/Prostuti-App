@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_simple_appbar.dart';
 import '../../subjects/models/subjects_model.dart';
 import '../controller/custom_exam_controller.dart';
+import 'package:collection/collection.dart';
 
 class CustomExamView extends GetView<CustomExamController> {
   const CustomExamView({super.key});
@@ -94,7 +95,10 @@ class CustomExamView extends GetView<CustomExamController> {
                           final newTopics =
                               controller.subjectTopicsMap[selectedSubject.id] ??
                                   [];
-log(" new topic: ${newTopics.first.name}");
+                          controller.selectedTopics[index]?.map((t) {
+                            log(" old topics: ${t}");
+                          });
+                          log(" new topic: ${newTopics.first.name}");
                           // Add only the first topic if available
                           subject.topics = newTopics.isNotEmpty
                               ? [
@@ -133,8 +137,11 @@ log(" new topic: ${newTopics.first.name}");
                         Expanded(
                           flex: 2,
                           child: DropdownButtonFormField<String>(
-                            value: subject.topics![j]
-                                ['topicName'], // Current selected topic
+                    // value: subject.topics != null ? subject.topics![j]['topicName'] : null,
+value: (controller.subjectTopicsMap[controller.selectedSubjectId.value]?.length ?? 0) > j
+    ? controller.subjectTopicsMap[controller.selectedSubjectId.value]![j].name
+    : null,
+
                             //       items:  [DropdownMenuItem(
                             //             value: 'Physics',
                             //             child: Text('Physicss'),
