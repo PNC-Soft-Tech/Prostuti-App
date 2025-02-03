@@ -49,6 +49,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       if (!controller.isQuestionOpened.value)
                         Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [

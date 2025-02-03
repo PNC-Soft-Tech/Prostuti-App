@@ -29,17 +29,17 @@ class HomeMainWidget extends GetWidget<HomeController> {
                   'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
                   style: TextStyle(fontSize: 16.sp),
                 )),
-            CustomButton.button(
-                text: "Logout",
-                onPressed: () {
-                  Utils.logoutUser();
-                }),
-            SizedBox(
-              height: 10.h,
-            ),
-            CustomButton.button(
-                text: "Dialog",
-                onPressed: () {
+            // CustomButton.button(
+            //     text: "Logout",
+            //     onPressed: () {
+            //       Utils.logoutUser();
+            //     }),
+            // SizedBox(
+            //   height: 10.h,
+            // ),
+            // CustomButton.button(
+            //     text: "Dialog",
+            //     onPressed: () {
                   // Show a success modal with two buttons
 // PostutiDialog.success(
 //   "Operation completed successfully!",
@@ -53,18 +53,18 @@ class HomeMainWidget extends GetWidget<HomeController> {
 // );
 
 // Show a warning modal with centered text and three buttons
-                  PostutiDialog.warning(
-                    "Are you sure you want to proceed?",
-                    isBottomButton: true,
-                    noOfButtons: 3,
-                    buttonLabels: ["Yes", "No", "Cancel"],
-                    buttonActions: [
-                      () => print("Yes pressed"),
-                      () => print("No pressed"),
-                      () => Get.back(),
-                    ],
-                  );
-                }),
+                //   PostutiDialog.warning(
+                //     "Are you sure you want to proceed?",
+                //     isBottomButton: true,
+                //     noOfButtons: 3,
+                //     buttonLabels: ["Yes", "No", "Cancel"],
+                //     buttonActions: [
+                //       () => print("Yes pressed"),
+                //       () => print("No pressed"),
+                //       () => Get.back(),
+                //     ],
+                //   );
+                // }),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),

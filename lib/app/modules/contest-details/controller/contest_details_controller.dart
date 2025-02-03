@@ -13,8 +13,8 @@ class ContestDetailsController extends GetxController {
   var contestDetails = Rxn<ContestDetailsResponse>();
 
   var isLoading = false.obs;
-  RxBool isContestRunning = true.obs;
-  RxBool isQuestionOpened = true.obs;
+  RxBool isContestRunning = false.obs;
+  RxBool isQuestionOpened = false.obs;
   @override
   void onInit() {
     super.onInit();
