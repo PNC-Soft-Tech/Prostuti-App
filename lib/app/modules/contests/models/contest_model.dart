@@ -13,6 +13,8 @@ class Contest {
   final int? registeredCount;
   final int totalMarks;
   final int totalTime;
+  final bool? isSubjectWise;
+  final bool? isRegistered;
   final DateTime startContest;
   final DateTime endContest;
   final List<Topic> topics;
@@ -28,6 +30,8 @@ class Contest {
     this.registeredCount,
     required this.totalMarks,
     required this.totalTime,
+     this.isSubjectWise,
+     this.isRegistered,
     required this.startContest,
     required this.endContest,
     required this.topics,
@@ -45,6 +49,8 @@ class Contest {
       registeredCount: json['registeredCount'] ?? 0,
       totalMarks: json['totalMarks'] ?? 0,
       totalTime: json['totalTime'] ?? 0,
+      isRegistered: json['isRegistered'] ?? true,
+      isSubjectWise: json['isSubjectWise'] ?? true,
       startContest: parseDate(json['startContest']),
       endContest: parseDate(json['endContest']),
       topics: (json['topics'] as List?)
