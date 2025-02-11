@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_bottom_fixed_button.dart';
@@ -49,7 +50,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       if (!controller.isQuestionOpened.value)
                         Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
@@ -74,17 +75,20 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                 SizedBox(
                                   width: 12.w,
                                 ),
-                                Text(
-                                  controller
-                                          .contestDetails.value?.contest.name ??
-                                      "বিসিএস কনটেস্ট-০১",
-                                  style: GoogleFonts.notoSansBengali(
-                                      textStyle: TextStyle(
-                                    fontSize: 20.sp,
-                                    color: AppColors.textPrimaryColor,
-                                    fontWeight: FontWeight.w600,
-                                  )),
-                                )
+                                HtmlWidget(controller
+                                        .contestDetails.value?.contest.name ??
+                                    "বিসিএস কনটেস্ট-০১")
+                                // Text(
+                                //   controller
+                                //           .contestDetails.value?.contest.name ??
+                                //       "বিসিএস কনটেস্ট-০১",
+                                //   style: GoogleFonts.notoSansBengali(
+                                //       textStyle: TextStyle(
+                                //     fontSize: 20.sp,
+                                //     color: AppColors.textPrimaryColor,
+                                //     fontWeight: FontWeight.w600,
+                                //   )),
+                                // )
                               ],
                             ),
                             SizedBox(
@@ -125,15 +129,17 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             SizedBox(
                               height: 22.h,
                             ),
-                            Text(
-                              "${controller.contestDetails.value?.contest.description}",
-                              style: GoogleFonts.notoSansBengali(
-                                  textStyle: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: AppColors.textPrimaryColor,
-                                      fontWeight: FontWeight.w400,
-                                      height: 26.h / 15.sp)),
-                            ),
+                            // Text(
+                            //   "${controller.contestDetails.value?.contest.description}",
+                            //   style: GoogleFonts.notoSansBengali(
+                            //       textStyle: TextStyle(
+                            //           fontSize: 15.sp,
+                            //           color: AppColors.textPrimaryColor,
+                            //           fontWeight: FontWeight.w400,
+                            //           height: 26.h / 15.sp)),
+                            // ),
+                            HtmlWidget(controller
+                                .contestDetails.value!.contest.description!),
                             // Text(
                             //   "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
                             //   style: GoogleFonts.notoSansBengali(
