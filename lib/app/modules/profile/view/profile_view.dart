@@ -9,6 +9,7 @@ import 'package:prostuti/app/modules/home/widgets/home_bottom_nav_more_bottom_sh
 import 'package:prostuti/app/modules/profile/widgets/profile_settings_item.dart';
 import 'package:prostuti/app/modules/profile/widgets/progress_circle.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
+import '../../../common/utils/prostuti_utils.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -90,7 +91,9 @@ class ProfileView extends GetView<ProfileController> {
               svgIcon: 'assets/profile/logout.svg',
               isNavigationable: false,
               isLogout: true,
-              onTap: () {},
+              onTap: () {
+                Utils.logoutUser();
+              },
             )
           ]))),
       bottomNavigationBar: Obx(() => CustomBottomNavBar(
