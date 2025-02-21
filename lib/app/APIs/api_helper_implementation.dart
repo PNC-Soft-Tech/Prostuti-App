@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/connect.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
@@ -35,8 +34,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       final token = await StorageHelper.getToken(); // Fetch token
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token'; // Add Bearer token
-      }
-      else{
+      } else {
         Get.toNamed(Routes.login);
       }
       log('Request: ${request.method} ${request.url}');

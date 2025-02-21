@@ -35,13 +35,14 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(
                 width: 1,
-                color:
-                    isCurrentPackage ? Color(0xFF50AFFF) : Color(0xFFD9D9D9)),
+                color: isCurrentPackage
+                    ? const Color(0xFF50AFFF)
+                    : const Color(0xFFD9D9D9)),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.2),
                 blurRadius: 4,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -70,14 +71,14 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                             textStyle: TextStyle(
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFF292D34),
+                              color: const Color(0xFF292D34),
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Checkbox(
                     value: isCurrentPackage,
                     onChanged: (value) {},
@@ -87,7 +88,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                 ],
               ),
               for (var service in services) ...[
-                buildRowItem(title: "${service}", isSelected: isCurrentPackage),
+                buildRowItem(title: service, isSelected: isCurrentPackage),
               ]
             ],
           ),
@@ -160,7 +161,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
               flex: 1,
               child: Icon(
                 Icons.check_circle_outlined,
-                color: isSelected ? AppColors.primary : Color(0xFFBDBDBD),
+                color: isSelected ? AppColors.primary : const Color(0xFFBDBDBD),
                 size: 20.w,
                 grade: 20,
               ),
@@ -175,7 +176,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
                 style: GoogleFonts.notoSansBengali(
                   textStyle: TextStyle(
                     fontSize: 14.sp,
-                    color: Color(0xFF292D34),
+                    color: const Color(0xFF292D34),
                     fontWeight: FontWeight.w500,
                   ),
                 ),

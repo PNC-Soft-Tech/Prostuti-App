@@ -30,7 +30,8 @@ class CustomExamView extends GetView<CustomExamController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (controller.customExamQuestions.value?.subjects != null) ...[
+                    if (controller.customExamQuestions.value?.subjects !=
+                        null) ...[
                       for (int i = 0;
                           i <
                               controller
@@ -39,16 +40,21 @@ class CustomExamView extends GetView<CustomExamController> {
                         buildSubjectCard(i),
                     ],
                     buildAddSubjectButton(),
-                    SizedBox(height: 80.h,)
+                    SizedBox(
+                      height: 80.h,
+                    )
                   ],
                 ),
               ),
               Positioned(
                 child: Align(
                   alignment: Alignment.bottomCenter,
-                  child: CustomButton.button(text: "Continue", onPressed: (){
-                    Get.toNamed('/custom_exam');
-                  }, mainAxisSize: MainAxisSize.max),
+                  child: CustomButton.button(
+                      text: "Continue",
+                      onPressed: () {
+                        Get.toNamed('/custom_exam');
+                      },
+                      mainAxisSize: MainAxisSize.max),
                 ),
               )
             ],
@@ -86,8 +92,8 @@ class CustomExamView extends GetView<CustomExamController> {
                       contentPadding: EdgeInsets.symmetric(
                           vertical: 12.h, horizontal: 16.w),
                       border: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(width: 0.5, color: Color(0xFF212D4066)),
+                        borderSide: const BorderSide(
+                            width: 0.5, color: Color(0xff212d4066)),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
                     ),
@@ -115,7 +121,7 @@ class CustomExamView extends GetView<CustomExamController> {
                               controller.subjectTopicsMap[selectedSubject.id] ??
                                   [];
                           controller.selectedTopics[index]?.map((t) {
-                            log(" old topics: ${t}");
+                            log(" old topics: $t");
                           });
                           log(" new topic: ${newTopics.first.name}");
                           // Add only the first topic if available
@@ -160,8 +166,8 @@ class CustomExamView extends GetView<CustomExamController> {
                             borderRadius: BorderRadius.circular(50.r),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 0.5, color: Color(0xFF212D4066)),
+                                borderSide: const BorderSide(
+                                    width: 0.5, color: Color(0xff212d4066)),
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
                             ),
@@ -246,8 +252,8 @@ class CustomExamView extends GetView<CustomExamController> {
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 12.h, horizontal: 16.w),
                               border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 0.5, color: Color(0xFF212D4066)),
+                                borderSide: const BorderSide(
+                                    width: 0.5, color: Color(0xff212d4066)),
                                 borderRadius: BorderRadius.circular(20.r),
                               ),
                             ),

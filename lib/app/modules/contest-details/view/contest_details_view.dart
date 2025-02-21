@@ -49,7 +49,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     children: [
                       if (!controller.isQuestionOpened.value)
                         Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
@@ -209,7 +209,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             ),
             Row(
               children: [
-                Icon(Icons.flag),
+                const Icon(Icons.flag),
                 SizedBox(
                   width: 5.w,
                 ),
@@ -231,7 +231,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   Flexible(
                       flex: 1,
                       child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50.r),
                           border: Border.all(color: Colors.black, width: 1),
@@ -255,7 +255,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   SizedBox(
                     width: 12.w,
                   ),
-                  Flexible(flex: 9, child: Text("${option.title}")),
+                  Flexible(flex: 9, child: Text(option.title)),
                 ],
               ),
               SizedBox(

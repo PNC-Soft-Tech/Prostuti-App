@@ -19,7 +19,7 @@ class PackageDetailsView extends GetView<PackageDetailsController> {
         body: SingleChildScrollView(
           child: Container(
             color: Colors.white,
-            child: Column(
+            child: const Column(
               children: [
                 PackageCardWidget(
                     isCurrentPackage: true,

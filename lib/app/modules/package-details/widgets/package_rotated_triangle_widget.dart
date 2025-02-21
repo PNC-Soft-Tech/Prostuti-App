@@ -5,7 +5,8 @@ class RotatedTriangle extends StatelessWidget {
   final double rotationAngle; // Rotation in radians
   final Color color;
 
-  RotatedTriangle({
+  const RotatedTriangle({
+    super.key,
     required this.size,
     required this.rotationAngle,
     required this.color,
@@ -45,4 +46,3 @@ class TrianglePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

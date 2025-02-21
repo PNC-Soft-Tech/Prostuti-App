@@ -51,13 +51,13 @@ class HistoryView extends GetWidget<HistoryController> {
           SizedBox(height: 5.h),
           Column(
             children: [
-              ContestCard(),
+              const ContestCard(),
               SizedBox(height: 15.w),
-              ContestCard(),
+              const ContestCard(),
               SizedBox(height: 15.w),
-              ContestCard(),
+              const ContestCard(),
               SizedBox(height: 15.w),
-              ContestCard(),
+              const ContestCard(),
               SizedBox(height: 15.w),
             ],
           )
@@ -230,7 +230,7 @@ class ContestCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // Time Section
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
