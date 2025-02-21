@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
@@ -164,10 +165,11 @@ Widget contestDetailsWidget(RankingInfo? rankingData) => Container(
                 SizedBox(
                   width: 9.w,
                 ),
-                Text(rankingData?.contestTitle ?? '',
-                    style: GoogleFonts.notoSansBengali(
-                        textStyle: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)))
+                 HtmlWidget(rankingData?.contestTitle ?? '')
+                // Text(rankingData?.contestTitle ?? '',
+                //     style: GoogleFonts.notoSansBengali(
+                //         textStyle: const TextStyle(
+                //             fontSize: 16, fontWeight: FontWeight.w600)))
               ],
             ),
             Padding(

@@ -3,6 +3,8 @@ import 'option_model.dart';
 class Question {
   final String id;
   final String title;
+  final double marks;
+  final bool? isGrid;
   final List<Option> options;
   final String? explanation;
   final String? subCategory;
@@ -11,6 +13,8 @@ class Question {
   Question({
     required this.id,
     required this.title,
+    this.isGrid = true,
+    this.marks = 1,
     required this.options,
     this.explanation,
     this.subCategory,
@@ -21,9 +25,10 @@ class Question {
     return Question(
       id: json['_id'] ?? '',
       title: json['title'] ?? '',
+      marks: json['marks'] ?? 1,
+      isGrid: json['isGrid'] ?? true,
       options: (json['options'] as List?)
-              ?.map((option) =>
-                  Option.fromJson(option as Map<String, dynamic>))
+              ?.map((option) => Option.fromJson(option as Map<String, dynamic>))
               .toList() ??
           [],
       explanation: json['explanation'],
