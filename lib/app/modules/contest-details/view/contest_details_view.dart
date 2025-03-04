@@ -44,6 +44,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               return const Center(child: CircularProgressIndicator());
             } else {
               return Container(
+                color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
                 child: SingleChildScrollView(
                   child: Column(
