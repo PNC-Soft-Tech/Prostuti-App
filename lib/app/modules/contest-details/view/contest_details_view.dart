@@ -39,6 +39,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       body: Stack(
         children: [
           Obx(() {
+             final questions = controller.contestDetails.value?.contest?.questions ?? [];
             if (controller.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             } else {
@@ -139,7 +140,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             //           height: 26.h / 15.sp)),
                             // ),
                             HtmlWidget(controller
-                                .contestDetails.value!.contest.description!),
+                                .contestDetails.value?.contest.description??''),
                             // Text(
                             //   "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
                             //   style: GoogleFonts.notoSansBengali(
@@ -155,17 +156,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             buildDetailsWidget(),
                           ],
                         ),
+                       
+
                       if (controller.isQuestionOpened.value)
-                        for (int i = 0;
-                            i <
-                                controller.contestDetails.value!.contest
-                                    .questions.length;
-                            i++) ...[
-                          buildQuestionWidget(
-                              question: controller
-                                  .contestDetails.value!.contest.questions[i],
-                              index: i)
-                        ],
+                      for (int i = 0; i < questions.length; i++) ...[
+  buildQuestionWidget(
+    question: questions[i],
+    index: i,
+  ),
+],
                       SizedBox(
                         height: 80.h,
                       ),
@@ -435,7 +434,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               "${controller.contestDetails.value?.contest.registeredCount} জন"),
                       buildRightColumnRow(
                           value: Utils.formatDateToBangla(controller
-                              .contestDetails.value!.contest.endContest)),
+                              .contestDetails.value?.contest?.endContest?? DateTime.now())),
                     ],
                   ),
                 )
