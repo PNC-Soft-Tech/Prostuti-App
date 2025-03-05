@@ -204,13 +204,24 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
 
   Widget buildQuestionWidget(
           {required Question question, required int index}) =>
-      IntrinsicHeight(
-        child: Row(
+    IntrinsicHeight(
+    child:Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,  // Ensures both sides match height
+
           children: [
-             Container(width:2 , color: controller.isMarkedQuestion(question.id)
-                                    ? Color(0xFFFF8143)
-                                    : Colors.black,),
-                                    SizedBox(width: 5.w,),
+            Visibility(
+              visible: controller.isMarkedQuestion(question.id),
+              child: Container(
+                width: 4.w,
+                height: double.infinity,
+                color: controller.isMarkedQuestion(question.id)
+                    ? Color(0xFFFF8143)
+                    : Colors.black,
+              ),
+            ),
+            SizedBox(
+              width: 20.w,
+            ),
             Container(
               child: Expanded(
                 child: Column(
@@ -230,9 +241,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     ),
                     Row(
                       children: [
-                         Icon(Icons.flag, color: controller.isMarkedQuestion(question.id)
-                                          ? Color(0xFFFF8143)
-                                          : Colors.black),
+                        Icon(Icons.flag,
+                            color: controller.isMarkedQuestion(question.id)
+                                ? Color(0xFFFF8143)
+                                : Colors.black),
                         SizedBox(
                           width: 5.w,
                         ),
@@ -245,7 +257,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   textStyle: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.w400,
-                                      color: controller.isMarkedQuestion(question.id)
+                                      color: controller
+                                              .isMarkedQuestion(question.id)
                                           ? Color(0xFFFF8143)
                                           : Colors.black))),
                         ),
@@ -257,7 +270,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     SizedBox(
                       height: 15.h,
                     ),
-                          
+        
                     question.isGrid == true
                         ? _buildGridOptions(question)
                         : _buildListOptions(question),
@@ -266,7 +279,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               ),
             ),
           ],
-        ),
+        )
       );
 
   Widget _buildGridOptions(Question question) {
