@@ -14,6 +14,7 @@ class ContestDetailsController extends GetxController {
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
 
   var isLoading = false.obs;
+final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
   RxBool isContestRunning = true.obs;
   RxBool isQuestionOpened = true.obs;
   @override
@@ -71,6 +72,34 @@ List<Map<String, dynamic>> prepareSubmissionPayload(String contestId) {
       "selectedAnswer": entry.value,
     };
   }).toList();
+}
+ Future<bool> submitAnswer(String questionId, String contestId, String selectedAnswer) async {
+  // 2️⃣ Set loading for this specific question
+  questionLoadingStatus[questionId] = true;
+
+  final result = await _apiHelper.submitContestAnswer(
+    questionId: questionId,
+    contestId: contestId,
+    selectedAnswer: selectedAnswer,
+  );
+
+  // 2️⃣ Set loading for this specific question
+  questionLoadingStatus[questionId] = false;
+
+  bool isSuccess = false;  // Add this flag
+
+  result.fold(
+    (error) {
+      Get.snackbar('Error', 'Something went wrong' ?? 'Something went wrong');
+      isSuccess = false;  // Set flag in case of error
+    },
+    (response) {
+      Get.snackbar('Success', 'Answer submitted successfully' ?? 'Answer submitted successfully');
+      isSuccess = true;  // Set flag if success
+    },
+  );
+
+  return isSuccess;  // Finally return the result
 }
 
 }
