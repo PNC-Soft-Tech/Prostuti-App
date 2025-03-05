@@ -465,4 +465,34 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+
+  @override
+Future<Either<CustomError, Response>> submitContest(String contestId) async {
+  try {
+    final token = await StorageHelper.getToken();
+
+    if (token == null) {
+      return Left(CustomError(401, message: 'Unauthorized: No token found'));
+    }
+
+    final headers = {
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await post('contests/submit-contest/$contestId', {}, headers: headers);
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      return Right(response);
+    } else {
+      return Left(CustomError(
+        response.statusCode ?? 500,
+        message: response.body['message'] ?? 'Failed to submit contest',
+      ));
+    }
+  } catch (e) {
+    log('Error submitting contest: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
+  }
+}
+
 }

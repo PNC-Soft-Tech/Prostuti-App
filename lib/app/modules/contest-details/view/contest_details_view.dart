@@ -250,7 +250,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            controller.markQuestion(question.id);
+                            controller.markUnmarkQuestion(question.id);
                           },
                           child: Text('Mark this Question',
                               style: GoogleFonts.inter(

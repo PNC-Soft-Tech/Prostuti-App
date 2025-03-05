@@ -45,4 +45,5 @@ abstract class ApiHelper {
     required String contestId,
     required String selectedAnswer,
   });
+  Future<Either<CustomError, Response>> submitContest(String contestId);
 }

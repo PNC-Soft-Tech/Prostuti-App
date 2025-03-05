@@ -13,6 +13,7 @@ class ContestDetailsController extends GetxController {
   var contestDetails = Rxn<ContestDetailsResponse>();
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
   final markedQuestions = <String>[].obs;
+ final isSubmittingContest = false.obs; // This will track loading state for submitContest
 
   var isLoading = false.obs;
 final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
@@ -52,6 +53,15 @@ final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
 
   void markQuestion(String questionId){
     markedQuestions.add(questionId);
+  }
+  void markUnmarkQuestion(String questionId){
+    if(isMarkedQuestion(questionId)){
+      markedQuestions.remove(questionId);
+    }
+    else{
+ markedQuestions.add(questionId);
+    }
+   
   }
   void unMarkQuestion(String questionId){
     markedQuestions.remove(questionId);
