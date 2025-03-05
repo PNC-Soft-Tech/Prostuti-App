@@ -5,6 +5,7 @@ class Question {
   final String title;
   final dynamic marks;
   final bool? isGrid;
+  final bool? isFlagged;
   final List<Option> options;
   final String? explanation;
   final String? subCategory;
@@ -14,6 +15,7 @@ class Question {
     required this.id,
     required this.title,
     this.isGrid = true,
+    this.isFlagged = false,
     this.marks = 1,
     required this.options,
     this.explanation,
@@ -27,6 +29,7 @@ class Question {
       title: json['title'] ?? '',
       marks: json['marks'] ?? 1,
       isGrid: json['isGrid'] ?? true,
+      isFlagged: json['isFlagged'] ?? false,
       options: (json['options'] as List?)
               ?.map((option) => Option.fromJson(option as Map<String, dynamic>))
               .toList() ??

@@ -11,6 +11,7 @@ class ContestDetailsController extends GetxController {
   var contests = <Contest>[].obs;
   var contest = Rxn<Contest>();
   var contestDetails = Rxn<ContestDetailsResponse>();
+  final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
 
   var isLoading = false.obs;
   RxBool isContestRunning = true.obs;
@@ -39,7 +40,13 @@ class ContestDetailsController extends GetxController {
       },
     );
   }
+  void selectOption(String questionId, String selectedOptionOrder) {
+    selectedAnswers[questionId] = selectedOptionOrder;  // ✅ Track selection per question
+  }
 
+  bool isOptionSelected(String questionId, String optionOrder) {
+    return selectedAnswers[questionId] == optionOrder;
+  }
   // Future<void> fetchContests() async {
   //   isLoading(true);
   //   final result = await _apiHelper.fetchAllContests();
@@ -54,4 +61,16 @@ class ContestDetailsController extends GetxController {
   //   );
   //   isLoading(false);
   // }
+
+
+List<Map<String, dynamic>> prepareSubmissionPayload(String contestId) {
+  return selectedAnswers.entries.map((entry) {
+    return {
+      "question": entry.key,
+      "contest": contestId,
+      "selectedAnswer": entry.value,
+    };
+  }).toList();
+}
+
 }

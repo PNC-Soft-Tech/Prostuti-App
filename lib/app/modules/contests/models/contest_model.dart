@@ -10,7 +10,7 @@ class Contest {
   final String? description;
   final String? stringTopics;
   final String? imageUrl;
-  final dynamic? registeredCount;
+  final dynamic registeredCount;
   final dynamic totalMarks;
   final dynamic totalTime;
   final bool? isSubjectWise;

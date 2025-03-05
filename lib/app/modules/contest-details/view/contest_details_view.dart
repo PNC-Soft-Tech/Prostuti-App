@@ -269,7 +269,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             question.isGrid == true
                 ? _buildGridOptions(question)
                 : _buildListOptions(question),
-            
+
             // for (Option option in question.options) ...[
             //   Column(
             //     children: [
@@ -318,75 +318,100 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
         return SizedBox(
           width: (MediaQuery.of(Get.context!).size.width - 48.w) /
               2, // 2 items per row
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.r),
-                  border: Border.all(color: Colors.black, width: 1),
-                  color: Colors.transparent,
-                ),
-                child: Container(
-                  height: 20,
-                  width: 20,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50.r),
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(child: Text(option.title)),
-                    SizedBox(
-                height: 16.h,
-              )
-            ],
-          ),
-        );
-      }).toList(),
-    );
-  }
+          child: GestureDetector(
+            onTap: () {
+              controller.selectOption(question.id, option.order);
 
-Widget _buildListOptions(Question question) {
-  if (question.options.isEmpty) {
-    return const Text("No options");
-  }
-
-  return Column(
-    children: [
-      for (int i = 0; i < question.options.length; i++) ...[
-        Row(
-          children: [
-            Flexible(
-                flex: 1,
-                child: Container(
+              debugPrint(" Selecetd optioon: ${controller.isOptionSelected(question.id, option.order)}");
+              debugPrint(" Selecetd optioon order: ${option.order}");
+            },
+            child: Row(
+              children: [
+                Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50.r),
                     border: Border.all(color: Colors.black, width: 1),
                     color: Colors.transparent,
                   ),
-                  child: Container(
-                    height: 20,
-                    width: 20,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50.r),
-                      color: AppColors.primary,
-                    ),
-                  ),
-                )),
-            SizedBox(width: 12.w),
-            Flexible(flex: 9, child: Text(question.options[i].title)),
-          ],
-        ),
-        if (i < question.options.length - 1) // Add SizedBox after each row except the last
-          SizedBox(height: 16.h),
-      ],
-    ],
-  );
-}
+                  child: controller.isOptionSelected(question.id, option.order)
+                      ? Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50.r),
+                            color: AppColors.primary,
+                          ),
+                        )
+                      : Container(
+                          height: 20,
+                          width: 20,
+                        ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(child: Text(option.title)),
+                SizedBox(
+                  height: 16.h,
+                )
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
 
+  Widget _buildListOptions(Question question) {
+    if (question.options.isEmpty) {
+      return const Text("No options");
+    }
+
+    return Column(
+      children: [
+        for (int i = 0; i < question.options.length; i++) ...[
+          GestureDetector(
+            onTap: () {
+              controller.selectOption(question.id, question.options[i].order);
+            },
+            child: Row(
+              children: [
+                Flexible(
+                    flex: 1,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.r),
+                        border: Border.all(color: Colors.black, width: 1),
+                        color: Colors.transparent,
+                      ),
+                      child: controller.isOptionSelected(
+                              question.id, question.options[i].order)
+                          ? Container(
+                              height: 20,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50.r),
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : Container(
+                              height: 20,
+                              width: 20,
+                            ),
+                    )),
+                SizedBox(width: 12.w),
+                Flexible(flex: 9, child: Text(question.options[i].title)),
+              ],
+            ),
+          ),
+          if (i <
+              question.options.length -
+                  1) // Add SizedBox after each row except the last
+            SizedBox(height: 16.h),
+        ],
+      ],
+    );
+  }
 
   Widget _alreadyRunning() => Row(
         children: [
