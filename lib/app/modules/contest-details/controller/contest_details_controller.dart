@@ -123,4 +123,22 @@ List<Map<String, dynamic>> prepareSubmissionPayload(String contestId) {
   return isSuccess;  // Finally return the result
 }
 
+  Future<void> submitContest(String contestId) async {
+    isSubmittingContest(true);
+
+    final result = await _apiHelper.submitContest(contestId);
+
+    isSubmittingContest(false);
+
+    result.fold(
+      (error) {
+        Get.snackbar('Error', error.message ?? 'Failed to submit contest');
+      },
+      (response) {
+        Get.snackbar('Success', response.body['message'] ?? 'Contest submitted successfully');
+        // Optionally: Do further actions like navigating back, refreshing data, etc.
+      },
+    );
+  }
+
 }
