@@ -12,6 +12,7 @@ class ContestDetailsController extends GetxController {
   var contest = Rxn<Contest>();
   var contestDetails = Rxn<ContestDetailsResponse>();
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
+  final markedQuestions = <String>[].obs;
 
   var isLoading = false.obs;
 final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
@@ -47,6 +48,16 @@ final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
 
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;
+  }
+
+  void markQuestion(String questionId){
+    markedQuestions.add(questionId);
+  }
+  void unMarkQuestion(String questionId){
+    markedQuestions.remove(questionId);
+  }
+  bool isMarkedQuestion(String questionId){
+    return markedQuestions.contains(questionId);
   }
   // Future<void> fetchContests() async {
   //   isLoading(true);

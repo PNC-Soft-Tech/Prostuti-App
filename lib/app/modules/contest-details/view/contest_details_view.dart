@@ -204,47 +204,67 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
 
   Widget buildQuestionWidget(
           {required Question question, required int index}) =>
-      Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      IntrinsicHeight(
+        child: Row(
           children: [
-            // Text(
-            //   "${index + 1}) ${question.title}",
-            //   style: GoogleFonts.notoSansBengali(
-            //       textStyle:
-            //           TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
-            // ),
-             HtmlWidget(
-              "${index + 1}) ${question.title.replaceAll('<p>', '')}",
-            
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Row(
-              children: [
-                const Icon(Icons.flag),
-                SizedBox(
-                  width: 5.w,
+             Container(width:2 , color: controller.isMarkedQuestion(question.id)
+                                    ? Color(0xFFFF8143)
+                                    : Colors.black,),
+                                    SizedBox(width: 5.w,),
+            Container(
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Text(
+                    //   "${index + 1}) ${question.title}",
+                    //   style: GoogleFonts.notoSansBengali(
+                    //       textStyle:
+                    //           TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    // ),
+                    HtmlWidget(
+                      "${index + 1}) ${question.title.replaceAll('<p>', '')}",
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Row(
+                      children: [
+                         Icon(Icons.flag, color: controller.isMarkedQuestion(question.id)
+                                          ? Color(0xFFFF8143)
+                                          : Colors.black),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            controller.markQuestion(question.id);
+                          },
+                          child: Text('Mark this Question',
+                              style: GoogleFonts.inter(
+                                  textStyle: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: controller.isMarkedQuestion(question.id)
+                                          ? Color(0xFFFF8143)
+                                          : Colors.black))),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                          
+                    question.isGrid == true
+                        ? _buildGridOptions(question)
+                        : _buildListOptions(question),
+                  ],
                 ),
-                Text('Mark this Question',
-                    style: GoogleFonts.inter(
-                        textStyle: TextStyle(
-                            fontSize: 15.sp, fontWeight: FontWeight.w400))),
-                SizedBox(
-                  height: 10.h,
-                ),
-              ],
+              ),
             ),
-            SizedBox(
-              height: 15.h,
-            ),
-    
-            question.isGrid == true
-                ? _buildGridOptions(question)
-                : _buildListOptions(question),
-
-         
           ],
         ),
       );
@@ -375,7 +395,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   ),
                           )),
                       SizedBox(width: 12.w),
-                      Flexible(flex: 9, child: HtmlWidget(question.options[i].title)),
+                      Flexible(
+                          flex: 9,
+                          child: HtmlWidget(question.options[i].title)),
                     ],
                   ),
                 ),
