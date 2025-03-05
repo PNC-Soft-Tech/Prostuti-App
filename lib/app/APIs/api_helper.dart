@@ -39,4 +39,10 @@ abstract class ApiHelper {
 
   Future<Either<CustomError, ContestData>> getLeaderboardRanks(
       String contestId);
+
+  Future<Either<CustomError, Response>> submitContestAnswer({
+    required String questionId,
+    required String contestId,
+    required String selectedAnswer,
+  });
 }
