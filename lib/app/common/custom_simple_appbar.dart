@@ -19,6 +19,8 @@ class CustomSimpleAppBar {
   }) {
     return AppBar(
         // leadingWidth: leadingWidth ?? 180,
+        foregroundColor: Colors.white,
+        
         title: Text(title,
             style: GoogleFonts.inter(
               textStyle: TextStyle(

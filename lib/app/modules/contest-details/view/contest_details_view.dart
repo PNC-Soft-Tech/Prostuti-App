@@ -39,7 +39,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       body: Stack(
         children: [
           Obx(() {
-             final questions = controller.contestDetails.value?.contest?.questions ?? [];
+            final questions =
+                controller.contestDetails.value?.contest?.questions ?? [];
             if (controller.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             } else {
@@ -140,8 +141,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             //           fontWeight: FontWeight.w400,
                             //           height: 26.h / 15.sp)),
                             // ),
-                            HtmlWidget(controller
-                                .contestDetails.value?.contest.description??''),
+                            HtmlWidget(controller.contestDetails.value?.contest
+                                    .description ??
+                                ''),
                             // Text(
                             //   "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
                             //   style: GoogleFonts.notoSansBengali(
@@ -157,15 +159,16 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             buildDetailsWidget(),
                           ],
                         ),
-                       
-
                       if (controller.isQuestionOpened.value)
-                      for (int i = 0; i < questions.length; i++) ...[
-  buildQuestionWidget(
-    question: questions[i],
-    index: i,
-  ),
-],
+                        for (int i = 0; i < questions.length; i++) ...[
+                          buildQuestionWidget(
+                            question: questions[i],
+                            index: i,
+                          ),
+                          SizedBox(
+                            height: 16.h,
+                          )
+                        ],
                       SizedBox(
                         height: 80.h,
                       ),
@@ -208,7 +211,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               "${index + 1}) ${question.title}",
               style: GoogleFonts.notoSansBengali(
                   textStyle:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w400)),
+                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
             ),
             SizedBox(
               height: 10.h,
@@ -231,46 +234,160 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             SizedBox(
               height: 15.h,
             ),
-            for (Option option in question.options) ...[
-              Row(
-                children: [
-                  Flexible(
-                      flex: 1,
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50.r),
-                          border: Border.all(color: Colors.black, width: 1),
-                          color: Colors.transparent,
-                        ),
-                        child: Container(
-                          height: 20,
-                          width: 20,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50.r),
-                            // border: Border.all(color: Colors.black, width: 1),
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      )
-                      // child: CircleAvatar(
-                      //   backgroundColor: Colors.grey,
-                      //   radius: 10.r,
-                      // ),
-                      ),
-                  SizedBox(
-                    width: 12.w,
-                  ),
-                  Flexible(flex: 9, child: Text(option.title)),
-                ],
-              ),
-              SizedBox(
-                height: 16.h,
-              )
-            ]
+            // for (Option option in question.options) ...[
+            //   Row(
+            //     children: [
+            //       Flexible(
+            //           flex: 1,
+            //           child: Container(
+            //             padding: const EdgeInsets.all(5),
+            //             decoration: BoxDecoration(
+            //               borderRadius: BorderRadius.circular(50.r),
+            //               border: Border.all(color: Colors.black, width: 1),
+            //               color: Colors.transparent,
+            //             ),
+            //             child: Container(
+            //               height: 20,
+            //               width: 20,
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(50.r),
+            //                 // border: Border.all(color: Colors.black, width: 1),
+            //                 color: AppColors.primary,
+            //               ),
+            //             ),
+            //           )),
+            //       SizedBox(
+            //         width: 12.w,
+            //       ),
+            //       Flexible(flex: 9, child: Text(option.title))
+            //     ],
+            //   ),
+            //   SizedBox(
+            //     height: 16.h,
+            //   )
+            // ],
+            question.isGrid == true
+                ? _buildGridOptions(question)
+                : _buildListOptions(question),
+            
+            // for (Option option in question.options) ...[
+            //   Column(
+            //     children: [
+            //       Flexible(
+            //           flex: 1,
+            //           child: Container(
+            //             padding: const EdgeInsets.all(5),
+            //             decoration: BoxDecoration(
+            //               borderRadius: BorderRadius.circular(50.r),
+            //               border: Border.all(color: Colors.black, width: 1),
+            //               color: Colors.transparent,
+            //             ),
+            //             child: Container(
+            //               height: 20,
+            //               width: 20,
+            //               decoration: BoxDecoration(
+            //                 borderRadius: BorderRadius.circular(50.r),
+            //                 // border: Border.all(color: Colors.black, width: 1),
+            //                 color: AppColors.primary,
+            //               ),
+            //             ),
+            //           )),
+            //       SizedBox(
+            //         width: 12.w,
+            //       ),
+            //       Flexible(flex: 9, child: Text(option.title))
+            //     ],
+            //   ),
+            //   SizedBox(
+            //     height: 16.h,
+            //   )
+            // ]
           ],
         ),
       );
+
+  Widget _buildGridOptions(Question question) {
+    if (question.options.isEmpty) {
+      return const Text("No options");
+    }
+
+    return Wrap(
+      spacing: 12.w, // Horizontal space between items
+      runSpacing: 16.h, // Vertical space between rows
+      children: question.options.map((option) {
+        return SizedBox(
+          width: (MediaQuery.of(Get.context!).size.width - 48.w) /
+              2, // 2 items per row
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.r),
+                  border: Border.all(color: Colors.black, width: 1),
+                  color: Colors.transparent,
+                ),
+                child: Container(
+                  height: 20,
+                  width: 20,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.r),
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Expanded(child: Text(option.title)),
+                    SizedBox(
+                height: 16.h,
+              )
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+Widget _buildListOptions(Question question) {
+  if (question.options.isEmpty) {
+    return const Text("No options");
+  }
+
+  return Column(
+    children: [
+      for (int i = 0; i < question.options.length; i++) ...[
+        Row(
+          children: [
+            Flexible(
+                flex: 1,
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.r),
+                    border: Border.all(color: Colors.black, width: 1),
+                    color: Colors.transparent,
+                  ),
+                  child: Container(
+                    height: 20,
+                    width: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50.r),
+                      color: AppColors.primary,
+                    ),
+                  ),
+                )),
+            SizedBox(width: 12.w),
+            Flexible(flex: 9, child: Text(question.options[i].title)),
+          ],
+        ),
+        if (i < question.options.length - 1) // Add SizedBox after each row except the last
+          SizedBox(height: 16.h),
+      ],
+    ],
+  );
+}
+
+
   Widget _alreadyRunning() => Row(
         children: [
           Text(
@@ -435,7 +552,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               "${controller.contestDetails.value?.contest.registeredCount} জন"),
                       buildRightColumnRow(
                           value: Utils.formatDateToBangla(controller
-                              .contestDetails.value?.contest?.endContest?? DateTime.now())),
+                                  .contestDetails.value?.contest?.endContest ??
+                              DateTime.now())),
                     ],
                   ),
                 )

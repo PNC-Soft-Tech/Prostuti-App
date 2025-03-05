@@ -3,7 +3,7 @@ import 'option_model.dart';
 class Question {
   final String id;
   final String title;
-  final double marks;
+  final dynamic marks;
   final bool? isGrid;
   final List<Option> options;
   final String? explanation;

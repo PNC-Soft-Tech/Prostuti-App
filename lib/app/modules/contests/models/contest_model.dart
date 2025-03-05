@@ -10,9 +10,9 @@ class Contest {
   final String? description;
   final String? stringTopics;
   final String? imageUrl;
-  final int? registeredCount;
-  final int totalMarks;
-  final int totalTime;
+  final dynamic? registeredCount;
+  final dynamic totalMarks;
+  final dynamic totalTime;
   final bool? isSubjectWise;
   final bool? isRegistered;
   final DateTime startContest;
@@ -47,7 +47,8 @@ class Contest {
       stringTopics: json['stringTopics'],
       imageUrl: json['imageUrl'],
       registeredCount: json['registeredCount'] ?? 0,
-      totalMarks: json['totalMarks'] ?? 0,
+totalMarks: (json['totalMarks'] ?? 0).toDouble(),
+
       totalTime: json['totalTime'] ?? 0,
       isRegistered: json['isRegistered'] ?? true,
       isSubjectWise: json['isSubjectWise'] ?? true,
