@@ -14,6 +14,7 @@ import '../../../common/widgets/countdown_timer.dart';
 import '../../contests/controller/contest_controller.dart';
 import '../../questions/models/option_model.dart';
 import '../controller/contest_details_controller.dart';
+import '../widgets/bottom_fixed_submit_contest_widget.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
   const ContestDetailsView({super.key});
@@ -187,15 +188,42 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               controller.contestDetails.value?.contest.endContest ??
                   DateTime.now(),
             );
-            return CustomBottomFixedButton(
-                buttonText: status.isRunning
-                    ? "Enter Now"
-                    : status.isScheduled
-                        ? "Register Now"
-                        : "Completed",
-                onPressed: () => Get.find<ContestController>()
-                    .registerForContest(
-                        controller.contestDetails.value!.contest.id));
+            // if(status.isRunning)
+
+            return controller.isQuestionOpened.value
+                ? Align(
+                    alignment: Alignment.bottomCenter,
+                    child: BottomFixedSubmitContestWidget(
+                      timeLeft: '29:55',
+                      currentQuestionIndex: 2,
+                      totalQuestions: 7,
+                      onCompletePressed: () {
+                        // Call your controller.submitContest() or relevant method
+                      },
+                    ),
+                  )
+                : CustomBottomFixedButton(
+                    buttonText: status.isRunning
+                        ? "Enter Now"
+                        : ((status.isScheduled &&
+                                    controller.contestDetails.value?.contest
+                                            .isRegistered ==
+                                        false) ||
+                                (status.isRunning == true &&
+                                    controller.contestDetails.value?.contest
+                                            .isRegistered ==
+                                        false))
+                            ? "Register Now"
+                            : "Completed",
+                    onPressed: () {
+                      status.isRunning || status.isScheduled
+                          ? (Get.find<ContestController>().registerForContest(
+                              controller.contestDetails.value!.contest.id),
+                              controller.isQuestionOpened.value = true)
+                          : (!status.isDone || !status.isScheduled)
+                              ? controller.isQuestionOpened.value = true
+                              : null;
+                    });
           }),
         ],
       ),
@@ -204,83 +232,83 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
 
   Widget buildQuestionWidget(
           {required Question question, required int index}) =>
-    IntrinsicHeight(
-    child:Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,  // Ensures both sides match height
+      IntrinsicHeight(
+          child: Row(
+        crossAxisAlignment:
+            CrossAxisAlignment.stretch, // Ensures both sides match height
 
-          children: [
-            Visibility(
-              visible: controller.isMarkedQuestion(question.id),
-              child: Container(
-                width: 4.w,
-                height: double.infinity,
-                color: controller.isMarkedQuestion(question.id)
-                    ? Color(0xFFFF8143)
-                    : Colors.black,
+        children: [
+          Visibility(
+            visible: controller.isMarkedQuestion(question.id),
+            child: Container(
+              width: 4.w,
+              height: double.infinity,
+              color: controller.isMarkedQuestion(question.id)
+                  ? Color(0xFFFF8143)
+                  : Colors.black,
+            ),
+          ),
+          SizedBox(
+            width: 20.w,
+          ),
+          Container(
+            child: Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   "${index + 1}) ${question.title}",
+                  //   style: GoogleFonts.notoSansBengali(
+                  //       textStyle:
+                  //           TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                  // ),
+                  HtmlWidget(
+                    "${index + 1}) ${question.title.replaceAll('<p>', '')}",
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.flag,
+                          color: controller.isMarkedQuestion(question.id)
+                              ? Color(0xFFFF8143)
+                              : Colors.black),
+                      SizedBox(
+                        width: 5.w,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          controller.markUnmarkQuestion(question.id);
+                        },
+                        child: Text('Mark this Question',
+                            style: GoogleFonts.inter(
+                                textStyle: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w400,
+                                    color:
+                                        controller.isMarkedQuestion(question.id)
+                                            ? Color(0xFFFF8143)
+                                            : Colors.black))),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+
+                  question.isGrid == true
+                      ? _buildGridOptions(question)
+                      : _buildListOptions(question),
+                ],
               ),
             ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Container(
-              child: Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Text(
-                    //   "${index + 1}) ${question.title}",
-                    //   style: GoogleFonts.notoSansBengali(
-                    //       textStyle:
-                    //           TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
-                    // ),
-                    HtmlWidget(
-                      "${index + 1}) ${question.title.replaceAll('<p>', '')}",
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.flag,
-                            color: controller.isMarkedQuestion(question.id)
-                                ? Color(0xFFFF8143)
-                                : Colors.black),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            controller.markUnmarkQuestion(question.id);
-                          },
-                          child: Text('Mark this Question',
-                              style: GoogleFonts.inter(
-                                  textStyle: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: controller
-                                              .isMarkedQuestion(question.id)
-                                          ? Color(0xFFFF8143)
-                                          : Colors.black))),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
-        
-                    question.isGrid == true
-                        ? _buildGridOptions(question)
-                        : _buildListOptions(question),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )
-      );
+          ),
+        ],
+      ));
 
   Widget _buildGridOptions(Question question) {
     if (question.options.isEmpty) {

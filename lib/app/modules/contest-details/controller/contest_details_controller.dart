@@ -18,7 +18,7 @@ class ContestDetailsController extends GetxController {
   var isLoading = false.obs;
 final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
   RxBool isContestRunning = true.obs;
-  RxBool isQuestionOpened = true.obs;
+  RxBool isQuestionOpened = false.obs;
   @override
   void onInit() {
     super.onInit();
