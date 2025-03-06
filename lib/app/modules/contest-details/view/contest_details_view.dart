@@ -17,6 +17,7 @@ import '../controller/contest_details_controller.dart';
 import '../widgets/bottom_fixed_submit_contest_widget.dart';
 import '../widgets/exam_completed_dialog.dart';
 import '../widgets/question_navigator_widget.dart';
+import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
   const ContestDetailsView({super.key});
@@ -53,6 +54,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                 color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
                 child: SingleChildScrollView(
+                  controller: controller.scrollController,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -183,128 +185,82 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               );
             }
           }),
-          // Obx(() {
-          //   // controller.isContestRunning.value
-          //   final status = Utils.getContestStatus(
-          //     controller.contestDetails.value?.contest.startContest ??
-          //         DateTime.now(),
-          //     controller.contestDetails.value?.contest.endContest ??
-          //         DateTime.now(),
-          //   );
-          //   // if(status.isRunning)
+          Obx(() {
+            final status = controller.contestStatus.value;
+            final isQuestionOpened = controller.isQuestionOpened.value;
 
-          //   return controller.isQuestionOpened.value
-          //       ? Align(
-          //           alignment: Alignment.bottomCenter,
-          //           child: BottomFixedSubmitContestWidget(
-          //             timeLeft: '29:55',
-          //             currentQuestionIndex: 2,
-          //             totalQuestions: 7,
-          //             onCompletePressed: () {
-          //               showDialog(
-          //                 context: context,
-          //                 builder: (context) => ExamCompletedDialog(
-          //                   onSubmit: () {
-          //                     Navigator.of(context).pop(); // Close dialog
-          //                     controller.submitContest(
-          //                         controller.contestDetails.value?.contest.id ??
-          //                             ''); // Call your submit API
-          //                   },
-          //                 ),
-          //               );
-          //             },
-          //           ),
-          //         )
-          //       : Align(
-          //           alignment: Alignment.bottomCenter,
-          //           child: CustomBottomFixedButton(
-          //               buttonText: status.isRunning
-          //                   ? "Enter Now"
-          //                   : ((status.isScheduled &&
-          //                               controller.contestDetails.value?.contest
-          //                                       .isRegistered ==
-          //                                   false) ||
-          //                           (status.isRunning == true &&
-          //                               controller.contestDetails.value?.contest
-          //                                       .isRegistered ==
-          //                                   false))
-          //                       ? "Register Now"
-          //                       : "Completed",
-          //               onPressed: () {
-          //                 status.isRunning || status.isScheduled
-          //                     ? (
-          //                         Get.find<ContestController>()
-          //                             .registerForContest(controller
-          //                                 .contestDetails.value!.contest.id),
-          //                         controller.isQuestionOpened.value = true
-          //                       )
-          //                     : (!status.isDone || status.isRunning)
-          //                         ? controller.isQuestionOpened.value = true
-          //                         : null;
-          //               }),
-          //         );
-          // }),
-        
-        Obx(() {
-  final status = controller.contestStatus.value;
-  final isQuestionOpened = controller.isQuestionOpened.value;
-
-  if (isQuestionOpened) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: BottomFixedSubmitContestWidget(
-        timeLeft: controller.formattedCountdownTime,
-        currentQuestionIndex: 2, // you can make this dynamic if needed
-        totalQuestions: controller.contestDetails.value?.contest?.questions.length ?? 0,
-        onCompletePressed: () {
-          showDialog(
-            context: context,
-            builder: (context) => ExamCompletedDialog(
-              onSubmit: () {
-                Navigator.of(context).pop();
-                controller.submitContest(controller.contestDetails.value?.contest.id ?? '');
-              },
-            ),
-          );
-        },
-      ),
-    );
-  } else {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: CustomBottomFixedButton(
-        buttonText: status?.isRunning == true && controller.contestDetails.value?.contest.isRegistered==true
-            ? "Enter Now "
-            : ((status?.isScheduled == true &&
-                    controller.contestDetails.value?.contest.isRegistered == false) ||
-                (status?.isRunning == true &&
-                    controller.contestDetails.value?.contest.isRegistered == false))
-                ? "Register Now"
-                : "Completed",
-        onPressed: () {
-          if (status?.isRunning == true || status?.isScheduled == true) {
-            Get.find<ContestController>().registerForContest(controller.contestDetails.value!.contest.id);
-            controller.isQuestionOpened.value = true;
-          } else if (status?.isDone == false || status?.isRunning == true) {
-            controller.isQuestionOpened.value = true;
-          }
-        },
+            if (isQuestionOpened) {
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: BottomFixedSubmitContestWidget(
+                  timeLeft: controller.formattedCountdownTime,
+                  currentQuestionIndex:
+                      2, // you can make this dynamic if needed
+                  totalQuestions: controller
+                          .contestDetails.value?.contest?.questions.length ??
+                      0,
+                  onCompletePressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ExamCompletedDialog(
+                        onSubmit: () {
+                          Navigator.of(context).pop();
+                          controller.submitContest(
+                              controller.contestDetails.value?.contest.id ??
+                                  '');
+                        },
+                      ),
+                    );
+                  },
+                ),
+              );
+            } else {
+              return Align(
+                alignment: Alignment.bottomCenter,
+                child: CustomBottomFixedButton(
+                  buttonText: status?.isRunning == true &&
+                          controller
+                                  .contestDetails.value?.contest.isRegistered ==
+                              true
+                      ? "Enter Now "
+                      : ((status?.isScheduled == true &&
+                                  controller.contestDetails.value?.contest
+                                          .isRegistered ==
+                                      false) ||
+                              (status?.isRunning == true &&
+                                  controller.contestDetails.value?.contest
+                                          .isRegistered ==
+                                      false))
+                          ? "Register Now"
+                          : "Completed",
+                  onPressed: () {
+                    if (status?.isRunning == true ||
+                        status?.isScheduled == true) {
+                      Get.find<ContestController>().registerForContest(
+                          controller.contestDetails.value!.contest.id);
+                      controller.isQuestionOpened.value = true;
+                    } else if (status?.isDone == false ||
+                        status?.isRunning == true) {
+                      controller.isQuestionOpened.value = true;
+                    }
+                  },
+                ),
+              );
+            }
+          }),
+         Obx(() {
+  if (controller.isQuestionOpened.value) {
+    return Positioned(
+      right: 16.w,
+      bottom: 100.h,
+      child: QuestionNavigatorFloating(
+        onOpenFlaggedSheet: () => showFlaggedQuestionsBottomSheet(controller.markedQuestionIds),
       ),
     );
   }
+  return SizedBox.shrink(); // If not opened, don't show
 }),
 
-          if (controller.isQuestionOpened.value)
-            Positioned(
-              right: 16.w,
-              bottom: 100.h, // Adjust to fit vertically at center if needed
-              child: QuestionNavigator(
-                currentQuestion: 3,
-                totalQuestions: 10,
-                onPrevious: () {},
-                onNext: () {},
-              ),
-            ),
         ],
       ),
     );
@@ -312,83 +268,87 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
 
   Widget buildQuestionWidget(
           {required Question question, required int index}) =>
-      IntrinsicHeight(
-          child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.stretch, // Ensures both sides match height
+      Container(
+        key: controller.questionKeys[question.id], // Attach key here
+        child: IntrinsicHeight(
+            child: Row(
+          crossAxisAlignment:
+              CrossAxisAlignment.stretch, // Ensures both sides match height
 
-        children: [
-          Visibility(
-            visible: controller.isMarkedQuestion(question.id),
-            child: Container(
-              width: 4.w,
-              height: double.infinity,
-              color: controller.isMarkedQuestion(question.id)
-                  ? Color(0xFFFF8143)
-                  : Colors.black,
-            ),
-          ),
-          SizedBox(
-            width: 20.w,
-          ),
-          Container(
-            child: Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Text(
-                  //   "${index + 1}) ${question.title}",
-                  //   style: GoogleFonts.notoSansBengali(
-                  //       textStyle:
-                  //           TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
-                  // ),
-                  HtmlWidget(
-                    "${index + 1}) ${question.title.replaceAll('<p>', '')}",
-                  ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Row(
-                    children: [
-                      Icon(Icons.flag,
-                          color: controller.isMarkedQuestion(question.id)
-                              ? Color(0xFFFF8143)
-                              : Colors.black),
-                      SizedBox(
-                        width: 5.w,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          controller.markUnmarkQuestion(question.id);
-                        },
-                        child: Text('Mark this Question',
-                            style: GoogleFonts.inter(
-                                textStyle: TextStyle(
-                                    fontSize: 15.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color:
-                                        controller.isMarkedQuestion(question.id)
-                                            ? Color(0xFFFF8143)
-                                            : Colors.black))),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-
-                  question.isGrid == true
-                      ? _buildGridOptions(question)
-                      : _buildListOptions(question),
-                ],
+          children: [
+            Visibility(
+              visible: controller.isMarkedQuestion(question.id),
+              child: Container(
+                width: 4.w,
+                height: double.infinity,
+                color: controller.isMarkedQuestion(question.id)
+                    ? Color(0xFFFF8143)
+                    : Colors.black,
               ),
             ),
-          ),
-        ],
-      ));
+            SizedBox(
+              width: 20.w,
+            ),
+            Container(
+              child: Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Text(
+                    //   "${index + 1}) ${question.title}",
+                    //   style: GoogleFonts.notoSansBengali(
+                    //       textStyle:
+                    //           TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600)),
+                    // ),
+                    HtmlWidget(
+                      "${index + 1}) ${question.title.replaceAll('<p>', '')}",
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.flag,
+                            color: controller.isMarkedQuestion(question.id)
+                                ? Color(0xFFFF8143)
+                                : Colors.black),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            controller.markUnmarkQuestion(question.id);
+                            debugPrint("qid-----> ${question.id}");
+                          },
+                          child: Text('Mark this Question',
+                              style: GoogleFonts.inter(
+                                  textStyle: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: controller
+                                              .isMarkedQuestion(question.id)
+                                          ? Color(0xFFFF8143)
+                                          : Colors.black))),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+
+                    question.isGrid == true
+                        ? _buildGridOptions(question)
+                        : _buildListOptions(question),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        )),
+      );
 
   Widget _buildGridOptions(Question question) {
     if (question.options.isEmpty) {

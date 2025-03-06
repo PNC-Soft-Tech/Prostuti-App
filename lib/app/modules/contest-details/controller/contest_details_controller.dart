@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
+import '../../questions/models/question_model.dart';
 import '../models/contest_details_model.dart';
 
 class ContestDetailsController extends GetxController {
@@ -16,6 +19,9 @@ class ContestDetailsController extends GetxController {
   var contestDetails = Rxn<ContestDetailsResponse>();
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
   final markedQuestions = <String>[].obs;
+  // final markedQuestions = <int>[].obs; // Store **question indexes**
+  final currentQuestionIndex = 0.obs; // Track current question
+
   final isSubmittingContest =
       false.obs; // This will track loading state for submitContest
 
@@ -27,13 +33,46 @@ class ContestDetailsController extends GetxController {
 
   RxBool isContestRunning = true.obs;
   RxBool isQuestionOpened = false.obs;
+  final scrollController = ScrollController();
+final questionKeys = <String, GlobalKey>{}.obs;
+final questionIdToIndexMap = <String, int>{}.obs;
+final markedQuestionIndexes = <int>[].obs; // For UI scroll
+final markedQuestionIds = <String>[].obs; // For API call if needed
   @override
   void onInit() {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
     contestId.value = arguments["contestId"]; // Retrieve contestId
     fetchContestDetails(contestId.value);
+    ever<int>(currentQuestionIndex, (index) {
+      scrollController.animateTo(
+        index * 300.h, // Approx height per question, tune if needed
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
   }
+void setUpQuestionKeysAndIndexes(List<Question> questions) {
+  questionKeys.clear();
+  questionIdToIndexMap.clear();
+  
+  for (int i = 0; i < questions.length; i++) {
+    final question = questions[i];
+    questionKeys[question.id] = GlobalKey();
+    questionIdToIndexMap[question.id] = i;
+  }
+}
+
+void scrollToQuestion(String questionId) {
+  final index = questionIdToIndexMap[questionId];
+  if (index == null) return;
+
+  scrollController.animateTo(
+    questionKeys[questionId]!.currentContext!.size!.height * index,
+    duration: Duration(milliseconds: 500),
+    curve: Curves.easeInOut,
+  );
+}
 
   void fetchContestDetails(String contestId) async {
     isLoading.value = true;
@@ -48,6 +87,7 @@ class ContestDetailsController extends GetxController {
       (data) {
         contestDetails.value = data;
         updateContestStatus();
+        setUpQuestionKeysAndIndexes(contestDetails.value?.contest?.questions??[]);
         if (data.contest != null) {
           startTimer(data.contest.startContest, data.contest.endContest);
         }
@@ -73,39 +113,50 @@ class ContestDetailsController extends GetxController {
     return selectedAnswers[questionId] == optionOrder;
   }
 
-  void markQuestion(String questionId) {
-    markedQuestions.add(questionId);
-  }
+  // void markQuestion(String questionId) {
+  //   markedQuestions.add(questionId);
+  // }
 
-  void markUnmarkQuestion(String questionId) {
-    if (isMarkedQuestion(questionId)) {
-      markedQuestions.remove(questionId);
-    } else {
-      markedQuestions.add(questionId);
-    }
-  }
+  // void markUnmarkQuestion(int index) {
+  //   if (markedQuestions.contains(index)) {
+  //     markedQuestions.remove(index);
+  //   } else {
+  //     markedQuestions.add(index);
+  //   }
+  // }
+// void markUnmarkQuestion(String questionId) {
+//   if (markedQuestions.contains(questionId)) {
+//     markedQuestions.remove(questionId);
+//   } else {
+//     markedQuestions.add(questionId);
+//   }
+// }
+void markUnmarkQuestion(String questionId) {
+  final index = questionIdToIndexMap[questionId] ?? -1;
+  if (index == -1) return;
 
-  void unMarkQuestion(String questionId) {
-    markedQuestions.remove(questionId);
+  if (markedQuestionIndexes.contains(index)) {
+    markedQuestionIndexes.remove(index);
+    markedQuestionIds.remove(questionId);
+  } else {
+    markedQuestionIndexes.add(index);
+    markedQuestionIds.add(questionId);
   }
+}
+
+  // void unMarkQuestion(String questionId) {
+  //   markedQuestions.remove(questionId);
+  // }
 
   bool isMarkedQuestion(String questionId) {
-    return markedQuestions.contains(questionId);
+    return markedQuestionIds.contains(questionId);
   }
-  // Future<void> fetchContests() async {
-  //   isLoading(true);
-  //   final result = await _apiHelper.fetchAllContests();
-  //   result.fold(
-  //     (error) {
-  //       Get.snackbar('Error', error.message ?? 'Failed to load contests');
-  //     },
-  //     (data) {
-  //       contests.assignAll(data);
-  //       log("data: ${data.first.id}");
-  //     },
-  //   );
-  //   isLoading(false);
-  // }
+ 
+Question? questionAtIndex(int index) {
+  final questions = contestDetails.value?.contest?.questions ?? [];
+  if (index < 0 || index >= questions.length) return null;
+  return questions[index];
+}
 
   List<Map<String, dynamic>> prepareSubmissionPayload(String contestId) {
     return selectedAnswers.entries.map((entry) {
@@ -194,11 +245,11 @@ class ContestDetailsController extends GetxController {
     super.onClose();
   }
 
-
   String get formattedCountdownTime {
-  final minutes = remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
-  final seconds = remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
-  return "$minutes:$seconds";
-}
-
+    final minutes =
+        remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds =
+        remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$minutes:$seconds";
+  }
 }

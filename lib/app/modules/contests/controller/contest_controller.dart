@@ -46,9 +46,9 @@ final registeredContests = <String, bool>{}.obs; // Contest ID => isRegistered
           log('Contest: ${contest.name}, Total Marks: ${contest.totalMarks}');
         }
 
-        Utils.showSnackbar(
-          message: 'Successfully fetched ${contests.length} contests',
-        );
+        // Utils.showSnackbar(
+        //   message: 'Successfully fetched ${contests.length} contests',
+        // );
       },
     );
   }
