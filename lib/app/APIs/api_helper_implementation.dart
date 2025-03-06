@@ -479,7 +479,7 @@ Future<Either<CustomError, Response>> submitContest(String contestId) async {
       'Authorization': 'Bearer $token',
     };
 
-    final response = await post('contests/submit-contest/$contestId', {}, headers: headers);
+    final response = await get('contests/submit-contest/$contestId', headers: headers);
 
     if (response.statusCode == 200 && response.body['success'] == true) {
       return Right(response);

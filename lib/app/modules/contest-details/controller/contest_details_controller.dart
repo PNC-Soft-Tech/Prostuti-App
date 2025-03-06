@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
+import '../../../routes/app_pages.dart';
 import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
 import '../../questions/models/question_model.dart';
@@ -192,6 +193,7 @@ Question? questionAtIndex(int index) {
       (response) {
         Get.snackbar('Success',
             'Answer submitted successfully' ?? 'Answer submitted successfully');
+            Get.toNamed(Routes.home);
         isSuccess = true; // Set flag if success
       },
     );
