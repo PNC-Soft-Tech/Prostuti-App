@@ -183,67 +183,117 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               );
             }
           }),
-          Obx(() {
-            // controller.isContestRunning.value
-            final status = Utils.getContestStatus(
-              controller.contestDetails.value?.contest.startContest ??
-                  DateTime.now(),
-              controller.contestDetails.value?.contest.endContest ??
-                  DateTime.now(),
-            );
-            // if(status.isRunning)
+          // Obx(() {
+          //   // controller.isContestRunning.value
+          //   final status = Utils.getContestStatus(
+          //     controller.contestDetails.value?.contest.startContest ??
+          //         DateTime.now(),
+          //     controller.contestDetails.value?.contest.endContest ??
+          //         DateTime.now(),
+          //   );
+          //   // if(status.isRunning)
 
-            return controller.isQuestionOpened.value
-                ? Align(
-                    alignment: Alignment.bottomCenter,
-                    child: BottomFixedSubmitContestWidget(
-                      timeLeft: '29:55',
-                      currentQuestionIndex: 2,
-                      totalQuestions: 7,
-                      onCompletePressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ExamCompletedDialog(
-                            onSubmit: () {
-                              Navigator.of(context).pop(); // Close dialog
-                              controller.submitContest(
-                                  controller.contestDetails.value?.contest.id ??
-                                      ''); // Call your submit API
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  )
-                : Align(
-                    alignment: Alignment.bottomCenter,
-                    child: CustomBottomFixedButton(
-                        buttonText: status.isRunning
-                            ? "Enter Now"
-                            : ((status.isScheduled &&
-                                        controller.contestDetails.value?.contest
-                                                .isRegistered ==
-                                            false) ||
-                                    (status.isRunning == true &&
-                                        controller.contestDetails.value?.contest
-                                                .isRegistered ==
-                                            false))
-                                ? "Register Now"
-                                : "Completed",
-                        onPressed: () {
-                          status.isRunning || status.isScheduled
-                              ? (
-                                  Get.find<ContestController>()
-                                      .registerForContest(controller
-                                          .contestDetails.value!.contest.id),
-                                  controller.isQuestionOpened.value = true
-                                )
-                              : (!status.isDone || !status.isScheduled)
-                                  ? controller.isQuestionOpened.value = true
-                                  : null;
-                        }),
-                  );
-          }),
+          //   return controller.isQuestionOpened.value
+          //       ? Align(
+          //           alignment: Alignment.bottomCenter,
+          //           child: BottomFixedSubmitContestWidget(
+          //             timeLeft: '29:55',
+          //             currentQuestionIndex: 2,
+          //             totalQuestions: 7,
+          //             onCompletePressed: () {
+          //               showDialog(
+          //                 context: context,
+          //                 builder: (context) => ExamCompletedDialog(
+          //                   onSubmit: () {
+          //                     Navigator.of(context).pop(); // Close dialog
+          //                     controller.submitContest(
+          //                         controller.contestDetails.value?.contest.id ??
+          //                             ''); // Call your submit API
+          //                   },
+          //                 ),
+          //               );
+          //             },
+          //           ),
+          //         )
+          //       : Align(
+          //           alignment: Alignment.bottomCenter,
+          //           child: CustomBottomFixedButton(
+          //               buttonText: status.isRunning
+          //                   ? "Enter Now"
+          //                   : ((status.isScheduled &&
+          //                               controller.contestDetails.value?.contest
+          //                                       .isRegistered ==
+          //                                   false) ||
+          //                           (status.isRunning == true &&
+          //                               controller.contestDetails.value?.contest
+          //                                       .isRegistered ==
+          //                                   false))
+          //                       ? "Register Now"
+          //                       : "Completed",
+          //               onPressed: () {
+          //                 status.isRunning || status.isScheduled
+          //                     ? (
+          //                         Get.find<ContestController>()
+          //                             .registerForContest(controller
+          //                                 .contestDetails.value!.contest.id),
+          //                         controller.isQuestionOpened.value = true
+          //                       )
+          //                     : (!status.isDone || status.isRunning)
+          //                         ? controller.isQuestionOpened.value = true
+          //                         : null;
+          //               }),
+          //         );
+          // }),
+        
+        Obx(() {
+  final status = controller.contestStatus.value;
+  final isQuestionOpened = controller.isQuestionOpened.value;
+
+  if (isQuestionOpened) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: BottomFixedSubmitContestWidget(
+        timeLeft: controller.formattedCountdownTime,
+        currentQuestionIndex: 2, // you can make this dynamic if needed
+        totalQuestions: controller.contestDetails.value?.contest?.questions.length ?? 0,
+        onCompletePressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => ExamCompletedDialog(
+              onSubmit: () {
+                Navigator.of(context).pop();
+                controller.submitContest(controller.contestDetails.value?.contest.id ?? '');
+              },
+            ),
+          );
+        },
+      ),
+    );
+  } else {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: CustomBottomFixedButton(
+        buttonText: status?.isRunning == true && controller.contestDetails.value?.contest.isRegistered==true
+            ? "Enter Now "
+            : ((status?.isScheduled == true &&
+                    controller.contestDetails.value?.contest.isRegistered == false) ||
+                (status?.isRunning == true &&
+                    controller.contestDetails.value?.contest.isRegistered == false))
+                ? "Register Now"
+                : "Completed",
+        onPressed: () {
+          if (status?.isRunning == true || status?.isScheduled == true) {
+            Get.find<ContestController>().registerForContest(controller.contestDetails.value!.contest.id);
+            controller.isQuestionOpened.value = true;
+          } else if (status?.isDone == false || status?.isRunning == true) {
+            controller.isQuestionOpened.value = true;
+          }
+        },
+      ),
+    );
+  }
+}),
+
           if (controller.isQuestionOpened.value)
             Positioned(
               right: 16.w,

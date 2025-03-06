@@ -14,7 +14,7 @@ class Contest {
   final dynamic totalMarks;
   final dynamic totalTime;
   final bool? isSubjectWise;
-  final bool? isRegistered;
+   bool? isRegistered;
   final DateTime startContest;
   final DateTime endContest;
   final List<Topic> topics;

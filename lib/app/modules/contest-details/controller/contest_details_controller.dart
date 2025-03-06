@@ -3,7 +3,9 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/utils/prostuti_utils.dart';
 import '../../contests/models/contest_model.dart';
+import '../../contests/models/contest_status.dart';
 import '../models/contest_details_model.dart';
 
 class ContestDetailsController extends GetxController {
@@ -21,6 +23,7 @@ class ContestDetailsController extends GetxController {
   final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
   Rx<Duration> remainingTime = Duration().obs;
   Timer? _timer;
+  Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
   RxBool isContestRunning = true.obs;
   RxBool isQuestionOpened = false.obs;
@@ -44,12 +47,21 @@ class ContestDetailsController extends GetxController {
       },
       (data) {
         contestDetails.value = data;
+        updateContestStatus();
         if (data.contest != null) {
           startTimer(data.contest.startContest, data.contest.endContest);
         }
         isLoading.value = false;
       },
     );
+  }
+
+  void updateContestStatus() {
+    final contest = contestDetails.value?.contest;
+    if (contest != null) {
+      contestStatus.value =
+          Utils.getContestStatus(contest.startContest, contest.endContest);
+    }
   }
 
   void selectOption(String questionId, String selectedOptionOrder) {
@@ -181,4 +193,12 @@ class ContestDetailsController extends GetxController {
     _timer?.cancel();
     super.onClose();
   }
+
+
+  String get formattedCountdownTime {
+  final minutes = remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
+  final seconds = remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return "$minutes:$seconds";
+}
+
 }

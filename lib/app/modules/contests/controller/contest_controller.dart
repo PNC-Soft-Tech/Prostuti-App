@@ -13,6 +13,7 @@ class ContestController extends GetxController {
   var upcomingContests = <Contest>[].obs;
   var isLoading = false.obs;
   var isLoadingUpcomingContest = false.obs;
+final registeredContests = <String, bool>{}.obs; // Contest ID => isRegistered
 
   @override
   void onInit() {
@@ -38,9 +39,10 @@ class ContestController extends GetxController {
       },
       (contests) {
         isLoadingUpcomingContest.value = false;
-
+  // ✅ Initialize the registration map from API data
         upcomingContests.value = contests;
         for (var contest in contests) {
+           registeredContests[contest.id] = contest.isRegistered ?? false;
           log('Contest: ${contest.name}, Total Marks: ${contest.totalMarks}');
         }
 
@@ -61,8 +63,13 @@ class ContestController extends GetxController {
             message: "Failed to register contest", isSuccess: false);
       },
       (response) {
+              // ✅ Mark this contest as registered
+      registeredContests[contestId] = true;
+        // Utils.showSnackbar(
+        //     message: "Successfully registered for contest: ${response.body}",
+        //     isSuccess: true);
         Utils.showSnackbar(
-            message: "Successfully registered for contest: ${response.body}",
+            message: "Successfully registered for contest",
             isSuccess: true);
         log('Successfully registered for contest: ${response.body}');
       },
