@@ -24,6 +24,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(title: "Contest Details"),
       // CustomAppBar.appBar(
       //     title: "Contest Details",
@@ -214,42 +215,46 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       },
                     ),
                   )
-                : CustomBottomFixedButton(
-                    buttonText: status.isRunning
-                        ? "Enter Now"
-                        : ((status.isScheduled &&
-                                    controller.contestDetails.value?.contest
-                                            .isRegistered ==
-                                        false) ||
-                                (status.isRunning == true &&
-                                    controller.contestDetails.value?.contest
-                                            .isRegistered ==
-                                        false))
-                            ? "Register Now"
-                            : "Completed",
-                    onPressed: () {
-                      status.isRunning || status.isScheduled
-                          ? (
-                              Get.find<ContestController>().registerForContest(
-                                  controller.contestDetails.value!.contest.id),
-                              controller.isQuestionOpened.value = true
-                            )
-                          : (!status.isDone || !status.isScheduled)
-                              ? controller.isQuestionOpened.value = true
-                              : null;
-                    });
+                : Align(
+                    alignment: Alignment.bottomCenter,
+                    child: CustomBottomFixedButton(
+                        buttonText: status.isRunning
+                            ? "Enter Now"
+                            : ((status.isScheduled &&
+                                        controller.contestDetails.value?.contest
+                                                .isRegistered ==
+                                            false) ||
+                                    (status.isRunning == true &&
+                                        controller.contestDetails.value?.contest
+                                                .isRegistered ==
+                                            false))
+                                ? "Register Now"
+                                : "Completed",
+                        onPressed: () {
+                          status.isRunning || status.isScheduled
+                              ? (
+                                  Get.find<ContestController>()
+                                      .registerForContest(controller
+                                          .contestDetails.value!.contest.id),
+                                  controller.isQuestionOpened.value = true
+                                )
+                              : (!status.isDone || !status.isScheduled)
+                                  ? controller.isQuestionOpened.value = true
+                                  : null;
+                        }),
+                  );
           }),
-          Positioned(
-  right: 16.w,
-  bottom: 100.h,  // Adjust to fit vertically at center if needed
-  child: QuestionNavigator(
-    currentQuestion: 3,
-    totalQuestions: 10,
-    onPrevious: (){},
-    onNext: (){},
-  ),
-),
-
+          if (controller.isQuestionOpened.value)
+            Positioned(
+              right: 16.w,
+              bottom: 100.h, // Adjust to fit vertically at center if needed
+              child: QuestionNavigator(
+                currentQuestion: 3,
+                totalQuestions: 10,
+                onPrevious: () {},
+                onNext: () {},
+              ),
+            ),
         ],
       ),
     );
