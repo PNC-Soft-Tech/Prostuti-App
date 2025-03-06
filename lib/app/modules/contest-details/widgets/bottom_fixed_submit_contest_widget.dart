@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'countdown_timer_widget.dart';
+
 class BottomFixedSubmitContestWidget extends StatelessWidget {
   final String timeLeft;
   final VoidCallback onCompletePressed;
@@ -37,7 +39,8 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildTimerWidget(),
+          // _buildTimerWidget(),
+          CountDownTimerWidget(),
           _buildCompleteButton(),
         ],
       ),

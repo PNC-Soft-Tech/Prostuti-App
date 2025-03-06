@@ -15,6 +15,8 @@ import '../../contests/controller/contest_controller.dart';
 import '../../questions/models/option_model.dart';
 import '../controller/contest_details_controller.dart';
 import '../widgets/bottom_fixed_submit_contest_widget.dart';
+import '../widgets/exam_completed_dialog.dart';
+import '../widgets/question_navigator_widget.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
   const ContestDetailsView({super.key});
@@ -198,7 +200,17 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       currentQuestionIndex: 2,
                       totalQuestions: 7,
                       onCompletePressed: () {
-                        // Call your controller.submitContest() or relevant method
+                        showDialog(
+                          context: context,
+                          builder: (context) => ExamCompletedDialog(
+                            onSubmit: () {
+                              Navigator.of(context).pop(); // Close dialog
+                              controller.submitContest(
+                                  controller.contestDetails.value?.contest.id ??
+                                      ''); // Call your submit API
+                            },
+                          ),
+                        );
                       },
                     ),
                   )
@@ -217,14 +229,27 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             : "Completed",
                     onPressed: () {
                       status.isRunning || status.isScheduled
-                          ? (Get.find<ContestController>().registerForContest(
-                              controller.contestDetails.value!.contest.id),
-                              controller.isQuestionOpened.value = true)
+                          ? (
+                              Get.find<ContestController>().registerForContest(
+                                  controller.contestDetails.value!.contest.id),
+                              controller.isQuestionOpened.value = true
+                            )
                           : (!status.isDone || !status.isScheduled)
                               ? controller.isQuestionOpened.value = true
                               : null;
                     });
           }),
+          Positioned(
+  right: 16.w,
+  bottom: 100.h,  // Adjust to fit vertically at center if needed
+  child: QuestionNavigator(
+    currentQuestion: 3,
+    totalQuestions: 10,
+    onPrevious: (){},
+    onNext: (){},
+  ),
+),
+
         ],
       ),
     );
