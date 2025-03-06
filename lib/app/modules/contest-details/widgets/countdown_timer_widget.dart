@@ -7,6 +7,8 @@ import '../controller/contest_details_controller.dart';
 class CountDownTimerWidget extends StatelessWidget {
   final ContestDetailsController controller = Get.find();
 
+  CountDownTimerWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -16,7 +18,7 @@ class CountDownTimerWidget extends StatelessWidget {
           SizedBox(width: 5.w),
           Text(
             "Time Left: ${_formatDuration(controller.remainingTime.value)}",
-     style: GoogleFonts.inter(
+            style: GoogleFonts.inter(
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,
               color: Colors.blue.shade800,

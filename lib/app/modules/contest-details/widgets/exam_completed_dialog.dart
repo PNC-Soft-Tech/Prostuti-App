@@ -6,9 +6,9 @@ class ExamCompletedDialog extends StatelessWidget {
   final VoidCallback onSubmit;
 
   const ExamCompletedDialog({
-    Key? key,
+    super.key,
     required this.onSubmit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ExamCompletedDialog extends StatelessWidget {
           children: [
             Row(
               children: [
-                Spacer(),
+                const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Icon(Icons.close, size: 24.sp, color: Colors.black54),
@@ -35,7 +35,10 @@ class ExamCompletedDialog extends StatelessWidget {
               ],
             ),
             SizedBox(height: 12.h),
-            Icon(Icons.fact_check, size: 48.r, color: Colors.blue), // or use Image.asset if you have a custom icon
+            Icon(Icons.fact_check,
+                size: 48.r,
+                color: Colors
+                    .blue), // or use Image.asset if you have a custom icon
             SizedBox(height: 12.h),
             Text(
               'Exam Completed?',

@@ -46,7 +46,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
         children: [
           Obx(() {
             final questions =
-                controller.contestDetails.value?.contest?.questions ?? [];
+                controller.contestDetails.value?.contest.questions ?? [];
             if (controller.isLoading.value) {
               return const Center(child: CircularProgressIndicator());
             } else {
@@ -197,7 +197,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   currentQuestionIndex:
                       2, // you can make this dynamic if needed
                   totalQuestions: controller
-                          .contestDetails.value?.contest?.questions.length ??
+                          .contestDetails.value?.contest.questions.length ??
                       0,
                   onCompletePressed: () {
                     showDialog(
@@ -248,19 +248,19 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               );
             }
           }),
-         Obx(() {
-  if (controller.isQuestionOpened.value) {
-    return Positioned(
-      right: 16.w,
-      bottom: 100.h,
-      child: QuestionNavigatorFloating(
-        onOpenFlaggedSheet: () => showFlaggedQuestionsBottomSheet(controller.markedQuestionIds),
-      ),
-    );
-  }
-  return SizedBox.shrink(); // If not opened, don't show
-}),
-
+          Obx(() {
+            if (controller.isQuestionOpened.value) {
+              return Positioned(
+                right: 16.w,
+                bottom: 100.h,
+                child: QuestionNavigatorFloating(
+                  onOpenFlaggedSheet: () => showFlaggedQuestionsBottomSheet(
+                      controller.markedQuestionIds),
+                ),
+              );
+            }
+            return const SizedBox.shrink(); // If not opened, don't show
+          }),
         ],
       ),
     );
@@ -282,7 +282,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                 width: 4.w,
                 height: double.infinity,
                 color: controller.isMarkedQuestion(question.id)
-                    ? Color(0xFFFF8143)
+                    ? const Color(0xFFFF8143)
                     : Colors.black,
               ),
             ),
@@ -310,7 +310,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       children: [
                         Icon(Icons.flag,
                             color: controller.isMarkedQuestion(question.id)
-                                ? Color(0xFFFF8143)
+                                ? const Color(0xFFFF8143)
                                 : Colors.black),
                         SizedBox(
                           width: 5.w,
@@ -327,7 +327,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                       fontWeight: FontWeight.w400,
                                       color: controller
                                               .isMarkedQuestion(question.id)
-                                          ? Color(0xFFFF8143)
+                                          ? const Color(0xFFFF8143)
                                           : Colors.black))),
                         ),
                         SizedBox(
@@ -356,7 +356,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
     }
 
     return controller.questionLoadingStatus[question.id] == true
-        ? Center(
+        ? const Center(
             child: CupertinoActivityIndicator(
             color: AppColors.primary,
           ))
@@ -372,7 +372,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     controller.selectOption(question.id, option.order);
                     bool isDone = await controller.submitAnswer(
                         question.id,
-                        controller.contestDetails.value?.contest?.id ?? '',
+                        controller.contestDetails.value?.contest.id ?? '',
                         option.order);
                     if (!isDone) {
                       // 3️⃣ If failed, revert selection
@@ -403,7 +403,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   color: AppColors.primary,
                                 ),
                               )
-                            : Container(
+                            : SizedBox(
                                 height: 20,
                                 width: 20,
                               ),
@@ -427,7 +427,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
     }
 
     return controller.questionLoadingStatus[question.id] == true
-        ? Center(
+        ? const Center(
             child: CupertinoActivityIndicator(
             color: AppColors.primary,
           ))
@@ -440,7 +440,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         question.id, question.options[i].order);
                     bool isDone = await controller.submitAnswer(
                         question.id,
-                        controller.contestDetails.value?.contest?.id ?? '',
+                        controller.contestDetails.value?.contest.id ?? '',
                         question.options[i].order);
                     if (!isDone) {
                       // 3️⃣ If failed, revert selection
@@ -470,7 +470,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                       color: AppColors.primary,
                                     ),
                                   )
-                                : Container(
+                                : SizedBox(
                                     height: 20,
                                     width: 20,
                                   ),
@@ -655,7 +655,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               "${controller.contestDetails.value?.contest.registeredCount} জন"),
                       buildRightColumnRow(
                           value: Utils.formatDateToBangla(controller
-                                  .contestDetails.value?.contest?.endContest ??
+                                  .contestDetails.value?.contest.endContest ??
                               DateTime.now())),
                     ],
                   ),

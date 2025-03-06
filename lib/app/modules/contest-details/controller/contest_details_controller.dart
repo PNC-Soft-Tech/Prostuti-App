@@ -28,17 +28,17 @@ class ContestDetailsController extends GetxController {
 
   var isLoading = false.obs;
   final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
-  Rx<Duration> remainingTime = Duration().obs;
+  Rx<Duration> remainingTime = const Duration().obs;
   Timer? _timer;
   Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
   RxBool isContestRunning = true.obs;
   RxBool isQuestionOpened = false.obs;
   final scrollController = ScrollController();
-final questionKeys = <String, GlobalKey>{}.obs;
-final questionIdToIndexMap = <String, int>{}.obs;
-final markedQuestionIndexes = <int>[].obs; // For UI scroll
-final markedQuestionIds = <String>[].obs; // For API call if needed
+  final questionKeys = <String, GlobalKey>{}.obs;
+  final questionIdToIndexMap = <String, int>{}.obs;
+  final markedQuestionIndexes = <int>[].obs; // For UI scroll
+  final markedQuestionIds = <String>[].obs; // For API call if needed
   @override
   void onInit() {
     super.onInit();
@@ -48,32 +48,33 @@ final markedQuestionIds = <String>[].obs; // For API call if needed
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
         index * 300.h, // Approx height per question, tune if needed
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
     });
   }
-void setUpQuestionKeysAndIndexes(List<Question> questions) {
-  questionKeys.clear();
-  questionIdToIndexMap.clear();
-  
-  for (int i = 0; i < questions.length; i++) {
-    final question = questions[i];
-    questionKeys[question.id] = GlobalKey();
-    questionIdToIndexMap[question.id] = i;
+
+  void setUpQuestionKeysAndIndexes(List<Question> questions) {
+    questionKeys.clear();
+    questionIdToIndexMap.clear();
+
+    for (int i = 0; i < questions.length; i++) {
+      final question = questions[i];
+      questionKeys[question.id] = GlobalKey();
+      questionIdToIndexMap[question.id] = i;
+    }
   }
-}
 
-void scrollToQuestion(String questionId) {
-  final index = questionIdToIndexMap[questionId];
-  if (index == null) return;
+  void scrollToQuestion(String questionId) {
+    final index = questionIdToIndexMap[questionId];
+    if (index == null) return;
 
-  scrollController.animateTo(
-    questionKeys[questionId]!.currentContext!.size!.height * index,
-    duration: Duration(milliseconds: 500),
-    curve: Curves.easeInOut,
-  );
-}
+    scrollController.animateTo(
+      questionKeys[questionId]!.currentContext!.size!.height * index,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
 
   void fetchContestDetails(String contestId) async {
     isLoading.value = true;
@@ -88,10 +89,9 @@ void scrollToQuestion(String questionId) {
       (data) {
         contestDetails.value = data;
         updateContestStatus();
-        setUpQuestionKeysAndIndexes(contestDetails.value?.contest?.questions??[]);
-        if (data.contest != null) {
-          startTimer(data.contest.startContest, data.contest.endContest);
-        }
+        setUpQuestionKeysAndIndexes(
+            contestDetails.value?.contest.questions ?? []);
+        startTimer(data.contest.startContest, data.contest.endContest);
         isLoading.value = false;
       },
     );
@@ -132,18 +132,18 @@ void scrollToQuestion(String questionId) {
 //     markedQuestions.add(questionId);
 //   }
 // }
-void markUnmarkQuestion(String questionId) {
-  final index = questionIdToIndexMap[questionId] ?? -1;
-  if (index == -1) return;
+  void markUnmarkQuestion(String questionId) {
+    final index = questionIdToIndexMap[questionId] ?? -1;
+    if (index == -1) return;
 
-  if (markedQuestionIndexes.contains(index)) {
-    markedQuestionIndexes.remove(index);
-    markedQuestionIds.remove(questionId);
-  } else {
-    markedQuestionIndexes.add(index);
-    markedQuestionIds.add(questionId);
+    if (markedQuestionIndexes.contains(index)) {
+      markedQuestionIndexes.remove(index);
+      markedQuestionIds.remove(questionId);
+    } else {
+      markedQuestionIndexes.add(index);
+      markedQuestionIds.add(questionId);
+    }
   }
-}
 
   // void unMarkQuestion(String questionId) {
   //   markedQuestions.remove(questionId);
@@ -152,12 +152,12 @@ void markUnmarkQuestion(String questionId) {
   bool isMarkedQuestion(String questionId) {
     return markedQuestionIds.contains(questionId);
   }
- 
-Question? questionAtIndex(int index) {
-  final questions = contestDetails.value?.contest?.questions ?? [];
-  if (index < 0 || index >= questions.length) return null;
-  return questions[index];
-}
+
+  Question? questionAtIndex(int index) {
+    final questions = contestDetails.value?.contest.questions ?? [];
+    if (index < 0 || index >= questions.length) return null;
+    return questions[index];
+  }
 
   List<Map<String, dynamic>> prepareSubmissionPayload(String contestId) {
     return selectedAnswers.entries.map((entry) {
@@ -193,7 +193,7 @@ Question? questionAtIndex(int index) {
       (response) {
         Get.snackbar('Success',
             'Answer submitted successfully' ?? 'Answer submitted successfully');
-            Get.toNamed(Routes.home);
+        Get.toNamed(Routes.home);
         isSuccess = true; // Set flag if success
       },
     );
@@ -224,7 +224,7 @@ Question? questionAtIndex(int index) {
     _updateRemainingTime(startTime, endTime);
 
     _timer?.cancel(); // Clear old timer if any
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateRemainingTime(startTime, endTime);
     });
   }

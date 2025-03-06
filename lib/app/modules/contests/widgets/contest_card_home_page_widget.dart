@@ -174,7 +174,8 @@ class ContestCardHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contestStatus = Utils.getContestStatus(contest.startContest, contest.endContest);
+    final contestStatus =
+        Utils.getContestStatus(contest.startContest, contest.endContest);
 
     return GestureDetector(
       onTap: () => _navigateToDetails(),
@@ -204,7 +205,7 @@ class ContestCardHome extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8.h),
-         _buildActionRow(contestStatus),
+            _buildActionRow(contestStatus),
           ],
         ),
       ),
@@ -242,25 +243,24 @@ class ContestCardHome extends StatelessWidget {
 
   Widget _buildActionRow(ContestStatus status) {
     return Obx(() {
-        final isRegistered = controller.registeredContests[contest.id] ?? false;
+      final isRegistered = controller.registeredContests[contest.id] ?? false;
 
-    if (status.isDone) {
-         return Text(
-        'Completed',
-        style: GoogleFonts.notoSansBengali(
-          fontSize: 14.sp,
-          fontWeight: FontWeight.w500,
-          color: Colors.grey,
-        ),
-      );
-      
-    } else if (status.isRunning && isRegistered ) {
-      return _buildCountdownRow("Enter Now", () => _navigateToDetails());
-    } else {
-   return _buildCountdownRow("Register Now", () => controller.registerForContest(contest.id));
-    }
-
-  });
+      if (status.isDone) {
+        return Text(
+          'Completed',
+          style: GoogleFonts.notoSansBengali(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey,
+          ),
+        );
+      } else if (status.isRunning && isRegistered) {
+        return _buildCountdownRow("Enter Now", () => _navigateToDetails());
+      } else {
+        return _buildCountdownRow(
+            "Register Now", () => controller.registerForContest(contest.id));
+      }
+    });
   }
 
   Widget _buildCountdownRow(String buttonText, VoidCallback onPressed) {
@@ -275,7 +275,7 @@ class ContestCardHome extends StatelessWidget {
             fontSize: 12.sp,
           ),
         ),
-        Spacer(),
+        const Spacer(),
         CustomButton.button(
           text: buttonText,
           fontSize: 13.sp,
@@ -291,9 +291,12 @@ class ContestCardHome extends StatelessWidget {
   void _navigateToDetails() {
     Get.toNamed(Routes.contestDetails, arguments: {"contestId": contest.id});
   }
-    void _registerForContest() async {
+
+  void _registerForContest() async {
     await controller.registerForContest(contest.id);
-    contest.isRegistered = true;  // 👈 After successful registration, update the contest itself
-    controller.upcomingContests.refresh();  // 👈 Ensure list updates with new isRegistered state
+    contest.isRegistered =
+        true; // 👈 After successful registration, update the contest itself
+    controller.upcomingContests
+        .refresh(); // 👈 Ensure list updates with new isRegistered state
   }
 }

@@ -11,12 +11,12 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
   final int totalQuestions;
 
   const BottomFixedSubmitContestWidget({
-    Key? key,
+    super.key,
     required this.timeLeft,
     required this.onCompletePressed,
     required this.currentQuestionIndex,
     required this.totalQuestions,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
           topLeft: Radius.circular(16.r),
           topRight: Radius.circular(16.r),
         ),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,

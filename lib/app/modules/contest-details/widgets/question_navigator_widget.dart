@@ -17,11 +17,14 @@ class QuestionNavigatorFloating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final questions = controller.contestDetails.value?.contest?.questions ?? [];
+      final questions =
+          controller.contestDetails.value?.contest.questions ?? [];
       final currentIndex = controller.currentQuestionIndex.value;
 
-      if (questions.isEmpty || currentIndex < 0 || currentIndex >= questions.length) {
-        return SizedBox.shrink(); // Guard if invalid
+      if (questions.isEmpty ||
+          currentIndex < 0 ||
+          currentIndex >= questions.length) {
+        return const SizedBox.shrink(); // Guard if invalid
       }
 
       final currentQuestion = questions[currentIndex];
@@ -39,16 +42,22 @@ class QuestionNavigatorFloating extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _navButton(Icons.arrow_upward, () => _navigateToPreviousQuestion(), enabled: currentIndex > 0),
+              _navButton(
+                  Icons.arrow_upward, () => _navigateToPreviousQuestion(),
+                  enabled: currentIndex > 0),
               SizedBox(height: 4.h),
-              if (isMarked) Icon(Icons.flag, color: Colors.white),
+              if (isMarked) const Icon(Icons.flag, color: Colors.white),
               SizedBox(height: 4.h),
               Text(
                 "${currentIndex + 1} / ${questions.length}",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.sp),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp),
               ),
               SizedBox(height: 4.h),
-              _navButton(Icons.arrow_downward, () => _navigateToNextQuestion(), enabled: currentIndex < questions.length - 1),
+              _navButton(Icons.arrow_downward, () => _navigateToNextQuestion(),
+                  enabled: currentIndex < questions.length - 1),
             ],
           ),
         ),
@@ -56,9 +65,11 @@ class QuestionNavigatorFloating extends StatelessWidget {
     });
   }
 
-  Widget _navButton(IconData icon, VoidCallback onPressed, {required bool enabled}) {
+  Widget _navButton(IconData icon, VoidCallback onPressed,
+      {required bool enabled}) {
     return IconButton(
-      icon: Icon(icon, color: enabled ? Colors.white : Colors.white.withOpacity(0.5)),
+      icon: Icon(icon,
+          color: enabled ? Colors.white : Colors.white.withOpacity(0.5)),
       onPressed: enabled ? onPressed : null,
       constraints: const BoxConstraints(),
       padding: EdgeInsets.zero,
@@ -73,7 +84,8 @@ class QuestionNavigatorFloating extends StatelessWidget {
   }
 
   void _navigateToNextQuestion() {
-    final totalQuestions = controller.contestDetails.value?.contest?.questions.length ?? 0;
+    final totalQuestions =
+        controller.contestDetails.value?.contest.questions.length ?? 0;
     if (controller.currentQuestionIndex.value < totalQuestions - 1) {
       controller.currentQuestionIndex.value += 1;
       _scrollToCurrentQuestion();
@@ -81,7 +93,8 @@ class QuestionNavigatorFloating extends StatelessWidget {
   }
 
   void _scrollToCurrentQuestion() {
-    final currentQuestion = controller.questionAtIndex(controller.currentQuestionIndex.value);
+    final currentQuestion =
+        controller.questionAtIndex(controller.currentQuestionIndex.value);
     if (currentQuestion != null) {
       controller.scrollToQuestion(currentQuestion.id);
     }
