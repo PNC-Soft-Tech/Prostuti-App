@@ -28,6 +28,8 @@ import '../modules/package-details/binding/package_details_binding.dart';
 import '../modules/package-details/view/package_details_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
 import '../modules/questions/views/question_view.dart';
+import '../modules/ranking/binding/ranking_binding.dart';
+import '../modules/ranking/views/ranking_view.dart';
 import '../modules/search-page/binding/search_binding.dart';
 import '../modules/search-page/view/search_view.dart';
 
@@ -49,6 +51,7 @@ class Routes {
   static const contests = '/contests';
   static const contestDetails = '/contest-details/';
   static const packageDetails = '/package-details/';
+  static const rankling = '/ranking/';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
 }
@@ -120,25 +123,30 @@ class AppPages {
       binding: CustomExamBinding(),
     ),
     GetPage(
-      name: '/contests',
+      name: Routes.contests,
       page: () => const ContestView(),
       binding: ContestBinding(),
     ),
     GetPage(
       // name: '/contest/:id',
-      name: '/contest-details/',
+      name: Routes.contestDetails,
       page: () => const ContestDetailsView(),
       binding: ContestDetailsBinding(),
     ),
     GetPage(
-      name: '/package-details/',
+      name: Routes.packageDetails,
       page: () => const PackageDetailsView(),
       binding: PackageDetailsBinding(),
     ),
     GetPage(
-      name: '/questions',
+      name: Routes.questions,
       page: () => const QuestionView(),
       binding: QuestionBinding(),
+    ),
+    GetPage(
+      name: Routes.rankling,
+      page: () => const RankingView(),
+      binding: RankingBinding(),
     ),
   ];
 }
