@@ -193,7 +193,7 @@ class ContestDetailsController extends GetxController {
       (response) {
         Get.snackbar('Success',
             'Answer submitted successfully' ?? 'Answer submitted successfully');
-        Get.toNamed(Routes.home);
+        Get.toNamed(Routes.rankling);
         isSuccess = true; // Set flag if success
       },
     );

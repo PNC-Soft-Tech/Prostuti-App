@@ -48,7 +48,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             final questions =
                 controller.contestDetails.value?.contest.questions ?? [];
             if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CupertinoActivityIndicator(color: AppColors.primary,));
             } else {
               return Container(
                 color: Colors.white,
@@ -132,8 +132,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                 return _contestCountdown();
                               } else {
                                 // return _contestEnded();
-                                return Text(
-                                    "Ended on: ${controller.contestDetails.value?.contest.endContest}");
+                                return SingleChildScrollView(
+                                  child: Text(
+                                      "Ended on: ${controller.contestDetails.value?.contest.endContest}"),
+                                );
                               }
                             }),
                             SizedBox(
@@ -491,57 +493,60 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           );
   }
 
-  Widget _alreadyRunning() => Row(
-        children: [
-          Text(
-            "Already Running",
-            style: GoogleFonts.inter(
-                textStyle: TextStyle(
-              fontSize: 15.sp,
-              color: AppColors.textPrimaryColor,
-              fontWeight: FontWeight.w500,
-            )),
-          ),
-          SizedBox(
-            width: 22.w,
-          ),
-          Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(55.13.r),
-              border: Border.all(color: AppColors.primary),
+  Widget _alreadyRunning() => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+          children: [
+            Text(
+              "Already Running",
+              style: GoogleFonts.inter(
+                  textStyle: TextStyle(
+                fontSize: 12.sp,
+                color: AppColors.textPrimaryColor,
+                fontWeight: FontWeight.w500,
+              )),
             ),
-            child: SingleChildScrollView(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset('assets/countdown.png'),
-                  SizedBox(width: 9.w),
-                  CountdownTimer(
-                    startContest:
-                        controller.contestDetails.value?.contest.startContest ??
-                            DateTime.now(),
-                    endContest:
-                        controller.contestDetails.value?.contest.endContest ??
-                            DateTime.now(),
-                    fontSize: 12.sp,
-                  ),
-                  // Text(
-                  //   "Time Left: 23: 55 : 20 ",
-                  //   style: GoogleFonts.inter(
-                  //       textStyle: TextStyle(
-                  //     fontSize: 15.sp,
-                  //     color: AppColors.primary,
-                  //     fontWeight: FontWeight.w600,
-                  //   )),
-                  // ),
-                ],
+            SizedBox(
+              width: 22.w,
+            ),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(55.13.r),
+                border: Border.all(color: AppColors.primary),
+              ),
+              child: SingleChildScrollView(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset('assets/countdown.png'),
+                    SizedBox(width: 9.w),
+                    CountdownTimer(
+                      startContest:
+                          controller.contestDetails.value?.contest.startContest ??
+                              DateTime.now(),
+                      endContest:
+                          controller.contestDetails.value?.contest.endContest ??
+                              DateTime.now(),
+                      fontSize: 12.sp,
+                    ),
+                    // Text(
+                    //   "Time Left: 23: 55 : 20 ",
+                    //   style: GoogleFonts.inter(
+                    //       textStyle: TextStyle(
+                    //     fontSize: 15.sp,
+                    //     color: AppColors.primary,
+                    //     fontWeight: FontWeight.w600,
+                    //   )),
+                    // ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      );
+          ],
+        ),
+  );
   Widget _contestCountdown() => Container(
         padding: const EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
         decoration: BoxDecoration(
