@@ -48,7 +48,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             final questions =
                 controller.contestDetails.value?.contest.questions ?? [];
             if (controller.isLoading.value) {
-              return const Center(child: CupertinoActivityIndicator(color: AppColors.primary,));
+              return const Center(
+                  child: CupertinoActivityIndicator(
+                color: AppColors.primary,
+              ));
             } else {
               return Container(
                 color: Colors.white,
@@ -375,7 +378,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     bool isDone = await controller.submitAnswer(
                         question.id,
                         controller.contestDetails.value?.contest.id ?? '',
-                        option.order);
+                        controller.getOptionAns(
+                            question.options.indexOf(option) + 1));
                     if (!isDone) {
                       // 3️⃣ If failed, revert selection
 
@@ -443,7 +447,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     bool isDone = await controller.submitAnswer(
                         question.id,
                         controller.contestDetails.value?.contest.id ?? '',
-                        question.options[i].order);
+                        controller.getOptionAns(i + 1));
                     if (!isDone) {
                       // 3️⃣ If failed, revert selection
 
@@ -494,8 +498,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
   }
 
   Widget _alreadyRunning() => SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    child: Row(
+        scrollDirection: Axis.horizontal,
+        child: Row(
           children: [
             Text(
               "Already Running",
@@ -523,9 +527,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     Image.asset('assets/countdown.png'),
                     SizedBox(width: 9.w),
                     CountdownTimer(
-                      startContest:
-                          controller.contestDetails.value?.contest.startContest ??
-                              DateTime.now(),
+                      startContest: controller
+                              .contestDetails.value?.contest.startContest ??
+                          DateTime.now(),
                       endContest:
                           controller.contestDetails.value?.contest.endContest ??
                               DateTime.now(),
@@ -546,7 +550,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
             ),
           ],
         ),
-  );
+      );
   Widget _contestCountdown() => Container(
         padding: const EdgeInsets.symmetric(vertical: 13.5, horizontal: 16.5),
         decoration: BoxDecoration(

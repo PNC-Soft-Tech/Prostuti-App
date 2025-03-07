@@ -193,14 +193,29 @@ class ContestDetailsController extends GetxController {
       (response) {
         Get.snackbar('Success',
             'Answer submitted successfully' ?? 'Answer submitted successfully');
-        Get.toNamed(Routes.rankling);
+ 
         isSuccess = true; // Set flag if success
       },
     );
 
     return isSuccess; // Finally return the result
   }
+String getOptionAns(int index){
+  switch(index){
+    case 1: return 'a';
+    case 2: return 'b';
+    case 3: return 'c';
+    case 4: return 'd';
+    case 5: return 'e';
+    case 6: return 'f';
+    case 7: return 'g';
+    case 8: return 'h';
+    case 9: return 'i';
+    case 10: return 'j';
 
+    default: return '';
+  }
+}
   Future<void> submitContest(String contestId) async {
     isSubmittingContest(true);
 
@@ -215,6 +230,7 @@ class ContestDetailsController extends GetxController {
       (response) {
         Get.snackbar('Success',
             response.body['message'] ?? 'Contest submitted successfully');
+                   Get.toNamed(Routes.ranking);
         // Optionally: Do further actions like navigating back, refreshing data, etc.
       },
     );

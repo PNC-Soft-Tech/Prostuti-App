@@ -51,7 +51,7 @@ class Routes {
   static const contests = '/contests';
   static const contestDetails = '/contest-details/';
   static const packageDetails = '/package-details/';
-  static const rankling = '/ranking/';
+  static const ranking = '/ranking/';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
 }
@@ -144,7 +144,7 @@ class AppPages {
       binding: QuestionBinding(),
     ),
     GetPage(
-      name: Routes.rankling,
+      name: Routes.ranking,
       page: () => const RankingView(),
       binding: RankingBinding(),
     ),

@@ -431,7 +431,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         "contest": contestId,
         "selectedAnswer": selectedAnswer,
       };
-
+log("payload $payload" );
       // Fetch the Bearer token from storage
       final token = await StorageHelper.getToken();
 
