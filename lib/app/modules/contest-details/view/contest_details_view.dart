@@ -239,8 +239,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           ? "Register Now"
                           : "Completed",
                   onPressed: () {
-                    if (status?.isRunning == true ||
-                        status?.isScheduled == true) {
+                    if (
+                        controller.contestDetails.value?.contest.isRegistered ==
+                            false && (status?.isRunning == true  ||
+                        status?.isScheduled == true)) {
                       Get.find<ContestController>().registerForContest(
                           controller.contestDetails.value!.contest.id);
                       controller.isQuestionOpened.value = true;
