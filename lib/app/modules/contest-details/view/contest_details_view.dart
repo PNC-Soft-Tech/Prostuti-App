@@ -117,9 +117,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           ],
                         ),
 
-                      SubjectTabsWidget(),
                       SizedBox(
-                        height: 15.h,
+                        height: 70.h,
                       ),
 
                       Obx(() {
@@ -157,6 +156,14 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           }),
           const ContestActionWidget(), // ✅ Handles submit/register buttons
           const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
+          Positioned(
+              child: Align(
+                  alignment: Alignment.topCenter, child: Container(
+                    color: Colors.grey.shade50,
+                    child: SubjectTabsWidget()))),
+          SizedBox(
+            height: 15.h,
+          ),
           // Obx(() {
           //   final status = controller.contestStatus.value;
           //   final isQuestionOpened = controller.isQuestionOpened.value;
