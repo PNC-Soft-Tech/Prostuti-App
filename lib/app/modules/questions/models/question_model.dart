@@ -1,3 +1,4 @@
+import '../../contests/models/topics_model.dart';
 import 'option_model.dart';
 
 class Question {
@@ -7,6 +8,7 @@ class Question {
   final bool? isGrid;
   final bool? isFlagged;
   final List<Option> options;
+  final Topic? topic;
   final String? explanation;
   final String? subCategory;
   final String? rightAnswer;
@@ -18,6 +20,7 @@ class Question {
     this.isFlagged = false,
     this.marks = 1,
     required this.options,
+    this.topic,
     this.explanation,
     this.subCategory,
     this.rightAnswer,
@@ -34,6 +37,9 @@ class Question {
               ?.map((option) => Option.fromJson(option as Map<String, dynamic>))
               .toList() ??
           [],
+      topic: json['topic'] != null
+          ? Topic.fromJson(json['topic'] as Map<String, dynamic>)
+          : null,
       explanation: json['explanation'],
       subCategory: json['subCategory'],
       rightAnswer: json['rightAnswer'],

@@ -12,7 +12,6 @@ import 'package:prostuti/app/modules/questions/models/question_model.dart';
 import '../../../common/custom_simple_appbar.dart';
 import '../../../common/widgets/countdown_timer.dart';
 import '../../contests/controller/contest_controller.dart';
-import '../../questions/models/option_model.dart';
 import '../controller/contest_details_controller.dart';
 import '../widgets/bottom_fixed_submit_contest_widget.dart';
 import '../widgets/exam_completed_dialog.dart';
@@ -171,16 +170,156 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             buildDetailsWidget(),
                           ],
                         ),
-                      if (controller.isQuestionOpened.value)
-                        for (int i = 0; i < questions.length; i++) ...[
-                          buildQuestionWidget(
-                            question: questions[i],
-                            index: i,
+                      // SingleChildScrollView(
+                      //   scrollDirection: Axis.horizontal,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      // Obx(() {
+                      //   if (controller.subjectLists.isEmpty) {
+                      //     return const Text('No subjects available');
+                      //   }
+
+                      //   return SingleChildScrollView(
+                      //     scrollDirection: Axis.horizontal,
+                      //     child: Row(
+                      //       children: List.generate(
+                      //           controller.subjectLists.length, (index) {
+                      //         final String subjectName = controller
+                      //             .subjectLists[index]; // Get subject name
+
+                      //         return Padding(
+                      //           padding: EdgeInsets.only(right: 8.w),
+                      //           child: Chip(
+                      //             label: Text(
+                      //                 '$subjectName'), // Example: "1. English"
+                      //             backgroundColor: Colors.white,
+                      //             labelPadding: EdgeInsets.symmetric(
+                      //                 vertical: 5.h, horizontal: 8.w),
+                      //           ),
+                      //         );
+                      //       }),
+                      //     ),
+                      //   );
+                      // }),
+                      Obx(() {
+                        if (controller.subjectLists.isEmpty) {
+                          return const Text('No subjects available');
+                        }
+
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              // "All" Chip - Selects all questions
+                              GestureDetector(
+                                onTap: () => controller.selectSubject('All'),
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 8.w),
+                                  child: Chip(
+                                    label: Text("All"),
+                                    backgroundColor:
+                                        controller.selectedSubject.value ==
+                                                'All'
+                                            ? Colors.blue
+                                            : Colors.white,
+                                    labelPadding: EdgeInsets.symmetric(
+                                        vertical: 5.h, horizontal: 8.w),
+                                  ),
+                                ),
+                              ),
+
+                              // Generate subject-specific Chips
+                              ...controller.subjectLists.map((subject) {
+                                return GestureDetector(
+                                  onTap: () => controller.selectSubject(
+                                      subject), // Set selected subject
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 8.w),
+                                    child: Chip(
+                                      label: Text(subject),
+                                      backgroundColor:
+                                          controller.selectedSubject.value ==
+                                                  subject
+                                              ? Colors.blue
+                                              : Colors.white,
+                                      labelPadding: EdgeInsets.symmetric(
+                                          vertical: 5.h, horizontal: 8.w),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ],
                           ),
-                          SizedBox(
-                            height: 16.h,
-                          )
-                        ],
+                        );
+                      }),
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      // SizedBox(width: 15.w,),
+                      // Container(
+                      //   child: Chip(
+                      //     label: Text("All"),
+                      //     backgroundColor: Colors.white,
+                      //     labelPadding: EdgeInsets.symmetric(
+                      //         vertical: 5.h, horizontal: 8.w),
+                      //   ),
+                      // ),      SizedBox(width: 15.w,),
+                      // Container(
+                      //   child: Chip(
+                      //     label: Text("All"),
+                      //     backgroundColor: Colors.white,
+                      //     labelPadding: EdgeInsets.symmetric(
+                      //         vertical: 5.h, horizontal: 8.w),
+                      //   ),
+                      // ),      SizedBox(width: 15.w,),
+                      // Container(
+                      //   child: Chip(
+                      //     label: Text("All"),
+                      //     backgroundColor: Colors.white,
+                      //     labelPadding: EdgeInsets.symmetric(
+                      //         vertical: 5.h, horizontal: 8.w),
+                      //   ),
+                      // ),      SizedBox(width: 15.w,),
+                      // Container(
+                      //   child: Chip(
+                      //     label: Text("All"),
+                      //     backgroundColor: Colors.white,
+                      //     labelPadding: EdgeInsets.symmetric(
+                      //         vertical: 5.h, horizontal: 8.w),
+                      //   ),
+                      // )
+                      //     ],
+                      //   ),
+                      // ),
+                      Obx(() {
+                        final filteredQuestions =
+                            controller.filteredQuestions; // Use filtered list
+
+                        if (!controller.isQuestionOpened.value) {
+                          return const SizedBox(); // Return an empty widget if questions are not opened
+                        }
+
+                        if (filteredQuestions.isEmpty) {
+                          return const Center(
+                            child: Text("No questions available"),
+                          );
+                        }
+
+                        return Column(
+                          children: [
+                            for (int i = 0;
+                                i < filteredQuestions.length;
+                                i++) ...[
+                              buildQuestionWidget(
+                                question: filteredQuestions[i],
+                                index: i,
+                              ),
+                              SizedBox(height: 16.h),
+                            ],
+                          ],
+                        );
+                      }),
                       SizedBox(
                         height: 80.h,
                       ),
@@ -239,10 +378,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           ? "Register Now"
                           : "Completed",
                   onPressed: () {
-                    if (
-                        controller.contestDetails.value?.contest.isRegistered ==
-                            false && (status?.isRunning == true  ||
-                        status?.isScheduled == true)) {
+                    if (controller.contestDetails.value?.contest.isRegistered ==
+                            false &&
+                        (status?.isRunning == true ||
+                            status?.isScheduled == true)) {
                       Get.find<ContestController>().registerForContest(
                           controller.contestDetails.value!.contest.id);
                       controller.isQuestionOpened.value = true;

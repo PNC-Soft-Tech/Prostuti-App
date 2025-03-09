@@ -20,7 +20,7 @@ class CustomBottomFixedButton extends StatelessWidget {
             child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.r),
-                  color: Colors.grey.withOpacity(.1),
+                  color: Colors.grey.withOpacity(.01),
                 ),
                 padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
                 child: CustomButton.button(

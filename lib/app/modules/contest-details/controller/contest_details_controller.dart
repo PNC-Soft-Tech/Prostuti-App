@@ -9,6 +9,7 @@ import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
 import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
+import '../../contests/models/topics_model.dart';
 import '../../questions/models/question_model.dart';
 import '../models/contest_details_model.dart';
 
@@ -39,6 +40,9 @@ class ContestDetailsController extends GetxController {
   final questionIdToIndexMap = <String, int>{}.obs;
   final markedQuestionIndexes = <int>[].obs; // For UI scroll
   final markedQuestionIds = <String>[].obs; // For API call if needed
+final RxList<String> subjectLists = <String>[].obs; // Change this in the controller
+  final RxString selectedSubject = 'All'.obs; // "All" is selected by default
+
   @override
   void onInit() {
     super.onInit();
@@ -88,6 +92,15 @@ class ContestDetailsController extends GetxController {
       },
       (data) {
         contestDetails.value = data;
+subjectLists.value = (contestDetails.value?.contest.questions ?? [])
+    .map((qs) => qs.topic?.subject?.name ?? '')
+    .toSet()
+    .toList();
+
+// Use this list somewhere else (if needed):
+// print(subjectNames);
+
+      // subjectLists.add(  contestDetails.value?.contest.questions.map(qs=> qs.topic.subject.name));
         updateContestStatus();
         setUpQuestionKeysAndIndexes(
             contestDetails.value?.contest.questions ?? []);
@@ -104,7 +117,19 @@ class ContestDetailsController extends GetxController {
           Utils.getContestStatus(contest.startContest, contest.endContest);
     }
   }
+  List<Question> get filteredQuestions {
+    final allQuestions = contestDetails.value?.contest.questions ?? [];
+    if (selectedSubject.value == 'All') {
+      return allQuestions; // Show all questions if "All" is selected
+    }
+    return allQuestions
+        .where((q) => q.topic?.subject?.name == selectedSubject.value)
+        .toList(); // Filter based on selected subject
+  }
 
+  void selectSubject(String subject) {
+    selectedSubject.value = subject; // Update the selected subject
+  }
   void selectOption(String questionId, String selectedOptionOrder) {
     selectedAnswers[questionId] =
         selectedOptionOrder; // ✅ Track selection per question
