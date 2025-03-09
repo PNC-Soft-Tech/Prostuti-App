@@ -40,7 +40,8 @@ class ContestDetailsController extends GetxController {
   final questionIdToIndexMap = <String, int>{}.obs;
   final markedQuestionIndexes = <int>[].obs; // For UI scroll
   final markedQuestionIds = <String>[].obs; // For API call if needed
-final RxList<String> subjectLists = <String>[].obs; // Change this in the controller
+  final RxList<String> subjectLists =
+      <String>[].obs; // Change this in the controller
   final RxString selectedSubject = 'All'.obs; // "All" is selected by default
 
   @override
@@ -92,15 +93,17 @@ final RxList<String> subjectLists = <String>[].obs; // Change this in the contro
       },
       (data) {
         contestDetails.value = data;
-subjectLists.value = (contestDetails.value?.contest.questions ?? [])
-    .map((qs) => qs.topic?.subject?.name ?? '')
-    .toSet()
-    .toList();
+        subjectLists.value = (contestDetails.value?.contest.questions ?? [])
+            .map((qs) => qs.topic?.subject?.name) // This returns List<String?>
+            .whereType<
+                String>() // ✅ Removes null values and casts to List<String>
+            .toSet()
+            .toList();
 
 // Use this list somewhere else (if needed):
 // print(subjectNames);
 
-      // subjectLists.add(  contestDetails.value?.contest.questions.map(qs=> qs.topic.subject.name));
+        // subjectLists.add(  contestDetails.value?.contest.questions.map(qs=> qs.topic.subject.name));
         updateContestStatus();
         setUpQuestionKeysAndIndexes(
             contestDetails.value?.contest.questions ?? []);
@@ -117,6 +120,7 @@ subjectLists.value = (contestDetails.value?.contest.questions ?? [])
           Utils.getContestStatus(contest.startContest, contest.endContest);
     }
   }
+
   List<Question> get filteredQuestions {
     final allQuestions = contestDetails.value?.contest.questions ?? [];
     if (selectedSubject.value == 'All') {
@@ -130,6 +134,7 @@ subjectLists.value = (contestDetails.value?.contest.questions ?? [])
   void selectSubject(String subject) {
     selectedSubject.value = subject; // Update the selected subject
   }
+
   void selectOption(String questionId, String selectedOptionOrder) {
     selectedAnswers[questionId] =
         selectedOptionOrder; // ✅ Track selection per question
@@ -218,29 +223,42 @@ subjectLists.value = (contestDetails.value?.contest.questions ?? [])
       (response) {
         Get.snackbar('Success',
             'Answer submitted successfully' ?? 'Answer submitted successfully');
- 
+
         isSuccess = true; // Set flag if success
       },
     );
 
     return isSuccess; // Finally return the result
   }
-String getOptionAns(int index){
-  switch(index){
-    case 1: return 'a';
-    case 2: return 'b';
-    case 3: return 'c';
-    case 4: return 'd';
-    case 5: return 'e';
-    case 6: return 'f';
-    case 7: return 'g';
-    case 8: return 'h';
-    case 9: return 'i';
-    case 10: return 'j';
 
-    default: return '';
+  String getOptionAns(int index) {
+    switch (index) {
+      case 1:
+        return 'a';
+      case 2:
+        return 'b';
+      case 3:
+        return 'c';
+      case 4:
+        return 'd';
+      case 5:
+        return 'e';
+      case 6:
+        return 'f';
+      case 7:
+        return 'g';
+      case 8:
+        return 'h';
+      case 9:
+        return 'i';
+      case 10:
+        return 'j';
+
+      default:
+        return '';
+    }
   }
-}
+
   Future<void> submitContest(String contestId) async {
     isSubmittingContest(true);
 
@@ -255,7 +273,7 @@ String getOptionAns(int index){
       (response) {
         Get.snackbar('Success',
             response.body['message'] ?? 'Contest submitted successfully');
-                   Get.toNamed(Routes.ranking);
+        Get.toNamed(Routes.ranking);
         // Optionally: Do further actions like navigating back, refreshing data, etc.
       },
     );
