@@ -12,11 +12,18 @@ import 'package:prostuti/app/modules/questions/models/question_model.dart';
 import '../../../common/custom_simple_appbar.dart';
 import '../../../common/widgets/countdown_timer.dart';
 import '../../contests/controller/contest_controller.dart';
+import '../../questions/widgets/question_widgets.dart';
 import '../controller/contest_details_controller.dart';
 import '../widgets/bottom_fixed_submit_contest_widget.dart';
+import '../widgets/contest_action_widget.dart';
+import '../widgets/contest_details_widget.dart';
+import '../widgets/contest_status_widget.dart';
 import '../widgets/exam_completed_dialog.dart';
+import '../widgets/question_navigator.dart';
 import '../widgets/question_navigator_widget.dart';
+import '../widgets/question_widget.dart';
 import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
+import '../widgets/subject_tabs_widget.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
   const ContestDetailsView({super.key});
@@ -26,21 +33,6 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(title: "Contest Details"),
-      // CustomAppBar.appBar(
-      //     title: "Contest Details",
-      //     leadingWidth: 80,
-      //     titleColor: AppColors.textPrimaryColor,
-      //     backgroundColor: Colors.white,
-      //     actions: [],
-      //     centerTitle: true,
-      //     leadingWidget: Container(
-      //         decoration: ShapeDecoration(
-      //             shape: CircleBorder(
-      //                 side: BorderSide(width: 1, color: AppColors.primary))),
-      //         child: Icon(
-      //           Icons.arrow_back,
-      //           color: AppColors.primary,
-      //         ))),
       body: Stack(
         children: [
           Obx(() {
@@ -118,240 +110,18 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             SizedBox(
                               height: 16.h,
                             ),
-                            Obx(() {
-                              final status = Utils.getContestStatus(
-                                controller.contestDetails.value?.contest
-                                        .startContest ??
-                                    DateTime.now(),
-                                controller.contestDetails.value?.contest
-                                        .endContest ??
-                                    DateTime.now(),
-                              );
-
-                              if (status.isRunning) {
-                                return _alreadyRunning();
-                              } else if (status.isScheduled) {
-                                return _contestCountdown();
-                              } else {
-                                // return _contestEnded();
-                                return SingleChildScrollView(
-                                  child: Text(
-                                      "Ended on: ${controller.contestDetails.value?.contest.endContest}"),
-                                );
-                              }
-                            }),
-                            SizedBox(
-                              height: 22.h,
-                            ),
-                            // Text(
-                            //   "${controller.contestDetails.value?.contest.description}",
-                            //   style: GoogleFonts.notoSansBengali(
-                            //       textStyle: TextStyle(
-                            //           fontSize: 15.sp,
-                            //           color: AppColors.textPrimaryColor,
-                            //           fontWeight: FontWeight.w400,
-                            //           height: 26.h / 15.sp)),
-                            // ),
-                            HtmlWidget(controller.contestDetails.value?.contest
-                                    .description ??
-                                ''),
-                            // Text(
-                            //   "বাংলাদেশ সিভিল সার্ভিসে নিয়োগ পরীক্ষা গ্রহণের জন্য প্রণীত বিসিএস (বয়স, যোগ্যতা ও সরাসরি নিয়োগের জন্য পরীক্ষা) বিধিমালা-২০১৪ অনুযায়ী বিসিএস-এর নিম্নোক্ত ২৬টি ক্যাডারে উপযুক্ত প্রার্থী নিয়োগের উদ্দেশ্যে কমিশন কর্তৃক ৩ স্তরবিশিষ্ট পরীক্ষা গ্রহণ করা হয়।",
-                            //   style: GoogleFonts.notoSansBengali(
-                            //       textStyle: TextStyle(
-                            //           fontSize: 15.sp,
-                            //           color: AppColors.textPrimaryColor,
-                            //           fontWeight: FontWeight.w400,
-                            //           height: 26.h / 15.sp)),
-                            // ),
-                            SizedBox(
-                              height: 28.h,
-                            ),
-                            buildDetailsWidget(),
+                            if (!controller.isQuestionOpened.value)
+                              const ContestStatusWidget(), // ✅ Displays running or countdown UI
+                            if (!controller.isQuestionOpened.value)
+                              const ContestDetailsWidget(), // ✅ Displays contest details
                           ],
                         ),
-                      // SingleChildScrollView(
-                      //   scrollDirection: Axis.horizontal,
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //     children: [
-                      // Obx(() {
-                      //   if (controller.subjectLists.isEmpty) {
-                      //     return const Text('No subjects available');
-                      //   }
 
-                      //   return SingleChildScrollView(
-                      //     scrollDirection: Axis.horizontal,
-                      //     child: Row(
-                      //       children: List.generate(
-                      //           controller.subjectLists.length, (index) {
-                      //         final String subjectName = controller
-                      //             .subjectLists[index]; // Get subject name
-
-                      //         return Padding(
-                      //           padding: EdgeInsets.only(right: 8.w),
-                      //           child: Chip(
-                      //             label: Text(
-                      //                 '$subjectName'), // Example: "1. English"
-                      //             backgroundColor: Colors.white,
-                      //             labelPadding: EdgeInsets.symmetric(
-                      //                 vertical: 5.h, horizontal: 8.w),
-                      //           ),
-                      //         );
-                      //       }),
-                      //     ),
-                      //   );
-                      // }),
-                      Obx(() {
-                        if (controller.subjectLists.isEmpty) {
-                          return const Text('No subjects available');
-                        }
-
-                        return controller.isQuestionOpened == true
-                            ? SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    // "All" Chip - Selects all questions
-                                    GestureDetector(
-                                      onTap: () =>
-                                          controller.selectSubject('All'),
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 5.w, vertical: 15.h),
-                                        child: Chip(
-                                          label: Text(
-                                            "All",
-                                            style: TextStyle(
-                                                color: controller
-                                                            .selectedSubject
-                                                            .value ==
-                                                        'All'
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                          ),
-                                          backgroundColor: controller
-                                                      .selectedSubject.value ==
-                                                  'All'
-                                              ? AppColors.primary
-                                              :   Color(0x2650AFFF),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 5.w, vertical: 15.h),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                                50.r), // Set border radius
-                                            side: BorderSide(
-                                              color: controller.selectedSubject
-                                                          .value ==
-                                                      'All'
-                                                  ? AppColors
-                                                      .primary // Border color for selected chip
-                                                  : Color(
-                                                    0x2650AFFF), // Border color for unselected chip
-                                                    
-                                              width: 1.5, // Border thickness
-                                            ),
-                                          ),
-                                            shadowColor: Color(0x2650AFFF),
-                                        ),
-                                      ),
-                                    ),
-
-                                    // Generate subject-specific Chips
-                                    ...controller.subjectLists.map((subject) {
-                                      return GestureDetector(
-                                        onTap: () => controller.selectSubject(
-                                            subject), // Set selected subject
-                                        child: Padding(
-                                          padding: EdgeInsets.only(right: 8.w),
-                                          child: Chip(
-                                            backgroundColor: controller
-                                                        .selectedSubject
-                                                        .value ==
-                                                    subject
-                                                ? AppColors.primary
-                                                : Color(
-                                                    0x2650AFFF), // Correct opacity
-                                            shadowColor: Color(0x2650AFFF),
-                                            label: Text(
-                                              subject,
-                                              style: TextStyle(
-                                                  color: controller
-                                                              .selectedSubject
-                                                              .value ==
-                                                          subject
-                                                      ? Colors.white
-                                                      : Colors.black),
-                                            ),
-
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 5.w,
-                                                vertical: 15.h),
-
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(50
-                                                      .r), // Set border radius
-                                              side: BorderSide(
-                                                color: controller
-                                                            .selectedSubject
-                                                            .value ==
-                                                        subject
-                                                    ? AppColors
-                                                        .primary // Border color for selected chip
-                                                    : Colors
-                                                        .white, // Border color for unselected chip
-                                                width: 1.5, // Border thickness
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ],
-                                ),
-                              )
-                            : SizedBox.shrink();
-                      }),
+                      SubjectTabsWidget(),
                       SizedBox(
                         height: 15.h,
                       ),
-                      // SizedBox(width: 15.w,),
-                      // Container(
-                      //   child: Chip(
-                      //     label: Text("All"),
-                      //     backgroundColor: Colors.white,
-                      //     labelPadding: EdgeInsets.symmetric(
-                      //         vertical: 5.h, horizontal: 8.w),
-                      //   ),
-                      // ),      SizedBox(width: 15.w,),
-                      // Container(
-                      //   child: Chip(
-                      //     label: Text("All"),
-                      //     backgroundColor: Colors.white,
-                      //     labelPadding: EdgeInsets.symmetric(
-                      //         vertical: 5.h, horizontal: 8.w),
-                      //   ),
-                      // ),      SizedBox(width: 15.w,),
-                      // Container(
-                      //   child: Chip(
-                      //     label: Text("All"),
-                      //     backgroundColor: Colors.white,
-                      //     labelPadding: EdgeInsets.symmetric(
-                      //         vertical: 5.h, horizontal: 8.w),
-                      //   ),
-                      // ),      SizedBox(width: 15.w,),
-                      // Container(
-                      //   child: Chip(
-                      //     label: Text("All"),
-                      //     backgroundColor: Colors.white,
-                      //     labelPadding: EdgeInsets.symmetric(
-                      //         vertical: 5.h, horizontal: 8.w),
-                      //   ),
-                      // )
-                      //     ],
-                      //   ),
-                      // ),
+
                       Obx(() {
                         final filteredQuestions =
                             controller.filteredQuestions; // Use filtered list
@@ -367,106 +137,104 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         }
 
                         return Column(
-                          children: [
-                            for (int i = 0;
-                                i < filteredQuestions.length;
-                                i++) ...[
-                              buildQuestionWidget(
-                                question: filteredQuestions[i],
-                                index: i,
-                              ),
-                              SizedBox(height: 16.h),
-                            ],
-                          ],
+                          children: List.generate(
+                            filteredQuestions.length,
+                            (index) => QuestionWidget(
+                              question: filteredQuestions[index],
+                              index: index,
+                            ),
+                          ),
                         );
                       }),
-                      SizedBox(
-                        height: 80.h,
-                      ),
+                      // SizedBox(
+                      //   height: 80.h,
+                      // ),
                     ],
                   ),
                 ),
               );
             }
           }),
-          Obx(() {
-            final status = controller.contestStatus.value;
-            final isQuestionOpened = controller.isQuestionOpened.value;
+          const ContestActionWidget(), // ✅ Handles submit/register buttons
+          const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
+          // Obx(() {
+          //   final status = controller.contestStatus.value;
+          //   final isQuestionOpened = controller.isQuestionOpened.value;
 
-            if (isQuestionOpened) {
-              return Align(
-                alignment: Alignment.bottomCenter,
-                child: BottomFixedSubmitContestWidget(
-                  timeLeft: controller.formattedCountdownTime,
-                  currentQuestionIndex:
-                      2, // you can make this dynamic if needed
-                  totalQuestions: controller
-                          .contestDetails.value?.contest.questions.length ??
-                      0,
-                  onCompletePressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ExamCompletedDialog(
-                        onSubmit: () {
-                          Navigator.of(context).pop();
-                          controller.submitContest(
-                              controller.contestDetails.value?.contest.id ??
-                                  '');
-                        },
-                      ),
-                    );
-                  },
-                ),
-              );
-            } else {
-              return Align(
-                alignment: Alignment.bottomCenter,
-                child: CustomBottomFixedButton(
-                  buttonText: status?.isRunning == true &&
-                          controller
-                                  .contestDetails.value?.contest.isRegistered ==
-                              true
-                      ? "Enter Now "
-                      : ((status?.isScheduled == true &&
-                                  controller.contestDetails.value?.contest
-                                          .isRegistered ==
-                                      false) ||
-                              (status?.isRunning == true &&
-                                  controller.contestDetails.value?.contest
-                                          .isRegistered ==
-                                      false))
-                          ? "Register Now"
-                          : "Completed",
-                  onPressed: () {
-                    if (controller.contestDetails.value?.contest.isRegistered ==
-                            false &&
-                        (status?.isRunning == true ||
-                            status?.isScheduled == true)) {
-                      Get.find<ContestController>().registerForContest(
-                          controller.contestDetails.value!.contest.id);
-                      controller.isQuestionOpened.value = true;
-                    } else if (status?.isDone == false ||
-                        status?.isRunning == true) {
-                      controller.isQuestionOpened.value = true;
-                    }
-                  },
-                ),
-              );
-            }
-          }),
-          Obx(() {
-            if (controller.isQuestionOpened.value) {
-              return Positioned(
-                right: 16.w,
-                bottom: 100.h,
-                child: QuestionNavigatorFloating(
-                  onOpenFlaggedSheet: () => showFlaggedQuestionsBottomSheet(
-                      controller.markedQuestionIds),
-                ),
-              );
-            }
-            return const SizedBox.shrink(); // If not opened, don't show
-          }),
+          //   if (isQuestionOpened) {
+          //     return Align(
+          //       alignment: Alignment.bottomCenter,
+          //       child: BottomFixedSubmitContestWidget(
+          //         timeLeft: controller.formattedCountdownTime,
+          //         currentQuestionIndex:
+          //             2, // you can make this dynamic if needed
+          //         totalQuestions: controller
+          //                 .contestDetails.value?.contest.questions.length ??
+          //             0,
+          //         onCompletePressed: () {
+          //           showDialog(
+          //             context: context,
+          //             builder: (context) => ExamCompletedDialog(
+          //               onSubmit: () {
+          //                 Navigator.of(context).pop();
+          //                 controller.submitContest(
+          //                     controller.contestDetails.value?.contest.id ??
+          //                         '');
+          //               },
+          //             ),
+          //           );
+          //         },
+          //       ),
+          //     );
+          //   } else {
+          //     return Align(
+          //       alignment: Alignment.bottomCenter,
+          //       child: CustomBottomFixedButton(
+          //         buttonText: status?.isRunning == true &&
+          //                 controller
+          //                         .contestDetails.value?.contest.isRegistered ==
+          //                     true
+          //             ? "Enter Now "
+          //             : ((status?.isScheduled == true &&
+          //                         controller.contestDetails.value?.contest
+          //                                 .isRegistered ==
+          //                             false) ||
+          //                     (status?.isRunning == true &&
+          //                         controller.contestDetails.value?.contest
+          //                                 .isRegistered ==
+          //                             false))
+          //                 ? "Register Now"
+          //                 : "Completed",
+          //         onPressed: () {
+          //           if (controller.contestDetails.value?.contest.isRegistered ==
+          //                   false &&
+          //               (status?.isRunning == true ||
+          //                   status?.isScheduled == true)) {
+          //             Get.find<ContestController>().registerForContest(
+          //                 controller.contestDetails.value!.contest.id);
+          //             controller.isQuestionOpened.value = true;
+          //           } else if (status?.isDone == false ||
+          //               status?.isRunning == true) {
+          //             controller.isQuestionOpened.value = true;
+          //           }
+          //         },
+          //       ),
+          //     );
+          //   }
+          // }),
+          // Obx(() {
+          //   if (controller.isQuestionOpened.value) {
+          //     return Positioned(
+          //       right: 16.w,
+          //       bottom: 100.h,
+          //       child: QuestionNavigatorFloating(
+          //         onOpenFlaggedSheet: () => showFlaggedQuestionsBottomSheet(
+          //             controller.markedQuestionIds),
+          //       ),
+          //     );
+          //   }
+          //   return const SizedBox.shrink(); // If not opened, don't show
+          // }),
         ],
       ),
     );
@@ -536,13 +304,10 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                           ? const Color(0xFFFF8143)
                                           : Colors.black))),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+                        // SizedBox(
+                        //   height: 10.h,
+                        // ),
                       ],
-                    ),
-                    SizedBox(
-                      height: 15.h,
                     ),
 
                     question.isGrid == true

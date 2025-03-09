@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../models/question_model.dart';
 
-class QuestionWidget extends StatelessWidget {
+class QuestionWidgetOld extends StatelessWidget {
   final Question question;
 
-  const QuestionWidget(this.question, {super.key});
+  const QuestionWidgetOld(this.question, {super.key});
 
   @override
   Widget build(BuildContext context) {

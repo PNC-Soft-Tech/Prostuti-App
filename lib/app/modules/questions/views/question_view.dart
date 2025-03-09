@@ -24,7 +24,7 @@ class QuestionView extends GetView<QuestionController> {
         return ListView.builder(
           itemCount: controller.questions.length,
           itemBuilder: (context, index) {
-            return QuestionWidget(controller.questions[index]);
+            return QuestionWidgetOld(controller.questions[index]);
           },
         );
       }),
