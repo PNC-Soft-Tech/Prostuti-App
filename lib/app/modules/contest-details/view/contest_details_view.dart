@@ -36,7 +36,6 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       body: Stack(
         children: [
           Obx(() {
- 
             if (controller.isLoading.value) {
               return const Center(
                   child: CupertinoActivityIndicator(
@@ -115,11 +114,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               const ContestDetailsWidget(), // ✅ Displays contest details
                           ],
                         ),
-
                       SizedBox(
                         height: 70.h,
                       ),
-
                       Obx(() {
                         final filteredQuestions =
                             controller.filteredQuestions; // Use filtered list
@@ -135,16 +132,22 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         }
 
                         return Column(
-                          children: List.generate(
-                            filteredQuestions.length,
-                            (index) => Padding(
-                              padding:  EdgeInsets.only(bottom: 8.h),
+                          children:
+                              List.generate(filteredQuestions.length, (index) {
+                            // ✅ Find the correct index in the full question list
+                            final originalIndex = controller
+                                .contestDetails.value?.contest.questions
+                                .indexWhere(
+                              (q) => q.id == filteredQuestions[index].id,
+                            );
+                            return Padding(
+                              padding: EdgeInsets.only(bottom: 8.h),
                               child: QuestionWidget(
                                 question: filteredQuestions[index],
-                                index: index,
+                                index: originalIndex ?? index,
                               ),
-                            ),
-                          ),
+                            );
+                          }),
                         );
                       }),
                       SizedBox(
@@ -160,16 +163,14 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
           Positioned(
               child: Align(
-                  alignment: Alignment.topCenter, child: Container(
-                    color: Colors.grey.shade50,
-                    child: SubjectTabsWidget()))),
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                      color: Colors.grey.shade50, child: SubjectTabsWidget()))),
           SizedBox(
             height: 15.h,
           ),
-         
         ],
       ),
     );
   }
-
 }
