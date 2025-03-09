@@ -70,16 +70,35 @@ class ContestDetailsController extends GetxController {
     }
   }
 
-  void scrollToQuestion(String questionId) {
-    final index = questionIdToIndexMap[questionId];
-    if (index == null) return;
+  // void scrollToQuestion(String questionId) {
+  //   final index = questionIdToIndexMap[questionId];
+  //   if (index == null) return;
 
-    scrollController.animateTo(
-      questionKeys[questionId]!.currentContext!.size!.height * index,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
+  //   scrollController.animateTo(
+  //     questionKeys[questionId]!.currentContext!.size!.height * index,
+  //     duration: const Duration(milliseconds: 500),
+  //     curve: Curves.easeInOut,
+  //   );
+  // }
+void scrollToQuestion(String questionId) {
+  // ✅ Find the original index from the full question list
+  final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+
+  if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
+
+  // ✅ Ensure the question is visible before scrolling
+  if (!filteredQuestions.any((q) => q.id == questionId)) {
+    // ✅ If the question is hidden, reset filter to show all
+    selectedSubject.value = 'All'; // Reset subject filter
   }
+
+  // ✅ Scroll to the question in the list
+  scrollController.animateTo(
+    originalIndex * 300.h, // Approx height per question, adjust if needed
+    duration: const Duration(milliseconds: 500),
+    curve: Curves.easeInOut,
+  );
+}
 
   void fetchContestDetails(String contestId) async {
     isLoading.value = true;
