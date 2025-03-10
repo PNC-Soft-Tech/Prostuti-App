@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../common/custom_simple_appbar.dart';
 import '../controllers/package_details_controller.dart';
@@ -17,6 +18,7 @@ class PackageDetailsView extends GetView<PackageDetailsController> {
         ),
         body: SingleChildScrollView(
           child: Container(
+            padding: EdgeInsets.only(top: 10.sp),
             color: Colors.white,
             child: const Column(
               children: [
