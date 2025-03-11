@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -28,15 +29,15 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-          margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 20.w),
+          padding: EdgeInsets.only(left: 12.w, bottom: 12.w, right: 12.w),
+          margin: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isCurrentPackage ? const Color(0xFFF1F9FF) : Colors.white,
             borderRadius: BorderRadius.circular(10.r),
             border: Border.all(
                 width: 1,
                 color: isCurrentPackage
-                    ? const Color(0xFF50AFFF)
+                    ? AppColors.primary
                     : const Color(0xFFD9D9D9)),
             boxShadow: [
               BoxShadow(
@@ -50,6 +51,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(width: 16.w),
                   Text.rich(
@@ -93,59 +95,67 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
             ],
           ),
         ),
+        // left blank arrow
+        Positioned(
+          left: 5,
+          top: 55,
+          child: SvgPicture.asset(
+            "assets/icons/angled-arrow.svg",
+            width: 10.w,
+          ),
+        ),
         Positioned(
           top: 24.h,
-          left: 10,
-          child: Stack(
-            children: [
-              Container(
-                width: 174.w,
-                height: 40.h,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-              Positioned(
-                right: -8,
-                top: 7,
-                child: Transform.rotate(
-                  angle: -3.14 / 2,
-                  child: CustomPaint(
-                    size: Size(40.w, 26.h),
-                    painter: TrianglePainter(color: Colors.white),
+          left: 6,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20.0),
+            child: Stack(
+              children: [
+                // primary bg
+                Container(
+                  width: 174.w,
+                  height: 42.h,
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius:
+                        BorderRadius.only(topLeft: Radius.circular(6)),
                   ),
                 ),
-              ),
-              Positioned(
-                left: -5,
-                bottom: -10,
-                child: Transform.rotate(
-                  angle: 180,
-                  child: CustomPaint(
-                    size: Size(15.w, 15.h),
-                    painter: TrianglePainter(color: Colors.black),
+                // right white angle
+                Positioned(
+                  right: -30,
+                  top: 7,
+                  child: Transform.rotate(
+                    angle: -3.14 / 2,
+                    child: CustomPaint(
+                      size: Size(70.w, 26.h),
+                      painter: TrianglePainter(
+                          color: isCurrentPackage
+                              ? const Color(0xFFF1F9FF)
+                              : Colors.white),
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 10.h,
-                left: 23.w,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    name.toUpperCase(),
-                    style: GoogleFonts.inter(
-                      textStyle: TextStyle(
-                        fontSize: 14.55.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                // text
+                Positioned(
+                  top: 10.h,
+                  left: 23.w,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      name.toUpperCase(),
+                      style: GoogleFonts.inter(
+                        textStyle: TextStyle(
+                          fontSize: 14.55.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -154,16 +164,17 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
 
   Widget buildRowItem({String title = '', bool isSelected = false}) =>
       Container(
-        margin: EdgeInsets.symmetric(vertical: 12.h),
+        margin: EdgeInsets.symmetric(vertical: 4.w),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Flexible(
               flex: 1,
               child: Icon(
                 Icons.check_circle_outlined,
                 color: isSelected ? AppColors.primary : const Color(0xFFBDBDBD),
-                size: 20.w,
-                grade: 20,
+                size: 24.sp,
+                // grade: 20,
               ),
             ),
             SizedBox(
@@ -171,13 +182,16 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
             ),
             Flexible(
               flex: 9,
-              child: Text(
-                title,
-                style: GoogleFonts.notoSansBengali(
-                  textStyle: TextStyle(
-                    fontSize: 14.sp,
-                    color: const Color(0xFF292D34),
-                    fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Text(
+                  title,
+                  style: GoogleFonts.notoSansBengali(
+                    textStyle: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.charcoalGray,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
@@ -185,4 +199,31 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
           ],
         ),
       );
+}
+
+class TrianglePainterCustom extends CustomPainter {
+  final Color color;
+  TrianglePainterCustom({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    Path path = Path();
+
+    // Define the points for the 45-45-90 triangle
+    path.moveTo(0, 0); // Start at the top-left corner
+    path.lineTo(size.width, 0); // Draw the bottom side (horizontal line)
+    path.lineTo(0, size.height); // Draw the vertical side
+    path.close(); // Close the path to form the triangle
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
 }
