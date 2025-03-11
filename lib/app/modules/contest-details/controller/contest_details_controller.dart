@@ -43,7 +43,8 @@ class ContestDetailsController extends GetxController {
   final RxList<String> subjectLists =
       <String>[].obs; // Change this in the controller
   final RxString selectedSubject = 'All'.obs; // "All" is selected by default
-
+  // ✅ Track which questions are currently visible
+  RxList<String> visibleQuestions = <String>[].obs;
   @override
   void onInit() {
     super.onInit();
@@ -80,24 +81,72 @@ class ContestDetailsController extends GetxController {
   //     curve: Curves.easeInOut,
   //   );
   // }
+// void scrollToQuestion(String questionId) {
+//   // ✅ Find the original index from the full question list
+//   final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+
+//   if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
+
+//   // ✅ Ensure the question is visible before scrolling
+//   if (!filteredQuestions.any((q) => q.id == questionId)) {
+//     // ✅ If the question is hidden, reset filter to show all
+//     selectedSubject.value = 'All'; // Reset subject filter
+//   }
+
+//   // ✅ Scroll to the question in the list
+//   scrollController.animateTo(
+//     originalIndex * 300.h, // Approx height per question, adjust if needed
+//     duration: const Duration(milliseconds: 500),
+//     curve: Curves.easeInOut,
+//   );
+// }
 void scrollToQuestion(String questionId) {
-  // ✅ Find the original index from the full question list
+  // ✅ Find the original index in the full question list
   final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
 
   if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
 
-  // ✅ Ensure the question is visible before scrolling
-  if (!filteredQuestions.any((q) => q.id == questionId)) {
-    // ✅ If the question is hidden, reset filter to show all
-    selectedSubject.value = 'All'; // Reset subject filter
+  // ✅ If the question is hidden, reset the filter to show all subjects
+  if (!visibleQuestions.contains(questionId)) {
+    selectedSubject.value = 'All'; // ✅ Reset subject filter
   }
 
   // ✅ Scroll to the question in the list
   scrollController.animateTo(
-    originalIndex * 300.h, // Approx height per question, adjust if needed
+    originalIndex * 300.h, // Adjust height per question if needed
     duration: const Duration(milliseconds: 500),
     curve: Curves.easeInOut,
   );
+}
+
+  void updateVisibleQuestions(List<String> questionIds) {
+    visibleQuestions.value = questionIds;
+      debugPrint("Visible Questions: $visibleQuestions"); // ✅ Debugging
+
+  }
+
+  bool isQuestionVisible(String questionId) {
+    return visibleQuestions.contains(questionId);
+  }
+
+
+String? getPreviousVisibleQuestion(String currentQuestionId) {
+  final index = visibleQuestions.indexOf(currentQuestionId);
+  debugPrint("Prev Check - Current: $currentQuestionId, Index: $index, Visible List: $visibleQuestions");
+
+  if (index > 0) {
+    debugPrint("✅ Previous Question Found: ${visibleQuestions[index - 1]}");
+    return visibleQuestions[index - 1]; 
+  }
+
+  debugPrint("❌ No Previous Question Found");
+  return null;
+}
+
+String? getNextVisibleQuestion(String currentQuestionId) {
+  final index = visibleQuestions.indexOf(currentQuestionId);
+  debugPrint("Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
+  return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
 }
 
   void fetchContestDetails(String contestId) async {

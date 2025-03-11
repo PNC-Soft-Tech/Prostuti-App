@@ -20,7 +20,7 @@ import '../widgets/contest_details_widget.dart';
 import '../widgets/contest_status_widget.dart';
 import '../widgets/exam_completed_dialog.dart';
 import '../widgets/question_navigator.dart';
-import '../widgets/question_navigator_widget.dart';
+import '../widgets/question_navigator_floating_widget.dart';
 import '../widgets/question_widget.dart';
 import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
 import '../widgets/subject_tabs_widget.dart';
