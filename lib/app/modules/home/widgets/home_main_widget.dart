@@ -8,7 +8,7 @@ import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../../job-circulars/widgets/job_circular_home_widget.dart';
-import '../../model_tests/widgets/model_test_home_widget.dart';
+import '../../model-tests-details/widgets/model_test_home_widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget<HomeController> {

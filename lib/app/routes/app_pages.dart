@@ -24,6 +24,8 @@ import '../modules/job-circulars/bindings/job-circulars-binding.dart';
 import '../modules/job-circulars/views/job-circulars-view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/model-tests-details/binding/model_test_details_binding.dart';
+import '../modules/model-tests-details/view/model_test_details_view.dart';
 import '../modules/package-details/binding/package_details_binding.dart';
 import '../modules/package-details/view/package_details_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
@@ -50,6 +52,7 @@ class Routes {
   static const questions = '/questions';
   static const contests = '/contests';
   static const contestDetails = '/contest-details/';
+  static const modelTestDetails = '/model-test-details/';
   static const packageDetails = '/package-details/';
   static const ranking = '/ranking/';
   // Dynamic route generator for single contest
@@ -147,6 +150,12 @@ class AppPages {
       name: Routes.ranking,
       page: () => const RankingView(),
       binding: RankingBinding(),
+    ),
+        GetPage(
+      // name: '/contest/:id',
+      name: Routes.modelTestDetails,
+      page: () =>  ModelTestDetailsView(),
+      binding: ModelTestDetailsBinding(),
     ),
   ];
 }
