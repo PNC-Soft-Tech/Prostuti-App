@@ -48,7 +48,7 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
                         (status?.isRunning == true &&
                             controller.contestDetails.value?.contest.isRegistered == false))
                     ? "Register Now"
-                    : "Completed",
+                    : status?.isRunning == true? "Completed":"Loading...",
             onPressed: () {
               if (controller.contestDetails.value?.contest.isRegistered == false &&
                   (status?.isRunning == true || status?.isScheduled == true)) {
