@@ -1,9 +1,13 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../../constant/app_color.dart';
 import '../../questions/models/question_model.dart';
 import '../controller/contest_details_controller.dart';
 
@@ -21,6 +25,12 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
 
   @override
   Widget build(BuildContext context) {
+
+  //          final document = quill.Document.fromJson(jsonDecode(question.title));
+  // var  _controller = quill.QuillController(
+  //     document: document,
+  //     selection: const TextSelection.collapsed(offset: 0),
+  //   );
     // Check if the title contains a base64 image
     bool containsBase64Image = question.title.contains("data:image");
 
@@ -50,20 +60,37 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
-                    HtmlWidget("${index + 1}) ${cleanedTitle}"),
-                    if (containsBase64Image)
-                      // Render as HTML if it contains a Base64 image
-                      HtmlWidget(
-                        "$cleanedTitle",
-                        textStyle: TextStyle(fontSize: 16),
-                        onErrorBuilder: (context, element, error) {
-                          return Text('Failed to load HTML content.');
-                        },
-                        onLoadingBuilder: (context, element, loadingProgress) {
-                          return CircularProgressIndicator();
-                        },
-                        buildAsync: true,
-                      ),
+                    // HtmlWidget("${index + 1}) ${cleanedTitle}"),
+                         HtmlWidget(
+                      "${index + 1}) ${question.title.replaceFirst('<p>', '').replaceFirst('</p>', '')}",
+                      textStyle: TextStyle(fontSize: 16.sp),
+                      onErrorBuilder: (context, element, error) {
+                        return Text('Failed to load HTML content.');
+                      },
+                      onLoadingBuilder: (context, element, loadingProgress) {
+                        return CupertinoActivityIndicator(color: AppColors.primary,);
+                      },
+                      buildAsync: true,
+                    ),
+                    // ReadOnlyQuillEditor(htmlContent: cleanedTitle,),
+        //              quill.QuillEditor.basic(
+        //   controller: _controller,
+        //   readOnly: true, // Read-only mode enabled
+       
+        // ),
+                    // if (containsBase64Image)
+                    //   // Render as HTML if it contains a Base64 image
+                    //   HtmlWidget(
+                    //     "$cleanedTitle",
+                    //     textStyle: TextStyle(fontSize: 16),
+                    //     onErrorBuilder: (context, element, error) {
+                    //       return Text('Failed to load HTML content.');
+                    //     },
+                    //     onLoadingBuilder: (context, element, loadingProgress) {
+                    //       return CircularProgressIndicator();
+                    //     },
+                    //     buildAsync: true,
+                    //   ),
                     Row(
                       children: [
                         Icon(Icons.flag,

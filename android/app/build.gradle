@@ -6,7 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.example.prostuti"
+    namespace "com.example.prostuti"
+
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

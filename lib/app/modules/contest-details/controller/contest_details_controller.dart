@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+// import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
@@ -25,6 +26,7 @@ class ContestDetailsController extends GetxController {
   final markedQuestions = <String>[].obs;
   // final markedQuestions = <int>[].obs; // Store **question indexes**
   final currentQuestionIndex = 0.obs; // Track current question
+  // late quill.QuillController _controller;
 
   final isSubmittingContest =
       false.obs; // This will track loading state for submitContest
@@ -52,6 +54,7 @@ class ContestDetailsController extends GetxController {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
     contestId.value = arguments["contestId"]; // Retrieve contestId
+
     fetchContestDetails(contestId.value);
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
