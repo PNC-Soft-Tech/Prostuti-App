@@ -13,7 +13,6 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
   final Question question;
   final int index;
 
-
   const QuestionWidget({
     Key? key,
     required this.question,
@@ -22,52 +21,50 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
 
   @override
   Widget build(BuildContext context) {
-          
-          // Check if the title contains a base64 image
+    // Check if the title contains a base64 image
     bool containsBase64Image = question.title.contains("data:image");
 
     // Remove unnecessary HTML tags from the title (optional)
-    String cleanedTitle =  question.title.replaceAll('<p>', '').replaceAll('</p>', '');
-    return Obx((){
-
-       return Container(
-      key: controller.questionKeys[question.id],
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Visibility(
-              visible: controller.isMarkedQuestion(question.id),
-              child: Container(
-                width: 4.w,
-                height: double.infinity,
-                color: controller.isMarkedQuestion(question.id)
-                    ? const Color(0xFFFF8143)
-                    : Colors.black,
+    String cleanedTitle =
+        question.title.replaceAll('<p>', '').replaceAll('</p>', '');
+    return Obx(() {
+      return Container(
+        key: controller.questionKeys[question.id],
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Visibility(
+                visible: controller.isMarkedQuestion(question.id),
+                child: Container(
+                  width: 4.w,
+                  height: double.infinity,
+                  color: controller.isMarkedQuestion(question.id)
+                      ? const Color(0xFFFF8143)
+                      : Colors.black,
+                ),
               ),
-            ),
-            SizedBox(width: 20.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
-                  HtmlWidget("${index + 1}) ${cleanedTitle}"),
-                         if (containsBase64Image)
-          // Render as HTML if it contains a Base64 image
-          HtmlWidget(
-            "$cleanedTitle",
-            textStyle: TextStyle(fontSize: 16),
-              onErrorBuilder: (context, element, error) {
-    return Text('Failed to load HTML content.');
-  },
-  onLoadingBuilder: (context, element, loadingProgress) {
-    return CircularProgressIndicator();
-  },
-buildAsync: true, 
-
-          ),
-                   Row(
+              SizedBox(width: 20.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
+                    HtmlWidget("${index + 1}) ${cleanedTitle}"),
+                    if (containsBase64Image)
+                      // Render as HTML if it contains a Base64 image
+                      HtmlWidget(
+                        "$cleanedTitle",
+                        textStyle: TextStyle(fontSize: 16),
+                        onErrorBuilder: (context, element, error) {
+                          return Text('Failed to load HTML content.');
+                        },
+                        onLoadingBuilder: (context, element, loadingProgress) {
+                          return CircularProgressIndicator();
+                        },
+                        buildAsync: true,
+                      ),
+                    Row(
                       children: [
                         Icon(Icons.flag,
                             color: controller.isMarkedQuestion(question.id)
@@ -96,16 +93,18 @@ buildAsync: true,
                         ),
                       ],
                     ),
-                  SizedBox(
+                    SizedBox(
                       height: 15.h,
                     ),
-                  QuestionOptionsWidget(question: question), // ✅ Use the separated widget
-                ],
+                    QuestionOptionsWidget(
+                        question: question), // ✅ Use the separated widget
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    ); });
+      );
+    });
   }
 }
