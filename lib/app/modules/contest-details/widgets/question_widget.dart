@@ -22,7 +22,15 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx((){ return Container(
+          
+          // Check if the title contains a base64 image
+    bool containsBase64Image = question.title.contains("data:image");
+
+    // Remove unnecessary HTML tags from the title (optional)
+    String cleanedTitle =  question.title.replaceAll('<p>', '').replaceAll('</p>', '');
+    return Obx((){
+
+       return Container(
       key: controller.questionKeys[question.id],
       child: IntrinsicHeight(
         child: Row(
@@ -43,7 +51,22 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
+                  // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
+                  HtmlWidget("${index + 1}) ${cleanedTitle}"),
+                         if (containsBase64Image)
+          // Render as HTML if it contains a Base64 image
+          HtmlWidget(
+            "$cleanedTitle",
+            textStyle: TextStyle(fontSize: 16),
+              onErrorBuilder: (context, element, error) {
+    return Text('Failed to load HTML content.');
+  },
+  onLoadingBuilder: (context, element, loadingProgress) {
+    return CircularProgressIndicator();
+  },
+buildAsync: true, 
+
+          ),
                    Row(
                       children: [
                         Icon(Icons.flag,

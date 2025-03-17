@@ -1,0 +1,2 @@
+C:/Users/rahat/OneDrive/Desktop/PNC_Soft_Tech/Prostuti/prostuti/android/app/.cxx/RelWithDebInfo/695k2y2l/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/rahat/OneDrive/Desktop/PNC_Soft_Tech/Prostuti/prostuti/android/app/.cxx/RelWithDebInfo/695k2y2l/x86_64/CMakeFiles/rebuild_cache.dir

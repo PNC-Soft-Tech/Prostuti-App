@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -381,4 +383,23 @@ String? getNextVisibleQuestion(String currentQuestionId) {
         remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
   }
+
+
+  bool isValidBase64(String base64) {
+  try {
+    base64Decode(base64.split(',').last);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<Uint8List?> decodeImage(String base64Data) async {
+  try {
+    return base64Decode(base64Data);
+  } catch (e) {
+    debugPrint("Error decoding base64 image: $e");
+    return null;
+  }
+}
 }

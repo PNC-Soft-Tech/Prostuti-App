@@ -71,6 +71,13 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
         visibleIds.add(question.id);
       }
     }
+  if (visibleIds.isNotEmpty) {
+      final firstVisibleIndex = controller.filteredQuestions.indexWhere((q) => q.id == visibleIds.first);
+      if (firstVisibleIndex != -1) {
+        controller.currentQuestionIndex.value = firstVisibleIndex;
+      }
+      debugPrint("📌 Updated Current Question Index: ${controller.currentQuestionIndex.value}");
+    }
 
     debugPrint("Updated Visible Questions: $visibleIds ✅"); // ✅ Track visible questions
     controller.updateVisibleQuestions(visibleIds); 
