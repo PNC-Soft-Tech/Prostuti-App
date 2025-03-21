@@ -133,4 +133,26 @@ class Utils {
 
     return bengaliNumber.toString();
   }
+  static String formatLatexString(String title) {
+  // Ensuring LaTeX format is correct by adding the $ symbols
+  if (!title.startsWith(r'$\displaystyle') && !title.startsWith(r'$')) {
+    return r'$\displaystyle ' + title.replaceAll(RegExp(r'\$'), '\\\$') + r'$';
+
+  }
+  return title; // Return the title if it's already correctly formatted
+}
+
+static String stripHtmlTags(String input) {
+  // Use a regular expression to remove HTML tags
+  return input.replaceAll(RegExp(r'<[^>]*>'), '');
+}
+// Function to check if the title contains formula expressions
+static bool containsFormulaExpression(String title) {
+  // Regex pattern for common LaTeX formula expressions
+  RegExp formulaRegex = RegExp(r'\\frac{.*?}{.*?}|\\sqrt{.*?}|[a-zA-Z0-9]+[\^]{1}[a-zA-Z0-9]+|[a-zA-Z0-9]+\/[a-zA-Z0-9]+');
+  
+  // Check if the title matches any of the patterns
+  return formulaRegex.hasMatch(title);
+}
+
 }

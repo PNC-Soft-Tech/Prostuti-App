@@ -34,6 +34,7 @@ import '../modules/ranking/binding/ranking_binding.dart';
 import '../modules/ranking/views/ranking_view.dart';
 import '../modules/search-page/binding/search_binding.dart';
 import '../modules/search-page/view/search_view.dart';
+import '../modules/testing/text_page.dart';
 
 class Routes {
   static const splash = '/splash';
@@ -55,6 +56,7 @@ class Routes {
   static const modelTestDetails = '/model-test-details/';
   static const packageDetails = '/package-details/';
   static const ranking = '/ranking/';
+  static const tex = '/tex/';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
 }
@@ -156,6 +158,12 @@ class AppPages {
       name: Routes.modelTestDetails,
       page: () =>  ModelTestDetailsView(),
       binding: ModelTestDetailsBinding(),
+    ),
+        GetPage(
+      // name: '/contest/:id',
+      name: Routes.tex,
+      page: () =>  TeXPage(),
+      // binding: ModelTestDetailsBinding(),
     ),
   ];
 }

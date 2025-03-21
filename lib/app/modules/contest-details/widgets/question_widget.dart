@@ -1,13 +1,14 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../constant/app_color.dart';
+import 'package:latext/latext.dart';
+
+import '../../../common/utils/prostuti_html_renderer.dart';
+import '../../../common/utils/prostuti_utils.dart';
 import '../../questions/models/question_model.dart';
 import '../controller/contest_details_controller.dart';
 
@@ -25,113 +26,117 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
 
   @override
   Widget build(BuildContext context) {
+       // Step 1: Strip HTML tags and handle entities
+    String cleanTitle = Utils.stripHtmlTags(question.title)
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&');
 
-  //          final document = quill.Document.fromJson(jsonDecode(question.title));
-  // var  _controller = quill.QuillController(
-  //     document: document,
-  //     selection: const TextSelection.collapsed(offset: 0),
-  //   );
-    // Check if the title contains a base64 image
-    bool containsBase64Image = question.title.contains("data:image");
+    // Step 2: Check if the LaTeX content is correctly formatted
+    String latexFormatted = r'$\displaystyle ' + cleanTitle.replaceAll(RegExp(r'\$'), '\\\$') + r'$';
+print("LaTeX String: $latexFormatted");  // Print LaTeX content for debugging
 
-    // Remove unnecessary HTML tags from the title (optional)
-    String cleanedTitle =
-        question.title.replaceAll('<p>', '').replaceAll('</p>', '');
     return Obx(() {
-      return Container(
-        key: controller.questionKeys[question.id],
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Visibility(
-                visible: controller.isMarkedQuestion(question.id),
-                child: Container(
-                  width: 4.w,
-                  height: double.infinity,
-                  color: controller.isMarkedQuestion(question.id)
-                      ? const Color(0xFFFF8143)
-                      : Colors.black,
-                ),
+    return Container(
+      key: controller.questionKeys[question.id],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Visibility(
+              visible: controller.isMarkedQuestion(question.id),
+              child: Container(
+                width: 4.w,
+                height: double.infinity,
+                color: controller.isMarkedQuestion(question.id)
+                    ? const Color(0xFFFF8143)
+                    : Colors.black,
               ),
-              SizedBox(width: 20.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
-                    // HtmlWidget("${index + 1}) ${cleanedTitle}"),
-                         HtmlWidget(
-                      "${index + 1}) ${question.title.replaceFirst('<p>', '').replaceFirst('</p>', '')}",
-                      textStyle: TextStyle(fontSize: 16.sp),
-                      onErrorBuilder: (context, element, error) {
-                        return Text('Failed to load HTML content.');
-                      },
-                      onLoadingBuilder: (context, element, loadingProgress) {
-                        return CupertinoActivityIndicator(color: AppColors.primary,);
-                      },
-                      buildAsync: true,
-                    ),
-                    // ReadOnlyQuillEditor(htmlContent: cleanedTitle,),
-        //              quill.QuillEditor.basic(
-        //   controller: _controller,
-        //   readOnly: true, // Read-only mode enabled
-       
-        // ),
-                    // if (containsBase64Image)
-                    //   // Render as HTML if it contains a Base64 image
-                    //   HtmlWidget(
-                    //     "$cleanedTitle",
-                    //     textStyle: TextStyle(fontSize: 16),
-                    //     onErrorBuilder: (context, element, error) {
-                    //       return Text('Failed to load HTML content.');
-                    //     },
-                    //     onLoadingBuilder: (context, element, loadingProgress) {
-                    //       return CircularProgressIndicator();
-                    //     },
-                    //     buildAsync: true,
-                    //   ),
-                    Row(
-                      children: [
-                        Icon(Icons.flag,
-                            color: controller.isMarkedQuestion(question.id)
-                                ? const Color(0xFFFF8143)
-                                : Colors.black),
-                        SizedBox(
-                          width: 5.w,
+            ),
+            SizedBox(width: 20.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
+                        
+               Utils.containsFormulaExpression(question.title)?   TeXView(
+                      child:  TeXViewDocument(
+                        """
+            <div>
+              <p>Here is the question:</p>
+            
+              <p>Another LaTeX example: 
+                \\(\\int_{0}^{\\infty} e^{-x^2} dx\\)
+              </p>
+            </div>
+            """,
+                        style: TeXViewStyle(
+                          textAlign: TeXViewTextAlign.left,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            controller.markUnmarkQuestion(question.id);
-                            debugPrint("qid-----> ${question.id}");
-                          },
-                          child: Text('Mark this Question',
-                              style: GoogleFonts.inter(
-                                  textStyle: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: controller
-                                              .isMarkedQuestion(question.id)
-                                          ? const Color(0xFFFF8143)
-                                          : Colors.black))),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                    QuestionOptionsWidget(
-                        question: question), // ✅ Use the separated widget
-                  ],
-                ),
+                        
+                      ),loadingWidgetBuilder: (_) =>
+                         Center(child: CircularProgressIndicator()),
+                    ):HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
+  //                 Builder(builder: (context) {
+  //                    String formattedTitle = question.title;  // Get the title from API
+  //                      String cleanTitle = Utils.stripHtmlTags(question.title)
+  //     .replaceAll('&nbsp;', ' ')
+  //     .replaceAll('&amp;', '&');
+      
+  // // For debugging
+  // print("LaTeX content: $cleanTitle");
+  //   formattedTitle = r'$\displaystyle ' + Utils.stripHtmlTags(formattedTitle).replaceAll(RegExp(r'\$'), '\\\$') + r'$';  // Properly escape $
+    
+  //   // Check the title to debug
+  //   print("Formatted LaTeX: $cleanTitle");
+  //                   return LaTexT( 
+  //                       laTeXCode: Text(cleanTitle,
+  //                           style: Theme.of(context)
+  //                               .textTheme
+  //                               .bodyMedium
+  //                               ?.copyWith(color: Colors.red)));
+  //                 }),
+                  Row(
+                    children: [
+                      Icon(Icons.flag,
+                          color: controller.isMarkedQuestion(question.id)
+                              ? const Color(0xFFFF8143)
+                              : Colors.black),
+                      SizedBox(
+                        width: 5.w,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          controller.markUnmarkQuestion(question.id);
+                          debugPrint("qid-----> ${question.id}");
+                        },
+                        child: Text('Mark this Question',
+                            style: GoogleFonts.inter(
+                                textStyle: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w400,
+                                    color:
+                                        controller.isMarkedQuestion(question.id)
+                                            ? const Color(0xFFFF8143)
+                                            : Colors.black))),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  QuestionOptionsWidget(
+                      question: question), // ✅ Use the separated widget
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
     });
   }
 }

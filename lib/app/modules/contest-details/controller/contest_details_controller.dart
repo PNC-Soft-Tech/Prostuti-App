@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
@@ -50,10 +52,12 @@ class ContestDetailsController extends GetxController {
   // ✅ Track which questions are currently visible
   RxList<String> visibleQuestions = <String>[].obs;
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
     contestId.value = arguments["contestId"]; // Retrieve contestId
+
+  rahat();
 
     fetchContestDetails(contestId.value);
     ever<int>(currentQuestionIndex, (index) {
@@ -64,7 +68,18 @@ class ContestDetailsController extends GetxController {
       );
     });
   }
+Future<void> rahat() async {
+    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
 
+  /// ✅ Properly Initialize `TeXRederingServer`
+  if (!kIsWeb) {
+    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
+    await TeXRederingServer.run(); // 🔥 Start MathJax Server
+    await Future.delayed(Duration(seconds: 2)); // 🔥 Give it time to initialize
+    await TeXRederingServer.initController();
+  }
+
+}
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
     questionKeys.clear();
     questionIdToIndexMap.clear();
@@ -378,6 +393,7 @@ String? getNextVisibleQuestion(String currentQuestionId) {
     _timer?.cancel();
     super.onClose();
   }
+
 
   String get formattedCountdownTime {
     final minutes =

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
 import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
@@ -26,6 +27,12 @@ class HomeMainWidget extends GetWidget<HomeController> {
                   'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
                   style: TextStyle(fontSize: 16.sp),
                 )),
+                SizedBox(height: 10.h),
+                GestureDetector(
+                  onTap: (){
+                    Get.toNamed(Routes.tex);
+                  },
+                  child: Text("Tex Page")),
             // CustomButton.button(
             //     text: "Logout",
             //     onPressed: () {

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'app/APIs/api_helper.dart';
@@ -10,6 +12,15 @@ import 'app/routes/app_pages.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
+
+  /// ✅ Properly Initialize `TeXRederingServer`
+  if (!kIsWeb) {
+    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
+    await TeXRederingServer.run(); // 🔥 Start MathJax Server
+    await Future.delayed(Duration(seconds: 2)); // 🔥 Give it time to initialize
+    await TeXRederingServer.initController();
+  }
   // Initialize locale data
   await initializeDateFormatting('bn_BD', null);
   Get.lazyPut<ApiHelper>(() => ApiHelperImpl(), fenix: true);
