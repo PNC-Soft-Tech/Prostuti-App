@@ -12,11 +12,11 @@ import 'app/routes/app_pages.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
+    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.katex();
 
   /// ✅ Properly Initialize `TeXRederingServer`
   if (!kIsWeb) {
-    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
+    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.katex();
     await TeXRederingServer.run(); // 🔥 Start MathJax Server
     await Future.delayed(Duration(seconds: 2)); // 🔥 Give it time to initialize
     await TeXRederingServer.initController();
