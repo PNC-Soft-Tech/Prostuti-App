@@ -30,6 +30,9 @@ class QuestionNavigatorFloating extends StatelessWidget {
       // ✅ Get the nearest previous and next visible questions
       final prevVisible = controller.getPreviousVisibleQuestion(currentQuestion.id);
       final nextVisible = controller.getNextVisibleQuestion(currentQuestion.id);
+  // Replace prevVisible/nextVisible with flagged navigation
+  final nextFlagged = controller.getNextFlaggedQuestion(currentQuestion.id);
+  final prevFlagged = controller.getPreviousFlaggedQuestion(currentQuestion.id);
 
       final currentFlaggedIndex = totalFlagged > 0
           ? flaggedQuestions.indexOf(currentQuestion.id) + 1
@@ -48,7 +51,7 @@ class QuestionNavigatorFloating extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               // ✅ Enable UP button only if a previous visible question exists
-              _navButton(Icons.arrow_upward, () => _scrollToQuestion(prevVisible), enabled: prevVisible != null),
+              _navButton(Icons.arrow_upward, () => controller.scrollToQuestion(prevFlagged), enabled: prevFlagged != null),
               SizedBox(height: 4.h),
 
               if (isMarked) const Icon(Icons.flag, color: Colors.white),
@@ -68,7 +71,7 @@ class QuestionNavigatorFloating extends StatelessWidget {
               SizedBox(height: 4.h),
 
               // ✅ Enable DOWN button only if a next visible question exists
-              _navButton(Icons.arrow_downward, () => _scrollToQuestion(nextVisible), enabled: nextVisible != null),
+              _navButton(Icons.arrow_downward, () => controller.scrollToQuestion(nextFlagged), enabled: nextFlagged != null),
             ],
           ),
         ),
@@ -87,9 +90,31 @@ class QuestionNavigatorFloating extends StatelessWidget {
   }
 
   /// ✅ Scroll to a Specific Question
-  void _scrollToQuestion(String? questionId) {
-    if (questionId != null) {
-      controller.scrollToQuestion(questionId);
-    }
-  }
+  // void _scrollToQuestion(String? questionId) {
+  //   if (questionId != null) {
+  //     controller.scrollToQuestion(questionId);
+  //   }
+  // }
+
+void _scrollToQuestion(String? questionId) async {
+  if (questionId == null) return;
+
+  final controller = Get.find<ContestDetailsController>();
+  
+  // Always reset filter first
+  controller.selectedSubject.value = 'All';
+  
+  // Wait for UI rebuild
+  await Future.delayed(Duration(milliseconds: 50));
+
+  final context = controller.questionKeys[questionId]?.currentContext;
+  if (context == null) return;
+
+  Scrollable.ensureVisible(
+    context,
+    duration: Duration(milliseconds: 500),
+    curve: Curves.easeInOut,
+    alignment: 0.1, // Adjust this value (0.0 = top, 0.5 = center)
+  );
+}
 }

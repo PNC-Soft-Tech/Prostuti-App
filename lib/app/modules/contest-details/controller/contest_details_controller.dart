@@ -105,26 +105,26 @@ class ContestDetailsController extends GetxController {
 //     curve: Curves.easeInOut,
 //   );
 // }
-  void scrollToQuestion(String questionId) {
-    // ✅ Find the original index in the full question list
-    final originalIndex = contestDetails.value?.contest.questions
-        .indexWhere((q) => q.id == questionId);
+  // void scrollToQuestion(String questionId) {
+  //   // ✅ Find the original index in the full question list
+  //   final originalIndex = contestDetails.value?.contest.questions
+  //       .indexWhere((q) => q.id == questionId);
 
-    if (originalIndex == null || originalIndex == -1)
-      return; // ❌ If not found, do nothing
+  //   if (originalIndex == null || originalIndex == -1)
+  //     return; // ❌ If not found, do nothing
 
-    // ✅ If the question is hidden, reset the filter to show all subjects
-    if (!visibleQuestions.contains(questionId)) {
-      selectedSubject.value = 'All'; // ✅ Reset subject filter
-    }
+  //   // ✅ If the question is hidden, reset the filter to show all subjects
+  //   if (!visibleQuestions.contains(questionId)) {
+  //     selectedSubject.value = 'All'; // ✅ Reset subject filter
+  //   }
 
-    // ✅ Scroll to the question in the list
-    scrollController.animateTo(
-      originalIndex * 300.h, // Adjust height per question if needed
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
-  }
+  //   // ✅ Scroll to the question in the list
+  //   scrollController.animateTo(
+  //     originalIndex * 300.h, // Adjust height per question if needed
+  //     duration: const Duration(milliseconds: 500),
+  //     curve: Curves.easeInOut,
+  //   );
+  // }
 
   void updateVisibleQuestions(List<String> questionIds) {
     visibleQuestions.value = questionIds;
@@ -239,19 +239,34 @@ class ContestDetailsController extends GetxController {
 //     markedQuestions.add(questionId);
 //   }
 // }
-  void markUnmarkQuestion(String questionId) {
-    final index = questionIdToIndexMap[questionId] ?? -1;
-    if (index == -1) return;
+  // void markUnmarkQuestion(String questionId) {
+  //   final index = questionIdToIndexMap[questionId] ?? -1;
+  //   if (index == -1) return;
 
-    if (markedQuestionIndexes.contains(index)) {
-      markedQuestionIndexes.remove(index);
-      markedQuestionIds.remove(questionId);
-    } else {
-      markedQuestionIndexes.add(index);
-      markedQuestionIds.add(questionId);
-    }
+  //   if (markedQuestionIndexes.contains(index)) {
+  //     markedQuestionIndexes.remove(index);
+  //     markedQuestionIds.remove(questionId);
+  //   } else {
+  //     markedQuestionIndexes.add(index);
+  //     markedQuestionIds.add(questionId);
+  //   }
+  // }
+// Update markUnmarkQuestion in controller
+// Modified mark/unmark method
+void markUnmarkQuestion(String questionId) {
+  final index = questionIdToIndexMap[questionId];
+  if (index == null) return;
+
+  if (markedQuestionIds.contains(questionId)) {
+    markedQuestionIds.remove(questionId);
+  } else {
+    markedQuestionIds.add(questionId);
   }
-
+  
+  // Keep the list sorted by original question order
+  markedQuestionIds.sort((a, b) => 
+    questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+}
   // void unMarkQuestion(String questionId) {
   //   markedQuestions.remove(questionId);
   // }
@@ -391,21 +406,59 @@ class ContestDetailsController extends GetxController {
     return "$minutes:$seconds";
   }
 
-  bool isValidBase64(String base64) {
-    try {
-      base64Decode(base64.split(',').last);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
+  
 
-  Future<Uint8List?> decodeImage(String base64Data) async {
-    try {
-      return base64Decode(base64Data);
-    } catch (e) {
-      debugPrint("Error decoding base64 image: $e");
-      return null;
-    }
-  }
+ // In ContestDetailsController
+String? getNextFlaggedQuestion(String currentQuestionId) {
+  if (markedQuestionIds.isEmpty) return null;
+  
+  final sortedFlagged = markedQuestionIds
+    .where((id) => questionIdToIndexMap.containsKey(id))
+    .toList()
+    ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+
+  final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
+  
+  if (currentIndex == -1) return sortedFlagged.first;
+  if (currentIndex >= sortedFlagged.length - 1) return sortedFlagged.first;
+  return sortedFlagged[currentIndex + 1];
+}
+
+String? getPreviousFlaggedQuestion(String currentQuestionId) {
+  if (markedQuestionIds.isEmpty) return null;
+  
+  final sortedFlagged = markedQuestionIds
+    .where((id) => questionIdToIndexMap.containsKey(id))
+    .toList()
+    ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+
+  final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
+  
+  if (currentIndex == -1) return sortedFlagged.last;
+  if (currentIndex <= 0) return sortedFlagged.last;
+  return sortedFlagged[currentIndex - 1];
+}
+
+// Modified scroll handler
+void scrollToQuestion(String? questionId) async {
+  if (questionId == null || !questionId.startsWith('ObjectId')) return;
+
+  final controller = Get.find<ContestDetailsController>();
+  
+  // Force show all questions
+  controller.selectedSubject.value = 'All';
+  
+  // Wait for UI rebuild
+  await Future.delayed(const Duration(milliseconds: 50));
+
+  final context = controller.questionKeys[questionId]?.currentContext;
+  if (context == null) return;
+
+  Scrollable.ensureVisible(
+    context,
+    duration: const Duration(milliseconds: 500),
+    curve: Curves.easeInOut,
+    alignment: 0.1,
+  );
+}
 }

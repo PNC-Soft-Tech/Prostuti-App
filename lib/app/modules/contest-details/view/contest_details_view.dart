@@ -62,20 +62,22 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                 color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 18.w),
                 child: NotificationListener<ScrollNotification>(
-  onNotification: (scrollNotification) {
-    debugPrint("Scroll detected! ✅"); // ✅ Ensure this prints when scrolling
+                  onNotification: (scrollNotification) {
+                    debugPrint(
+                        "Scroll detected! ✅"); // ✅ Ensure this prints when scrolling
 
-    List<String> visibleIds = [];
-    for (var question in controller.filteredQuestions) {
-      if (isQuestionInViewport(question.id)) {
-        visibleIds.add(question.id);
-      }
-    }
+                    List<String> visibleIds = [];
+                    for (var question in controller.filteredQuestions) {
+                      if (isQuestionInViewport(question.id)) {
+                        visibleIds.add(question.id);
+                      }
+                    }
 
-    debugPrint("Updated Visible Questions: $visibleIds ✅"); // ✅ Track visible questions
-    controller.updateVisibleQuestions(visibleIds); 
-    return true;
-  },
+                    debugPrint(
+                        "Updated Visible Questions: $visibleIds ✅"); // ✅ Track visible questions
+                    controller.updateVisibleQuestions(visibleIds);
+                    return true;
+                  },
                   child: SingleChildScrollView(
                     controller: controller.scrollController,
                     child: Column(
@@ -90,12 +92,12 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   controller.contestDetails.value?.contest
                                                   .imageUrl !=
                                               null &&
-                                          controller.contestDetails.value!.contest
-                                              .imageUrl!
+                                          controller.contestDetails.value!
+                                              .contest.imageUrl!
                                               .contains('http')
                                       ? Image.network(
-                                          controller.contestDetails.value?.contest
-                                                  .imageUrl ??
+                                          controller.contestDetails.value
+                                                  ?.contest.imageUrl ??
                                               '',
                                           height: 34.r,
                                           width: 34.r,
@@ -151,21 +153,20 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         Obx(() {
                           final filteredQuestions =
                               controller.filteredQuestions; // Use filtered list
-                  
+
                           if (!controller.isQuestionOpened.value) {
                             return const SizedBox(); // Return an empty widget if questions are not opened
                           }
-                  
+
                           if (filteredQuestions.isEmpty) {
                             return const Center(
                               child: Text("No questions available"),
                             );
                           }
-                  
+
                           return Column(
                             children: List.generate(filteredQuestions.length,
                                 (index) {
-                                  
                               // ✅ Find the correct index in the full question list
                               final originalIndex = controller
                                   .contestDetails.value?.contest.questions
@@ -175,6 +176,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
                                 child: QuestionWidget(
+                                  // key: controller.questionKeys[filteredQuestions[index].id],
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
                                 ),
@@ -195,9 +197,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           const ContestActionWidget(), // ✅ Handles submit/register buttons
           const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
           Align(
-              alignment: Alignment.topCenter,
+              alignment: Alignment.topLeft,
               child: Container(
-                  color: Colors.grey.shade50, child: SubjectTabsWidget())),
+                  color: Colors.white, child: SubjectTabsWidget())),
           SizedBox(
             height: 15.h,
           ),
