@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_tex/flutter_tex.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
@@ -56,9 +55,6 @@ class ContestDetailsController extends GetxController {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
     contestId.value = arguments["contestId"]; // Retrieve contestId
-
-  rahat();
-
     fetchContestDetails(contestId.value);
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
@@ -68,18 +64,7 @@ class ContestDetailsController extends GetxController {
       );
     });
   }
-Future<void> rahat() async {
-    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
 
-  /// ✅ Properly Initialize `TeXRederingServer`
-  if (!kIsWeb) {
-    TeXRederingServer.renderingEngine = const TeXViewRenderingEngine.mathjax();
-    await TeXRederingServer.run(); // 🔥 Start MathJax Server
-    await Future.delayed(Duration(seconds: 2)); // 🔥 Give it time to initialize
-    await TeXRederingServer.initController();
-  }
-
-}
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
     questionKeys.clear();
     questionIdToIndexMap.clear();
@@ -120,54 +105,58 @@ Future<void> rahat() async {
 //     curve: Curves.easeInOut,
 //   );
 // }
-void scrollToQuestion(String questionId) {
-  // ✅ Find the original index in the full question list
-  final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+  void scrollToQuestion(String questionId) {
+    // ✅ Find the original index in the full question list
+    final originalIndex = contestDetails.value?.contest.questions
+        .indexWhere((q) => q.id == questionId);
 
-  if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
+    if (originalIndex == null || originalIndex == -1)
+      return; // ❌ If not found, do nothing
 
-  // ✅ If the question is hidden, reset the filter to show all subjects
-  if (!visibleQuestions.contains(questionId)) {
-    selectedSubject.value = 'All'; // ✅ Reset subject filter
+    // ✅ If the question is hidden, reset the filter to show all subjects
+    if (!visibleQuestions.contains(questionId)) {
+      selectedSubject.value = 'All'; // ✅ Reset subject filter
+    }
+
+    // ✅ Scroll to the question in the list
+    scrollController.animateTo(
+      originalIndex * 300.h, // Adjust height per question if needed
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
-
-  // ✅ Scroll to the question in the list
-  scrollController.animateTo(
-    originalIndex * 300.h, // Adjust height per question if needed
-    duration: const Duration(milliseconds: 500),
-    curve: Curves.easeInOut,
-  );
-}
 
   void updateVisibleQuestions(List<String> questionIds) {
     visibleQuestions.value = questionIds;
-      debugPrint("Visible Questions: $visibleQuestions"); // ✅ Debugging
-
+    debugPrint("Visible Questions: $visibleQuestions"); // ✅ Debugging
   }
 
   bool isQuestionVisible(String questionId) {
     return visibleQuestions.contains(questionId);
   }
 
+  String? getPreviousVisibleQuestion(String currentQuestionId) {
+    final index = visibleQuestions.indexOf(currentQuestionId);
+    debugPrint(
+        "Prev Check - Current: $currentQuestionId, Index: $index, Visible List: $visibleQuestions");
 
-String? getPreviousVisibleQuestion(String currentQuestionId) {
-  final index = visibleQuestions.indexOf(currentQuestionId);
-  debugPrint("Prev Check - Current: $currentQuestionId, Index: $index, Visible List: $visibleQuestions");
+    if (index > 0) {
+      debugPrint("✅ Previous Question Found: ${visibleQuestions[index - 1]}");
+      return visibleQuestions[index - 1];
+    }
 
-  if (index > 0) {
-    debugPrint("✅ Previous Question Found: ${visibleQuestions[index - 1]}");
-    return visibleQuestions[index - 1]; 
+    debugPrint("❌ No Previous Question Found");
+    return null;
   }
 
-  debugPrint("❌ No Previous Question Found");
-  return null;
-}
-
-String? getNextVisibleQuestion(String currentQuestionId) {
-  final index = visibleQuestions.indexOf(currentQuestionId);
-  debugPrint("Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
-  return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
-}
+  String? getNextVisibleQuestion(String currentQuestionId) {
+    final index = visibleQuestions.indexOf(currentQuestionId);
+    debugPrint(
+        "Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
+    return index < visibleQuestions.length - 1
+        ? visibleQuestions[index + 1]
+        : null;
+  }
 
   void fetchContestDetails(String contestId) async {
     isLoading.value = true;
@@ -394,7 +383,6 @@ String? getNextVisibleQuestion(String currentQuestionId) {
     super.onClose();
   }
 
-
   String get formattedCountdownTime {
     final minutes =
         remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
@@ -403,22 +391,21 @@ String? getNextVisibleQuestion(String currentQuestionId) {
     return "$minutes:$seconds";
   }
 
-
   bool isValidBase64(String base64) {
-  try {
-    base64Decode(base64.split(',').last);
-    return true;
-  } catch (e) {
-    return false;
+    try {
+      base64Decode(base64.split(',').last);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-Future<Uint8List?> decodeImage(String base64Data) async {
-  try {
-    return base64Decode(base64Data);
-  } catch (e) {
-    debugPrint("Error decoding base64 image: $e");
-    return null;
+  Future<Uint8List?> decodeImage(String base64Data) async {
+    try {
+      return base64Decode(base64Data);
+    } catch (e) {
+      debugPrint("Error decoding base64 image: $e");
+      return null;
+    }
   }
-}
 }

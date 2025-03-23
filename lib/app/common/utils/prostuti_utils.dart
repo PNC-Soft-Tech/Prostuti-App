@@ -7,7 +7,8 @@ import '../../common/controller/app_controller.dart';
 import '../../constant/app_color.dart';
 import '../../modules/contests/models/contest_status.dart';
 import '../../storage/storage_helper.dart';
-
+import 'package:html/parser.dart' show parseFragment;
+import 'package:html/dom.dart' as dom;
 class Utils {
   static Future<void> logoutUser() async {
     try {
@@ -153,6 +154,11 @@ static bool containsFormulaExpression(String title) {
   
   // Check if the title matches any of the patterns
   return formulaRegex.hasMatch(title);
+}
+
+static String decodeHtmlEntities(String input) {
+  final fragment = parseFragment(input);
+  return fragment.text ??'';
 }
 
 }

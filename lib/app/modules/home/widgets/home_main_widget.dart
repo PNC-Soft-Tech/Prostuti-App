@@ -28,11 +28,11 @@ class HomeMainWidget extends GetWidget<HomeController> {
                   style: TextStyle(fontSize: 16.sp),
                 )),
                 SizedBox(height: 10.h),
-                GestureDetector(
-                  onTap: (){
-                    Get.toNamed(Routes.tex);
-                  },
-                  child: Text("Tex Page")),
+                // GestureDetector(
+                //   onTap: (){
+                //     Get.toNamed(Routes.tex);
+                //   },
+                //   child: Text("Tex Page")),
             // CustomButton.button(
             //     text: "Logout",
             //     onPressed: () {

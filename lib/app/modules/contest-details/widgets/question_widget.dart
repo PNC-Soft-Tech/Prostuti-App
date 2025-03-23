@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_tex/flutter_tex.dart';
+
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:latext/latext.dart';
-
-import '../../../common/utils/prostuti_html_renderer.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../questions/models/question_model.dart';
 import '../controller/contest_details_controller.dart';
@@ -30,7 +28,7 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
     String cleanTitle = Utils.stripHtmlTags(question.title)
         .replaceAll('&nbsp;', ' ')
         .replaceAll('&amp;', '&');
-
+String htmltitle = Utils.decodeHtmlEntities(question.title);
     // Step 2: Check if the LaTeX content is correctly formatted
     String latexFormatted = r'$\displaystyle ' +
         cleanTitle.replaceAll(RegExp(r'\$'), '\\\$') +
@@ -61,57 +59,70 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                   children: [
                     // HtmlWidget("${index + 1}) ${question.title.replaceAll('<p>', '')}"),
 
-            //         Utils.containsFormulaExpression(question.title)
-            //             ? TeXView(
-            //                 child: TeXViewDocument(
-            //                   """
-            // <div>
-            //   <p>Here is the question:</p>
-            
-            //   <p>Another LaTeX example: 
-            //     \\(\\int_{0}^{\\infty} e^{-x^2} dx\\)
-            //   </p>
-            // </div>
-            // """,
-            //                   style: TeXViewStyle(
-            //                     textAlign: TeXViewTextAlign.left,
-            //                   ),
-            //                 ),
-            //                 loadingWidgetBuilder: (_) =>
-            //                     Center(child: CircularProgressIndicator()),
-            //               )
-            //             : HtmlWidget(
-            //                 "${index + 1}) ${question.title.replaceAll('<p>', '')}"),
-                
-                 Utils.containsFormulaExpression(question.title)
-                        ?
-                    Builder(builder: (context) {
-                      String formattedTitle =
-                          question.title; // Get the title from API
-                      String cleanTitle = Utils.stripHtmlTags(question.title)
-                          .replaceAll('&nbsp;', ' ')
-                          .replaceAll('&amp;', '&');
+                    //         Utils.containsFormulaExpression(question.title)
+                    //             ? TeXView(
+                    //                 child: TeXViewDocument(
+                    //                   """
+                    // <div>
+                    //   <p>Here is the question:</p>
 
-                      // For debugging
-                      print("LaTeX content: $cleanTitle");
-                      formattedTitle = r'$\displaystyle ' +
-                          Utils.stripHtmlTags(formattedTitle)
-                              .replaceAll(RegExp(r'\$'), '\\\$') +
-                          r'$'; // Properly escape $
+                    //   <p>Another LaTeX example:
+                    //     \\(\\int_{0}^{\\infty} e^{-x^2} dx\\)
+                    //   </p>
+                    // </div>
+                    // """,
+                    //                   style: TeXViewStyle(
+                    //                     textAlign: TeXViewTextAlign.left,
+                    //                   ),
+                    //                 ),
+                    //                 loadingWidgetBuilder: (_) =>
+                    //                     Center(child: CircularProgressIndicator()),
+                    //               )
+                    //             : HtmlWidget(
+                    //                 "${index + 1}) ${question.title.replaceAll('<p>', '')}"),
 
-                      // Check the title to debug
-                      print("Formatted LaTeX: $cleanTitle");
-                      return LaTexT(  equationStyle: GoogleFonts.notoSansBengali(
-                                        textStyle: 
-                              
-                              TextStyle(fontSize: 15)),
-                          laTeXCode: Text(formattedTitle,
-                              style: GoogleFonts.notoSansBengali(
-                                        textStyle: 
-                              
-                              TextStyle(fontSize: 15))));
-                    }):HtmlWidget(
-                            "${index + 1}) ${question.title.replaceAll('<p>', '')}"),
+                    // Utils.containsFormulaExpression(question.title)
+                    //     ? Builder(builder: (context) {
+                    //         String formattedTitle =
+                    //             question.title; // Get the title from API
+                    //         String cleanTitle =
+                    //             Utils.stripHtmlTags(question.title)
+                    //                 .replaceAll('&nbsp;', ' ')
+                    //                 .replaceAll('&amp;', '&');
+
+                    //         // For debugging
+                    //         print("LaTeX content: $cleanTitle");
+                    //         formattedTitle = r'$\displaystyle ' +
+                    //             Utils.stripHtmlTags(formattedTitle)
+                    //                 .replaceAll(RegExp(r'\$'), '\\\$') +
+                    //             r'$'; // Properly escape $
+
+                    //         // Check the title to debug
+                    //         print("Formatted LaTeX: $cleanTitle");
+                    //         // return LaTexT(
+                    //         //     equationStyle: GoogleFonts.notoSansBengali(
+                    //         //         textStyle: TextStyle(fontSize: 15)),
+                    //         //     laTeXCode: Text(formattedTitle,
+                    //         //         style: GoogleFonts.notoSansBengali(
+                    //         //             textStyle: TextStyle(fontSize: 15))));
+                    //      return   MixedLaTeXText(input: formattedTitle,);
+                    //       })
+                    //     :
+                    HtmlWidget(
+                    htmltitle.replaceAll('<pre>', '').replaceAll('</pre>', ''),
+                      customWidgetBuilder: (element) {
+                          print('Element classes: ${question.title}');
+
+                        if (element.classes.contains('latex') || element.classes.contains('ql-syntax')) {
+                          // Render LaTeX content
+                          return Math.tex(
+                            element.text,
+                            textStyle: TextStyle(fontSize: 20),
+                          );
+                        }
+                        return null; // Fallback to default rendering
+                      },
+                    ),
                     Row(
                       children: [
                         Icon(Icons.flag,
