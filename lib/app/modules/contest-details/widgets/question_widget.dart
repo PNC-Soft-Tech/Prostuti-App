@@ -33,7 +33,7 @@ String htmltitle = Utils.decodeHtmlEntities(question.title);
     String latexFormatted = r'$\displaystyle ' +
         cleanTitle.replaceAll(RegExp(r'\$'), '\\\$') +
         r'$';
-    print("LaTeX String: $latexFormatted"); // Print LaTeX content for debugging
+    print("htmltitle String: $htmltitle"); // Print LaTeX content for debugging
 
     return Obx(() {
       return Container(
@@ -109,7 +109,7 @@ String htmltitle = Utils.decodeHtmlEntities(question.title);
                     //       })
                     //     :
                     HtmlWidget(
-                    htmltitle.replaceAll('<pre>', '').replaceAll('</pre>', ''),
+                    question.title.replaceAll('<pre>', '').replaceAll('</pre>', ''),
                       customWidgetBuilder: (element) {
                           print('Element classes: ${question.title}');
 

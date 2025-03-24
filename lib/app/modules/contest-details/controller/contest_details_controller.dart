@@ -190,13 +190,16 @@ class ContestDetailsController extends GetxController {
     );
   }
 
-  void updateContestStatus() {
-    final contest = contestDetails.value?.contest;
-    if (contest != null) {
-      contestStatus.value =
-          Utils.getContestStatus(contest.startContest, contest.endContest);
-    }
+// Update status check wherever needed
+void updateContestStatus() {
+  final contest = contestDetails.value?.contest;
+  if (contest != null) {
+    contestStatus.value = ContestStatus.fromDates(
+      contest.startContest.toLocal(),
+      contest.endContest.toLocal(),
+    );
   }
+}
 
   List<Question> get filteredQuestions {
     final allQuestions = contestDetails.value?.contest.questions ?? [];
@@ -371,41 +374,84 @@ void markUnmarkQuestion(String questionId) {
     );
   }
 
-  void startTimer(DateTime startTime, DateTime endTime) {
-    _updateRemainingTime(startTime, endTime);
+// In ContestDetailsController
+void startTimer(DateTime startTime, DateTime endTime) {
+  // Convert to local timezone
+  final localStart = startTime.toLocal();
+  final localEnd = endTime.toLocal();
 
-    _timer?.cancel(); // Clear old timer if any
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _updateRemainingTime(startTime, endTime);
-    });
-  }
+  _updateRemainingTime(localStart, localEnd);
+  _timer?.cancel();
+  _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _updateRemainingTime(localStart, localEnd);
+  });
+}
 
-  void _updateRemainingTime(DateTime startTime, DateTime endTime) {
-    final now = DateTime.now();
-    if (now.isBefore(startTime)) {
-      remainingTime.value = startTime.difference(now);
-    } else if (now.isBefore(endTime)) {
-      remainingTime.value = endTime.difference(now);
-    } else {
-      remainingTime.value = Duration.zero;
-      _timer?.cancel();
-    }
+void _updateRemainingTime(DateTime startTime, DateTime endTime) {
+  final status = ContestStatus.fromDates(startTime, endTime);
+  contestStatus.value = status;
+
+  final now = DateTime.now();
+  if (status.isScheduled) {
+    remainingTime.value = startTime.difference(now);
+  } else if (status.isRunning) {
+    remainingTime.value = endTime.difference(now);
+  } else {
+    remainingTime.value = Duration.zero;
+    _timer?.cancel();
   }
+}
 
   @override
   void onClose() {
     _timer?.cancel();
     super.onClose();
   }
-
+// String get formattedCountdownTime {
+//   if (remainingTime.value.isNegative) return "00:00:00";
+  
+//   final hours = remainingTime.value.inHours;
+//   final minutes = remainingTime.value.inMinutes.remainder(60);
+//   final seconds = remainingTime.value.inSeconds.remainder(60);
+  
+//   return [
+//     hours.toString().padLeft(2, '0'),
+//     minutes.toString().padLeft(2, '0'),
+//     seconds.toString().padLeft(2, '0')
+//   ].join(':');
+// }
   String get formattedCountdownTime {
-    final minutes =
-        remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds =
-        remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$minutes:$seconds";
+  if (contestStatus.value?.isDone ?? true) {
+    return 'Contest Ended';
   }
 
+  final time = remainingTime.value;
+  if (time <= Duration.zero) {
+    return 'Contest Ended';
+  }
+
+  // Extract time components
+  final days = time.inDays;
+  final hours = time.inHours.remainder(24);
+  final minutes = time.inMinutes.remainder(60);
+  final seconds = time.inSeconds.remainder(60);
+
+  // Build human-readable parts
+  final parts = <String>[];
+  if (days > 0) parts.add('$days day${days != 1 ? 's' : ''}');
+  if (hours > 0) parts.add('$hours hour${hours != 1 ? 's' : ''}');
+  if (minutes > 0) parts.add('$minutes minute${minutes != 1 ? 's' : ''}');
+  if (seconds > 0) parts.add('$seconds second${seconds != 1 ? 's' : ''}');
+
+  // Get up to two most significant units
+  final displayParts = parts.take(2).toList();
+  final timeString = displayParts.join(' and ');
+
+  // Add status context
+  return contestStatus.value!.isScheduled 
+      ? 'Starts in $timeString'
+      : 'Ends in $timeString';
+}
   
 
  // In ContestDetailsController
