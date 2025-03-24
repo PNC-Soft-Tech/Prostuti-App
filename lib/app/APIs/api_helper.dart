@@ -9,6 +9,7 @@ import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
+import '../modules/model-tests-details/models/model_test_response_model.dart';
 import '../modules/questions/models/question_model.dart';
 import '../modules/register/models/register_model.dart';
 import '../modules/subjects/models/subjects_model.dart';
@@ -32,6 +33,8 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<Contest>>> fetchRecentContests();
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       String contestId);
+  Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
+      String modelTestId);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   Future<Either<CustomError, List<Subjects>>> fetchSubjects();
   Future<Either<CustomError, List<SubjectTopics>>>

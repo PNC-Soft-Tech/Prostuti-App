@@ -14,14 +14,16 @@ import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
 import '../../contests/models/topics_model.dart';
 import '../../questions/models/question_model.dart';
+import '../models/model_test_response_model.dart';
 
 
 class ModelTestDetailsController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   var contestId = ''.obs;
+  var modelTestId = ''.obs;
   var contests = <Contest>[].obs;
   var contest = Rxn<Contest>();
-  var contestDetails = Rxn<ContestDetailsResponse>();
+  var modelDetails = Rxn<ModelTestDetailsResponse>();
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
   final markedQuestions = <String>[].obs;
   // final markedQuestions = <int>[].obs; // Store **question indexes**
@@ -51,9 +53,10 @@ class ModelTestDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final Map<String, dynamic> arguments = Get.arguments;
-    contestId.value = arguments["contestId"]; // Retrieve contestId
-    fetchContestDetails(contestId.value);
+    // final Map<String, dynamic> arguments = Get.arguments;
+    // contestId.value = arguments["contestId"]; // Retrieve contestId
+    modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
+    fetchModelTestDetails(modelTestId.value);
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
         index * 300.h, // Approx height per question, tune if needed
@@ -105,7 +108,7 @@ class ModelTestDetailsController extends GetxController {
 // }
 void scrollToQuestion(String questionId) {
   // ✅ Find the original index in the full question list
-  final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+  final originalIndex = modelDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
 
   if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
 
@@ -152,19 +155,20 @@ String? getNextVisibleQuestion(String currentQuestionId) {
   return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
 }
 
-  void fetchContestDetails(String contestId) async {
+  void fetchModelTestDetails(String modelTestId) async {
     isLoading.value = true;
 
-    final result = await _apiHelper.fetchSingleContest(contestId);
+    final result = await _apiHelper.fetchSingleModelTest(modelTestId);
 
     result.fold(
       (error) {
         isLoading.value = false;
-        log('Error fetching contest details: ${error.message}');
+        log('Error fetching model test details: ${error.message}');
       },
       (data) {
-        contestDetails.value = data;
-        subjectLists.value = (contestDetails.value?.contest.questions ?? [])
+        modelDetails.value = data;
+        log("model test data: ${modelDetails.value}");
+        subjectLists.value = (modelDetails.value?.contest.questions ?? [])
             .map((qs) => qs.topic?.subject?.name) // This returns List<String?>
             .whereType<
                 String>() // ✅ Removes null values and casts to List<String>
@@ -175,25 +179,19 @@ String? getNextVisibleQuestion(String currentQuestionId) {
 // print(subjectNames);
 
         // subjectLists.add(  contestDetails.value?.contest.questions.map(qs=> qs.topic.subject.name));
-        updateContestStatus();
+
         setUpQuestionKeysAndIndexes(
-            contestDetails.value?.contest.questions ?? []);
+            modelDetails.value?.contest.questions ?? []);
         startTimer(data.contest.startContest, data.contest.endContest);
         isLoading.value = false;
       },
     );
   }
 
-  void updateContestStatus() {
-    final contest = contestDetails.value?.contest;
-    if (contest != null) {
-      contestStatus.value =
-          Utils.getContestStatus(contest.startContest, contest.endContest);
-    }
-  }
+
 
   List<Question> get filteredQuestions {
-    final allQuestions = contestDetails.value?.contest.questions ?? [];
+    final allQuestions = modelDetails.value?.contest.questions ?? [];
     if (selectedSubject.value == 'All') {
       return allQuestions; // Show all questions if "All" is selected
     }
@@ -215,24 +213,7 @@ String? getNextVisibleQuestion(String currentQuestionId) {
     return selectedAnswers[questionId] == optionOrder;
   }
 
-  // void markQuestion(String questionId) {
-  //   markedQuestions.add(questionId);
-  // }
-
-  // void markUnmarkQuestion(int index) {
-  //   if (markedQuestions.contains(index)) {
-  //     markedQuestions.remove(index);
-  //   } else {
-  //     markedQuestions.add(index);
-  //   }
-  // }
-// void markUnmarkQuestion(String questionId) {
-//   if (markedQuestions.contains(questionId)) {
-//     markedQuestions.remove(questionId);
-//   } else {
-//     markedQuestions.add(questionId);
-//   }
-// }
+ 
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId] ?? -1;
     if (index == -1) return;
@@ -255,7 +236,7 @@ String? getNextVisibleQuestion(String currentQuestionId) {
   }
 
   Question? questionAtIndex(int index) {
-    final questions = contestDetails.value?.contest.questions ?? [];
+    final questions = modelDetails.value?.contest.questions ?? [];
     if (index < 0 || index >= questions.length) return null;
     return questions[index];
   }
@@ -385,22 +366,4 @@ String? getNextVisibleQuestion(String currentQuestionId) {
     return "$minutes:$seconds";
   }
 
-
-  bool isValidBase64(String base64) {
-  try {
-    base64Decode(base64.split(',').last);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-Future<Uint8List?> decodeImage(String base64Data) async {
-  try {
-    return base64Decode(base64Data);
-  } catch (e) {
-    debugPrint("Error decoding base64 image: $e");
-    return null;
-  }
-}
 }

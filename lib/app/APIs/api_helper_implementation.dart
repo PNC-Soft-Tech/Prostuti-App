@@ -14,6 +14,7 @@ import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
+import '../modules/model-tests-details/models/model_test_response_model.dart';
 import '../modules/questions/models/question_model.dart';
 import '../modules/register/models/register_model.dart';
 import '../modules/subjects/models/subjects_model.dart';
@@ -323,6 +324,31 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+  @override
+  Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
+      String modelTestId) async {
+    try {
+      // Make GET request
+      final response = await get('models/$modelTestId');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // Parse the response into SingleContestResponse
+        final data = ModelTestDetailsResponse.fromJson(response.body['data']);
+        return Right(data);
+      } else {
+        // Handle API error
+        return Left(CustomError(
+          response.statusCode,
+          message:
+              response.body['message'] ?? 'Failed to fetch model details',
+        ));
+      }
+    } catch (e) {
+      // Handle network or parsing errors
+      log('Error fetching model : $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
 
   @override
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
@@ -431,7 +457,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         "contest": contestId,
         "selectedAnswer": selectedAnswer,
       };
-log("payload $payload" );
+      log("payload $payload");
       // Fetch the Bearer token from storage
       final token = await StorageHelper.getToken();
 
@@ -467,32 +493,32 @@ log("payload $payload" );
   }
 
   @override
-Future<Either<CustomError, Response>> submitContest(String contestId) async {
-  try {
-    final token = await StorageHelper.getToken();
+  Future<Either<CustomError, Response>> submitContest(String contestId) async {
+    try {
+      final token = await StorageHelper.getToken();
 
-    if (token == null) {
-      return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      final response =
+          await get('contests/submit-contest/$contestId', headers: headers);
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to submit contest',
+        ));
+      }
+    } catch (e) {
+      log('Error submitting contest: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-
-    final headers = {
-      'Authorization': 'Bearer $token',
-    };
-
-    final response = await get('contests/submit-contest/$contestId', headers: headers);
-
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      return Right(response);
-    } else {
-      return Left(CustomError(
-        response.statusCode ?? 500,
-        message: response.body['message'] ?? 'Failed to submit contest',
-      ));
-    }
-  } catch (e) {
-    log('Error submitting contest: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-
 }
