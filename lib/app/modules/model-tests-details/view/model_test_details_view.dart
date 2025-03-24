@@ -170,6 +170,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                   // key: controller.questionKeys[filteredQuestions[index].id],
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
+                                   isExp: true,
                                 ),
                               );
                             }),

@@ -15,11 +15,13 @@ import 'question_option_widget.dart';
 class QuestionWidget extends GetWidget<ContestDetailsController> {
   final Question question;
   final int index;
+  final bool isExp;
 
   const QuestionWidget({
     Key? key,
     required this.question,
     required this.index,
+    this.isExp = false,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,7 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
     String cleanTitle = Utils.stripHtmlTags(question.title)
         .replaceAll('&nbsp;', ' ')
         .replaceAll('&amp;', '&');
-String htmltitle = Utils.decodeHtmlEntities(question.title);
+    String htmltitle = Utils.decodeHtmlEntities(question.title);
     // Step 2: Check if the LaTeX content is correctly formatted
     String latexFormatted = r'$\displaystyle ' +
         cleanTitle.replaceAll(RegExp(r'\$'), '\\\$') +
@@ -109,11 +111,15 @@ String htmltitle = Utils.decodeHtmlEntities(question.title);
                     //       })
                     //     :
                     HtmlWidget(
-                    question.title.replaceAll('<pre>', '').replaceAll('</pre>', ''),
+                      '${index + 1}) ' +
+                          question.title
+                              .replaceAll('<pre>', '')
+                              .replaceAll('</pre>', ''),
                       customWidgetBuilder: (element) {
-                          print('Element classes: ${question.title}');
+                        print('Element classes: ${question.title}');
 
-                        if (element.classes.contains('latex') || element.classes.contains('ql-syntax')) {
+                        if (element.classes.contains('latex') ||
+                            element.classes.contains('ql-syntax')) {
                           // Render LaTeX content
                           return Math.tex(
                             element.text,
@@ -157,6 +163,51 @@ String htmltitle = Utils.decodeHtmlEntities(question.title);
                     ),
                     QuestionOptionsWidget(
                         question: question), // ✅ Use the separated widget
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                    isExp
+                        ? Container(
+                            width: Get.width,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 14.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 1, color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(10.r)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("ব্যাখ্যা"),
+                                SizedBox(
+                                  height: 6.h,
+                                ),
+                                HtmlWidget(
+                                  question.explanation
+                                          ?.replaceAll('<pre>', '')
+                                          .replaceAll('</pre>', '') ??
+                                      ''
+                                          .replaceAll('<pre>', '')
+                                          .replaceAll('</pre>', ''),
+                                  customWidgetBuilder: (element) {
+                                    print(
+                                        'explanation Element classes: ${question.title}');
+
+                                    if (element.classes.contains('latex') ||
+                                        element.classes.contains('ql-syntax')) {
+                                      // Render LaTeX content
+                                      return Math.tex(
+                                        element.text,
+                                        textStyle: TextStyle(fontSize: 20),
+                                      );
+                                    }
+                                    return null; // Fallback to default rendering
+                                  },
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
               ),
