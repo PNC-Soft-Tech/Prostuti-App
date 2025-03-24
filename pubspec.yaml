@@ -7,6 +7,7 @@ environment:
   sdk: ">=3.5.1 <4.0.0"
 
 dependencies:
+  blur: ^4.0.0
   collection: ^1.18.0
   dart_quill_delta: ^10.8.3
   dartz: ^0.10.1
