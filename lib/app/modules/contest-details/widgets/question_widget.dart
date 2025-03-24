@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../common/modals/unlock_full_access_modal.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../questions/models/question_model.dart';
 import '../controller/contest_details_controller.dart';
@@ -168,67 +169,72 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                       height: 15.h,
                     ),
                     isExp
-                        ? Container(
-                            width: Get.width,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 14.w, vertical: 6.h),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 1, color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(10.r)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("ব্যাখ্যা"),
-                                SizedBox(
-                                  height: 6.h,
-                                ),
-                                Blur(
-                                  blur: 2.5, 
-                                  borderRadius: BorderRadius.circular(10.r),
-                                  blurColor: Colors.blueGrey.shade50 ,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: HtmlWidget(
-                                      question.explanation
-                                              ?.replaceAll('<pre>', '')
-                                              .replaceAll('</pre>', '') ??
-                                          ''
-                                              .replaceAll('<pre>', '')
-                                              .replaceAll('</pre>', ''),
-                                      customWidgetBuilder: (element) {
-                                        print(
-                                            'explanation Element classes: ${question.title}');
-                                    
-                                        if (element.classes.contains('latex') ||
-                                            element.classes
-                                                .contains('ql-syntax')) {
-                                          // Render LaTeX content
-                                          return Math.tex(
-                                            element.text,
-                                            textStyle: TextStyle(fontSize: 20),
-                                          );
-                                        }
-                                        return null; // Fallback to default rendering
-                                      },
+                        ? GestureDetector(
+                          onTap: (){
+                            UnlockFullAccessDialog.show();
+                          },
+                          child: Container(
+                              width: Get.width,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, vertical: 6.h),
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(10.r)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("ব্যাখ্যা"),
+                                  SizedBox(
+                                    height: 6.h,
+                                  ),
+                                  Blur(
+                                    blur: 2.5, 
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    blurColor: Colors.blueGrey.shade50 ,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: HtmlWidget(
+                                        question.explanation
+                                                ?.replaceAll('<pre>', '')
+                                                .replaceAll('</pre>', '') ??
+                                            ''
+                                                .replaceAll('<pre>', '')
+                                                .replaceAll('</pre>', ''),
+                                        customWidgetBuilder: (element) {
+                                          print(
+                                              'explanation Element classes: ${question.title}');
+                                      
+                                          if (element.classes.contains('latex') ||
+                                              element.classes
+                                                  .contains('ql-syntax')) {
+                                            // Render LaTeX content
+                                            return Math.tex(
+                                              element.text,
+                                              textStyle: TextStyle(fontSize: 20),
+                                            );
+                                          }
+                                          return null; // Fallback to default rendering
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                                // Positioned.fill(
-                                //     child: Container(
-                                //   decoration: BoxDecoration(
-                                //       color: Colors.blueGrey.shade50,
-                                //       border: Border.all(
-                                //           width: .1,
-                                //           color: Colors.grey.shade300),
-                                //       borderRadius:
-                                //           BorderRadius.circular(10.r)),
-                                //           child: Text("■■■"),
-                                // )),
-                          
-                              ],
+                                  // Positioned.fill(
+                                  //     child: Container(
+                                  //   decoration: BoxDecoration(
+                                  //       color: Colors.blueGrey.shade50,
+                                  //       border: Border.all(
+                                  //           width: .1,
+                                  //           color: Colors.grey.shade300),
+                                  //       borderRadius:
+                                  //           BorderRadius.circular(10.r)),
+                                  //           child: Text("■■■"),
+                                  // )),
+                            
+                                ],
+                              ),
                             ),
-                          )
+                        )
                         : SizedBox.shrink(),
                   ],
                 ),
