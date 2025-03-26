@@ -153,16 +153,16 @@ class AppPages {
       page: () => const RankingView(),
       binding: RankingBinding(),
     ),
-        GetPage(
+    GetPage(
       // name: '/contest/:id',
       name: Routes.modelTestDetails,
-      page: () =>  ModelTestDetailsView(),
+      page: () => ModelTestDetailsView(),
       binding: ModelTestDetailsBinding(),
     ),
-        GetPage(
+    GetPage(
       // name: '/contest/:id',
       name: Routes.tex,
-      page: () =>  TeXPage(),
+      page: () => TeXPage(),
       // binding: ModelTestDetailsBinding(),
     ),
   ];
