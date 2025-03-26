@@ -66,7 +66,7 @@ class StorageHelper {
     await prefs.remove(_userId);
   }
 
-  static Future<void> saveContestId(String contestId) async {
+  static Future<void> saveLatestContestId(String contestId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('latest_contestId', contestId);
   }
