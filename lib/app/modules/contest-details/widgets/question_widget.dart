@@ -41,12 +41,13 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
 
     return Obx(() {
       return Container(
+        // color: Colors.tealAccent,
         key: controller.questionKeys[question.id],
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Visibility(
+            controller.isMarkedQuestion(question.id)?  Visibility(
                 visible: controller.isMarkedQuestion(question.id),
                 child: Container(
                   width: 4.w,
@@ -55,7 +56,7 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                       ? const Color(0xFFFF8143)
                       : Colors.black,
                 ),
-              ),
+              ):SizedBox.shrink(),
               SizedBox(width: 20.w),
               Expanded(
                 child: Column(

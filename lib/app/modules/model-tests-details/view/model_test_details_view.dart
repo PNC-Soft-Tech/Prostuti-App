@@ -90,6 +90,9 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                              SizedBox(
+                              height: 70.h,
+                            ),
                             Row(
                               children: [
                                 controller.modelDetails.value?.contest
@@ -154,7 +157,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         SizedBox(
                           height: 20.h,
                         ),
-                        Text("Subject: ${controller.subjectLists.length}"),
+                        // Text("Subject: ${controller.subjectLists.length}"),
                         Obx(() {
                           final filteredQuestions =
                               controller.filteredQuestions; // Use filtered list
@@ -203,6 +206,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         },
                         selectedSubject: controller.selectedSubject.value,
                         subjects: controller.subjectLists,
+                         isQuestionOpened: true,
                       )))),
           SizedBox(
             height: 15.h,
