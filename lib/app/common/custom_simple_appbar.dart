@@ -7,7 +7,8 @@ import 'package:prostuti/app/constant/app_color.dart';
 class CustomSimpleAppBar {
   // Static method to create a custom app bar
   static PreferredSizeWidget appBar({
-    required String title,
+     String? title,
+      Widget? titleWidget, // ✅ Add this
     bool centerTitle = true,
     Color? backgroundColor,
     Color? titleColor,
@@ -21,14 +22,17 @@ class CustomSimpleAppBar {
         // leadingWidth: leadingWidth ?? 180,
         foregroundColor: Colors.white,
         
-        title: Text(title,
-            style: GoogleFonts.inter(
-              textStyle: TextStyle(
-                color: titleColor ?? AppColors.textPrimaryColor,
-                fontSize: 18.0,
-                fontWeight: FontWeight.w600,
-              ),
-            )),
+        title: titleWidget ?? // ✅ Use reactive title if provided
+        Text(
+          title ?? "",
+          style: GoogleFonts.inter(
+            textStyle: TextStyle(
+              color: titleColor ?? AppColors.textPrimaryColor,
+              fontSize: 14.0.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
         centerTitle: centerTitle,
         backgroundColor: backgroundColor ?? Colors.white,
         automaticallyImplyLeading: true,

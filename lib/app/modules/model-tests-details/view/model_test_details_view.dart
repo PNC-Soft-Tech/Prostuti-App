@@ -48,7 +48,10 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(
-          title: "${controller.modelDetails.value?.contest.name}"),
+          titleWidget: Obx(() => Text(
+                controller.modelDetails.value?.contest.name ?? 'Model Test',
+                style: TextStyle(color: Colors.black, fontSize: 14.sp),
+              ))),
       body: Stack(
         children: [
           Obx(() {
