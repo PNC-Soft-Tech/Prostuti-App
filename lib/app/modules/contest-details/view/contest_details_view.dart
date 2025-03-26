@@ -199,7 +199,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
           Align(
               alignment: Alignment.topLeft,
               child: Container(
-                  color: Colors.white, child: SubjectTabsWidget())),
+                  color: Colors.white,
+                  child: Obx(()=>SubjectTabsWidget(
+                    onSubjectSelected: (subject) {
+                      controller.selectSubject(subject); // update logic
+                    },
+                    selectedSubject: controller.selectedSubject.value,
+                    subjects: controller.subjectLists,
+                    isQuestionOpened: controller.isQuestionOpened.value,
+                  )))),
           SizedBox(
             height: 15.h,
           ),

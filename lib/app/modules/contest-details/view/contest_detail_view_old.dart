@@ -163,7 +163,10 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
               child: Align(
                   alignment: Alignment.topCenter, child: Container(
                     color: Colors.grey.shade50,
-                    child: SubjectTabsWidget()))),
+                    child: SubjectTabsWidget(onSubjectSelected: (subject) {
+    controller.selectSubject(subject);             // update logic
+  }
+                    , selectedSubject: '', subjects: const [],)))),
           SizedBox(
             height: 15.h,
           ),

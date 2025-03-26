@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,7 +22,7 @@ import '../../contest-details/widgets/subject_tabs_widget.dart';
 import '../../contests/controller/contest_controller.dart';
 import '../../questions/widgets/question_widgets.dart';
 import '../controllers/model_test_details_controller.dart';
-
+import '../widgets/model_test_details.dart';
 
 class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
   const ModelTestDetailsView({super.key});
@@ -45,7 +47,8 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomSimpleAppBar.appBar(title: "${controller.modelDetails.value?.contest.name}"),
+      appBar: CustomSimpleAppBar.appBar(
+          title: "${controller.modelDetails.value?.contest.name}"),
       body: Stack(
         children: [
           Obx(() {
@@ -81,74 +84,74 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // if (!controller.isQuestionOpened.value)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  controller.modelDetails.value?.contest
-                                                  .imageUrl !=
-                                              null &&
-                                          controller.modelDetails.value!
-                                              .contest.imageUrl!
-                                              .contains('http')
-                                      ? Image.network(
-                                          controller.modelDetails.value
-                                                  ?.contest.imageUrl ??
-                                              '',
-                                          height: 34.r,
-                                          width: 34.r,
-                                        )
-                                      : Image.asset(
-                                          'assets/govt-bd.png',
-                                          height: 34.r,
-                                          width: 34.r,
-                                        ),
-                                  SizedBox(
-                                    width: 12.w,
-                                  ),
-                                  HtmlWidget(controller
-                                          .modelDetails.value?.contest.name ??
-                                      "বিসিএস কনটেস্ট-০১")
-                                  // Text(
-                                  //   controller
-                                  //           .contestDetails.value?.contest.name ??
-                                  //       "বিসিএস কনটেস্ট-০১",
-                                  //   style: GoogleFonts.notoSansBengali(
-                                  //       textStyle: TextStyle(
-                                  //     fontSize: 20.sp,
-                                  //     color: AppColors.textPrimaryColor,
-                                  //     fontWeight: FontWeight.w600,
-                                  //   )),
-                                  // )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 19.h,
-                              ),
-                              Text(
-                                " ${controller.modelDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}",
-                                style: GoogleFonts.notoSansBengali(
-                                    textStyle: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: AppColors.textPrimaryColor,
-                                  fontWeight: FontWeight.w500,
-                                )),
-                              ),
-                              SizedBox(
-                                height: 16.h,
-                              ),
-                              // if (!controller.isQuestionOpened.value)
-                              //   const ContestStatusWidget(), // ✅ Displays running or countdown UI
-                              if (!controller.isQuestionOpened.value)
-                                const ContestDetailsWidget(), // ✅ Displays contest details
-                            ],
-                          ),
-                          Text("Length: ${controller.filteredQuestions.length}"),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                controller.modelDetails.value?.contest
+                                                .imageUrl !=
+                                            null &&
+                                        controller.modelDetails.value!.contest
+                                            .imageUrl!
+                                            .contains('http')
+                                    ? Image.network(
+                                        controller.modelDetails.value?.contest
+                                                .imageUrl ??
+                                            '',
+                                        height: 34.r,
+                                        width: 34.r,
+                                      )
+                                    : Image.asset(
+                                        'assets/govt-bd.png',
+                                        height: 34.r,
+                                        width: 34.r,
+                                      ),
+                                SizedBox(
+                                  width: 12.w,
+                                ),
+                                HtmlWidget(controller
+                                        .modelDetails.value?.contest.name ??
+                                    "Model Test -০১")
+                                // Text(
+                                //   controller
+                                //           .contestDetails.value?.contest.name ??
+                                //       "বিসিএস কনটেস্ট-০১",
+                                //   style: GoogleFonts.notoSansBengali(
+                                //       textStyle: TextStyle(
+                                //     fontSize: 20.sp,
+                                //     color: AppColors.textPrimaryColor,
+                                //     fontWeight: FontWeight.w600,
+                                //   )),
+                                // )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 19.h,
+                            ),
+                            Text(
+                              " ${controller.modelDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}",
+                              style: GoogleFonts.notoSansBengali(
+                                  textStyle: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.textPrimaryColor,
+                                fontWeight: FontWeight.w500,
+                              )),
+                            ),
+                            SizedBox(
+                              height: 16.h,
+                            ),
+                            // if (!controller.isQuestionOpened.value)
+                            //   const ContestStatusWidget(), // ✅ Displays running or countdown UI
+                            if (!controller.isQuestionOpened.value)
+                              const ModelTestDetailsWidget(), // ✅ Displays contest details
+                          ],
+                        ),
+                        // Text("Length: ${controller.filteredQuestions.length}"),
                         SizedBox(
                           height: 20.h,
                         ),
-                   
+                        Text("Subject: ${controller.subjectLists.length}"),
                         Obx(() {
                           final filteredQuestions =
                               controller.filteredQuestions; // Use filtered list
@@ -162,15 +165,13 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                   .indexWhere(
                                 (q) => q.id == filteredQuestions[index].id,
                               );
-                              return   
-                              
-                              Padding(
+                              return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
                                 child: QuestionWidget(
                                   // key: controller.questionKeys[filteredQuestions[index].id],
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
-                                   isExp: true,
+                                  isExp: true,
                                 ),
                               );
                             }),
@@ -191,7 +192,15 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
           Align(
               alignment: Alignment.topLeft,
               child: Container(
-                  color: Colors.white, child: SubjectTabsWidget())),
+                  color: Colors.white,
+                  child: Obx(() => SubjectTabsWidget(
+                        onSubjectSelected: (subject) {
+                          log("Sujcet changed to ${subject}");
+                          controller.selectSubject(subject); // update logic
+                        },
+                        selectedSubject: controller.selectedSubject.value,
+                        subjects: controller.subjectLists,
+                      )))),
           SizedBox(
             height: 15.h,
           ),

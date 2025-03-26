@@ -38,7 +38,6 @@ class ModelTestDetailsController extends GetxController {
   Timer? _timer;
   Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
-  RxBool isContestRunning = true.obs;
   RxBool isQuestionOpened = false.obs;
   final scrollController = ScrollController();
   final questionKeys = <String, GlobalKey>{}.obs;
