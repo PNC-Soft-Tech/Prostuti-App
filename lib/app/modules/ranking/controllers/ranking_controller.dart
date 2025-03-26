@@ -27,6 +27,7 @@ class RankingController extends GetxController {
   }
 
   Future<void> _getContestIdFromSharedPreferences() async {
+    // await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
     contestId = await StorageHelper.getLatestContestId();
     if (contestId.isNotEmpty) {
       displayLeaderboardRanks(contestId);
