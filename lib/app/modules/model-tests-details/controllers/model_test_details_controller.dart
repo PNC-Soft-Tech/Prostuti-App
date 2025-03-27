@@ -28,6 +28,9 @@ class ModelTestDetailsController extends GetxController {
   final markedQuestions = <String>[].obs;
   // final markedQuestions = <int>[].obs; // Store **question indexes**
   final currentQuestionIndex = 0.obs; // Track current question
+  final RxBool isReadModeSelected = true.obs;
+  final RxBool isExamModeSelected = false.obs;
+
 
   final isSubmittingContest =
       false.obs; // This will track loading state for submitContest
@@ -64,7 +67,10 @@ class ModelTestDetailsController extends GetxController {
       );
     });
   }
-
+  void toggleMode(bool isReadMode) {
+    isReadModeSelected.value = isReadMode;
+    isExamModeSelected.value = !isReadMode;
+  }
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
     questionKeys.clear();
     questionIdToIndexMap.clear();
