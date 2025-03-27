@@ -5,6 +5,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
@@ -27,6 +28,18 @@ class RankingView extends GetWidget<RankingController> {
       RankingInfo? rankingInfo = rankingData?.info;
       List<ContestResult>? firstThree = rankingInfo?.firstThreeResults;
       List<ContestResult>? results = rankingData?.results;
+
+      if (rankingInfo == null) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              "No Contest Found",
+              style: CustomStyles.textStyle,
+            ),
+          ),
+        );
+      }
 
       return Stack(
         clipBehavior: Clip.hardEdge,
@@ -165,7 +178,7 @@ Widget contestDetailsWidget(RankingInfo? rankingData) => Container(
                 SizedBox(
                   width: 9.w,
                 ),
-                 HtmlWidget(rankingData?.contestTitle ?? '')
+                HtmlWidget(rankingData?.contestTitle ?? '')
                 // Text(rankingData?.contestTitle ?? '',
                 //     style: GoogleFonts.notoSansBengali(
                 //         textStyle: const TextStyle(
@@ -251,7 +264,7 @@ class RankProfileCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: rank == '1' ? 65.w : 40.w,
-              backgroundColor: AppColors.lightGray,
+              backgroundColor: AppColors.primaryOpacity,
               child: SvgPicture.asset(
                 "assets/default-male.svg",
                 width: rank == '1' ? 65.w : 40.w,
@@ -321,7 +334,7 @@ class LeaderBoardEntry extends StatelessWidget {
               SizedBox(width: 15.w),
               CircleAvatar(
                   radius: 25.w,
-                  backgroundColor: AppColors.lightGray,
+                  backgroundColor: AppColors.primaryOpacity,
                   child: SvgPicture.asset(
                       "assets/default-male.svg") //Image.network(profilePicture)
                   ),

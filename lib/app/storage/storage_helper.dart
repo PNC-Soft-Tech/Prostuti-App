@@ -48,12 +48,10 @@ class StorageHelper {
     await prefs.remove(_userKey);
   }
 
-
-    // Set user Id
+  // Set user Id
   static Future<void> setUserId(String userData) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userId, userData.toString());
-
   }
 
   // Get user id
@@ -66,5 +64,15 @@ class StorageHelper {
   static Future<void> removeUserId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userId);
+  }
+
+  static Future<void> saveContestId(String contestId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('latest_contestId', contestId);
+  }
+
+  static Future<String> getLatestContestId() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString("latest_contestId") ?? "";
   }
 }
