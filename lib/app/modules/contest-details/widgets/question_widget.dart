@@ -16,8 +16,8 @@ import 'question_option_widget.dart';
 
 class QuestionWidget extends StatelessWidget {
   final Question question;
- Function(String subject) isMarkedQuestion;
- Function(String qid) markUnmarkQuestion;
+ final bool Function(String qid) isMarkedQuestion;
+ final void Function(String qid) markUnmarkQuestion;
   final int index;
   final bool isExp;
 

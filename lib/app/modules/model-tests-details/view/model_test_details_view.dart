@@ -90,7 +90,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                              SizedBox(
+                            SizedBox(
                               height: 70.h,
                             ),
                             Row(
@@ -177,6 +177,11 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                   // key: controller.questionKeys[filteredQuestions[index].id],
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
+                                  isMarkedQuestion: (qid) =>
+                                      controller.isMarkedQuestion(qid),
+                                  markUnmarkQuestion: (qid) =>
+                                      controller.markUnmarkQuestion(qid),
+
                                   isExp: true,
                                 ),
                               );
@@ -206,7 +211,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         },
                         selectedSubject: controller.selectedSubject.value,
                         subjects: controller.subjectLists,
-                         isQuestionOpened: true,
+                        isQuestionOpened: true,
                       )))),
           SizedBox(
             height: 15.h,

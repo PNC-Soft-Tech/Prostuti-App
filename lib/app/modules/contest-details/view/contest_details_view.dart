@@ -179,6 +179,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                   // key: controller.questionKeys[filteredQuestions[index].id],
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
+                          isMarkedQuestion: (qid) => controller.isMarkedQuestion(qid),
+markUnmarkQuestion: (qid) => controller.markUnmarkQuestion(qid),
+
                                 ),
                               );
                             }),
