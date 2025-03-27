@@ -14,15 +14,19 @@ import '../controller/contest_details_controller.dart';
 
 import 'question_option_widget.dart';
 
-class QuestionWidget extends GetWidget<ContestDetailsController> {
+class QuestionWidget extends StatelessWidget {
   final Question question;
+ Function(String subject) isMarkedQuestion;
+ Function(String qid) markUnmarkQuestion;
   final int index;
   final bool isExp;
 
-  const QuestionWidget({
+   QuestionWidget({
     Key? key,
     required this.question,
     required this.index,
+   required this.isMarkedQuestion,
+   required this.markUnmarkQuestion,
     this.isExp = false,
   }) : super(key: key);
 
@@ -42,17 +46,17 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
     return Obx(() {
       return Container(
         // color: Colors.tealAccent,
-        key: controller.questionKeys[question.id],
+        // key: controller.questionKeys[question.id],
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-            controller.isMarkedQuestion(question.id)?  Visibility(
-                visible: controller.isMarkedQuestion(question.id),
+           isMarkedQuestion(question.id)?  Visibility(
+                visible: isMarkedQuestion(question.id),
                 child: Container(
                   width: 4.w,
                   height: double.infinity,
-                  color: controller.isMarkedQuestion(question.id)
+                  color: isMarkedQuestion(question.id)
                       ? const Color(0xFFFF8143)
                       : Colors.black,
                 ),
@@ -135,7 +139,7 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                     Row(
                       children: [
                         Icon(Icons.flag,
-                            color: controller.isMarkedQuestion(question.id)
+                            color: isMarkedQuestion(question.id)
                                 ? const Color(0xFFFF8143)
                                 : Colors.black),
                         SizedBox(
@@ -143,7 +147,7 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            controller.markUnmarkQuestion(question.id);
+                           markUnmarkQuestion(question.id);
                             debugPrint("qid-----> ${question.id}");
                           },
                           child: Text('Mark this Question',
@@ -151,8 +155,7 @@ class QuestionWidget extends GetWidget<ContestDetailsController> {
                                   textStyle: TextStyle(
                                       fontSize: 15.sp,
                                       fontWeight: FontWeight.w400,
-                                      color: controller
-                                              .isMarkedQuestion(question.id)
+                                      color: isMarkedQuestion(question.id)
                                           ? const Color(0xFFFF8143)
                                           : Colors.black))),
                         ),
