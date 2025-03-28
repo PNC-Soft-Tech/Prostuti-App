@@ -116,6 +116,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                 SizedBox(
                                   width: 12.w,
                                 ),
+                                Text("Mode: ${controller.currentSelectedModelTestMode}"),
                                 HtmlWidget(controller
                                         .modelDetails.value?.contest.name ??
                                     "Model Test -০১")

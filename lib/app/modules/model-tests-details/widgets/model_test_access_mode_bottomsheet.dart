@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ModelTestAccessBottomSheet extends StatelessWidget {
+import '../../../constant/app_color.dart';
+import '../../../routes/app_pages.dart';
+import '../controllers/model_test_details_controller.dart';
+
+class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
+  final String modelTestId;
+
+  const ModelTestAccessBottomSheet({super.key, required this.modelTestId});
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
-    
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Choose Access Mode',
@@ -27,8 +36,13 @@ class ModelTestAccessBottomSheet extends StatelessWidget {
                     icon: Icons.menu_book_rounded,
                     title: 'Read Mode',
                     description: 'Detailed learning',
-                    color: Colors.green,
-                    onTap: () => _navigateToReadMode(),
+                    color: AppColors.primary,
+                    // onTap: () => _navigateToReadMode(),
+                    onTap: () {
+                    // Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
+                    //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'read';
+                      Get.toNamed(Routes.modelTestDetails, arguments: {'modelTestId':modelTestId,'mode':'read', });
+                    },
                   ),
                 ),
                 SizedBox(width: 16),
@@ -37,8 +51,13 @@ class ModelTestAccessBottomSheet extends StatelessWidget {
                     icon: Icons.quiz_rounded,
                     title: 'Exam Mode',
                     description: 'Timed practice test',
-                    color: Colors.blue,
-                    onTap: () => _navigateToExamMode(),
+                    color: AppColors.primary,
+                    // onTap: () => _navigateToExamMode(),
+                    onTap: () {
+                    //    Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
+                    //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'exam';
+                      Get.toNamed(Routes.modelTestDetails, arguments: {'modelTestId':modelTestId, 'mode':'exam', });
+                    },
                   ),
                 ),
               ],
@@ -141,8 +160,8 @@ class ReadModeDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.menu_book_rounded, 
-              size: 100, 
+              Icons.menu_book_rounded,
+              size: 100,
               color: Colors.green,
             ),
             SizedBox(height: 20),
@@ -186,8 +205,8 @@ class ExamModeDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.quiz_rounded, 
-              size: 100, 
+              Icons.quiz_rounded,
+              size: 100,
               color: Colors.blue,
             ),
             SizedBox(height: 20),

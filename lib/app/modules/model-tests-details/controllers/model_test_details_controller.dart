@@ -30,7 +30,8 @@ class ModelTestDetailsController extends GetxController {
   final currentQuestionIndex = 0.obs; // Track current question
   final RxBool isReadModeSelected = true.obs;
   final RxBool isExamModeSelected = false.obs;
-
+final RxString currentSelectedModelTestId=''.obs;
+final RxString currentSelectedModelTestMode='read'.obs;
 
   final isSubmittingContest =
       false.obs; // This will track loading state for submitContest
@@ -58,6 +59,7 @@ class ModelTestDetailsController extends GetxController {
     final Map<String, dynamic> arguments = Get.arguments;
     // contestId.value = arguments["contestId"]; // Retrieve contestId
     modelTestId.value = arguments["modelTestId"]; // Retrieve contestId
+    currentSelectedModelTestMode.value = arguments["mode"]; // Retrieve contestId
     // modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
     fetchModelTestDetails(modelTestId.value);
     ever<int>(currentQuestionIndex, (index) {

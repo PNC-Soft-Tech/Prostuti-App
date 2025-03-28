@@ -33,11 +33,11 @@ class HomeMainWidget extends GetWidget<HomeController> {
             GestureDetector(
                 onTap: () async {
                   log("clickeddddd");
-               final result = await Get.bottomSheet(
-                  ModelTestAccessBottomSheet(),
-                  backgroundColor: Colors.transparent,
-                  isDismissible: true,
-                );
+              //  final result = await Get.bottomSheet(
+              //     ModelTestAccessBottomSheet(),
+              //     backgroundColor: Colors.transparent,
+              //     isDismissible: true,
+              //   );
                   // Get.toNamed(Routes.modelTestDetails);
                 },
                 child: Text("Model Test Page")),

@@ -6,6 +6,7 @@ import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../contests/models/contest_model.dart';
+import '../../model-tests-details/widgets/model_test_access_mode_bottomsheet.dart';
 import '../controller/model_test_controller.dart';
 import '../models/model_test_model.dart';
 import 'model_test_home_card.dart';
@@ -48,9 +49,17 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
                 child: Row(
                   children: controller.model_tests.map((modelTest) {
                     return GestureDetector(
-                      onTap: () {
-                     
-                        Get.toNamed(Routes.modelTestDetails, arguments: {"modelTestId": modelTest.id});
+                  
+                         onTap: () async {
+                  // log("clickeddddd");
+               final result = await Get.bottomSheet(
+                  ModelTestAccessBottomSheet(modelTestId: modelTest.id,),
+                  backgroundColor: Colors.transparent,
+                  isDismissible: true,
+                );
+                  // Get.toNamed(Routes.modelTestDetails);
+              
+                        // Get.toNamed(Routes.modelTestDetails, arguments: {"modelTestId": modelTest.id});
                       },
                       child: Padding(
                         padding: EdgeInsets.only(right: 12.w),
