@@ -49,7 +49,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
       backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(
           titleWidget: Obx(() => Text(
-                controller.modelDetails.value?.contest.name ?? 'Model Test',
+                Utils.stripHtmlTags(controller.modelDetails.value?.contest.name ?? 'Model Test'),
                 style: TextStyle(color: Colors.black, fontSize: 14.sp),
               ))),
       body: Stack(
