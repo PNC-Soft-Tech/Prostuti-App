@@ -10,6 +10,7 @@ import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/model-tests-details/models/model_test_response_model.dart';
+import '../modules/model-tests/models/model_test_model.dart';
 import '../modules/questions/models/question_model.dart';
 import '../modules/register/models/register_model.dart';
 import '../modules/subjects/models/subjects_model.dart';
@@ -26,6 +27,7 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<ExamType>>> getExamTypes();
   Future<Either<CustomError, List<Contest>>> fetchAllContests();
   Future<Either<CustomError, List<Question>>> fetchAllQuestions();
+    Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests();
 // Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId);
   Future<Either<CustomError, Response>> verifyOtp(Map<String, dynamic> data);
   // Future<Either<CustomError, UserProfile>> getUserProfile(String userId);

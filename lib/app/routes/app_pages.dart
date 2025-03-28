@@ -59,6 +59,7 @@ class Routes {
   static const tex = '/tex/';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
+  static String singleModelTest(String id) => '/model-test/$id';
 }
 
 class AppPages {

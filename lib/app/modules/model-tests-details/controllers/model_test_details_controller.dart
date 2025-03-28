@@ -55,9 +55,10 @@ class ModelTestDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // final Map<String, dynamic> arguments = Get.arguments;
+    final Map<String, dynamic> arguments = Get.arguments;
     // contestId.value = arguments["contestId"]; // Retrieve contestId
-    modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
+    modelTestId.value = arguments["modelTestId"]; // Retrieve contestId
+    // modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
     fetchModelTestDetails(modelTestId.value);
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(

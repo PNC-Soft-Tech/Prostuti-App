@@ -15,6 +15,7 @@ import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
 import '../modules/login/models/login_response_model.dart';
 import '../modules/model-tests-details/models/model_test_response_model.dart';
+import '../modules/model-tests/models/model_test_model.dart';
 import '../modules/questions/models/question_model.dart';
 import '../modules/register/models/register_model.dart';
 import '../modules/subjects/models/subjects_model.dart';
@@ -163,6 +164,24 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       }
     } catch (e) {
       log('Error fetching contests: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+  @override
+  Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests() async {
+    try {
+      final response = await get('models');
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        log("model dataaa: $data");
+        final contests = data.map((json) => ModelTest.fromJson(json)).toList();
+        return Right(contests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch models'));
+      }
+    } catch (e) {
+      log('Error fetching models: $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }

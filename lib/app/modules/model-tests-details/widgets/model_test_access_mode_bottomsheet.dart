@@ -5,16 +5,14 @@ class ModelTestAccessBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Model Test Selection'),
-      ),
+    
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Choose Your Test Mode',
+              'Choose Access Mode',
               style: Get.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -28,7 +26,7 @@ class ModelTestAccessBottomSheet extends StatelessWidget {
                   child: _buildTestModeCard(
                     icon: Icons.menu_book_rounded,
                     title: 'Read Mode',
-                    description: 'Detailed learning & review',
+                    description: 'Detailed learning',
                     color: Colors.green,
                     onTap: () => _navigateToReadMode(),
                   ),

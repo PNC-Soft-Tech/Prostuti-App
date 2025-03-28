@@ -1,0 +1,81 @@
+import 'dart:developer';
+import '../../contests/models/topics_model.dart';
+import '../../questions/models/question_model.dart';
+
+class ModelTest {
+  final String id;
+  final String? name;
+  final String? description;
+  final String? stringTopics;
+  final String? imageUrl;
+  final dynamic registeredCount;
+  final dynamic totalMarks;
+  final dynamic totalTime;
+  final bool? isSubjectWise;
+   bool? isRegistered;
+  final DateTime startContest;
+  final DateTime endContest;
+  final List<Topic> topics;
+  final List<Question> questions;
+  // final List<RegisteredUser> registeredUsers;
+
+  ModelTest({
+    required this.id,
+    this.name,
+    this.description,
+    this.stringTopics,
+    this.imageUrl,
+    this.registeredCount,
+    required this.totalMarks,
+    required this.totalTime,
+     this.isSubjectWise,
+     this.isRegistered,
+    required this.startContest,
+    required this.endContest,
+    required this.topics,
+    required this.questions,
+    // required this.registeredUsers,
+  });
+
+  factory ModelTest.fromJson(Map<String, dynamic> json) {
+    return ModelTest(
+      id: json['_id'] ?? '',
+      name: json['name'],
+      description: json['description'],
+      stringTopics: json['stringTopics'],
+      imageUrl: json['imageUrl'],
+      registeredCount: json['registeredCount'] ?? 0,
+totalMarks: (json['totalMarks'] ?? 0).toDouble(),
+
+      totalTime: json['totalTime'] ?? 0,
+      isRegistered: json['isRegistered'] ?? true,
+      isSubjectWise: json['isSubjectWise'] ?? true,
+      startContest: parseDate(json['startContest']),
+      endContest: parseDate(json['endContest']),
+      topics: (json['topics'] as List?)
+              ?.map((topic) => Topic.fromJson(topic as Map<String, dynamic>))
+              .toList() ??
+          [],
+questions: (json['questions'] as List?)?.map((q) {
+  // You can fetch full question data later based on these IDs
+  return Question(id: q.toString(), title: '', options: []);
+}).toList() ?? [],
+
+      // registeredUsers: (json['registeredUsers'] as List?)
+      //         ?.map((user) =>
+      //             RegisteredUser.fromJson(user as Map<String, dynamic>))
+      //         .toList() ??
+      //     [],
+    );
+  }
+
+  static DateTime parseDate(String? dateStr) {
+    if (dateStr == null) return DateTime.now(); // Handle null date string
+    try {
+      return DateTime.parse(dateStr); // ISO 8601 parsing
+    } catch (e) {
+      log('Invalid date format: $dateStr');
+      return DateTime.now(); // Fallback date
+    }
+  }
+}
