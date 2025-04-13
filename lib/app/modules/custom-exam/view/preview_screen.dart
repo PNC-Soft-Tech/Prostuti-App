@@ -203,7 +203,16 @@ class PreviewScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle continue action
+                      showExamConfirmationDialog(
+                        totalQuestions: subjectsData.values.fold(
+                            0,
+                            (sum, topics) =>
+                                sum +
+                                topics.fold(
+                                    0,
+                                    (sum, topic) =>
+                                        sum + (topic['questionCount'] ?? 0) as int)),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF50BDB4),
@@ -227,6 +236,106 @@ class PreviewScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void showExamConfirmationDialog({required int totalQuestions}) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(24.w),
+          width: 0.8.sw,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/confirm-custom-exam.png', // Make sure to add this image
+                width: 48.w,
+                height: 48.w,
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                'Test Exam 001',
+                style: GoogleFonts.inter(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF212121),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                '$totalQuestions Questions',
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  color: const Color(0xFF757575),
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                'Your custom exam is all set',
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  color: const Color(0xFF757575),
+                ),
+              ),
+              SizedBox(height: 24.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        side: const BorderSide(color: Color(0xFF50BDB4)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Save as Draft',
+                        style: GoogleFonts.inter(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF50BDB4),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                        // Add your exam start logic here
+                        // Get.toNamed('/exam_screen');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF50BDB4),
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      child: Text(
+                        'Start Exam Now',
+                        style: GoogleFonts.inter(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
     );
   }
 }
