@@ -10,6 +10,8 @@ import '../../subjects/models/subjects_model.dart';
 import '../controller/custom_exam_controller.dart';
 import 'package:collection/collection.dart';
 
+import 'preview_screen.dart';
+
 class CustomExamView extends GetView<CustomExamController> {
   const CustomExamView({super.key});
 
@@ -52,7 +54,17 @@ class CustomExamView extends GetView<CustomExamController> {
                   child: CustomButton.button(
                       text: "Continue",
                       onPressed: () {
-                        Get.toNamed('/custom_exam');
+                        if (controller.customExamQuestions.value?.subjects != null) {
+                          final Map<String, List<Map<String, dynamic>>> previewData = {};
+                          
+                          for (var subject in controller.customExamQuestions.value!.subjects!) {
+                            if (subject.subjectName != null && subject.topics != null) {
+                              previewData[subject.subjectName!] = subject.topics!;
+                            }
+                          }
+                          
+                          Get.to(() => PreviewScreen(subjectsData: previewData));
+                        }
                       },
                       mainAxisSize: MainAxisSize.max),
                 ),
