@@ -12,12 +12,12 @@ class SharedQuestionOptionsWidget extends StatelessWidget {
   final int? selectedOptionOrder;
 
   const SharedQuestionOptionsWidget({
-    Key? key,
+    super.key,
     required this.question,
     this.onOptionSelected,
     this.isSelected = false,
     this.selectedOptionOrder,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +73,7 @@ class SharedQuestionOptionsWidget extends StatelessWidget {
                       element.classes.contains('ql-syntax')) {
                     return Math.tex(
                       element.text,
-                      textStyle: TextStyle(fontSize: 20),
+                      textStyle: const TextStyle(fontSize: 20),
                     );
                   }
                   return null;

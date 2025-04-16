@@ -25,7 +25,7 @@ class SubjectTabsWidget extends StatelessWidget {
       }
 
       return isQuestionOpened == true
-          ? Container(
+          ? SizedBox(
             width: Get.width,
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -47,7 +47,7 @@ class SubjectTabsWidget extends StatelessWidget {
                           ),
                           backgroundColor: selectedSubject == 'All'
                               ? AppColors.primary
-                              : Color(0x2650AFFF),
+                              : const Color(0x2650AFFF),
                           padding: EdgeInsets.symmetric(
                               horizontal: 5.w, vertical: 15.h),
                           shape: RoundedRectangleBorder(
@@ -57,13 +57,13 @@ class SubjectTabsWidget extends StatelessWidget {
                               color: selectedSubject == 'All'
                                   ? AppColors
                                       .primary // Border color for selected chip
-                                  : Color(
+                                  : const Color(
                                       0x2650AFFF), // Border color for unselected chip
             
                               width: 1.5, // Border thickness
                             ),
                           ),
-                          shadowColor: Color(0x2650AFFF),
+                          shadowColor: const Color(0x2650AFFF),
                         ),
                       ),
                     ),
@@ -78,8 +78,8 @@ class SubjectTabsWidget extends StatelessWidget {
                           child: Chip(
                             backgroundColor: selectedSubject == subject
                                 ? AppColors.primary
-                                : Color(0x2650AFFF), // Correct opacity
-                            shadowColor: Color(0x2650AFFF),
+                                : const Color(0x2650AFFF), // Correct opacity
+                            shadowColor: const Color(0x2650AFFF),
                             label: Text(
                               subject,
                               style: TextStyle(
@@ -106,12 +106,12 @@ class SubjectTabsWidget extends StatelessWidget {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
           )
-          : SizedBox.shrink();
+          : const SizedBox.shrink();
     });
   }
 }

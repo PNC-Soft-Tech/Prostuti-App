@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 class PreviewScreen extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> subjectsData;
 
-  const PreviewScreen({Key? key, required this.subjectsData}) : super(key: key);
+  const PreviewScreen({super.key, required this.subjectsData});
 
   @override
   Widget build(BuildContext context) {

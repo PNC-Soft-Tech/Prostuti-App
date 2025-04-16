@@ -151,19 +151,19 @@ class AppPages {
     ),
     GetPage(
       name: Routes.ranking,
-      page: () => const RankingView(),
+      page: () => RankingView(),
       binding: RankingBinding(),
     ),
     GetPage(
       // name: '/contest/:id',
       name: Routes.modelTestDetails,
-      page: () => ModelTestDetailsView(),
+      page: () => const ModelTestDetailsView(),
       binding: ModelTestDetailsBinding(),
     ),
     GetPage(
       // name: '/contest/:id',
       name: Routes.tex,
-      page: () => TeXPage(),
+      page: () => const TeXPage(),
       // binding: ModelTestDetailsBinding(),
     ),
   ];

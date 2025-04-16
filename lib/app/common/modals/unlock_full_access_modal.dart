@@ -18,7 +18,7 @@ class UnlockFullAccessDialog {
         ),
         child: Container(
           // color: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -26,11 +26,11 @@ class UnlockFullAccessDialog {
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.only(right: 10),
                   child: IconButton(
                     icon: Icon(Icons.close, color: Colors.grey, size: 28.sp,),
                     onPressed: () => Get.back(),
-                    constraints: BoxConstraints(),
+                    constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                   ),
                 ),
@@ -45,21 +45,21 @@ class UnlockFullAccessDialog {
               Image.asset("assets/unlock.png"),
               // Title
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   'Unlock Full Access',
                   style: GoogleFonts.inter(
                       textStyle: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF212D40),
+                    color: const Color(0xFF212D40),
                   )),
                 ),
               ),
 
               // Description
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Text(
                   'Upgrade to premium to unlock explanations and enhance your understanding.',
                   textAlign: TextAlign.center,
@@ -67,21 +67,21 @@ class UnlockFullAccessDialog {
                       textStyle: TextStyle(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w400,
-                    color: Color(0xFF212D40),
+                    color: const Color(0xFF212D40),
                   )),
                 ),
               ),
 
               // Subtitle
               Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 20),
+                padding: const EdgeInsets.only(top: 10, bottom: 20),
                 child: Text(
                   'Don\'t let blurred answers stop you!',
                   style: GoogleFonts.inter(
                       textStyle: TextStyle(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF50AFFF),
+                    color: const Color(0xFF50AFFF),
                   )),
                 ),
               ),
@@ -94,7 +94,7 @@ class UnlockFullAccessDialog {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

@@ -4,25 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prostuti/app/common/custom_bottom_fixed_button.dart';
-import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
-import 'package:prostuti/app/modules/questions/models/question_model.dart';
 
 import '../../../common/custom_simple_appbar.dart';
-import '../../../common/widgets/countdown_timer.dart';
-import '../../contests/controller/contest_controller.dart';
-import '../../questions/widgets/question_widgets.dart';
 import '../controller/contest_details_controller.dart';
-import '../widgets/bottom_fixed_submit_contest_widget.dart';
 import '../widgets/contest_action_widget.dart';
 import '../widgets/contest_details_widget.dart';
 import '../widgets/contest_status_widget.dart';
-import '../widgets/exam_completed_dialog.dart';
 import '../widgets/question_navigator.dart';
-import '../widgets/question_navigator_floating_widget.dart';
-import '../widgets/question_widget.dart';
-import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
 import '../widgets/subject_tabs_widget.dart';
 import '../../../common/widgets/shared_question_widget.dart';
 
@@ -40,7 +29,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       final double screenHeight = Get.height;
       final double widgetHeight = box.size.height;
 
-      final double minVisibleY = 50.0; // Adjust if you have an AppBar
+      const double minVisibleY = 50.0; // Adjust if you have an AppBar
       final double maxVisibleY = screenHeight - 50.0; // Adjust for BottomBar
 
       return (offset.dy + widgetHeight > minVisibleY) &&
@@ -179,9 +168,11 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                                 child: SharedQuestionWidget(
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
-                                  isMarkedQuestion: controller.isMarkedQuestion(filteredQuestions[index].id),
+                                  isMarkedQuestion: controller.isMarkedQuestion(
+                                      filteredQuestions[index].id),
                                   onMarkQuestion: controller.markUnmarkQuestion,
-                                  onOptionSelected: (option) => controller.selectOption(
+                                  onOptionSelected: (option) =>
+                                      controller.selectOption(
                                     filteredQuestions[index].id,
                                     option.order,
                                   ),
@@ -206,14 +197,14 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               alignment: Alignment.topLeft,
               child: Container(
                   color: Colors.white,
-                  child: Obx(()=>SubjectTabsWidget(
-                    onSubjectSelected: (subject) {
-                      controller.selectSubject(subject); // update logic
-                    },
-                    selectedSubject: controller.selectedSubject.value,
-                    subjects: controller.subjectLists,
-                    isQuestionOpened: controller.isQuestionOpened.value,
-                  )))),
+                  child: Obx(() => SubjectTabsWidget(
+                        onSubjectSelected: (subject) {
+                          controller.selectSubject(subject); // update logic
+                        },
+                        selectedSubject: controller.selectedSubject.value,
+                        subjects: controller.subjectLists,
+                        isQuestionOpened: controller.isQuestionOpened.value,
+                      )))),
           SizedBox(
             height: 15.h,
           ),

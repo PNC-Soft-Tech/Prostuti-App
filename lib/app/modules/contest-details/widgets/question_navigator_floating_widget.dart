@@ -105,14 +105,14 @@ void _scrollToQuestion(String? questionId) async {
   controller.selectedSubject.value = 'All';
   
   // Wait for UI rebuild
-  await Future.delayed(Duration(milliseconds: 50));
+  await Future.delayed(const Duration(milliseconds: 50));
 
   final context = controller.questionKeys[questionId]?.currentContext;
   if (context == null) return;
 
   Scrollable.ensureVisible(
     context,
-    duration: Duration(milliseconds: 500),
+    duration: const Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     alignment: 0.1, // Adjust this value (0.0 = top, 0.5 = center)
   );

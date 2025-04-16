@@ -49,16 +49,17 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
                 child: Row(
                   children: controller.model_tests.map((modelTest) {
                     return GestureDetector(
-                  
-                         onTap: () async {
-                  // log("clickeddddd");
-               final result = await Get.bottomSheet(
-                  ModelTestAccessBottomSheet(modelTestId: modelTest.id,),
-                  backgroundColor: Colors.transparent,
-                  isDismissible: true,
-                );
-                  // Get.toNamed(Routes.modelTestDetails);
-              
+                      onTap: () async {
+                        // log("clickeddddd");
+                        final result = await Get.bottomSheet(
+                          ModelTestAccessBottomSheet(
+                            modelTestId: modelTest.id,
+                          ),
+                          backgroundColor: Colors.transparent,
+                          isDismissible: true,
+                        );
+                        // Get.toNamed(Routes.modelTestDetails);
+
                         // Get.toNamed(Routes.modelTestDetails, arguments: {"modelTestId": modelTest.id});
                       },
                       child: Padding(

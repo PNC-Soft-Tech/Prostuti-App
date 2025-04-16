@@ -4,25 +4,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prostuti/app/common/custom_bottom_fixed_button.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/questions/models/question_model.dart';
 
 import '../../../common/custom_simple_appbar.dart';
 import '../../../common/widgets/countdown_timer.dart';
-import '../../contests/controller/contest_controller.dart';
-import '../../questions/widgets/question_widgets.dart';
 import '../controller/contest_details_controller.dart';
-import '../widgets/bottom_fixed_submit_contest_widget.dart';
 import '../widgets/contest_action_widget.dart';
 import '../widgets/contest_details_widget.dart';
 import '../widgets/contest_status_widget.dart';
-import '../widgets/exam_completed_dialog.dart';
 import '../widgets/question_navigator.dart';
-import '../widgets/question_navigator_floating_widget.dart';
 import '../widgets/question_widget.dart';
-import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
 import '../widgets/subject_tabs_widget.dart';
 
 class ContestDetailsViewOld extends GetView<ContestDetailsController> {
@@ -394,7 +387,7 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
                                   color: AppColors.primary,
                                 ),
                               )
-                            : SizedBox(
+                            : const SizedBox(
                                 height: 20,
                                 width: 20,
                               ),
@@ -461,7 +454,7 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
                                       color: AppColors.primary,
                                     ),
                                   )
-                                : SizedBox(
+                                : const SizedBox(
                                     height: 20,
                                     width: 20,
                                   ),

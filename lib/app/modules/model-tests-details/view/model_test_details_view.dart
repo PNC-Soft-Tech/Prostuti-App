@@ -7,23 +7,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prostuti/app/common/custom_bottom_fixed_button.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/questions/models/question_model.dart';
 import 'package:blur/blur.dart';
 
 import '../../../common/custom_simple_appbar.dart';
-import '../../../common/widgets/countdown_timer.dart';
 import '../../../common/widgets/shared_question_widget.dart';
-import '../../contest-details/widgets/contest_action_widget.dart';
-import '../../contest-details/widgets/contest_details_widget.dart';
-import '../../contest-details/widgets/contest_status_widget.dart';
 import '../../contest-details/widgets/question_navigator.dart';
-import '../../contest-details/widgets/question_widget.dart';
 import '../../contest-details/widgets/subject_tabs_widget.dart';
-import '../../contests/controller/contest_controller.dart';
-import '../../questions/widgets/question_widgets.dart';
 import '../controllers/model_test_details_controller.dart';
 import '../widgets/model_test_details.dart';
 
@@ -41,7 +33,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
       final double screenHeight = Get.height;
       final double widgetHeight = box.size.height;
 
-      final double minVisibleY = 50.0; // Adjust if you have an AppBar
+      const double minVisibleY = 50.0; // Adjust if you have an AppBar
       final double maxVisibleY = screenHeight - 50.0; // Adjust for BottomBar
 
       return (offset.dy + widgetHeight > minVisibleY) &&
@@ -52,7 +44,9 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
       backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(
           titleWidget: Obx(() => Text(
-                Utils.stripHtmlTags(controller.modelDetails.value?.contest.name ?? 'Model Test'),
+                Utils.stripHtmlTags(
+                    controller.modelDetails.value?.contest.name ??
+                        'Model Test'),
                 style: TextStyle(color: Colors.black, fontSize: 14.sp),
               ))),
       body: Stack(
@@ -119,7 +113,8 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                 SizedBox(
                                   width: 12.w,
                                 ),
-                                Text("Mode: ${controller.currentSelectedModelTestMode}"),
+                                Text(
+                                    "Mode: ${controller.currentSelectedModelTestMode}"),
                                 HtmlWidget(controller
                                         .modelDetails.value?.contest.name ??
                                     "Model Test -০১")
@@ -180,11 +175,14 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                 child: SharedQuestionWidget(
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
-                                  isMarkedQuestion: controller.isMarkedQuestion(filteredQuestions[index].id),
+                                  isMarkedQuestion: controller.isMarkedQuestion(
+                                      filteredQuestions[index].id),
                                   onMarkQuestion: controller.markUnmarkQuestion,
                                   isExplanationEnabled: true,
-                                  explanationWidget: _buildExplanationWidget(filteredQuestions[index]),
-                                  onOptionSelected: (option) => controller.selectOption(
+                                  explanationWidget: _buildExplanationWidget(
+                                      filteredQuestions[index]),
+                                  onOptionSelected: (option) =>
+                                      controller.selectOption(
                                     filteredQuestions[index].id,
                                     option.order,
                                   ),
@@ -211,7 +209,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                   color: Colors.white,
                   child: Obx(() => SubjectTabsWidget(
                         onSubjectSelected: (subject) {
-                          log("Sujcet changed to ${subject}");
+                          log("Sujcet changed to $subject");
                           controller.selectSubject(subject); // update logic
                         },
                         selectedSubject: controller.selectedSubject.value,
@@ -252,7 +250,10 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
             SizedBox(height: 6.h),
             if (controller.currentSelectedModelTestMode == "Practice") ...[
               HtmlWidget(
-                question.explanation?.replaceAll('<pre>', '').replaceAll('</pre>', '') ?? '',
+                question.explanation
+                        ?.replaceAll('<pre>', '')
+                        .replaceAll('</pre>', '') ??
+                    '',
                 customWidgetBuilder: (element) {
                   if (element.classes.contains('latex') ||
                       element.classes.contains('ql-syntax')) {
@@ -272,7 +273,10 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: HtmlWidget(
-                    question.explanation?.replaceAll('<pre>', '').replaceAll('</pre>', '') ?? '',
+                    question.explanation
+                            ?.replaceAll('<pre>', '')
+                            .replaceAll('</pre>', '') ??
+                        '',
                     customWidgetBuilder: (element) {
                       if (element.classes.contains('latex') ||
                           element.classes.contains('ql-syntax')) {

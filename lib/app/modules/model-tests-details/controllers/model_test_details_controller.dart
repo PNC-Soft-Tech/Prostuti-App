@@ -1,18 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
-import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
-import '../../contest-details/models/contest_details_model.dart';
 import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
-import '../../contests/models/topics_model.dart';
 import '../../questions/models/question_model.dart';
 import '../models/model_test_response_model.dart';
 

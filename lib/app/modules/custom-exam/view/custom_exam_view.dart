@@ -54,16 +54,22 @@ class CustomExamView extends GetView<CustomExamController> {
                   child: CustomButton.button(
                       text: "Continue",
                       onPressed: () {
-                        if (controller.customExamQuestions.value?.subjects != null) {
-                          final Map<String, List<Map<String, dynamic>>> previewData = {};
-                          
-                          for (var subject in controller.customExamQuestions.value!.subjects!) {
-                            if (subject.subjectName != null && subject.topics != null) {
-                              previewData[subject.subjectName!] = subject.topics!;
+                        if (controller.customExamQuestions.value?.subjects !=
+                            null) {
+                          final Map<String, List<Map<String, dynamic>>>
+                              previewData = {};
+
+                          for (var subject in controller
+                              .customExamQuestions.value!.subjects!) {
+                            if (subject.subjectName != null &&
+                                subject.topics != null) {
+                              previewData[subject.subjectName!] =
+                                  subject.topics!;
                             }
                           }
-                          
-                          Get.to(() => PreviewScreen(subjectsData: previewData));
+
+                          Get.to(
+                              () => PreviewScreen(subjectsData: previewData));
                         }
                       },
                       mainAxisSize: MainAxisSize.max),

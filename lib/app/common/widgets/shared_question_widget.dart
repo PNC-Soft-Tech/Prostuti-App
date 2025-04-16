@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
@@ -17,7 +16,7 @@ class SharedQuestionWidget extends StatelessWidget {
   final Function? onOptionSelected;
 
   const SharedQuestionWidget({
-    Key? key,
+    super.key,
     required this.question,
     required this.index,
     required this.isMarkedQuestion,
@@ -25,7 +24,7 @@ class SharedQuestionWidget extends StatelessWidget {
     this.isExplanationEnabled = false,
     this.explanationWidget,
     this.onOptionSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +50,7 @@ class SharedQuestionWidget extends StatelessWidget {
                           element.classes.contains('ql-syntax')) {
                         return Math.tex(
                           element.text,
-                          textStyle: TextStyle(fontSize: 20),
+                          textStyle: const TextStyle(fontSize: 20),
                         );
                       }
                       return null;

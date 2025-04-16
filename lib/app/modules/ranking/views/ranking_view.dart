@@ -10,9 +10,12 @@ import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
+import 'package:prostuti/app/modules/ranking/widgets/ranking_filter_bottom_sheet.dart';
 
 class RankingView extends GetWidget<RankingController> {
-  const RankingView({super.key});
+  RankingView({super.key});
+  @override
+  final controller = Get.find<RankingController>();
 
   @override
   Widget build(BuildContext context) {
@@ -90,28 +93,30 @@ class RankingView extends GetWidget<RankingController> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: 'Overall Top 10',
-                        icon: Icon(Icons.arrow_drop_down, size: 20.sp),
-                        underline: Container(),
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14.sp,
-                        ),
-                        onChanged: (String? newValue) {
-                          print('Selected: $newValue');
+                      GestureDetector(
+                        onTap: () {
+                          _showBottomSheet(context);
                         },
-                        items: <String>[
-                          'Overall Top 10',
-                          'Overall Top 20',
-                          'Top Weekly'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                controller.selectedRankingType.value,
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 14),
+                              ),
+                              const Icon(Icons.arrow_drop_down, size: 20),
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ),
                   SizedBox(height: 5.h),
@@ -154,6 +159,17 @@ class RankingView extends GetWidget<RankingController> {
         ],
       );
     });
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    Get.bottomSheet(
+      const RankingFilterBottomSheet(),
+      isScrollControlled:
+          false, // Optional, to allow for full-screen or scrollable content
+      backgroundColor: Colors.white,
+      ignoreSafeArea: false,
+      isDismissible: true,
+    );
   }
 }
 

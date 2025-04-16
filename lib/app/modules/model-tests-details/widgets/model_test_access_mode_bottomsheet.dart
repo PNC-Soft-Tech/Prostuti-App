@@ -11,8 +11,6 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
   const ModelTestAccessBottomSheet({super.key, required this.modelTestId});
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -28,7 +26,7 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
@@ -39,13 +37,16 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
                     color: AppColors.primary,
                     // onTap: () => _navigateToReadMode(),
                     onTap: () {
-                    // Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
-                    //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'read';
-                      Get.toNamed(Routes.modelTestDetails, arguments: {'modelTestId':modelTestId,'mode':'read', });
+                      // Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
+                      //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'read';
+                      Get.toNamed(Routes.modelTestDetails, arguments: {
+                        'modelTestId': modelTestId,
+                        'mode': 'read',
+                      });
                     },
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: _buildTestModeCard(
                     icon: Icons.quiz_rounded,
@@ -54,9 +55,12 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
                     color: AppColors.primary,
                     // onTap: () => _navigateToExamMode(),
                     onTap: () {
-                    //    Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
-                    //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'exam';
-                      Get.toNamed(Routes.modelTestDetails, arguments: {'modelTestId':modelTestId, 'mode':'exam', });
+                      //    Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
+                      //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'exam';
+                      Get.toNamed(Routes.modelTestDetails, arguments: {
+                        'modelTestId': modelTestId,
+                        'mode': 'exam',
+                      });
                     },
                   ),
                 ),
@@ -90,11 +94,11 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 2,
               blurRadius: 5,
-              offset: Offset(0, 3),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -113,7 +117,7 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               title,
               style: TextStyle(
@@ -122,10 +126,10 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
                 color: color,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               description,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 color: Colors.black87,
               ),
@@ -138,24 +142,26 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
 
   // Navigation methods for each mode
   void _navigateToReadMode() {
-    Get.to(() => ReadModeDetailScreen());
+    Get.to(() => const ReadModeDetailScreen());
   }
 
   void _navigateToExamMode() {
-    Get.to(() => ExamModeDetailScreen());
+    Get.to(() => const ExamModeDetailScreen());
   }
 }
 
 // Read Mode Detail Screen
 class ReadModeDetailScreen extends StatelessWidget {
+  const ReadModeDetailScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Read Mode'),
+        title: const Text('Read Mode'),
         backgroundColor: Colors.green,
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -174,7 +180,7 @@ class ReadModeDetailScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'Explore detailed content, review materials, and learn at your own pace.',
                 textAlign: TextAlign.center,
@@ -193,14 +199,16 @@ class ReadModeDetailScreen extends StatelessWidget {
 
 // Exam Mode Detail Screen
 class ExamModeDetailScreen extends StatelessWidget {
+  const ExamModeDetailScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exam Mode'),
+        title: const Text('Exam Mode'),
         backgroundColor: Colors.blue,
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -219,7 +227,7 @@ class ExamModeDetailScreen extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Text(
                 'Start a timed practice test with strict exam-like conditions and performance tracking.',
                 textAlign: TextAlign.center,

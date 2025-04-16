@@ -10,25 +10,24 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../common/modals/unlock_full_access_modal.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../questions/models/question_model.dart';
-import '../controller/contest_details_controller.dart';
 
 import 'question_option_widget.dart';
 
 class QuestionWidget extends StatelessWidget {
   final Question question;
- final bool Function(String qid) isMarkedQuestion;
- final void Function(String qid) markUnmarkQuestion;
+  final bool Function(String qid) isMarkedQuestion;
+  final void Function(String qid) markUnmarkQuestion;
   final int index;
   final bool isExp;
 
-   QuestionWidget({
-    Key? key,
+  const QuestionWidget({
+    super.key,
     required this.question,
     required this.index,
-   required this.isMarkedQuestion,
-   required this.markUnmarkQuestion,
+    required this.isMarkedQuestion,
+    required this.markUnmarkQuestion,
     this.isExp = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,16 +50,18 @@ class QuestionWidget extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-           isMarkedQuestion(question.id)?  Visibility(
-                visible: isMarkedQuestion(question.id),
-                child: Container(
-                  width: 4.w,
-                  height: double.infinity,
-                  color: isMarkedQuestion(question.id)
-                      ? const Color(0xFFFF8143)
-                      : Colors.black,
-                ),
-              ):SizedBox.shrink(),
+              isMarkedQuestion(question.id)
+                  ? Visibility(
+                      visible: isMarkedQuestion(question.id),
+                      child: Container(
+                        width: 4.w,
+                        height: double.infinity,
+                        color: isMarkedQuestion(question.id)
+                            ? const Color(0xFFFF8143)
+                            : Colors.black,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
               SizedBox(width: 20.w),
               Expanded(
                 child: Column(
@@ -118,10 +119,7 @@ class QuestionWidget extends StatelessWidget {
                     //       })
                     //     :
                     HtmlWidget(
-                      '${index + 1}) ' +
-                          question.title
-                              .replaceAll('<pre>', '')
-                              .replaceAll('</pre>', ''),
+                      '${index + 1}) ${question.title.replaceAll('<pre>', '').replaceAll('</pre>', '')}',
                       customWidgetBuilder: (element) {
                         print('Element classes: ${question.title}');
 
@@ -130,7 +128,7 @@ class QuestionWidget extends StatelessWidget {
                           // Render LaTeX content
                           return Math.tex(
                             element.text,
-                            textStyle: TextStyle(fontSize: 20),
+                            textStyle: const TextStyle(fontSize: 20),
                           );
                         }
                         return null; // Fallback to default rendering
@@ -147,7 +145,7 @@ class QuestionWidget extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                           markUnmarkQuestion(question.id);
+                            markUnmarkQuestion(question.id);
                             debugPrint("qid-----> ${question.id}");
                           },
                           child: Text('Mark this Question',
@@ -174,10 +172,10 @@ class QuestionWidget extends StatelessWidget {
                     ),
                     isExp
                         ? GestureDetector(
-                          onTap: (){
-                            UnlockFullAccessDialog.show();
-                          },
-                          child: Container(
+                            onTap: () {
+                              UnlockFullAccessDialog.show();
+                            },
+                            child: Container(
                               width: Get.width,
                               padding: EdgeInsets.symmetric(
                                   horizontal: 14.w, vertical: 6.h),
@@ -188,14 +186,14 @@ class QuestionWidget extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("ব্যাখ্যা"),
+                                  const Text("ব্যাখ্যা"),
                                   SizedBox(
                                     height: 6.h,
                                   ),
                                   Blur(
-                                    blur: 2.5, 
+                                    blur: 2.5,
                                     borderRadius: BorderRadius.circular(10.r),
-                                    blurColor: Colors.blueGrey.shade50 ,
+                                    blurColor: Colors.blueGrey.shade50,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: HtmlWidget(
@@ -208,14 +206,16 @@ class QuestionWidget extends StatelessWidget {
                                         customWidgetBuilder: (element) {
                                           print(
                                               'explanation Element classes: ${question.title}');
-                                      
-                                          if (element.classes.contains('latex') ||
+
+                                          if (element.classes
+                                                  .contains('latex') ||
                                               element.classes
                                                   .contains('ql-syntax')) {
                                             // Render LaTeX content
                                             return Math.tex(
                                               element.text,
-                                              textStyle: TextStyle(fontSize: 20),
+                                              textStyle:
+                                                  const TextStyle(fontSize: 20),
                                             );
                                           }
                                           return null; // Fallback to default rendering
@@ -234,12 +234,11 @@ class QuestionWidget extends StatelessWidget {
                                   //           BorderRadius.circular(10.r)),
                                   //           child: Text("■■■"),
                                   // )),
-                            
                                 ],
                               ),
                             ),
-                        )
-                        : SizedBox.shrink(),
+                          )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),

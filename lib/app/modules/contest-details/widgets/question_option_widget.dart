@@ -12,8 +12,7 @@ import '../controller/contest_details_controller.dart';
 class QuestionOptionsWidget extends GetWidget<ContestDetailsController> {
   final Question question;
 
-  const QuestionOptionsWidget({Key? key, required this.question})
-      : super(key: key);
+  const QuestionOptionsWidget({super.key, required this.question});
 
   @override
   Widget build(BuildContext context) {
@@ -83,14 +82,14 @@ class QuestionOptionsWidget extends GetWidget<ContestDetailsController> {
                             child: HtmlWidget(
                           optionTitle,
                           customWidgetBuilder: (element) {
-                            print('option Element classes: ${optionTitle}');
+                            print('option Element classes: $optionTitle');
 
                             if (element.classes.contains('latex') ||
                                 element.classes.contains('ql-syntax')) {
                               // Render LaTeX content
                               return Math.tex(
                                 element.text,
-                                textStyle: TextStyle(fontSize: 20),
+                                textStyle: const TextStyle(fontSize: 20),
                               );
                             }
                             return null; // Fallback to default rendering

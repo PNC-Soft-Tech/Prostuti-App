@@ -11,6 +11,14 @@ class RankingController extends GetxController {
   var isLoading = false.obs;
   var isRankLoading = false.obs;
 
+  // Store the selected filters as Rx variables
+  var selectedRankingType = 'overall'.obs; // Default value is 'overall'
+  var selectedDivision = Rxn<String>();
+  var selectedDistrict = Rxn<String>();
+  var selectedUpazila = Rxn<String>();
+  var selectedInstitutionType = Rxn<String>();
+  var selectedInstitutionName = Rxn<String>();
+
   late String contestId; // the contest ID
 
   @override
@@ -27,7 +35,7 @@ class RankingController extends GetxController {
   }
 
   Future<void> _getContestIdFromSharedPreferences() async {
-    // await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
+    await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
     contestId = await StorageHelper.getLatestContestId();
     if (contestId.isNotEmpty) {
       displayLeaderboardRanks(contestId);
@@ -55,5 +63,29 @@ class RankingController extends GetxController {
         contestRankData.value = rankingData;
       },
     );
+  }
+
+  // Update the selected ranking type
+  void updateRankingType(String type) {
+    selectedRankingType.value = type;
+  }
+
+  // Update the selected division, district, upazila, institution type, and name
+  void updateFilters({
+    String? division,
+    String? district,
+    String? upazila,
+    String? institutionType,
+    String? institutionName,
+  }) {
+    if (division != null) selectedDivision.value = division;
+    if (district != null) selectedDistrict.value = district;
+    if (upazila != null) selectedUpazila.value = upazila;
+    if (institutionType != null) {
+      selectedInstitutionType.value = institutionType;
+    }
+    if (institutionName != null) {
+      selectedInstitutionName.value = institutionName;
+    }
   }
 }

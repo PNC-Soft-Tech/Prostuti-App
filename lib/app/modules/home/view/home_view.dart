@@ -16,7 +16,7 @@ class HomeView extends GetView<HomeController> {
   final List<Widget> _pages = [
     const HomeMainWidget(),
     const SearchView(),
-    const RankingView(),
+    RankingView(),
     const HistoryView(),
     const Center(child: Text('More Page')),
   ];

@@ -45,6 +45,7 @@ flutter:
     - assets/
     - assets/splash/
     - assets/logo/
+    - assets/jsons/
     - assets/onboarding/
     - assets/icons/
     - assets/leaderboard/
