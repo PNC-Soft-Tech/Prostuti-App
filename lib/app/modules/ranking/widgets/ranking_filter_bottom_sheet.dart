@@ -1,12 +1,15 @@
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/models/division_model.dart';
 import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
 import 'package:prostuti/app/constant/app_color.dart'; // Assuming you have this constant file
 
 class RankingFilterBottomSheet extends StatelessWidget {
-  const RankingFilterBottomSheet({super.key});
+  RankingFilterBottomSheet({super.key});
+  final divKey = GlobalKey<DropdownSearchState>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +72,43 @@ class RankingFilterBottomSheet extends StatelessWidget {
                 // Conditionally render the Division dropdown based on ranking type
                 Obx(() {
                   if (controller.selectedRankingType.value == 'division') {
-                    return DropdownButton<String>(
-                      hint: const Text("Select Division"),
-                      value: controller.selectedDivision.value,
-                      onChanged: (String? newValue) {
-                        controller.updateFilters(division: newValue);
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                            value: 'Barishal', child: Text('Barishal')),
-                        DropdownMenuItem(value: 'Dhaka', child: Text('Dhaka')),
-                      ],
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: DropdownSearch<Division>(
+                        key: divKey,
+                        selectedItem: controller.selectedDivision.value,
+                        items: (filter, infiniteScrollProps) =>
+                            controller.divisions,
+                        itemAsString: (Division division) => division.name,
+                        decoratorProps: const DropDownDecoratorProps(
+                          decoration: InputDecoration(
+                            labelText: 'Select Division',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        compareFn: (item1, item2) =>
+                            item1.name.toLowerCase() ==
+                            item2.name.toLowerCase(),
+                        popupProps: const PopupProps.dialog(
+                          showSearchBox: true,
+                          fit: FlexFit.tight,
+                          // constraints: BoxConstraints(
+                          //   maxHeight:
+                          //       200, // Set the maximum height for the dropdown
+                          // ),
+                        ),
+                        filterFn: (division, filter) {
+                          if (filter.isEmpty) {
+                            return true; // Return all divisions if no filter
+                          }
+                          return division.name.toLowerCase().contains(
+                              filter.toLowerCase()); // Filter by division name
+                        },
+                      ),
                     );
                   } else {
-                    return SizedBox.shrink(); // Empty widget if not 'division'
+                    return const SizedBox
+                        .shrink(); // Empty widget if not 'division'
                   }
                 }),
                 Padding(

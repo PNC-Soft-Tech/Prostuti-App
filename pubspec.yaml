@@ -11,6 +11,7 @@ dependencies:
   collection: ^1.18.0
   dart_quill_delta: ^10.8.3
   dartz: ^0.10.1
+  dropdown_search: ^6.0.2
   flutter:
     sdk: flutter
   # flutter_launcher_icons: ^0.14.2

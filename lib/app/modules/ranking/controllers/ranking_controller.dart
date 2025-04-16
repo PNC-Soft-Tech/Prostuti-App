@@ -1,4 +1,7 @@
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/models/division_model.dart';
+import 'dart:convert';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/storage/storage_helper.dart';
 import '../../../APIs/api_helper.dart';
@@ -11,9 +14,12 @@ class RankingController extends GetxController {
   var isLoading = false.obs;
   var isRankLoading = false.obs;
 
-  // Store the selected filters as Rx variables
   var selectedRankingType = 'overall'.obs; // Default value is 'overall'
-  var selectedDivision = Rxn<String>();
+
+  var divisions = <Division>[].obs;
+  var searchQueryDiv = ''.obs;
+
+  var selectedDivision = Rxn<Division>();
   var selectedDistrict = Rxn<String>();
   var selectedUpazila = Rxn<String>();
   var selectedInstitutionType = Rxn<String>();
@@ -26,12 +32,13 @@ class RankingController extends GetxController {
     super.onInit();
 
     contestId = Get.arguments ?? "";
-
     if (contestId.isEmpty) {
       _getContestIdFromSharedPreferences();
     } else {
       displayLeaderboardRanks(contestId);
     }
+
+    loadDivisions();
   }
 
   Future<void> _getContestIdFromSharedPreferences() async {
@@ -65,6 +72,25 @@ class RankingController extends GetxController {
     );
   }
 
+  Future<void> loadDivisions() async {
+    final String response =
+        await rootBundle.loadString('assets/jsons/bd-divisions.json');
+    final List<dynamic> data = json.decode(response);
+    print(data);
+    divisions.value = data.map((json) => Division.fromJson(json)).toList();
+  }
+
+  List<Division> get filteredDivisions {
+    if (searchQueryDiv.value.isEmpty) {
+      return divisions;
+    }
+    return divisions
+        .where((division) => division.name
+            .toLowerCase()
+            .contains(searchQueryDiv.value.toLowerCase()))
+        .toList();
+  }
+
   // Update the selected ranking type
   void updateRankingType(String type) {
     selectedRankingType.value = type;
@@ -72,7 +98,7 @@ class RankingController extends GetxController {
 
   // Update the selected division, district, upazila, institution type, and name
   void updateFilters({
-    String? division,
+    Division? division,
     String? district,
     String? upazila,
     String? institutionType,
