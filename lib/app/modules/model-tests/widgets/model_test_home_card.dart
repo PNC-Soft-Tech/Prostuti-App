@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
+import '../../../common/utils/prostuti_utils.dart';
+
 class ModelTestHomeCard extends GetWidget {
   final String? title;
   final String? image;
@@ -38,11 +40,15 @@ class ModelTestHomeCard extends GetWidget {
                   SizedBox(
                     width: 8.w,
                   ),
-                  Text(
-                    title ?? 'NTRCA Exam',
-                    style: GoogleFonts.notoSansBengali(
-                        textStyle: TextStyle(
-                            fontSize: 15.sp, fontWeight: FontWeight.w400)),
+                  Expanded(
+                    child: Text(
+                     Utils.stripHtmlTags(title??'')  ?? 'NTRCA Exam',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.notoSansBengali(
+                          textStyle: TextStyle(
+                              fontSize: 15.sp, fontWeight: FontWeight.w400)),
+                    ),
                   )
                 ],
               ),

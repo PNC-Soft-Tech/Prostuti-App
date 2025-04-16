@@ -116,11 +116,9 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
                               const ContestDetailsWidget(), // ✅ Displays contest details
                           ],
                         ),
-
                       SizedBox(
                         height: 70.h,
                       ),
-
                       Obx(() {
                         final filteredQuestions =
                             controller.filteredQuestions; // Use filtered list
@@ -139,10 +137,14 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
                           children: List.generate(
                             filteredQuestions.length,
                             (index) => Padding(
-                              padding:  EdgeInsets.only(bottom: 8.h),
+                              padding: EdgeInsets.only(bottom: 8.h),
                               child: QuestionWidget(
                                 question: filteredQuestions[index],
                                 index: index,
+                                isMarkedQuestion: (qid) =>
+                                    controller.isMarkedQuestion(qid),
+                                markUnmarkQuestion: (qid) =>
+                                    controller.markUnmarkQuestion(qid),
                               ),
                             ),
                           ),
@@ -161,12 +163,16 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
           const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
           Positioned(
               child: Align(
-                  alignment: Alignment.topCenter, child: Container(
-                    color: Colors.grey.shade50,
-                    child: SubjectTabsWidget(onSubjectSelected: (subject) {
-    controller.selectSubject(subject);             // update logic
-  }
-                    , selectedSubject: '', subjects: const [],)))),
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                      color: Colors.grey.shade50,
+                      child: SubjectTabsWidget(
+                        onSubjectSelected: (subject) {
+                          controller.selectSubject(subject); // update logic
+                        },
+                        selectedSubject: '',
+                        subjects: const [],
+                      )))),
           SizedBox(
             height: 15.h,
           ),

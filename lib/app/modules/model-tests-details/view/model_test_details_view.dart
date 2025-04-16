@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
@@ -10,9 +11,11 @@ import 'package:prostuti/app/common/custom_bottom_fixed_button.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/questions/models/question_model.dart';
+import 'package:blur/blur.dart';
 
 import '../../../common/custom_simple_appbar.dart';
 import '../../../common/widgets/countdown_timer.dart';
+import '../../../common/widgets/shared_question_widget.dart';
 import '../../contest-details/widgets/contest_action_widget.dart';
 import '../../contest-details/widgets/contest_details_widget.dart';
 import '../../contest-details/widgets/contest_status_widget.dart';
@@ -49,7 +52,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
       backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(
           titleWidget: Obx(() => Text(
-                controller.modelDetails.value?.contest.name ?? 'Model Test',
+                Utils.stripHtmlTags(controller.modelDetails.value?.contest.name ?? 'Model Test'),
                 style: TextStyle(color: Colors.black, fontSize: 14.sp),
               ))),
       body: Stack(
@@ -90,7 +93,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                              SizedBox(
+                            SizedBox(
                               height: 70.h,
                             ),
                             Row(
@@ -116,6 +119,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                 SizedBox(
                                   width: 12.w,
                                 ),
+                                Text("Mode: ${controller.currentSelectedModelTestMode}"),
                                 HtmlWidget(controller
                                         .modelDetails.value?.contest.name ??
                                     "Model Test -০১")
@@ -173,11 +177,17 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                               );
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
-                                child: QuestionWidget(
-                                  // key: controller.questionKeys[filteredQuestions[index].id],
+                                child: SharedQuestionWidget(
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
-                                  isExp: true,
+                                  isMarkedQuestion: controller.isMarkedQuestion(filteredQuestions[index].id),
+                                  onMarkQuestion: controller.markUnmarkQuestion,
+                                  isExplanationEnabled: true,
+                                  explanationWidget: _buildExplanationWidget(filteredQuestions[index]),
+                                  onOptionSelected: (option) => controller.selectOption(
+                                    filteredQuestions[index].id,
+                                    option.order,
+                                  ),
                                 ),
                               );
                             }),
@@ -206,12 +216,79 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                         },
                         selectedSubject: controller.selectedSubject.value,
                         subjects: controller.subjectLists,
-                         isQuestionOpened: true,
+                        isQuestionOpened: true,
                       )))),
           SizedBox(
             height: 15.h,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildExplanationWidget(Question question) {
+    return GestureDetector(
+      onTap: () {
+        // Handle explanation tap if needed
+      },
+      child: Container(
+        width: Get.width,
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
+        decoration: BoxDecoration(
+          border: Border.all(width: 1, color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "ব্যাখ্যা",
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF212121),
+              ),
+            ),
+            SizedBox(height: 6.h),
+            if (controller.currentSelectedModelTestMode == "Practice") ...[
+              HtmlWidget(
+                question.explanation?.replaceAll('<pre>', '').replaceAll('</pre>', '') ?? '',
+                customWidgetBuilder: (element) {
+                  if (element.classes.contains('latex') ||
+                      element.classes.contains('ql-syntax')) {
+                    return Math.tex(
+                      element.text,
+                      textStyle: const TextStyle(fontSize: 20),
+                    );
+                  }
+                  return null;
+                },
+              ),
+            ] else ...[
+              Blur(
+                blur: 2.5,
+                borderRadius: BorderRadius.circular(10.r),
+                blurColor: Colors.blueGrey.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: HtmlWidget(
+                    question.explanation?.replaceAll('<pre>', '').replaceAll('</pre>', '') ?? '',
+                    customWidgetBuilder: (element) {
+                      if (element.classes.contains('latex') ||
+                          element.classes.contains('ql-syntax')) {
+                        return Math.tex(
+                          element.text,
+                          textStyle: const TextStyle(fontSize: 20),
+                        );
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

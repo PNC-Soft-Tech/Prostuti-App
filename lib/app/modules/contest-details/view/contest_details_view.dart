@@ -24,6 +24,7 @@ import '../widgets/question_navigator_floating_widget.dart';
 import '../widgets/question_widget.dart';
 import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
 import '../widgets/subject_tabs_widget.dart';
+import '../../../common/widgets/shared_question_widget.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
   const ContestDetailsView({super.key});
@@ -175,10 +176,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               );
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
-                                child: QuestionWidget(
-                                  // key: controller.questionKeys[filteredQuestions[index].id],
+                                child: SharedQuestionWidget(
                                   question: filteredQuestions[index],
                                   index: originalIndex ?? index,
+                                  isMarkedQuestion: controller.isMarkedQuestion(filteredQuestions[index].id),
+                                  onMarkQuestion: controller.markUnmarkQuestion,
+                                  onOptionSelected: (option) => controller.selectOption(
+                                    filteredQuestions[index].id,
+                                    option.order,
+                                  ),
                                 ),
                               );
                             }),

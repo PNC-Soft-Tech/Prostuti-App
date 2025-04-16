@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +10,8 @@ import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../../job-circulars/widgets/job_circular_home_widget.dart';
-import '../../model-tests-details/widgets/model_test_home_widget.dart';
+import '../../model-tests-details/widgets/model_test_access_mode_bottomsheet.dart';
+import '../../model-tests/widgets/model_test_home_widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget<HomeController> {
@@ -27,12 +29,18 @@ class HomeMainWidget extends GetWidget<HomeController> {
                   'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
                   style: TextStyle(fontSize: 16.sp),
                 )),
-                SizedBox(height: 10.h),
-                GestureDetector(
-                  onTap: (){
-                    Get.toNamed(Routes.modelTestDetails);
-                  },
-                  child: Text("Model Test Page")),
+            SizedBox(height: 10.h),
+            GestureDetector(
+                onTap: () async {
+                  log("clickeddddd");
+              //  final result = await Get.bottomSheet(
+              //     ModelTestAccessBottomSheet(),
+              //     backgroundColor: Colors.transparent,
+              //     isDismissible: true,
+              //   );
+                  // Get.toNamed(Routes.modelTestDetails);
+                },
+                child: Text("Model Test Page")),
             // CustomButton.button(
             //     text: "Logout",
             //     onPressed: () {

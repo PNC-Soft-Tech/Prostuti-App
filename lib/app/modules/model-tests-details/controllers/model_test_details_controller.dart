@@ -28,6 +28,10 @@ class ModelTestDetailsController extends GetxController {
   final markedQuestions = <String>[].obs;
   // final markedQuestions = <int>[].obs; // Store **question indexes**
   final currentQuestionIndex = 0.obs; // Track current question
+  final RxBool isReadModeSelected = true.obs;
+  final RxBool isExamModeSelected = false.obs;
+final RxString currentSelectedModelTestId=''.obs;
+final RxString currentSelectedModelTestMode='read'.obs;
 
   final isSubmittingContest =
       false.obs; // This will track loading state for submitContest
@@ -52,9 +56,11 @@ class ModelTestDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // final Map<String, dynamic> arguments = Get.arguments;
+    final Map<String, dynamic> arguments = Get.arguments;
     // contestId.value = arguments["contestId"]; // Retrieve contestId
-    modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
+    modelTestId.value = arguments["modelTestId"]; // Retrieve contestId
+    currentSelectedModelTestMode.value = arguments["mode"]; // Retrieve contestId
+    // modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
     fetchModelTestDetails(modelTestId.value);
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
@@ -64,7 +70,10 @@ class ModelTestDetailsController extends GetxController {
       );
     });
   }
-
+  void toggleMode(bool isReadMode) {
+    isReadModeSelected.value = isReadMode;
+    isExamModeSelected.value = !isReadMode;
+  }
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
     questionKeys.clear();
     questionIdToIndexMap.clear();
