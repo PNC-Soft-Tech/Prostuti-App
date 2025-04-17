@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/models/district_model.dart';
 import 'package:prostuti/app/models/division_model.dart';
+import 'package:prostuti/app/models/institution_type.dart';
+import 'package:prostuti/app/models/upazila_model.dart';
 import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
 import 'package:prostuti/app/constant/app_color.dart'; // Assuming you have this constant file
 
@@ -37,7 +40,8 @@ class RankingFilterBottomSheet extends StatelessWidget {
               children: [
                 Obx(() {
                   return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 0), // not working actually
                     title: const Text('Overall Top 10'),
                     leading: Radio<String>(
                       value: 'overall',
@@ -57,7 +61,7 @@ class RankingFilterBottomSheet extends StatelessWidget {
 
                 Obx(() {
                   return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                     title: const Text('Division-wise Top 10'),
                     leading: Radio<String>(
                       value: 'division',
@@ -118,7 +122,7 @@ class RankingFilterBottomSheet extends StatelessWidget {
 
                 Obx(() {
                   return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                     title: const Text('District-wise Top 10'),
                     leading: Radio<String>(
                       value: 'district',
@@ -133,23 +137,43 @@ class RankingFilterBottomSheet extends StatelessWidget {
                 // Conditionally render the District dropdown based on ranking type
                 Obx(() {
                   if (controller.selectedRankingType.value == 'district') {
-                    return DropdownButton<String>(
-                      hint: const Text("Select District"),
-                      value: controller.selectedDistrict.value,
-                      onChanged: (String? newValue) {
-                        controller.updateFilters(district: newValue);
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                            value: 'Barishal District',
-                            child: Text('Barishal District')),
-                        DropdownMenuItem(
-                            value: 'Dhaka District',
-                            child: Text('Dhaka District')),
-                      ],
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: DropdownSearch<District>(
+                        key: divKey,
+                        selectedItem: controller.selectedDistrict.value,
+                        items: (filter, infiniteScrollProps) =>
+                            controller.districts,
+                        itemAsString: (District district) => district.name,
+                        decoratorProps: const DropDownDecoratorProps(
+                          decoration: InputDecoration(
+                            labelText: 'Select District',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        compareFn: (item1, item2) =>
+                            item1.name.toLowerCase() ==
+                            item2.name.toLowerCase(),
+                        popupProps: const PopupProps.dialog(
+                          showSearchBox: true,
+                          fit: FlexFit.tight,
+                          // constraints: BoxConstraints(
+                          //   maxHeight:
+                          //       200, // Set the maximum height for the dropdown
+                          // ),
+                        ),
+                        filterFn: (district, filter) {
+                          if (filter.isEmpty) {
+                            return true; // Return all districts if no filter
+                          }
+                          return district.name.toLowerCase().contains(
+                              filter.toLowerCase()); // Filter by district name
+                        },
+                      ),
                     );
                   } else {
-                    return SizedBox.shrink(); // Empty widget if not 'district'
+                    return const SizedBox
+                        .shrink(); // Empty widget if not 'district'
                   }
                 }),
                 Padding(
@@ -159,7 +183,7 @@ class RankingFilterBottomSheet extends StatelessWidget {
 
                 Obx(() {
                   return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                     title: const Text('Upazila-wise Top 10'),
                     leading: Radio<String>(
                       value: 'upazila',
@@ -174,21 +198,43 @@ class RankingFilterBottomSheet extends StatelessWidget {
                 // Conditionally render the Upazila dropdown based on ranking type
                 Obx(() {
                   if (controller.selectedRankingType.value == 'upazila') {
-                    return DropdownButton<String>(
-                      hint: const Text("Select Upazila"),
-                      value: controller.selectedUpazila.value,
-                      onChanged: (String? newValue) {
-                        controller.updateFilters(upazila: newValue);
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                            value: 'Polashpur', child: Text('Polashpur')),
-                        DropdownMenuItem(
-                            value: 'Magura', child: Text('Magura')),
-                      ],
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: DropdownSearch<Upazila>(
+                        key: divKey,
+                        selectedItem: controller.selectedUpazila.value,
+                        items: (filter, infiniteScrollProps) =>
+                            controller.upazilas,
+                        itemAsString: (Upazila upazila) => upazila.name,
+                        decoratorProps: const DropDownDecoratorProps(
+                          decoration: InputDecoration(
+                            labelText: 'Select Upazila',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        compareFn: (item1, item2) =>
+                            item1.name.toLowerCase() ==
+                            item2.name.toLowerCase(),
+                        popupProps: const PopupProps.dialog(
+                          showSearchBox: true,
+                          fit: FlexFit.tight,
+                          // constraints: BoxConstraints(
+                          //   maxHeight:
+                          //       200, // Set the maximum height for the dropdown
+                          // ),
+                        ),
+                        filterFn: (upazila, filter) {
+                          if (filter.isEmpty) {
+                            return true; // Return all upazilas if no filter
+                          }
+                          return upazila.name.toLowerCase().contains(
+                              filter.toLowerCase()); // Filter by upazila name
+                        },
+                      ),
                     );
                   } else {
-                    return SizedBox.shrink(); // Empty widget if not 'upazila'
+                    return const SizedBox
+                        .shrink(); // Empty widget if not 'upazila'
                   }
                 }),
                 Padding(
@@ -198,7 +244,7 @@ class RankingFilterBottomSheet extends StatelessWidget {
 
                 Obx(() {
                   return ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
                     title: const Text('Institute-wise Top 10'),
                     leading: Radio<String>(
                       value: 'institution',
@@ -215,18 +261,43 @@ class RankingFilterBottomSheet extends StatelessWidget {
                   if (controller.selectedRankingType.value == 'institution') {
                     return Column(
                       children: [
-                        DropdownButton<String>(
-                          hint: const Text("Select Institute Type"),
-                          value: controller.selectedInstitutionType.value,
-                          onChanged: (String? newValue) {
-                            controller.updateFilters(institutionType: newValue);
-                          },
-                          items: const [
-                            DropdownMenuItem(
-                                value: 'University', child: Text('University')),
-                            DropdownMenuItem(
-                                value: 'College', child: Text('College')),
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: DropdownSearch<InstitutionType>(
+                            key: divKey,
+                            selectedItem:
+                                controller.selectedInstitutionType.value,
+                            items: (filter, infiniteScrollProps) =>
+                                controller.institutionTypes,
+                            itemAsString: (InstitutionType institutionType) =>
+                                institutionType.name,
+                            decoratorProps: const DropDownDecoratorProps(
+                              decoration: InputDecoration(
+                                labelText: 'Select Institution Type',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            compareFn: (item1, item2) =>
+                                item1.name.toLowerCase() ==
+                                item2.name.toLowerCase(),
+                            popupProps: const PopupProps.dialog(
+                              showSearchBox: true,
+                              fit: FlexFit.tight,
+                              // constraints: BoxConstraints(
+                              //   maxHeight:
+                              //       200, // Set the maximum height for the dropdown
+                              // ),
+                            ),
+                            filterFn: (institutionType, filter) {
+                              if (filter.isEmpty) {
+                                return true; // Return all upazilas if no filter
+                              }
+                              return institutionType.name
+                                  .toLowerCase()
+                                  .contains(filter
+                                      .toLowerCase()); // Filter by institutionType name
+                            },
+                          ),
                         ),
                         SizedBox(height: 15.h),
                         DropdownButton<String>(
@@ -247,7 +318,7 @@ class RankingFilterBottomSheet extends StatelessWidget {
                       ],
                     );
                   } else {
-                    return SizedBox
+                    return const SizedBox
                         .shrink(); // Empty widget if not 'institution'
                   }
                 }),

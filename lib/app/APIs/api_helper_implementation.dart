@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
+import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 
@@ -167,6 +168,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+
   @override
   Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests() async {
     try {
@@ -343,6 +345,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+
   @override
   Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
       String modelTestId) async {
@@ -358,8 +361,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         // Handle API error
         return Left(CustomError(
           response.statusCode,
-          message:
-              response.body['message'] ?? 'Failed to fetch model details',
+          message: response.body['message'] ?? 'Failed to fetch model details',
         ));
       }
     } catch (e) {
@@ -459,6 +461,32 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       }
     } catch (e) {
       log('Error fetching recent leaderboard: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<InstitutionType>>>
+      getInstitutionTypes() async {
+    try {
+      final response = await get('institution-types');
+
+      if (response.statusCode == 200 && !response.hasError) {
+        final List<dynamic> dataList = response.body['data'] as List<dynamic>;
+
+        final List<InstitutionType> types = dataList
+            .map((json) =>
+                InstitutionType.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return Right(types);
+      } else {
+        final message =
+            response.body['message'] ?? 'Failed to fetch institution types';
+        return Left(CustomError(response.statusCode, message: message));
+      }
+    } catch (e, st) {
+      log('Error fetching institution types: $e\n$st');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }

@@ -1,11 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/models/division_model.dart';
-import 'dart:convert';
+import 'package:prostuti/app/models/district_model.dart';
+import 'package:prostuti/app/models/institution_type.dart';
+import 'package:prostuti/app/models/upazila_model.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/storage/storage_helper.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import '../../../APIs/api_helper.dart';
-import '../../../common/utils/prostuti_utils.dart';
 
 class RankingController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
@@ -14,23 +17,31 @@ class RankingController extends GetxController {
   var isLoading = false.obs;
   var isRankLoading = false.obs;
 
-  var selectedRankingType = 'overall'.obs; // Default value is 'overall'
+  /// selected ranking type: 'overall', 'division', 'district', 'upazila', 'institution'
+  var selectedRankingType = 'overall'.obs;
 
+  /// Geography data
   var divisions = <Division>[].obs;
-  var searchQueryDiv = ''.obs;
+  var districts = <District>[].obs;
+  var upazilas = <Upazila>[].obs;
 
+  /// Institution types (from API)
+  var institutionTypes = <InstitutionType>[].obs;
+
+  /// Selected filters
   var selectedDivision = Rxn<Division>();
-  var selectedDistrict = Rxn<String>();
-  var selectedUpazila = Rxn<String>();
-  var selectedInstitutionType = Rxn<String>();
+  var selectedDistrict = Rxn<District>();
+  var selectedUpazila = Rxn<Upazila>();
+  var selectedInstitutionType = Rxn<InstitutionType>();
   var selectedInstitutionName = Rxn<String>();
 
-  late String contestId; // the contest ID
+  late String contestId;
 
   @override
   void onInit() {
     super.onInit();
 
+    // initial load of leaderboard
     contestId = Get.arguments ?? "";
     if (contestId.isEmpty) {
       _getContestIdFromSharedPreferences();
@@ -38,7 +49,37 @@ class RankingController extends GetxController {
       displayLeaderboardRanks(contestId);
     }
 
-    loadDivisions();
+    // listen to ranking type changes
+    ever(selectedRankingType, _onRankingTypeChanged);
+    // trigger initial load for default 'overall'
+    _onRankingTypeChanged(selectedRankingType.value);
+  }
+
+  void _onRankingTypeChanged(String type) {
+    switch (type) {
+      case 'division':
+        if (divisions.isEmpty) {
+          loadDivisions();
+        }
+
+        break;
+      case 'district':
+        if (districts.isEmpty) {
+          loadDistricts();
+        }
+        break;
+      case 'upazila':
+        if (upazilas.isEmpty) {
+          loadUpazilas();
+        }
+        break;
+      case 'institution':
+        loadInstitutionTypes();
+        break;
+      default:
+        // no data load for 'overall'
+        break;
+    }
   }
 
   Future<void> _getContestIdFromSharedPreferences() async {
@@ -46,62 +87,67 @@ class RankingController extends GetxController {
     contestId = await StorageHelper.getLatestContestId();
     if (contestId.isNotEmpty) {
       displayLeaderboardRanks(contestId);
-    } else {
-      print('No contestId found in SharedPreferences.');
     }
   }
 
   Future<void> displayLeaderboardRanks(String contestId) async {
     isRankLoading.value = true;
     final result = await _apiHelper.getLeaderboardRanks(contestId);
-
     result.fold(
       (error) {
         isRankLoading.value = false;
-
         Utils.showSnackbar(
           message: 'Failed to fetch leaderboard: ${error.message}',
           isSuccess: false,
         );
       },
-      (rankingData) {
+      (data) {
         isRankLoading.value = false;
-
-        contestRankData.value = rankingData;
+        contestRankData.value = data;
       },
     );
   }
 
   Future<void> loadDivisions() async {
-    final String response =
+    final jsonStr =
         await rootBundle.loadString('assets/jsons/bd-divisions.json');
-    final List<dynamic> data = json.decode(response);
-    print(data);
-    divisions.value = data.map((json) => Division.fromJson(json)).toList();
+    final List<dynamic> data = json.decode(jsonStr);
+    divisions.value = data.map((j) => Division.fromJson(j)).toList();
   }
 
-  List<Division> get filteredDivisions {
-    if (searchQueryDiv.value.isEmpty) {
-      return divisions;
-    }
-    return divisions
-        .where((division) => division.name
-            .toLowerCase()
-            .contains(searchQueryDiv.value.toLowerCase()))
-        .toList();
+  Future<void> loadDistricts() async {
+    final jsonStr =
+        await rootBundle.loadString('assets/jsons/bd-districts.json');
+    final List<dynamic> data = json.decode(jsonStr);
+    districts.value = data.map((j) => District.fromJson(j)).toList();
   }
 
-  // Update the selected ranking type
+  Future<void> loadUpazilas() async {
+    final jsonStr =
+        await rootBundle.loadString('assets/jsons/bd-upazilas.json');
+    final List<dynamic> data = json.decode(jsonStr);
+    upazilas.value = data.map((j) => Upazila.fromJson(j)).toList();
+  }
+
+  Future<void> loadInstitutionTypes() async {
+    final res = await _apiHelper.getInstitutionTypes();
+    res.fold(
+      (err) => Utils.showSnackbar(message: err.message, isSuccess: false),
+      (list) => institutionTypes.value = list,
+    );
+  }
+
+  // Update ranking type from UI
   void updateRankingType(String type) {
     selectedRankingType.value = type;
   }
 
-  // Update the selected division, district, upazila, institution type, and name
+  // Update selected filter values
   void updateFilters({
     Division? division,
-    String? district,
-    String? upazila,
-    String? institutionType,
+    District? district,
+    Upazila? upazila,
+    InstitutionType? institutionType,
     String? institutionName,
   }) {
     if (division != null) selectedDivision.value = division;
