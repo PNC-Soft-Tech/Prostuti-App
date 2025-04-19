@@ -11,8 +11,9 @@ import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
 import '../../questions/models/question_model.dart';
 import '../models/contest_details_model.dart';
+import '../../../common/controllers/base_question_controller.dart';
 
-class ContestDetailsController extends GetxController {
+class ContestDetailsController extends GetxController implements BaseQuestionController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   var contestId = ''.obs;
   var contests = <Contest>[].obs;
@@ -71,56 +72,6 @@ class ContestDetailsController extends GetxController {
     }
   }
 
-  // void scrollToQuestion(String questionId) {
-  //   final index = questionIdToIndexMap[questionId];
-  //   if (index == null) return;
-
-  //   scrollController.animateTo(
-  //     questionKeys[questionId]!.currentContext!.size!.height * index,
-  //     duration: const Duration(milliseconds: 500),
-  //     curve: Curves.easeInOut,
-  //   );
-  // }
-// void scrollToQuestion(String questionId) {
-//   // ✅ Find the original index from the full question list
-//   final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
-
-//   if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
-
-//   // ✅ Ensure the question is visible before scrolling
-//   if (!filteredQuestions.any((q) => q.id == questionId)) {
-//     // ✅ If the question is hidden, reset filter to show all
-//     selectedSubject.value = 'All'; // Reset subject filter
-//   }
-
-//   // ✅ Scroll to the question in the list
-//   scrollController.animateTo(
-//     originalIndex * 300.h, // Approx height per question, adjust if needed
-//     duration: const Duration(milliseconds: 500),
-//     curve: Curves.easeInOut,
-//   );
-// }
-  // void scrollToQuestion(String questionId) {
-  //   // ✅ Find the original index in the full question list
-  //   final originalIndex = contestDetails.value?.contest.questions
-  //       .indexWhere((q) => q.id == questionId);
-
-  //   if (originalIndex == null || originalIndex == -1)
-  //     return; // ❌ If not found, do nothing
-
-  //   // ✅ If the question is hidden, reset the filter to show all subjects
-  //   if (!visibleQuestions.contains(questionId)) {
-  //     selectedSubject.value = 'All'; // ✅ Reset subject filter
-  //   }
-
-  //   // ✅ Scroll to the question in the list
-  //   scrollController.animateTo(
-  //     originalIndex * 300.h, // Adjust height per question if needed
-  //     duration: const Duration(milliseconds: 500),
-  //     curve: Curves.easeInOut,
-  //   );
-  // }
-
   void updateVisibleQuestions(List<String> questionIds) {
     visibleQuestions.value = questionIds;
     debugPrint("Visible Questions: $visibleQuestions"); // ✅ Debugging
@@ -172,10 +123,6 @@ class ContestDetailsController extends GetxController {
             .toSet()
             .toList();
 
-// Use this list somewhere else (if needed):
-// print(subjectNames);
-
-        // subjectLists.add(  contestDetails.value?.contest.questions.map(qs=> qs.topic.subject.name));
         updateContestStatus();
         setUpQuestionKeysAndIndexes(
             contestDetails.value?.contest.questions ?? []);
@@ -215,60 +162,24 @@ void updateContestStatus() {
         selectedOptionOrder; // ✅ Track selection per question
   }
 
+  @override
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;
   }
 
-  // void markQuestion(String questionId) {
-  //   markedQuestions.add(questionId);
-  // }
+  @override
+  void markUnmarkQuestion(String questionId) {
+    final index = questionIdToIndexMap[questionId];
+    if (index == null) return;
 
-  // void markUnmarkQuestion(int index) {
-  //   if (markedQuestions.contains(index)) {
-  //     markedQuestions.remove(index);
-  //   } else {
-  //     markedQuestions.add(index);
-  //   }
-  // }
-// void markUnmarkQuestion(String questionId) {
-//   if (markedQuestions.contains(questionId)) {
-//     markedQuestions.remove(questionId);
-//   } else {
-//     markedQuestions.add(questionId);
-//   }
-// }
-  // void markUnmarkQuestion(String questionId) {
-  //   final index = questionIdToIndexMap[questionId] ?? -1;
-  //   if (index == -1) return;
-
-  //   if (markedQuestionIndexes.contains(index)) {
-  //     markedQuestionIndexes.remove(index);
-  //     markedQuestionIds.remove(questionId);
-  //   } else {
-  //     markedQuestionIndexes.add(index);
-  //     markedQuestionIds.add(questionId);
-  //   }
-  // }
-// Update markUnmarkQuestion in controller
-// Modified mark/unmark method
-void markUnmarkQuestion(String questionId) {
-  final index = questionIdToIndexMap[questionId];
-  if (index == null) return;
-
-  if (markedQuestionIds.contains(questionId)) {
-    markedQuestionIds.remove(questionId);
-  } else {
-    markedQuestionIds.add(questionId);
+    if (markedQuestionIds.contains(questionId)) {
+      markedQuestionIds.remove(questionId);
+    } else {
+      markedQuestionIds.add(questionId);
+    }
   }
-  
-  // Keep the list sorted by original question order
-  markedQuestionIds.sort((a, b) => 
-    questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
-}
-  // void unMarkQuestion(String questionId) {
-  //   markedQuestions.remove(questionId);
-  // }
 
+  @override
   bool isMarkedQuestion(String questionId) {
     return markedQuestionIds.contains(questionId);
   }
@@ -289,38 +200,37 @@ void markUnmarkQuestion(String questionId) {
     }).toList();
   }
 
+  @override
   Future<bool> submitAnswer(
       String questionId, String contestId, String selectedAnswer) async {
-    // 2️⃣ Set loading for this specific question
     questionLoadingStatus[questionId] = true;
 
-    final result = await _apiHelper.submitContestAnswer(
-      questionId: questionId,
-      contestId: contestId,
-      selectedAnswer: selectedAnswer,
-    );
+    try {
+      final result = await _apiHelper.submitContestAnswer(
+        questionId: questionId,
+        contestId: contestId,
+        selectedAnswer: selectedAnswer,
+      );
 
-    // 2️⃣ Set loading for this specific question
-    questionLoadingStatus[questionId] = false;
+      bool isSuccess = false;
+      result.fold(
+        (error) {
+          Get.snackbar('Error', error.message ?? 'Something went wrong');
+          isSuccess = false;
+        },
+        (response) {
+          Get.snackbar('Success', 'Answer submitted successfully');
+          isSuccess = true;
+        },
+      );
 
-    bool isSuccess = false; // Add this flag
-
-    result.fold(
-      (error) {
-        Get.snackbar('Error', 'Something went wrong' ?? 'Something went wrong');
-        isSuccess = false; // Set flag in case of error
-      },
-      (response) {
-        Get.snackbar('Success',
-            'Answer submitted successfully' ?? 'Answer submitted successfully');
-
-        isSuccess = true; // Set flag if success
-      },
-    );
-
-    return isSuccess; // Finally return the result
+      return isSuccess;
+    } finally {
+      questionLoadingStatus[questionId] = false;
+    }
   }
 
+  @override
   String getOptionAns(int index) {
     switch (index) {
       case 1:
@@ -402,104 +312,89 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
     _timer?.cancel();
     super.onClose();
   }
-// String get formattedCountdownTime {
-//   if (remainingTime.value.isNegative) return "00:00:00";
-  
-//   final hours = remainingTime.value.inHours;
-//   final minutes = remainingTime.value.inMinutes.remainder(60);
-//   final seconds = remainingTime.value.inSeconds.remainder(60);
-  
-//   return [
-//     hours.toString().padLeft(2, '0'),
-//     minutes.toString().padLeft(2, '0'),
-//     seconds.toString().padLeft(2, '0')
-//   ].join(':');
-// }
+
   String get formattedCountdownTime {
-  if (contestStatus.value?.isDone ?? true) {
-    return 'Contest Ended';
+    if (contestStatus.value?.isDone ?? true) {
+      return 'Contest Ended';
+    }
+
+    final time = remainingTime.value;
+    if (time <= Duration.zero) {
+      return 'Contest Ended';
+    }
+
+    // Extract time components
+    final days = time.inDays;
+    final hours = time.inHours.remainder(24);
+    final minutes = time.inMinutes.remainder(60);
+    final seconds = time.inSeconds.remainder(60);
+
+    // Build human-readable parts
+    final parts = <String>[];
+    if (days > 0) parts.add('$days day${days != 1 ? 's' : ''}');
+    if (hours > 0) parts.add('$hours hour${hours != 1 ? 's' : ''}');
+    if (minutes > 0) parts.add('$minutes minute${minutes != 1 ? 's' : ''}');
+    if (seconds > 0) parts.add('$seconds second${seconds != 1 ? 's' : ''}');
+
+    // Get up to two most significant units
+    final displayParts = parts.take(2).toList();
+    final timeString = displayParts.join(' and ');
+
+    // Add status context
+    return contestStatus.value!.isScheduled 
+        ? 'Starts in $timeString'
+        : 'Ends in $timeString';
   }
 
-  final time = remainingTime.value;
-  if (time <= Duration.zero) {
-    return 'Contest Ended';
+  String? getNextFlaggedQuestion(String currentQuestionId) {
+    if (markedQuestionIds.isEmpty) return null;
+    
+    final sortedFlagged = markedQuestionIds
+      .where((id) => questionIdToIndexMap.containsKey(id))
+      .toList()
+      ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+
+    final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
+    
+    if (currentIndex == -1) return sortedFlagged.first;
+    if (currentIndex >= sortedFlagged.length - 1) return sortedFlagged.first;
+    return sortedFlagged[currentIndex + 1];
   }
 
-  // Extract time components
-  final days = time.inDays;
-  final hours = time.inHours.remainder(24);
-  final minutes = time.inMinutes.remainder(60);
-  final seconds = time.inSeconds.remainder(60);
+  String? getPreviousFlaggedQuestion(String currentQuestionId) {
+    if (markedQuestionIds.isEmpty) return null;
+    
+    final sortedFlagged = markedQuestionIds
+      .where((id) => questionIdToIndexMap.containsKey(id))
+      .toList()
+      ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
 
-  // Build human-readable parts
-  final parts = <String>[];
-  if (days > 0) parts.add('$days day${days != 1 ? 's' : ''}');
-  if (hours > 0) parts.add('$hours hour${hours != 1 ? 's' : ''}');
-  if (minutes > 0) parts.add('$minutes minute${minutes != 1 ? 's' : ''}');
-  if (seconds > 0) parts.add('$seconds second${seconds != 1 ? 's' : ''}');
+    final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
+    
+    if (currentIndex == -1) return sortedFlagged.last;
+    if (currentIndex <= 0) return sortedFlagged.last;
+    return sortedFlagged[currentIndex - 1];
+  }
 
-  // Get up to two most significant units
-  final displayParts = parts.take(2).toList();
-  final timeString = displayParts.join(' and ');
+  void scrollToQuestion(String? questionId) async {
+    if (questionId == null || !questionId.startsWith('ObjectId')) return;
 
-  // Add status context
-  return contestStatus.value!.isScheduled 
-      ? 'Starts in $timeString'
-      : 'Ends in $timeString';
-}
-  
+    final controller = Get.find<ContestDetailsController>();
+    
+    // Force show all questions
+    controller.selectedSubject.value = 'All';
+    
+    // Wait for UI rebuild
+    await Future.delayed(const Duration(milliseconds: 50));
 
- // In ContestDetailsController
-String? getNextFlaggedQuestion(String currentQuestionId) {
-  if (markedQuestionIds.isEmpty) return null;
-  
-  final sortedFlagged = markedQuestionIds
-    .where((id) => questionIdToIndexMap.containsKey(id))
-    .toList()
-    ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+    final context = controller.questionKeys[questionId]?.currentContext;
+    if (context == null) return;
 
-  final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
-  
-  if (currentIndex == -1) return sortedFlagged.first;
-  if (currentIndex >= sortedFlagged.length - 1) return sortedFlagged.first;
-  return sortedFlagged[currentIndex + 1];
-}
-
-String? getPreviousFlaggedQuestion(String currentQuestionId) {
-  if (markedQuestionIds.isEmpty) return null;
-  
-  final sortedFlagged = markedQuestionIds
-    .where((id) => questionIdToIndexMap.containsKey(id))
-    .toList()
-    ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
-
-  final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
-  
-  if (currentIndex == -1) return sortedFlagged.last;
-  if (currentIndex <= 0) return sortedFlagged.last;
-  return sortedFlagged[currentIndex - 1];
-}
-
-// Modified scroll handler
-void scrollToQuestion(String? questionId) async {
-  if (questionId == null || !questionId.startsWith('ObjectId')) return;
-
-  final controller = Get.find<ContestDetailsController>();
-  
-  // Force show all questions
-  controller.selectedSubject.value = 'All';
-  
-  // Wait for UI rebuild
-  await Future.delayed(const Duration(milliseconds: 50));
-
-  final context = controller.questionKeys[questionId]?.currentContext;
-  if (context == null) return;
-
-  Scrollable.ensureVisible(
-    context,
-    duration: const Duration(milliseconds: 500),
-    curve: Curves.easeInOut,
-    alignment: 0.1,
-  );
-}
+    Scrollable.ensureVisible(
+      context,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      alignment: 0.1,
+    );
+  }
 }

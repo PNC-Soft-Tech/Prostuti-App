@@ -155,7 +155,6 @@ class AppPages {
       binding: RankingBinding(),
     ),
     GetPage(
-      // name: '/contest/:id',
       name: Routes.modelTestDetails,
       page: () => const ModelTestDetailsView(),
       binding: ModelTestDetailsBinding(),

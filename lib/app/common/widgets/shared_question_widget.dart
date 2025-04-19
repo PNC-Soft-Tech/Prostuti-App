@@ -1,97 +1,126 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:get/get.dart';
+import '../controllers/base_question_controller.dart';
 import '../../modules/questions/models/question_model.dart';
-import 'shared_question_options_widget.dart';
 
 class SharedQuestionWidget extends StatelessWidget {
   final Question question;
-  final int index;
-  final bool isMarkedQuestion;
-  final Function(String) onMarkQuestion;
-  final bool isExplanationEnabled;
-  final Widget? explanationWidget;
-  final Function? onOptionSelected;
+  final String contestId;
+  final bool showFlagButton;
+  final BaseQuestionController? controller;
 
-  const SharedQuestionWidget({
-    super.key,
+  SharedQuestionWidget({
+    Key? key,
     required this.question,
-    required this.index,
-    required this.isMarkedQuestion,
-    required this.onMarkQuestion,
-    this.isExplanationEnabled = false,
-    this.explanationWidget,
-    this.onOptionSelected,
-  });
+    required this.contestId,
+    this.showFlagButton = true,
+    this.controller,
+  }) : super(key: key);
+
+  final loadingOptionIndex = RxnInt();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    final ctrl = controller != null
+        ? controller!
+        : Get.isRegistered<BaseQuestionController>()
+            ? Get.find<BaseQuestionController>()
+            : throw Exception('No question controller found');
+
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isMarkedQuestion)
-              Container(
-                width: 4.w,
-                color: const Color(0xFFFF8143),
-              ),
-            SizedBox(width: 20.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HtmlWidget(
-                    '${index + 1}) ${question.title}',
-                    customWidgetBuilder: (element) {
-                      if (element.classes.contains('latex') ||
-                          element.classes.contains('ql-syntax')) {
-                        return Math.tex(
-                          element.text,
-                          textStyle: const TextStyle(fontSize: 20),
-                        );
-                      }
-                      return null;
-                    },
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    question.title ?? 'No question text',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  _buildMarkQuestionButton(),
-                  SizedBox(height: 15.h),
-                  SharedQuestionOptionsWidget(
-                    question: question,
-                    onOptionSelected: onOptionSelected,
-                  ),
-                  SizedBox(height: 15.h),
-                  if (isExplanationEnabled && explanationWidget != null)
-                    explanationWidget!,
+                ),
+                if (showFlagButton) ...[
+                  const SizedBox(width: 8),
+                  Obx(() {
+                    final isMarked = ctrl.isMarkedQuestion(question.id);
+                    return IconButton(
+                      icon: Icon(
+                        isMarked ? Icons.flag : Icons.flag_outlined,
+                        color: isMarked ? Colors.red : Colors.grey,
+                      ),
+                      onPressed: () {
+                        ctrl.markUnmarkQuestion(question.id);
+                        debugPrint('Question ${question.id} marked: $isMarked');
+                      },
+                    );
+                  }),
                 ],
-              ),
+              ],
             ),
+            const SizedBox(height: 16),
+            if (question.options != null && question.options!.isNotEmpty)
+              Column(
+                children: List.generate(
+                  question.options!.length,
+                  (index) => Obx(() {
+                    final isSelected = ctrl.isOptionSelected(
+                      question.id,
+                      question.options![index].order,
+                    );
+
+                    return ListTile(
+                      title: loadingOptionIndex.value == index
+                          ? const CupertinoActivityIndicator()
+                          : Text(question.options![index].title),
+                      tileColor: isSelected ? Colors.blue.withOpacity(0.1) : null,
+                      onTap: loadingOptionIndex.value != null
+                          ? null
+                          : () async {
+                              try {
+                                loadingOptionIndex.value = index;
+                                await ctrl.submitAnswer(
+                                  question.id,
+                                  contestId,
+                                  ctrl.getOptionAns(index + 1),
+                                );
+                              } catch (e) {
+                                Get.snackbar(
+                                  'Error',
+                                  'Failed to submit answer',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              } finally {
+                                loadingOptionIndex.value = null;
+                              }
+                            },
+                    );
+                  }),
+                ),
+              )
+            else
+              const Text('No options available'),
+            const SizedBox(height: 8),
+            if (question.topic?.subject != null) ...[
+              const Divider(),
+              Text(
+                'Subject: ${question.topic?.subject?.name ?? "Unknown"}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildMarkQuestionButton() {
-    return Row(
-      children: [
-        Icon(Icons.flag,
-            color: isMarkedQuestion ? const Color(0xFFFF8143) : Colors.black),
-        SizedBox(width: 5.w),
-        GestureDetector(
-          onTap: () => onMarkQuestion(question.id),
-          child: Text(
-            'Mark this Question',
-            style: GoogleFonts.inter(
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w400,
-              color: isMarkedQuestion ? const Color(0xFFFF8143) : Colors.black,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

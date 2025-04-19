@@ -1,109 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
-import '../../modules/questions/models/option_model.dart';
-import '../../modules/questions/models/question_model.dart';
+import 'package:get/get.dart';
+import '../../modules/contest-details/controller/contest_details_controller.dart';
 
 class SharedQuestionOptionsWidget extends StatelessWidget {
-  final Question question;
-  final Function? onOptionSelected;
-  final bool isSelected;
-  final int? selectedOptionOrder;
+  final String questionId;
+  final List<dynamic> options;
+  final String contestId;
 
   const SharedQuestionOptionsWidget({
-    super.key,
-    required this.question,
-    this.onOptionSelected,
-    this.isSelected = false,
-    this.selectedOptionOrder,
-  });
+    Key? key,
+    required this.questionId,
+    required this.options,
+    required this.contestId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return question.isGrid == true
-        ? _buildGridOptions()
-        : _buildListOptions();
-  }
+    final controller = Get.find<ContestDetailsController>();
 
-  Widget _buildGridOptions() {
-    if (question.options.isEmpty) {
-      return const Text("No options");
-    }
+    return Column(
+      children: options.asMap().entries.map((entry) {
+        final index = entry.key + 1;
+        final option = entry.value;
+        final optionOrder = controller.getOptionAns(index);
 
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 1.h),
-      child: Wrap(
-        spacing: 12.w,
-        runSpacing: 16.h,
-        children: question.options.map((option) => _buildOptionItem(option)).toList(),
-      ),
-    );
-  }
+        return Obx(() {
+          final isSelected = controller.isOptionSelected(questionId, optionOrder);
+          final isLoading = controller.questionLoadingStatus[questionId] ?? false;
 
-  Widget _buildListOptions() {
-    if (question.options.isEmpty) {
-      return const Text("No options");
-    }
-
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 1.h),
-      child: Column(
-        children: question.options.map((option) => _buildOptionItem(option)).toList(),
-      ),
-    );
-  }
-
-  Widget _buildOptionItem(Option option) {
-    bool isOptionSelected = selectedOptionOrder == option.order;
-
-    return GestureDetector(
-      onTap: () => onOptionSelected?.call(option),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-        child: Row(
-          children: [
-            _buildSelectionIndicator(isOptionSelected),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: HtmlWidget(
-                option.title,
-                customWidgetBuilder: (element) {
-                  if (element.classes.contains('latex') ||
-                      element.classes.contains('ql-syntax')) {
-                    return Math.tex(
-                      element.text,
-                      textStyle: const TextStyle(fontSize: 20),
-                    );
-                  }
-                  return null;
-                },
-              ),
+          return ListTile(
+            title: Text(option.toString()),
+            leading: Radio<String>(
+              value: optionOrder,
+              groupValue: controller.selectedAnswers[questionId],
+              onChanged: isLoading ? null : (String? value) async {
+                if (value != null) {
+                  controller.selectOption(questionId, value);
+                  
+                  // Submit the answer immediately after selection
+                  debugPrint('Calling submitAnswer with:'
+                      '\nquestionId: $questionId'
+                      '\ncontestId: $contestId'
+                      '\nvalue: $value');
+                      
+                  final success = await controller.submitAnswer(
+                    questionId,
+                    contestId,
+                    value,
+                  );
+                  
+                  debugPrint('Submit answer result: $success');
+                }
+              },
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSelectionIndicator(bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50.r),
-        border: Border.all(color: Colors.black, width: 1),
-        color: Colors.transparent,
-      ),
-      child: isSelected
-          ? Container(
-              height: 20,
+            trailing: isLoading ? const SizedBox(
               width: 20,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.r),
-                color: const Color(0xFF50BDB4),
-              ),
-            )
-          : const SizedBox(height: 20, width: 20),
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ) : null,
+          );
+        });
+      }).toList(),
     );
   }
 }

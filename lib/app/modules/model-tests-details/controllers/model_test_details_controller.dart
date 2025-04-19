@@ -10,9 +10,9 @@ import '../../contests/models/contest_model.dart';
 import '../../contests/models/contest_status.dart';
 import '../../questions/models/question_model.dart';
 import '../models/model_test_response_model.dart';
+import '../../../common/controllers/base_question_controller.dart';
 
-
-class ModelTestDetailsController extends GetxController {
+class ModelTestDetailsController extends GetxController implements BaseQuestionController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   var contestId = ''.obs;
   var modelTestId = ''.obs;
@@ -21,12 +21,11 @@ class ModelTestDetailsController extends GetxController {
   var modelDetails = Rxn<ModelTestDetailsResponse>();
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
   final markedQuestions = <String>[].obs;
-  // final markedQuestions = <int>[].obs; // Store **question indexes**
   final currentQuestionIndex = 0.obs; // Track current question
   final RxBool isReadModeSelected = true.obs;
   final RxBool isExamModeSelected = false.obs;
-final RxString currentSelectedModelTestId=''.obs;
-final RxString currentSelectedModelTestMode='read'.obs;
+  final RxString currentSelectedModelTestId = ''.obs;
+  final RxString currentSelectedModelTestMode = 'read'.obs;
 
   final isSubmittingContest =
       false.obs; // This will track loading state for submitContest
@@ -46,16 +45,14 @@ final RxString currentSelectedModelTestMode='read'.obs;
   final RxList<String> subjectLists =
       <String>[].obs; // Change this in the controller
   final RxString selectedSubject = 'All'.obs; // "All" is selected by default
-  // ✅ Track which questions are currently visible
   RxList<String> visibleQuestions = <String>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
-    // contestId.value = arguments["contestId"]; // Retrieve contestId
     modelTestId.value = arguments["modelTestId"]; // Retrieve contestId
     currentSelectedModelTestMode.value = arguments["mode"]; // Retrieve contestId
-    // modelTestId.value = '67972a8d2bc9d3abc82cba5a'; // Retrieve contestId
     fetchModelTestDetails(modelTestId.value);
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
@@ -65,10 +62,12 @@ final RxString currentSelectedModelTestMode='read'.obs;
       );
     });
   }
+
   void toggleMode(bool isReadMode) {
     isReadModeSelected.value = isReadMode;
     isExamModeSelected.value = !isReadMode;
   }
+
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
     questionKeys.clear();
     questionIdToIndexMap.clear();
@@ -80,83 +79,52 @@ final RxString currentSelectedModelTestMode='read'.obs;
     }
   }
 
-  // void scrollToQuestion(String questionId) {
-  //   final index = questionIdToIndexMap[questionId];
-  //   if (index == null) return;
+  void scrollToQuestion(String questionId) {
+    final originalIndex =
+        modelDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
 
-  //   scrollController.animateTo(
-  //     questionKeys[questionId]!.currentContext!.size!.height * index,
-  //     duration: const Duration(milliseconds: 500),
-  //     curve: Curves.easeInOut,
-  //   );
-  // }
-// void scrollToQuestion(String questionId) {
-//   // ✅ Find the original index from the full question list
-//   final originalIndex = contestDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+    if (originalIndex == null || originalIndex == -1) return;
 
-//   if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
+    if (!visibleQuestions.contains(questionId)) {
+      selectedSubject.value = 'All';
+    }
 
-//   // ✅ Ensure the question is visible before scrolling
-//   if (!filteredQuestions.any((q) => q.id == questionId)) {
-//     // ✅ If the question is hidden, reset filter to show all
-//     selectedSubject.value = 'All'; // Reset subject filter
-//   }
-
-//   // ✅ Scroll to the question in the list
-//   scrollController.animateTo(
-//     originalIndex * 300.h, // Approx height per question, adjust if needed
-//     duration: const Duration(milliseconds: 500),
-//     curve: Curves.easeInOut,
-//   );
-// }
-void scrollToQuestion(String questionId) {
-  // ✅ Find the original index in the full question list
-  final originalIndex = modelDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
-
-  if (originalIndex == null || originalIndex == -1) return; // ❌ If not found, do nothing
-
-  // ✅ If the question is hidden, reset the filter to show all subjects
-  if (!visibleQuestions.contains(questionId)) {
-    selectedSubject.value = 'All'; // ✅ Reset subject filter
+    scrollController.animateTo(
+      originalIndex * 300.h,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
   }
-
-  // ✅ Scroll to the question in the list
-  scrollController.animateTo(
-    originalIndex * 300.h, // Adjust height per question if needed
-    duration: const Duration(milliseconds: 500),
-    curve: Curves.easeInOut,
-  );
-}
 
   void updateVisibleQuestions(List<String> questionIds) {
     visibleQuestions.value = questionIds;
-      debugPrint("Visible Questions: $visibleQuestions"); // ✅ Debugging
-
+    debugPrint("Visible Questions: $visibleQuestions");
   }
 
   bool isQuestionVisible(String questionId) {
     return visibleQuestions.contains(questionId);
   }
 
+  String? getPreviousVisibleQuestion(String currentQuestionId) {
+    final index = visibleQuestions.indexOf(currentQuestionId);
+    debugPrint(
+        "Prev Check - Current: $currentQuestionId, Index: $index, Visible List: $visibleQuestions");
 
-String? getPreviousVisibleQuestion(String currentQuestionId) {
-  final index = visibleQuestions.indexOf(currentQuestionId);
-  debugPrint("Prev Check - Current: $currentQuestionId, Index: $index, Visible List: $visibleQuestions");
+    if (index > 0) {
+      debugPrint("✅ Previous Question Found: ${visibleQuestions[index - 1]}");
+      return visibleQuestions[index - 1];
+    }
 
-  if (index > 0) {
-    debugPrint("✅ Previous Question Found: ${visibleQuestions[index - 1]}");
-    return visibleQuestions[index - 1]; 
+    debugPrint("❌ No Previous Question Found");
+    return null;
   }
 
-  debugPrint("❌ No Previous Question Found");
-  return null;
-}
-
-String? getNextVisibleQuestion(String currentQuestionId) {
-  final index = visibleQuestions.indexOf(currentQuestionId);
-  debugPrint("Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
-  return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
-}
+  String? getNextVisibleQuestion(String currentQuestionId) {
+    final index = visibleQuestions.indexOf(currentQuestionId);
+    debugPrint(
+        "Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
+    return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
+  }
 
   void fetchModelTestDetails(String modelTestId) async {
     isLoading.value = true;
@@ -172,16 +140,10 @@ String? getNextVisibleQuestion(String currentQuestionId) {
         modelDetails.value = data;
         log("model test data: ${modelDetails.value}");
         subjectLists.value = (modelDetails.value?.contest.questions ?? [])
-            .map((qs) => qs.topic?.subject?.name) // This returns List<String?>
-            .whereType<
-                String>() // ✅ Removes null values and casts to List<String>
+            .map((qs) => qs.topic?.subject?.name)
+            .whereType<String>()
             .toSet()
             .toList();
-
-// Use this list somewhere else (if needed):
-// print(subjectNames);
-
-        // subjectLists.add(  contestDetails.value?.contest.questions.map(qs=> qs.topic.subject.name));
 
         setUpQuestionKeysAndIndexes(
             modelDetails.value?.contest.questions ?? []);
@@ -191,32 +153,28 @@ String? getNextVisibleQuestion(String currentQuestionId) {
     );
   }
 
-
-
   List<Question> get filteredQuestions {
     final allQuestions = modelDetails.value?.contest.questions ?? [];
     if (selectedSubject.value == 'All') {
-      return allQuestions; // Show all questions if "All" is selected
+      return allQuestions;
     }
     return allQuestions
         .where((q) => q.topic?.subject?.name == selectedSubject.value)
-        .toList(); // Filter based on selected subject
+        .toList();
   }
 
   void selectSubject(String subject) {
-    selectedSubject.value = subject; // Update the selected subject
+    selectedSubject.value = subject;
   }
 
   void selectOption(String questionId, String selectedOptionOrder) {
-    selectedAnswers[questionId] =
-        selectedOptionOrder; // ✅ Track selection per question
+    selectedAnswers[questionId] = selectedOptionOrder;
   }
 
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;
   }
 
- 
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId] ?? -1;
     if (index == -1) return;
@@ -229,10 +187,6 @@ String? getNextVisibleQuestion(String currentQuestionId) {
       markedQuestionIds.add(questionId);
     }
   }
-
-  // void unMarkQuestion(String questionId) {
-  //   markedQuestions.remove(questionId);
-  // }
 
   bool isMarkedQuestion(String questionId) {
     return markedQuestionIds.contains(questionId);
@@ -255,35 +209,38 @@ String? getNextVisibleQuestion(String currentQuestionId) {
   }
 
   Future<bool> submitAnswer(
-      String questionId, String contestId, String selectedAnswer) async {
-    // 2️⃣ Set loading for this specific question
+    String questionId,
+    String contestId,
+    String selectedAnswer,
+  ) async {
     questionLoadingStatus[questionId] = true;
 
-    final result = await _apiHelper.submitContestAnswer(
-      questionId: questionId,
-      contestId: contestId,
-      selectedAnswer: selectedAnswer,
-    );
+    try {
+      final result = await _apiHelper.submitContestAnswer(
+        questionId: questionId,
+        contestId: contestId,
+        selectedAnswer: selectedAnswer,
+      );
 
-    // 2️⃣ Set loading for this specific question
-    questionLoadingStatus[questionId] = false;
+      bool isSuccess = false;
+      result.fold(
+        (error) {
+          Get.snackbar('Error', error.message ?? 'Something went wrong');
+          isSuccess = false;
+        },
+        (response) {
+          Get.snackbar('Success', 'Answer submitted successfully');
+          isSuccess = true;
+        },
+      );
 
-    bool isSuccess = false; // Add this flag
-
-    result.fold(
-      (error) {
-        Get.snackbar('Error', 'Something went wrong' ?? 'Something went wrong');
-        isSuccess = false; // Set flag in case of error
-      },
-      (response) {
-        Get.snackbar('Success',
-            'Answer submitted successfully' ?? 'Answer submitted successfully');
-
-        isSuccess = true; // Set flag if success
-      },
-    );
-
-    return isSuccess; // Finally return the result
+      return isSuccess;
+    } catch (e) {
+      debugPrint('Error submitting answer: $e');
+      return false;
+    } finally {
+      questionLoadingStatus[questionId] = false;
+    }
   }
 
   String getOptionAns(int index) {
@@ -308,7 +265,6 @@ String? getNextVisibleQuestion(String currentQuestionId) {
         return 'i';
       case 10:
         return 'j';
-
       default:
         return '';
     }
@@ -329,7 +285,6 @@ String? getNextVisibleQuestion(String currentQuestionId) {
         Get.snackbar('Success',
             response.body['message'] ?? 'Contest submitted successfully');
         Get.toNamed(Routes.ranking);
-        // Optionally: Do further actions like navigating back, refreshing data, etc.
       },
     );
   }
@@ -337,7 +292,7 @@ String? getNextVisibleQuestion(String currentQuestionId) {
   void startTimer(DateTime startTime, DateTime endTime) {
     _updateRemainingTime(startTime, endTime);
 
-    _timer?.cancel(); // Clear old timer if any
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateRemainingTime(startTime, endTime);
     });
@@ -368,5 +323,4 @@ String? getNextVisibleQuestion(String currentQuestionId) {
         remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
   }
-
 }
