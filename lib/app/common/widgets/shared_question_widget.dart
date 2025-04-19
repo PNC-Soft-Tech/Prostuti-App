@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -38,76 +39,125 @@ class SharedQuestionWidget extends StatelessWidget {
     }
 
     return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 1),
+            blurRadius: 4,
+            color: Colors.black.withOpacity(0.1),
+          ),
+        ],
+      ),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Flagged Question Indicator
-            Obx(() => Visibility(
-              visible: ctrl.isMarkedQuestion(question.id),
-              child: Container(
-                width: 4.w,
-                height: double.infinity,
-                color: const Color(0xFFFF8143),
-              ),
-            )),
-            SizedBox(width: 20.w),
+            ctrl.isMarkedQuestion(question.id)
+                ? Visibility(
+                    visible: ctrl.isMarkedQuestion(question.id),
+                    child: Container(
+                      width: 4.w,
+                      height: double.infinity,
+                      color: ctrl.isMarkedQuestion(question.id)
+                          ? const Color(0xFFFF8143)
+                          : Colors.black,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+            // Question Number Container
+            // Container(
+            //   width: 40.w,
+            //   decoration: BoxDecoration(
+            //     color: AppColors.primary,
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(8.r),
+            //       bottomLeft: Radius.circular(8.r),
+            //     ),
+            //   ),
+            //   child: Center(
+            //     child: Text(
+            //       '${index + 1}',
+            //       style: TextStyle(
+            //         color: Colors.white,
+            //         fontSize: 18.sp,
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
-            // Main Question Content
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Question Title with LaTeX Support
-                  HtmlWidget(
-                    '${index + 1}) ${question.title}',
-                    customWidgetBuilder: (element) {
-                      if (element.classes.contains('latex') ||
-                          element.classes.contains('ql-syntax')) {
-                        return Math.tex(
-                          element.text,
-                          textStyle: const TextStyle(fontSize: 20),
-                        );
-                      }
-                      return null;
-                    },
-                  ),
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Question Title
+                    HtmlWidget(
+                      '${index + 1}) ${question.title.replaceAll('<pre>', '').replaceAll('</pre>', '')}',
+                      customWidgetBuilder: (element) {
+                        if (element.classes.contains('latex') ||
+                            element.classes.contains('ql-syntax')) {
+                          return Math.tex(
+                            element.text,
+                            textStyle: TextStyle(fontSize: 16.sp),
+                          );
+                        }
+                        return null;
+                      },
+                      textStyle: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.black87,
+                        height: 1.5,
+                      ),
+                    ),
 
-                  // Mark Question Row
-                  Row(
-                    children: [
-                      Obx(() => Icon(
-                        Icons.flag,
-                        color: ctrl.isMarkedQuestion(question.id) 
-                            ? const Color(0xFFFF8143) 
-                            : Colors.black,
-                      )),
-                      SizedBox(width: 5.w),
-                      GestureDetector(
-                        onTap: () => ctrl.markUnmarkQuestion(question.id),
-                        child: Obx(() => Text(
-                          'Mark this Question',
-                          style: GoogleFonts.inter(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w400,
+                    SizedBox(height: 16.h),
+                    // Mark Question Button
+                    Row(
+                      children: [
+                        Icon(Icons.flag,
                             color: ctrl.isMarkedQuestion(question.id)
                                 ? const Color(0xFFFF8143)
-                                : Colors.black,
-                          ),
-                        )),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 15.h),
+                                : Colors.black),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            ctrl.markUnmarkQuestion(question.id);
+                            debugPrint("qid-----> ${question.id}");
+                          },
+                          child: Text('Mark this Question',
+                              style: GoogleFonts.inter(
+                                  textStyle: TextStyle(
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: ctrl.isMarkedQuestion(question.id)
+                                          ? const Color(0xFFFF8143)
+                                          : Colors.black))),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    // Options
+                    if (question.options != null &&
+                        question.options!.isNotEmpty)
+                      _buildOptions(ctrl)
+                    else
+                      const Text('No options available'),
 
-                  // Options
-                  if (question.options != null && question.options!.isNotEmpty)
-                    _buildOptionsGrid(ctrl)
-                  else
-                    const Text('No options available'),
-
-                  SizedBox(height: 15.h),
-                ],
+                    SizedBox(height: 16.h),
+                  ],
+                ),
               ),
             ),
           ],
@@ -116,64 +166,66 @@ class SharedQuestionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildOptionsGrid(BaseQuestionController ctrl) {
-    return Wrap(
-      spacing: 12.w,
-      runSpacing: 16.h,
-      children: question.options!.asMap().entries.map((entry) {
-        final index = entry.key;
-        final option = entry.value;
-        
-        return SizedBox(
-          width: (Get.width - 48.w) / 2,
-          child: Obx(() {
+  Widget _buildOptions(BaseQuestionController ctrl) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: Obx(() {
+        return Column(
+          children: List.generate(question.options!.length, (optionIndex) {
+            final option = question.options![optionIndex];
             final isSelected = ctrl.isOptionSelected(question.id, option.order);
-            final isLoading = loadingOptionIndex.value == index;
+            final isLoading = loadingOptionIndex.value == optionIndex;
 
             return GestureDetector(
-              onTap: isLoading ? null : () async {
-                try {
-                  loadingOptionIndex.value = index;
-                  await ctrl.submitAnswer(
-                    question.id,
-                    contestId,
-                    ctrl.getOptionAns(index + 1),
-                  );
-                } finally {
-                  loadingOptionIndex.value = null;
+              onTap: () async {
+                loadingOptionIndex.value = optionIndex;
+                bool isDone = await ctrl.submitAnswer(
+                  question.id,
+                  contestId,
+                  ctrl.getOptionAns(optionIndex + 1),
+                );
+                loadingOptionIndex.value = null;
+                if (!isDone) {
+                  // Optionally handle failed submission
                 }
               },
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50.r),
-                      border: Border.all(color: Colors.black, width: 1),
+              child: Container(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.r),
+                        border: Border.all(color: Colors.black, width: 1),
+                        color: Colors.transparent,
+                      ),
+                      child: isSelected
+                          ? Container(
+                              height: 20,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50.r),
+                                color: AppColors.primary,
+                              ),
+                            )
+                          : const SizedBox(height: 20, width: 20),
                     ),
-                    child: isSelected 
-                        ? Container(
-                            height: 20,
-                            width: 20,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50.r),
-                              color: AppColors.primary,
-                            ),
-                          )
-                        : const SizedBox(height: 20, width: 20),
-                  ),
-                  SizedBox(width: 8.w),
-                  Expanded(
-                    child: isLoading 
-                        ? const CircularProgressIndicator()
-                        : HtmlWidget(option.title),
-                  ),
-                ],
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: isLoading
+                          ? Center(
+                              child: CupertinoActivityIndicator(
+                                  color: AppColors.primary))
+                          : HtmlWidget(option.title),
+                    ),
+                  ],
+                ),
               ),
             );
           }),
         );
-      }).toList(),
+      }),
     );
   }
 }
