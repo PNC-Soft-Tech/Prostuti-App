@@ -117,6 +117,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                     key: controller.questionKeys[question.id],
                     question: question,
                     contestId: controller.modelTestId.value,
+                    index: index,
                   );
                 },
               ),

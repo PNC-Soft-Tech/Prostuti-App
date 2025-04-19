@@ -90,6 +90,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                     question: question,
                     contestId: controller.contestId.value,
                     controller: controller, // Pass the controller instance
+                    index: index,
                   );
                 },
               ),
