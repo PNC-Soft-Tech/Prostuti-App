@@ -179,6 +179,7 @@ class SharedQuestionWidget extends StatelessWidget {
             return GestureDetector(
               onTap: () async {
                 loadingOptionIndex.value = optionIndex;
+                ctrl.selectOption(question.id, option.order);
                 bool isDone = await ctrl.submitAnswer(
                   question.id,
                   contestId,
