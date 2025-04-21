@@ -1,17 +1,15 @@
+// lib/modules/contests/views/contest_details_view.dart
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../common/custom_simple_appbar.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../common/widgets/shared_question_widget.dart';
 import '../../../constant/app_color.dart';
 import '../controller/contest_details_controller.dart';
 import '../widgets/contest_action_widget.dart';
-import '../widgets/contest_details_widget.dart';
-import '../widgets/contest_status_widget.dart';
 import '../widgets/question_navigator.dart';
 import '../widgets/subject_tabs_widget.dart';
 
@@ -21,45 +19,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:CustomSimpleAppBar.appBar( titleWidget:Obx(() => Text(
-              Utils.stripHtmlTags(controller.contestDetails.value?.contest.name??'') ?? 'Contest',
-              style: const TextStyle(fontSize: 18, color: AppColors.primary), 
-            )), ),
-      //  AppBar(
-      //   title: Obx(() => Text(
-      //         controller.contestDetails.value?.contest.name ?? 'Contest',
-      //         style: const TextStyle(fontSize: 18),
-      //       )),
-      //   actions: [
-      //     Center(
-      //       child: Padding(
-      //         padding: const EdgeInsets.all(8.0),
-      //         child: Obx(() => Text(
-      //               controller.formattedCountdownTime,
-      //               style: const TextStyle(
-      //                 fontSize: 16,
-      //                 fontWeight: FontWeight.bold,
-      //               ),
-      //             )),
-      //       ),
-      //     ),
-      //   ],
-      // ),
+      backgroundColor: Colors.white,
+      appBar: CustomSimpleAppBar.appBar(
+        titleWidget: Text(
+          Utils.stripHtmlTags(controller.contestDetails.value?.contest.name ?? '') ?? 'Contest Details',
+          style: const TextStyle(fontSize: 18, color: AppColors.primary),
+        ),
+      ),
       body: Stack(
         children: [
-          // controller.submitContest(controller.contestId.value),
-          Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                  color: Colors.white,
-                  child: Obx(() => SubjectTabsWidget(
-                        onSubjectSelected: (subject) {
-                          controller.selectSubject(subject); // update logic
-                        },
-                        selectedSubject: controller.selectedSubject.value,
-                        subjects: controller.subjectLists,
-                        isQuestionOpened: controller.isQuestionOpened.value,
-                      )))),
           Obx(() {
             if (controller.isLoading.value) {
               return const Center(child: CupertinoActivityIndicator());
@@ -72,39 +40,38 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
 
             return Column(
               children: [
-                // Subject Filter
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  child: Row(
-                    children: [
-                      // FilterChip(
-                      //   label: const Text('All'),
-                      //   selected: controller.selectedSubject.value == 'All',
-                      //   onSelected: (_) => controller.selectSubject('All'),
-                      // ),
-                      // const SizedBox(width: 8),
-                      // ...controller.subjectLists.map((subject) => Padding(
-                      //       padding: const EdgeInsets.only(right: 8),
-                      //       child: FilterChip(
-                      //         label: Text(subject),
-                      //         selected: controller.selectedSubject.value == subject,
-                      //         onSelected: (_) => controller.selectSubject(subject),
-                      //       ),
-                      //     )),
-                    ],
-                  ),
-                ),
+                // Subject Filter - Only display ONCE
+                Obx(() => SubjectTabsWidget(
+                  onSubjectSelected: (subject) {
+                    controller.selectSubject(subject);
+                  },
+                  selectedSubject: controller.selectedSubject.value,
+                  subjects: controller.subjectLists,
+                  isQuestionOpened: controller.isQuestionOpened.value,
+                )),
 
-                // Question Navigation
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                // Status Bar - Question/Marking count
+                Container(
+                  padding: EdgeInsets.all(8.w),
+                  color: Colors.white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Questions: ${questions.length}'),
-                      Text('Marked: ${controller.markedQuestionIds.length}'),
+                      Text(
+                        'Questions: ${questions.length}',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        'Marked: ${controller.markedQuestionIds.length}',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.tealAccent,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -120,7 +87,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         key: controller.questionKeys[question.id],
                         question: question,
                         contestId: controller.contestId.value,
-                        controller: controller, // Pass the controller instance
+                        controller: controller, 
                         index: index,
                       );
                     },
@@ -129,22 +96,21 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               ],
             );
           }),
-          const ContestActionWidget(), // ✅ Handles submit/register buttons
-          const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
-          Align(
-              alignment: Alignment.topLeft,
-              child: Container(
-                  color: Colors.white,
-                  child: Obx(() => SubjectTabsWidget(
-                        onSubjectSelected: (subject) {
-                          controller.selectSubject(subject); // update logic
-                        },
-                        selectedSubject: controller.selectedSubject.value,
-                        subjects: controller.subjectLists,
-                        isQuestionOpened: controller.isQuestionOpened.value,
-                      )))),
-          SizedBox(
-            height: 15.h,
+          
+          // Action widget for contest submission
+          Obx(() => controller.isQuestionOpened.value
+            ? const ContestActionWidget()
+            : const SizedBox.shrink()
+          ),
+          
+          // Question navigator widget - only visible when questions are open
+          Obx(() => controller.isQuestionOpened.value
+            ? Positioned(
+                right: 16.w,
+                bottom: 100.h,
+                child: QuestionNavigatorWidget(),
+              )
+            : const SizedBox.shrink()
           ),
         ],
       ),

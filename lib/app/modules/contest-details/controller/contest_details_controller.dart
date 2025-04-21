@@ -35,7 +35,7 @@ class ContestDetailsController extends GetxController implements BaseQuestionCon
   Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
   RxBool isContestRunning = true.obs;
-  RxBool isQuestionOpened = false.obs;
+  RxBool isQuestionOpened = true.obs;
   final scrollController = ScrollController();
   final questionKeys = <String, GlobalKey>{}.obs;
   final questionIdToIndexMap = <String, int>{}.obs;
