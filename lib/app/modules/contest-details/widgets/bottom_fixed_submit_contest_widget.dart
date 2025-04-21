@@ -39,6 +39,7 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: [
+              SizedBox(height: 15.h,),
           _buildTimerWidget(),
           SizedBox(height: 15.h,),
           // CountDownTimerWidget(),

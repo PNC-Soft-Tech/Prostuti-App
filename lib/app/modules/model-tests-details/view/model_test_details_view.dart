@@ -20,10 +20,12 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CustomSimpleAppBar.appBar(
-        titleWidget: Text(
-          Utils.stripHtmlTags(controller.modelDetails.value?.contest.name ?? '') ?? 'Model Test',
-          style: const TextStyle(fontSize: 18, color: AppColors.primary),
-        ),
+        titleWidget: Obx(() => Text(
+              Utils.stripHtmlTags(
+                      controller.modelDetails.value?.contest.name ?? '') ??
+                  'Model Test',
+              style: const TextStyle(fontSize: 18, color: AppColors.primary),
+            )),
       ),
       body: Stack(
         children: [
@@ -69,7 +71,8 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                       return SharedQuestionWidget(
                         key: controller.questionKeys[question.id],
                         question: question,
-                        contestId: controller.modelDetails.value?.contest.id ?? '',
+                        contestId:
+                            controller.modelDetails.value?.contest.id ?? '',
                         index: index,
                         controller: controller,
                       );
@@ -79,21 +82,20 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
               ],
             );
           }),
-          
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: TestActionWidget(controller: controller),
           ),
-          
           Positioned(
             bottom: 100.h,
             right: 16.w,
-            child: Obx(() => controller.currentSelectedModelTestMode.value == 'exam' || 
-                   controller.isQuestionOpened.value
-                ? QuestionNavigatorWidget(controller: controller)
-                : const SizedBox.shrink()),
+            child: Obx(() =>
+                controller.currentSelectedModelTestMode.value == 'exam' ||
+                        controller.isQuestionOpened.value
+                    ? QuestionNavigatorWidget(controller: controller)
+                    : const SizedBox.shrink()),
           ),
         ],
       ),
