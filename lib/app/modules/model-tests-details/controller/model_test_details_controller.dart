@@ -1,7 +1,280 @@
+// lib/modules/model_tests/controllers/model_test_details_controller.dart
+
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../APIs/api_helper.dart';
 import '../../../common/controllers/base_question_controller.dart';
+import '../../../routes/app_pages.dart';
+import '../../contests/models/contest_model.dart';
+import '../../contests/models/contest_status.dart';
+import '../../questions/models/question_model.dart';
+import '../models/model_test_response_model.dart';
 
 class ModelTestDetailsController extends GetxController implements BaseQuestionController {
+  final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  
+  // Observable state
+  var modelTestId = ''.obs;
+  var modelDetails = Rxn<ModelTestDetailsResponse>();
+  final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
+  final RxList<String> markedQuestionIds = <String>[].obs;
+  final currentQuestionIndex = 0.obs;
+  final RxBool isReadModeSelected = true.obs;
+  final RxBool isExamModeSelected = false.obs;
+  final RxString currentSelectedModelTestId = ''.obs;
+  final RxString currentSelectedModelTestMode = 'read'.obs;
+  final RxList<String> subjectLists = <String>[].obs;
+  final RxString selectedSubject = 'All'.obs;
+  RxList<String> visibleQuestions = <String>[].obs;
+  final RxBool isQuestionOpened = false.obs;
+  
+  // Loading states
+  var isLoading = false.obs;
+  final isSubmittingContest = false.obs;
+  final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
+  
+  // Timer state
+  Rx<Duration> remainingTime = const Duration().obs;
+  Timer? _timer;
+  
+  // Navigation
+  final scrollController = ScrollController();
+  final questionKeys = <String, GlobalKey>{}.obs;
+  final questionIdToIndexMap = <String, int>{}.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final Map<String, dynamic> arguments = Get.arguments;
+    modelTestId.value = arguments["modelTestId"];
+    currentSelectedModelTestMode.value = arguments["mode"];
+    fetchModelTestDetails(modelTestId.value);
+    
+    // Handle scrolling to current question
+    ever<int>(currentQuestionIndex, (index) {
+      scrollController.animateTo(
+        index * 300.h,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  void toggleMode(bool isReadMode) {
+    isReadModeSelected.value = isReadMode;
+    isExamModeSelected.value = !isReadMode;
+    // Update UI based on mode
+  }
+
+  void setUpQuestionKeysAndIndexes(List<Question> questions) {
+    questionKeys.clear();
+    questionIdToIndexMap.clear();
+
+    for (int i = 0; i < questions.length; i++) {
+      final question = questions[i];
+      questionKeys[question.id] = GlobalKey();
+      questionIdToIndexMap[question.id] = i;
+    }
+  }
+
+  @override
+  void scrollToQuestion(String questionId) {
+    final originalIndex = modelDetails.value?.contest.questions
+        .indexWhere((q) => q.id == questionId);
+
+    if (originalIndex == null || originalIndex == -1) return;
+
+    // Reset filter if needed
+    if (!visibleQuestions.contains(questionId)) {
+      selectedSubject.value = 'All';
+    }
+
+    // Allow UI to update
+    Future.delayed(const Duration(milliseconds: 50), () {
+      final context = questionKeys[questionId]?.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          alignment: 0.1,
+        );
+      } else {
+        // Fallback to estimated position
+        scrollController.animateTo(
+          originalIndex * 300.h,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  void updateVisibleQuestions(List<String> questionIds) {
+    visibleQuestions.value = questionIds;
+    debugPrint("Visible Questions: $visibleQuestions");
+  }
+
+  bool isQuestionVisible(String questionId) {
+    return visibleQuestions.contains(questionId);
+  }
+
+  @override
+  String? getPreviousVisibleQuestion(String currentQuestionId) {
+    final index = visibleQuestions.indexOf(currentQuestionId);
+    debugPrint(
+        "Prev Check - Current: $currentQuestionId, Index: $index, Visible List: $visibleQuestions");
+
+    if (index > 0) {
+      debugPrint("✅ Previous Question Found: ${visibleQuestions[index - 1]}");
+      return visibleQuestions[index - 1];
+    }
+
+    debugPrint("❌ No Previous Question Found");
+    return null;
+  }
+
+  @override
+  String? getNextVisibleQuestion(String currentQuestionId) {
+    final index = visibleQuestions.indexOf(currentQuestionId);
+    debugPrint(
+        "Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
+    return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
+  }
+
+  void fetchModelTestDetails(String modelTestId) async {
+    isLoading.value = true;
+
+    final result = await _apiHelper.fetchSingleModelTest(modelTestId);
+
+    result.fold(
+      (error) {
+        isLoading.value = false;
+        log('Error fetching model test details: ${error.message}');
+        Get.snackbar('Error', 'Failed to load model test: ${error.message}');
+      },
+      (data) {
+        modelDetails.value = data;
+        subjectLists.value = (modelDetails.value?.contest.questions ?? [])
+            .map((qs) => qs.topic?.subject?.name)
+            .whereType<String>()
+            .toSet()
+            .toList();
+
+        // Set up navigation
+        setUpQuestionKeysAndIndexes(modelDetails.value?.contest.questions ?? []);
+        
+        // Set visible questions (all at first)
+        updateVisibleQuestions((modelDetails.value?.contest.questions ?? [])
+            .map((q) => q.id)
+            .toList());
+            
+        // Start timer
+        startTimer(data.contest.startContest, data.contest.endContest);
+        
+        isLoading.value = false;
+      },
+    );
+  }
+
+  List<Question> get filteredQuestions {
+    final allQuestions = modelDetails.value?.contest.questions ?? [];
+    if (selectedSubject.value == 'All') {
+      return allQuestions;
+    }
+    return allQuestions
+        .where((q) => q.topic?.subject?.name == selectedSubject.value)
+        .toList();
+  }
+
+  void selectSubject(String subject) {
+    selectedSubject.value = subject;
+    
+    // Update visible questions based on filter
+    final visibleIds = filteredQuestions.map((q) => q.id).toList();
+    updateVisibleQuestions(visibleIds);
+  }
+
+  @override
+  void selectOption(String questionId, String selectedOptionOrder) {
+    selectedAnswers[questionId] = selectedOptionOrder;
+  }
+
+  @override
+  bool isOptionSelected(String questionId, String optionOrder) {
+    return selectedAnswers[questionId] == optionOrder;
+  }
+
+  @override
+  void markUnmarkQuestion(String questionId) {
+    if (markedQuestionIds.contains(questionId)) {
+      markedQuestionIds.remove(questionId);
+    } else {
+      markedQuestionIds.add(questionId);
+    }
+  }
+
+  @override
+  bool isMarkedQuestion(String questionId) {
+    return markedQuestionIds.contains(questionId);
+  }
+
+  Question? questionAtIndex(int index) {
+    final questions = modelDetails.value?.contest.questions ?? [];
+    if (index < 0 || index >= questions.length) return null;
+    return questions[index];
+  }
+
+  List<Map<String, dynamic>> prepareSubmissionPayload(String contestId) {
+    return selectedAnswers.entries.map((entry) {
+      return {
+        "question": entry.key,
+        "contest": contestId,
+        "selectedAnswer": entry.value,
+      };
+    }).toList();
+  }
+
+  @override
+  Future<bool> submitAnswer(
+    String questionId,
+    String contestId,
+    String selectedAnswer,
+  ) async {
+    questionLoadingStatus[questionId] = true;
+
+    try {
+      final result = await _apiHelper.submitContestAnswer(
+        questionId: questionId,
+        contestId: contestId,
+        selectedAnswer: selectedAnswer,
+      );
+
+      bool isSuccess = false;
+      result.fold(
+        (error) {
+          Get.snackbar('Error', error.message ?? 'Something went wrong');
+          isSuccess = false;
+        },
+        (response) {
+          Get.snackbar('Success', 'Answer submitted successfully');
+          isSuccess = true;
+        },
+      );
+
+      return isSuccess;
+    } catch (e) {
+      debugPrint('Error submitting answer: $e');
+      return false;
+    } finally {
+      questionLoadingStatus[questionId] = false;
+    }
+  }
+
   @override
   String getOptionAns(int index) {
     switch (index) {
@@ -13,36 +286,75 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
         return 'c';
       case 4:
         return 'd';
+      case 5:
+        return 'e';
+      case 6:
+        return 'f';
+      case 7:
+        return 'g';
+      case 8:
+        return 'h';
+      case 9:
+        return 'i';
+      case 10:
+        return 'j';
       default:
         return '';
     }
   }
 
-  @override
-  bool isMarkedQuestion(String questionId) {
-    // Implement your marking logic
-    return false;
+  Future<void> submitContest(String contestId) async {
+    isSubmittingContest(true);
+
+    final result = await _apiHelper.submitContest(contestId);
+
+    isSubmittingContest(false);
+
+    result.fold(
+      (error) {
+        Get.snackbar('Error', error.message ?? 'Failed to submit contest');
+      },
+      (response) {
+        Get.snackbar('Success',
+            response.body['message'] ?? 'Contest submitted successfully');
+        Get.toNamed(Routes.ranking);
+      },
+    );
+  }
+
+  void startTimer(DateTime startTime, DateTime endTime) {
+    _updateRemainingTime(startTime, endTime);
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _updateRemainingTime(startTime, endTime);
+    });
+  }
+
+  void _updateRemainingTime(DateTime startTime, DateTime endTime) {
+    final now = DateTime.now();
+    if (now.isBefore(startTime)) {
+      remainingTime.value = startTime.difference(now);
+    } else if (now.isBefore(endTime)) {
+      remainingTime.value = endTime.difference(now);
+    } else {
+      remainingTime.value = Duration.zero;
+      _timer?.cancel();
+    }
   }
 
   @override
-  void markUnmarkQuestion(String questionId) {
-    // Implement your mark/unmark logic
+  void onClose() {
+    _timer?.cancel();
+    scrollController.dispose();
+    super.onClose();
   }
 
-  @override
-  void selectOption(String questionId, String selectedOptionOrder) {
-    // Implement option selection logic
-  }
-
-  @override
-  bool isOptionSelected(String questionId, String optionOrder) {
-    // Implement selected option check
-    return false;
-  }
-
-  @override
-  Future<bool> submitAnswer(String questionId, String contestId, String selectedAnswer) async {
-    // Implement answer submission logic
-    return true;
+  String get formattedCountdownTime {
+    final minutes =
+        remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds =
+        remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$minutes:$seconds";
   }
 }

@@ -1,101 +1,73 @@
+// lib/common/widgets/shared_question_widget.dart
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import '../controllers/base_question_controller.dart';
 import '../../constant/app_color.dart';
+import '../../common/controllers/base_question_controller.dart';
 import '../../modules/questions/models/question_model.dart';
 
 class SharedQuestionWidget extends StatelessWidget {
   final Question question;
   final String contestId;
-  final bool showFlagButton;
-  final BaseQuestionController? controller;
   final int index;
+  final BaseQuestionController controller;
+  final bool showExplanation;
 
-  SharedQuestionWidget({
+   SharedQuestionWidget({
     Key? key,
     required this.question,
     required this.contestId,
     required this.index,
-    this.showFlagButton = true,
-    this.controller,
+    required this.controller,
+    this.showExplanation = false,
   }) : super(key: key);
 
   final loadingOptionIndex = RxnInt();
 
   @override
   Widget build(BuildContext context) {
-    final BaseQuestionController ctrl;
-    if (controller != null) {
-      ctrl = controller!;
-    } else if (Get.isRegistered<BaseQuestionController>()) {
-      ctrl = Get.find<BaseQuestionController>();
-    } else {
-      throw Exception('No question controller found');
-    }
-
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            offset: const Offset(0, 1),
-            blurRadius: 4,
             color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ctrl.isMarkedQuestion(question.id)
-                ? Visibility(
-                    visible: ctrl.isMarkedQuestion(question.id),
-                    child: Container(
-                      width: 4.w,
-                      height: double.infinity,
-                      color: ctrl.isMarkedQuestion(question.id)
-                          ? const Color(0xFFFF8143)
-                          : Colors.black,
-                    ),
-                  )
-                : const SizedBox.shrink(),
-            // Question Number Container
-            // Container(
-            //   width: 40.w,
-            //   decoration: BoxDecoration(
-            //     color: AppColors.primary,
-            //     borderRadius: BorderRadius.only(
-            //       topLeft: Radius.circular(8.r),
-            //       bottomLeft: Radius.circular(8.r),
-            //     ),
-            //   ),
-            //   child: Center(
-            //     child: Text(
-            //       '${index + 1}',
-            //       style: TextStyle(
-            //         color: Colors.white,
-            //         fontSize: 18.sp,
-            //         fontWeight: FontWeight.bold,
-            //       ),
-            //     ),
-            //   ),
-            // ),
-
+            // Marking indicator
+            if (controller.isMarkedQuestion(question.id))
+              Container(
+                width: 4.w,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFF8143),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    bottomLeft: Radius.circular(12),
+                  ),
+                ),
+              ),
+            
+            // Question content
             Expanded(
               child: Padding(
                 padding: EdgeInsets.all(16.w),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Question Title
+                    // Question title
                     HtmlWidget(
                       '${index + 1}) ${question.title.replaceAll('<pre>', '').replaceAll('</pre>', '')}',
                       customWidgetBuilder: (element) {
@@ -114,48 +86,50 @@ class SharedQuestionWidget extends StatelessWidget {
                         height: 1.5,
                       ),
                     ),
-
                     SizedBox(height: 16.h),
-                    // Mark Question Button
-                    Row(
-                      children: [
-                        Icon(Icons.flag,
-                            color: ctrl.isMarkedQuestion(question.id)
+                    
+                    // Mark question button
+                    GestureDetector(
+                      onTap: () => controller.markUnmarkQuestion(question.id),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.flag,
+                            color: controller.isMarkedQuestion(question.id)
                                 ? const Color(0xFFFF8143)
-                                : Colors.black),
-                        SizedBox(
-                          width: 5.w,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            ctrl.markUnmarkQuestion(question.id);
-                            debugPrint("qid-----> ${question.id}");
-                          },
-                          child: Text('Mark this Question',
-                              style: GoogleFonts.inter(
-                                  textStyle: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: ctrl.isMarkedQuestion(question.id)
-                                          ? const Color(0xFFFF8143)
-                                          : Colors.black))),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                      ],
+                                : Colors.black54,
+                            size: 20.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            'Mark this Question',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: controller.isMarkedQuestion(question.id)
+                                  ? const Color(0xFFFF8143)
+                                  : Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    // Options
-                    if (question.options != null &&
-                        question.options!.isNotEmpty)
-                      _buildOptions(ctrl)
-                    else
-                      const Text('No options available'),
-
                     SizedBox(height: 16.h),
+                    
+                    // Options
+                    if (question.options != null && question.options!.isNotEmpty)
+                      _buildOptions()
+                    else
+                      Text(
+                        'No options available',
+                        style: TextStyle(
+                          color: Colors.red.shade300,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    
+                    // Explanation (if available and enabled)
+                    if (showExplanation && question.explanation != null && question.explanation!.isNotEmpty)
+                      _buildExplanation(),
                   ],
                 ),
               ),
@@ -166,67 +140,111 @@ class SharedQuestionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildOptions(BaseQuestionController ctrl) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 12.h),
-      child: Obx(() {
-        return Column(
-          children: List.generate(question.options!.length, (optionIndex) {
-            final option = question.options![optionIndex];
-            final isSelected = ctrl.isOptionSelected(question.id, option.order);
-            final isLoading = loadingOptionIndex.value == optionIndex;
+  Widget _buildOptions() {
+    return Obx(() {
+      return Column(
+        children: List.generate(question.options!.length, (optionIndex) {
+          final option = question.options![optionIndex];
+          final isSelected = controller.isOptionSelected(question.id, option.order);
+          final isLoading = loadingOptionIndex.value == optionIndex;
 
-            return GestureDetector(
-              onTap: () async {
-                loadingOptionIndex.value = optionIndex;
-                ctrl.selectOption(question.id, option.order);
-                bool isDone = await ctrl.submitAnswer(
-                  question.id,
-                  contestId,
-                  ctrl.getOptionAns(optionIndex + 1),
-                );
-                loadingOptionIndex.value = null;
-                if (!isDone) {
-                  // Optionally handle failed submission
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.only(bottom: 8.h),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.r),
-                        border: Border.all(color: Colors.black, width: 1),
-                        color: Colors.transparent,
+          return GestureDetector(
+            onTap: () async {
+              loadingOptionIndex.value = optionIndex;
+              controller.selectOption(question.id, option.order);
+              
+              bool success = await controller.submitAnswer(
+                question.id,
+                contestId,
+                controller.getOptionAns(optionIndex + 1),
+              );
+              
+              loadingOptionIndex.value = null;
+            },
+            child: Container(
+              margin: EdgeInsets.only(bottom: 12.h),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Option selector
+                  Container(
+                    width: 26.w,
+                    height: 26.w,
+                    margin: EdgeInsets.only(top: 4.h),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected ? AppColors.primary : Colors.black54,
+                        width: 1.5,
                       ),
-                      child: isSelected
-                          ? Container(
-                              height: 20,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50.r),
-                                color: AppColors.primary,
-                              ),
-                            )
-                          : const SizedBox(height: 20, width: 20),
+                      color: isSelected ? AppColors.primary : Colors.transparent,
                     ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: isLoading
-                          ? Center(
-                              child: CupertinoActivityIndicator(
-                                  color: AppColors.primary))
-                          : HtmlWidget(option.title),
-                    ),
-                  ],
-                ),
+                    child: isSelected
+                        ? Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 16.sp,
+                          )
+                        : null,
+                  ),
+                  
+                  SizedBox(width: 12.w),
+                  
+                  // Option content
+                  Expanded(
+                    child: isLoading
+                        ? Center(
+                            child: CupertinoActivityIndicator(radius: 12.r),
+                          )
+                        : HtmlWidget(
+                            option.title,
+                            textStyle: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black87,
+                            ),
+                          ),
+                  ),
+                ],
               ),
-            );
-          }),
-        );
-      }),
+            ),
+          );
+        }),
+      );
+    });
+  }
+
+  Widget _buildExplanation() {
+    return Container(
+      margin: EdgeInsets.only(top: 16.h),
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Explanation',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16.sp,
+              color: Colors.black87,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          HtmlWidget(
+            question.explanation ?? '',
+            textStyle: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
