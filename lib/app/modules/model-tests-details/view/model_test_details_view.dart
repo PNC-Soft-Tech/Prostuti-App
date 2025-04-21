@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../common/widgets/shared_question_widget.dart';
+import '../../contest-details/widgets/contest_action_widget.dart';
+import '../../contest-details/widgets/question_navigator.dart';
+import '../../contest-details/widgets/subject_tabs_widget.dart';
 import '../controllers/model_test_details_controller.dart';
 
 class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
@@ -116,51 +119,34 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                   return SharedQuestionWidget(
                     key: controller.questionKeys[question.id],
                     question: question,
-                    contestId: controller.modelTestId.value,
+                    contestId: controller.modelDetails.value?.contest.id ?? '',
                     index: index,
+                    controller: controller,
                   );
                 },
               ),
             ),
+               const ContestActionWidget(), // ✅ Handles submit/register buttons
+          const QuestionNavigatorWidget(), // ✅ Handles floating question navigator
+          Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                  color: Colors.white,
+                  child: Obx(() => SubjectTabsWidget(
+                        onSubjectSelected: (subject) {
+                          controller.selectSubject(subject); // update logic
+                        },
+                        selectedSubject: controller.selectedSubject.value,
+                        subjects: controller.subjectLists,
+                        isQuestionOpened: controller.isQuestionOpened.value,
+                      )))),
+          SizedBox(
+            height: 15.h,
+          ),
           ],
         );
       }),
-      bottomNavigationBar: Obx(() {
-        if (controller.isSubmittingContest.value) {
-          return const SizedBox(
-            height: 60,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        return SafeArea(
-          child: Row(
-            children: [
-              // Show total marked questions
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Chip(
-                  label: Text('Marked: ${controller.markedQuestionIds.length}'),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0.w),
-                  child: ElevatedButton(
-                    onPressed: () => controller.submitContest(
-                      controller.modelTestId.value,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 50.h),
-                    ),
-                    child: const Text('Submit Test'),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
+     
     );
   }
 }
