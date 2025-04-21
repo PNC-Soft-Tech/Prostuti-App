@@ -37,19 +37,13 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
               return const Center(child: Text('No questions available'));
             }
 
-            // Make sure isQuestionOpened is set to true in exam mode
-            if (controller.currentSelectedModelTestMode.value == 'exam' && 
-                !controller.isQuestionOpened.value) {
-              controller.isQuestionOpened.value = true;
-            }
-
             return Column(
               children: [
                 SubjectTabsWidget(
                   subjects: controller.subjectLists,
                   selectedSubject: controller.selectedSubject.value,
                   onSubjectSelected: controller.selectSubject,
-                  isQuestionOpened: true,
+                  isQuestionOpened: controller.isQuestionOpened.value,
                 ),
 
                 // Status Bar

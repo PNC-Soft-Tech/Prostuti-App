@@ -61,6 +61,12 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
         curve: Curves.easeInOut,
       );
     });
+    // Ensure questions are opened in exam mode
+    ever(currentSelectedModelTestMode, (mode) {
+      if (mode == 'exam' && !isQuestionOpened.value) {
+        isQuestionOpened.value = true;
+      }
+    });
   }
 
   void toggleMode(bool isReadMode) {
