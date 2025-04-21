@@ -145,20 +145,188 @@ class SharedQuestionWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildOptions() {
-    return Obx(() {
+  // Widget _buildOptions() {
+  //   return Obx(() {
+  //     return Column(
+  //       children: List.generate(question.options!.length, (optionIndex) {
+  //         final option = question.options![optionIndex];
+  //         final isSelected =
+  //             controller.isOptionSelected(question.id, option.order);
+  //         final isLoading = loadingOptionIndex.value == optionIndex;
+
+  //         return GestureDetector(
+  //           onTap: () async {
+  //             loadingOptionIndex.value = optionIndex;
+  //             controller.selectOption(question.id, option.order);
+         
+  //             bool success = await controller.submitAnswer(
+  //               question.id,
+  //               contestId,
+  //               controller.getOptionAns(optionIndex + 1),
+  //             );
+  //             if (!success) {
+  //               controller.resetSelectOption(question.id);
+  //             } 
+          
+  //             loadingOptionIndex.value = null;
+  //           },
+  //           child: Container(
+  //             margin: EdgeInsets.only(bottom: 12.h),
+  //             child: Row(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 // Option selector
+  //                 Container(
+  //                   width: 26.w,
+  //                   height: 26.w,
+  //                   margin: EdgeInsets.only(top: 4.h),
+  //                   decoration: BoxDecoration(
+  //                     shape: BoxShape.circle,
+  //                     border: Border.all(
+  //                       color: isSelected ? AppColors.primary : Colors.black54,
+  //                       width: 1.5,
+  //                     ),
+  //                     color:
+  //                         isSelected ? AppColors.primary : Colors.transparent,
+  //                   ),
+  //                   child: isSelected
+  //                       ? Icon(
+  //                           Icons.check,
+  //                           color: Colors.white,
+  //                           size: 16.sp,
+  //                         )
+  //                       : null,
+  //                 ),
+          
+  //                 SizedBox(width: 12.w),
+          
+  //                 // Option content
+  //                 Expanded(
+  //                   child: isLoading
+  //                       ? Center(
+  //                           child: CupertinoActivityIndicator(radius: 12.r),
+  //                         )
+  //                       : HtmlWidget(
+  //                           option.title,
+  //                           textStyle: TextStyle(
+  //                             fontSize: 16.sp,
+  //                             color: Colors.black87,
+  //                           ),
+  //                         ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       }),
+  //     );
+  //   });
+  // }
+Widget _buildOptions() {
+  return Obx(() {
+    if (question.isGrid == true) {
+      // GRID LAYOUT - 2 options per row
+      // Calculate the number of rows needed (ceiling division)
+      final int rowCount = (question.options!.length + 1) ~/ 2;
+      
+      return Column(
+        children: List.generate(rowCount, (rowIndex) {
+          // Create a row with up to 2 options
+          return Row(
+            children: List.generate(2, (colIndex) {
+              final optionIndex = rowIndex * 2 + colIndex;
+              
+              // Check if this option exists (handle odd number of options)
+              if (optionIndex >= question.options!.length) {
+                return Expanded(child: Container());
+              }
+              
+              final option = question.options![optionIndex];
+              final isSelected = controller.isOptionSelected(question.id, option.order);
+              final isLoading = loadingOptionIndex.value == optionIndex;
+              
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () async {
+                    loadingOptionIndex.value = optionIndex;
+                    controller.selectOption(question.id, option.order);
+                    
+                    bool success = await controller.submitAnswer(
+                      question.id,
+                      contestId,
+                      controller.getOptionAns(optionIndex + 1),
+                    );
+                    if (!success) {
+                      controller.resetSelectOption(question.id);
+                    }
+                    
+                    loadingOptionIndex.value = null;
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 12.h, right: colIndex == 0 ? 8.w : 0, left: colIndex == 1 ? 8.w : 0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Option selector
+                        Container(
+                          width: 26.w,
+                          height: 26.w,
+                          margin: EdgeInsets.only(top: 4.h),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected ? AppColors.primary : Colors.black54,
+                              width: 1.5,
+                            ),
+                            color: isSelected ? AppColors.primary : Colors.transparent,
+                          ),
+                          child: isSelected
+                              ? Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                  size: 16.sp,
+                                )
+                              : null,
+                        ),
+                        
+                        SizedBox(width: 8.w),
+                        
+                        // Option content
+                        Expanded(
+                          child: isLoading
+                              ? Center(
+                                  child: CupertinoActivityIndicator(radius: 12.r),
+                                )
+                              : HtmlWidget(
+                                  option.title,
+                                  textStyle: TextStyle(
+                                    fontSize: 14.sp, // Slightly smaller font for grid layout
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          );
+        }),
+      );
+    } else {
+      // SINGLE COLUMN LAYOUT - Original implementation
       return Column(
         children: List.generate(question.options!.length, (optionIndex) {
           final option = question.options![optionIndex];
-          final isSelected =
-              controller.isOptionSelected(question.id, option.order);
+          final isSelected = controller.isOptionSelected(question.id, option.order);
           final isLoading = loadingOptionIndex.value == optionIndex;
 
           return GestureDetector(
             onTap: () async {
               loadingOptionIndex.value = optionIndex;
               controller.selectOption(question.id, option.order);
-
+         
               bool success = await controller.submitAnswer(
                 question.id,
                 contestId,
@@ -167,7 +335,7 @@ class SharedQuestionWidget extends StatelessWidget {
               if (!success) {
                 controller.resetSelectOption(question.id);
               } 
-
+          
               loadingOptionIndex.value = null;
             },
             child: Container(
@@ -186,8 +354,7 @@ class SharedQuestionWidget extends StatelessWidget {
                         color: isSelected ? AppColors.primary : Colors.black54,
                         width: 1.5,
                       ),
-                      color:
-                          isSelected ? AppColors.primary : Colors.transparent,
+                      color: isSelected ? AppColors.primary : Colors.transparent,
                     ),
                     child: isSelected
                         ? Icon(
@@ -197,9 +364,9 @@ class SharedQuestionWidget extends StatelessWidget {
                           )
                         : null,
                   ),
-
+          
                   SizedBox(width: 12.w),
-
+          
                   // Option content
                   Expanded(
                     child: isLoading
@@ -220,9 +387,9 @@ class SharedQuestionWidget extends StatelessWidget {
           );
         }),
       );
-    });
-  }
-
+    }
+  });
+}
   Widget _buildExplanation() {
     return GestureDetector(
       onTap: () {
