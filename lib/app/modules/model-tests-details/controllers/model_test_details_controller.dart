@@ -174,14 +174,21 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     selectedSubject.value = subject;
   }
 
+  @override
   void selectOption(String questionId, String selectedOptionOrder) {
     selectedAnswers[questionId] = selectedOptionOrder;
   }
+  @override
+  void resetSelectOption(String questionId) {
+    selectedAnswers[questionId] = '';
+  }
 
+  @override
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;
   }
 
+  @override
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId] ?? -1;
     if (index == -1) return;

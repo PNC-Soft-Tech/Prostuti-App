@@ -164,6 +164,9 @@ class SharedQuestionWidget extends StatelessWidget {
                 contestId,
                 controller.getOptionAns(optionIndex + 1),
               );
+              if (!success) {
+                controller.resetSelectOption(question.id);
+              } 
 
               loadingOptionIndex.value = null;
             },

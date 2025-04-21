@@ -14,9 +14,10 @@ import '../../contests/models/contest_status.dart';
 import '../../questions/models/question_model.dart';
 import '../models/model_test_response_model.dart';
 
-class ModelTestDetailsController extends GetxController implements BaseQuestionController {
+class ModelTestDetailsController extends GetxController
+    implements BaseQuestionController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-  
+
   // Observable state
   var modelTestId = ''.obs;
   var modelDetails = Rxn<ModelTestDetailsResponse>();
@@ -31,16 +32,16 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
   final RxString selectedSubject = 'All'.obs;
   RxList<String> visibleQuestions = <String>[].obs;
   final RxBool isQuestionOpened = false.obs;
-  
+
   // Loading states
   var isLoading = false.obs;
   final isSubmittingContest = false.obs;
   final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
-  
+
   // Timer state
   Rx<Duration> remainingTime = const Duration().obs;
   Timer? _timer;
-  
+
   // Navigation
   final scrollController = ScrollController();
   final questionKeys = <String, GlobalKey>{}.obs;
@@ -53,7 +54,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     modelTestId.value = arguments["modelTestId"];
     currentSelectedModelTestMode.value = arguments["mode"];
     fetchModelTestDetails(modelTestId.value);
-    
+
     // Handle scrolling to current question
     ever<int>(currentQuestionIndex, (index) {
       scrollController.animateTo(
@@ -143,7 +144,9 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     final index = visibleQuestions.indexOf(currentQuestionId);
     debugPrint(
         "Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
-    return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
+    return index < visibleQuestions.length - 1
+        ? visibleQuestions[index + 1]
+        : null;
   }
 
   void fetchModelTestDetails(String modelTestId) async {
@@ -166,16 +169,17 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
             .toList();
 
         // Set up navigation
-        setUpQuestionKeysAndIndexes(modelDetails.value?.contest.questions ?? []);
-        
+        setUpQuestionKeysAndIndexes(
+            modelDetails.value?.contest.questions ?? []);
+
         // Set visible questions (all at first)
         updateVisibleQuestions((modelDetails.value?.contest.questions ?? [])
             .map((q) => q.id)
             .toList());
-            
+
         // Start timer
         startTimer(data.contest.startContest, data.contest.endContest);
-        
+
         isLoading.value = false;
       },
     );
@@ -193,7 +197,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
 
   void selectSubject(String subject) {
     selectedSubject.value = subject;
-    
+
     // Update visible questions based on filter
     final visibleIds = filteredQuestions.map((q) => q.id).toList();
     updateVisibleQuestions(visibleIds);
@@ -202,6 +206,11 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
   @override
   void selectOption(String questionId, String selectedOptionOrder) {
     selectedAnswers[questionId] = selectedOptionOrder;
+  }
+
+  @override
+  void resetSelectOption(String questionId) {
+    selectedAnswers[questionId] = ''; // Reset selection for the question
   }
 
   @override

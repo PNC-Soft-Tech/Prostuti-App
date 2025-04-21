@@ -8,9 +8,9 @@ import '../../../common/custom_simple_appbar.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../common/widgets/shared_question_widget.dart';
 import '../../../constant/app_color.dart';
+import '../../contest-details/widgets/subject_tabs_widget.dart';
 import '../controllers/model_test_details_controller.dart';
 import '../widgets/question_navigator_widget.dart';
-import '../widgets/subject_tabs_widget.dart';
 import '../widgets/test_action_widget.dart';
 
 class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
@@ -42,12 +42,16 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
 
             return Column(
               children: [
-                SubjectTabsWidget(
-                  subjects: controller.subjectLists,
-                  selectedSubject: controller.selectedSubject.value,
-                  onSubjectSelected: controller.selectSubject,
-                  isQuestionOpened: controller.isQuestionOpened.value,
-                ),
+          
+                // Subject Tabs
+                Obx(() => SubjectTabsWidget(
+                      subjects: controller.subjectLists,
+                      selectedSubject: controller.selectedSubject.value,
+                      onSubjectSelected: controller.selectSubject,
+                      // isQuestionOpened: controller.currentSelectedModelTestMode.value ==
+                      //     'exam',
+                      isQuestionOpened: true,
+                    )),
 
                 // Status Bar
                 Container(

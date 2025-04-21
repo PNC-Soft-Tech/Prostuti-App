@@ -157,9 +157,14 @@ void updateContestStatus() {
     selectedSubject.value = subject; // Update the selected subject
   }
 
+  @override
   void selectOption(String questionId, String selectedOptionOrder) {
     selectedAnswers[questionId] =
         selectedOptionOrder; // ✅ Track selection per question
+  }
+  @override
+void resetSelectOption(String questionId) {
+    selectedAnswers[questionId] = ''; // Reset selection for the question
   }
 
   @override

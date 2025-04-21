@@ -21,4 +21,5 @@ abstract class BaseQuestionController extends GetxController {
   bool isOptionSelected(String questionId, String optionOrder);
   Future<bool> submitAnswer(String questionId, String contestId, String selectedAnswer);
   String getOptionAns(int index);
+  void resetSelectOption(String questionId) ;
 }
