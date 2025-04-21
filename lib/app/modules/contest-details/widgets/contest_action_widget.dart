@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/modules/contest-details/widgets/exam_completed_dialog.dart';
 
 import '../../../common/custom_bottom_fixed_button.dart';
 import '../../contests/controller/contest_controller.dart';
 import '../controller/contest_details_controller.dart';
-import '../widgets/exam_completed_dialog.dart';
+// import '../widgets/exam_completed_dialog.dart';
 import 'bottom_fixed_submit_contest_widget.dart';
 
 class ContestActionWidget extends GetWidget<ContestDetailsController> {

@@ -35,10 +35,11 @@ class ExamCompletedDialog extends StatelessWidget {
               ],
             ),
             SizedBox(height: 12.h),
-            Icon(Icons.fact_check,
-                size: 48.r,
-                color: Colors
-                    .blue), // or use Image.asset if you have a custom icon
+            // Icon(Icons.fact_check,
+            //     size: 48.r,
+            //     color: Colors
+            //         .blue), // or use Image.asset if you have a custom icon
+            Image.asset('assets/confirm-custom-exam.png'),
             SizedBox(height: 12.h),
             Text(
               'Exam Completed?',
