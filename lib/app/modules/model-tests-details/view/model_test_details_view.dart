@@ -1,5 +1,6 @@
 // lib/modules/model_tests/views/model_test_details_view.dart
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -31,7 +32,7 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
         children: [
           Obx(() {
             if (controller.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CupertinoActivityIndicator());
             }
 
             final questions = controller.filteredQuestions;
@@ -75,6 +76,11 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                             controller.modelDetails.value?.contest.id ?? '',
                         index: index,
                         controller: controller,
+                        showExplanation:
+                            controller.currentSelectedModelTestMode.value ==
+                                    'exam'
+                                ? false
+                                : true,
                       );
                     },
                   ),

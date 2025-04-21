@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../constant/app_color.dart';
 import '../controllers/model_test_details_controller.dart';
 
 class TestActionWidget extends StatelessWidget {
@@ -46,9 +47,8 @@ class TestActionWidget extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  backgroundColor: isExamMode
-                      ? Colors.blue
-                      : const Color(0xFFFF8143),
+                  backgroundColor:  AppColors.primary,
+                      
                 ),
                 child: Text(
                   isExamMode ? 'Complete Exam' : 'View in Exam Mode',

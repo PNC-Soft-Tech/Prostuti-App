@@ -70,6 +70,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
   }
 
   void toggleMode(bool isReadMode) {
+    currentSelectedModelTestMode.value = isReadMode ? 'read' : 'exam';
     isReadModeSelected.value = isReadMode;
     isExamModeSelected.value = !isReadMode;
   }

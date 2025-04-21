@@ -1,5 +1,6 @@
 // lib/common/widgets/shared_question_widget.dart
 
+import 'package:blur/blur.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 import '../../constant/app_color.dart';
 import '../../common/controllers/base_question_controller.dart';
 import '../../modules/questions/models/question_model.dart';
+import '../modals/unlock_full_access_modal.dart';
 
 class SharedQuestionWidget extends StatelessWidget {
   final Question question;
@@ -17,7 +19,7 @@ class SharedQuestionWidget extends StatelessWidget {
   final BaseQuestionController controller;
   final bool showExplanation;
 
-   SharedQuestionWidget({
+  SharedQuestionWidget({
     Key? key,
     required this.question,
     required this.contestId,
@@ -59,7 +61,7 @@ class SharedQuestionWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            
+
             // Question content
             Expanded(
               child: Padding(
@@ -87,7 +89,7 @@ class SharedQuestionWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16.h),
-                    
+
                     // Mark question button
                     GestureDetector(
                       onTap: () => controller.markUnmarkQuestion(question.id),
@@ -114,9 +116,10 @@ class SharedQuestionWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16.h),
-                    
+
                     // Options
-                    if (question.options != null && question.options!.isNotEmpty)
+                    if (question.options != null &&
+                        question.options!.isNotEmpty)
                       _buildOptions()
                     else
                       Text(
@@ -126,9 +129,11 @@ class SharedQuestionWidget extends StatelessWidget {
                           fontSize: 14.sp,
                         ),
                       ),
-                    
+
                     // Explanation (if available and enabled)
-                    if (showExplanation && question.explanation != null && question.explanation!.isNotEmpty)
+                    if (showExplanation &&
+                        question.explanation != null &&
+                        question.explanation!.isNotEmpty)
                       _buildExplanation(),
                   ],
                 ),
@@ -145,20 +150,21 @@ class SharedQuestionWidget extends StatelessWidget {
       return Column(
         children: List.generate(question.options!.length, (optionIndex) {
           final option = question.options![optionIndex];
-          final isSelected = controller.isOptionSelected(question.id, option.order);
+          final isSelected =
+              controller.isOptionSelected(question.id, option.order);
           final isLoading = loadingOptionIndex.value == optionIndex;
 
           return GestureDetector(
             onTap: () async {
               loadingOptionIndex.value = optionIndex;
               controller.selectOption(question.id, option.order);
-              
+
               bool success = await controller.submitAnswer(
                 question.id,
                 contestId,
                 controller.getOptionAns(optionIndex + 1),
               );
-              
+
               loadingOptionIndex.value = null;
             },
             child: Container(
@@ -177,7 +183,8 @@ class SharedQuestionWidget extends StatelessWidget {
                         color: isSelected ? AppColors.primary : Colors.black54,
                         width: 1.5,
                       ),
-                      color: isSelected ? AppColors.primary : Colors.transparent,
+                      color:
+                          isSelected ? AppColors.primary : Colors.transparent,
                     ),
                     child: isSelected
                         ? Icon(
@@ -187,9 +194,9 @@ class SharedQuestionWidget extends StatelessWidget {
                           )
                         : null,
                   ),
-                  
+
                   SizedBox(width: 12.w),
-                  
+
                   // Option content
                   Expanded(
                     child: isLoading
@@ -214,36 +221,69 @@ class SharedQuestionWidget extends StatelessWidget {
   }
 
   Widget _buildExplanation() {
-    return Container(
-      margin: EdgeInsets.only(top: 16.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(
-          color: Colors.grey.withOpacity(0.3),
+    return GestureDetector(
+      onTap: () {
+        UnlockFullAccessDialog.show();
+      },
+      child: Container(
+         width: Get.width,
+        margin: EdgeInsets.only(top: 16.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: Colors.grey.withOpacity(0.3),
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Explanation',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.sp,
-              color: Colors.black87,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'ব্যাখ্যা',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          HtmlWidget(
-            question.explanation ?? '',
-            textStyle: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.black87,
+            SizedBox(height: 6.h),
+            Blur(
+              blur: 2.5,
+              borderRadius: BorderRadius.circular(10.r),
+              blurColor: Colors.blueGrey.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: HtmlWidget(
+                  question.explanation
+                          ?.replaceAll('<pre>', '')
+                          .replaceAll('</pre>', '') ??
+                      ''.replaceAll('<pre>', '').replaceAll('</pre>', ''),
+                  customWidgetBuilder: (element) {
+                    print('explanation Element classes: ${question.title}');
+
+                    if (element.classes.contains('latex') ||
+                        element.classes.contains('ql-syntax')) {
+                      // Render LaTeX content
+                      return Math.tex(
+                        element.text,
+                        textStyle: TextStyle(fontSize: 20),
+                      );
+                    }
+                    return null; // Fallback to default rendering
+                  },
+                ),
+              ),
             ),
-          ),
-        ],
+            // HtmlWidget(
+            //   question.explanation ?? '',
+            //   textStyle: TextStyle(
+            //     fontSize: 14.sp,
+            //     color: Colors.black87,
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }
