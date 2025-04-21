@@ -212,7 +212,15 @@ class ModelTestDetailsController extends GetxController
   void resetSelectOption(String questionId) {
     selectedAnswers[questionId] = ''; // Reset selection for the question
   }
+@override 
 
+bool isCorrectAnswered(String questionId, String selectedAnswer) {
+    // Check if the selected answer is correct
+    final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
+    if (question == null) return false;
+    return question.rightAnswer == selectedAnswer;
+   
+  }
   @override
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;

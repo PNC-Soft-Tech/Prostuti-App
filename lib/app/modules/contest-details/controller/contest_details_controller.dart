@@ -183,7 +183,14 @@ void resetSelectOption(String questionId) {
     }
     return isOptionAnswered;
   }
-
+@override 
+bool isCorrectAnswered(String questionId, String selectedAnswer) {
+    // Check if the selected answer is correct
+    final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
+    if (question == null) return false;
+    return question.rightAnswer == selectedAnswer;
+   
+  }
   @override
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId];

@@ -136,6 +136,7 @@ class TestActionWidget extends StatelessWidget {
                       Get.back();
                       controller.submitContest(
                           controller.modelDetails.value?.contest.id ?? '');
+                          controller.isModelTestSubmitted.value=true;
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

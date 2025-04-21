@@ -19,7 +19,7 @@ abstract class BaseQuestionController extends GetxController {
   void markUnmarkQuestion(String questionId);
   void selectOption(String questionId, String selectedOptionOrder);
   bool isOptionSelected(String questionId, String optionOrder);
-    @override
+    bool isCorrectAnswered (String questionId, String selectedAnswer) ;
   bool isAnswered(String questionId, List<String> optionOrderList) ;
   Future<bool> submitAnswer(String questionId, String contestId, String selectedAnswer);
   String getOptionAns(int index);

@@ -46,7 +46,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
       <String>[].obs; // Change this in the controller
   final RxString selectedSubject = 'All'.obs; // "All" is selected by default
   RxList<String> visibleQuestions = <String>[].obs;
-
+RxBool isModelTestSubmitted = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -198,6 +198,14 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     }
     return isOptionAnswered;
   }
+@override 
+bool isCorrectAnswered(String questionId, String selectedAnswer) {
+    // Check if the selected answer is correct
+    final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
+    if (question == null) return false;
+    return question.rightAnswer == selectedAnswer;
+   
+  }
   @override
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId] ?? -1;
@@ -212,6 +220,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     }
   }
 
+  @override
   bool isMarkedQuestion(String questionId) {
     return markedQuestionIds.contains(questionId);
   }
@@ -267,6 +276,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     }
   }
 
+  @override
   String getOptionAns(int index) {
     switch (index) {
       case 1:

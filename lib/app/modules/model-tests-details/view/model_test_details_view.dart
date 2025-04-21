@@ -84,7 +84,8 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                             controller.currentSelectedModelTestMode.value ==
                                     'exam'
                                 ? false
-                                : true,
+                                : true, 
+                                showCorrectAns:  controller.isModelTestSubmitted.value
                       );
                     },
                   ),

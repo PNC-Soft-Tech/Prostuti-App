@@ -18,6 +18,7 @@ class SharedQuestionWidget extends StatelessWidget {
   final int index;
   final BaseQuestionController controller;
   final bool showExplanation;
+  final bool showCorrectAns;
 
   SharedQuestionWidget({
     Key? key,
@@ -26,12 +27,14 @@ class SharedQuestionWidget extends StatelessWidget {
     required this.index,
     required this.controller,
     this.showExplanation = false,
+    this.showCorrectAns = false,
   }) : super(key: key);
 
   final loadingOptionIndex = RxnInt();
 
   @override
   Widget build(BuildContext context) {
+bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == question.rightAnswer?.toLowerCase();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -88,6 +91,19 @@ class SharedQuestionWidget extends StatelessWidget {
                         height: 1.5,
                       ),
                     ),
+                    SizedBox(height: 8.h),
+                    // Question description
+                    if (showCorrectAns)
+                    //show if correct ans
+
+                      Text(isCorrectAns ? "Correct" : "Incorrect",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: isCorrectAns
+                                ? Colors.black54
+                                : Colors.red.shade300,
+                          )),
+
                     SizedBox(height: 16.h),
 
                     // Mark question button
@@ -158,7 +174,7 @@ class SharedQuestionWidget extends StatelessWidget {
   //           onTap: () async {
   //             loadingOptionIndex.value = optionIndex;
   //             controller.selectOption(question.id, option.order);
-         
+
   //             bool success = await controller.submitAnswer(
   //               question.id,
   //               contestId,
@@ -166,8 +182,8 @@ class SharedQuestionWidget extends StatelessWidget {
   //             );
   //             if (!success) {
   //               controller.resetSelectOption(question.id);
-  //             } 
-          
+  //             }
+
   //             loadingOptionIndex.value = null;
   //           },
   //           child: Container(
@@ -197,9 +213,9 @@ class SharedQuestionWidget extends StatelessWidget {
   //                         )
   //                       : null,
   //                 ),
-          
+
   //                 SizedBox(width: 12.w),
-          
+
   //                 // Option content
   //                 Expanded(
   //                   child: isLoading
@@ -222,185 +238,249 @@ class SharedQuestionWidget extends StatelessWidget {
   //     );
   //   });
   // }
-Widget _buildOptions() {
-  return Obx(() {
-    if (question.isGrid == true) {
-      // GRID LAYOUT - 2 options per row
-      // Calculate the number of rows needed (ceiling division)
-      final int rowCount = (question.options!.length + 1) ~/ 2;
-      
-      return Column(
-        children: List.generate(rowCount, (rowIndex) {
-          // Create a row with up to 2 options
-          return Row(
-            children: List.generate(2, (colIndex) {
-              final optionIndex = rowIndex * 2 + colIndex;
-              
-              // Check if this option exists (handle odd number of options)
-              if (optionIndex >= question.options!.length) {
-                return Expanded(child: Container());
-              }
-              
-              final option = question.options![optionIndex];
-              final isSelected = controller.isOptionSelected(question.id, option.order);
-              final isLoading = loadingOptionIndex.value == optionIndex;
-              
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () async {
-                    loadingOptionIndex.value = optionIndex;
-                    controller.selectOption(question.id, option.order);
-                    
-                    bool success = await controller.submitAnswer(
-                      question.id,
-                      contestId,
-                      controller.getOptionAns(optionIndex + 1),
-                    );
-                    if (!success) {
-                      controller.resetSelectOption(question.id);
-                    }
-                    
-                    loadingOptionIndex.value = null;
-                  },
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 12.h, right: colIndex == 0 ? 8.w : 0, left: colIndex == 1 ? 8.w : 0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Option selector
-                        Container(
-                          width: 26.w,
-                          height: 26.w,
-                          margin: EdgeInsets.only(top: 4.h),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected ? AppColors.primary : Colors.black54,
-                              width: 1.5,
+  Widget _buildOptions() {
+    return Obx(() {
+      if (question.isGrid == true) {
+        // GRID LAYOUT - 2 options per row
+        // Calculate the number of rows needed (ceiling division)
+        final int rowCount = (question.options!.length + 1) ~/ 2;
+
+        return Column(
+          children: List.generate(rowCount, (rowIndex) {
+            // Create a row with up to 2 options
+            return Row(
+              children: List.generate(2, (colIndex) {
+                final optionIndex = rowIndex * 2 + colIndex;
+
+                // Check if this option exists (handle odd number of options)
+                if (optionIndex >= question.options!.length) {
+                  return Expanded(child: Container());
+                }
+
+                final option = question.options![optionIndex];
+                final isSelected =
+                    controller.isOptionSelected(question.id, option.order);
+                final isLoading = loadingOptionIndex.value == optionIndex;
+                final isCorrectAns = question.rightAnswer?.toLowerCase() ==
+                    controller
+                        .getOptionAns(int.tryParse(option.order) ?? 0)
+                        .toLowerCase();
+                        
+                final isAnswered = controller.isAnswered(question.id,
+                    question.options!.map((e) => e.order).toList());
+
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      loadingOptionIndex.value = optionIndex;
+                      controller.selectOption(question.id, option.order);
+
+                      bool success = await controller.submitAnswer(
+                        question.id,
+                        contestId,
+                        controller.getOptionAns(optionIndex + 1),
+                      );
+                      // if (!success) {
+                      //   controller.resetSelectOption(question.id);
+                      // }
+
+                      loadingOptionIndex.value = null;
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(
+                          bottom: 12.h,
+                          right: colIndex == 0 ? 8.w : 0,
+                          left: colIndex == 1 ? 8.w : 0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Option selector
+                          Container(
+                            width: 26.w,
+                            height: 26.w,
+                            margin: EdgeInsets.only(top: 4.h),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.black54,
+                                width: 1.5,
+                              ),
+                              color: isCorrectAns
+                                  ? Colors.green
+                                  : isSelected && showCorrectAns
+                                      ? Colors.transparent
+                                      : isSelected && !showCorrectAns
+                                          ? AppColors.primary
+                                          : Colors.transparent,
                             ),
-                            color: isSelected ? AppColors.primary : Colors.transparent,
+                            child: isCorrectAns
+                                ? Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 16.sp,
+                                  )
+                                : isSelected && showCorrectAns
+                                    ? Icon(
+                                        Icons.close,
+                                        color: Colors.red,
+                                        size: 16.sp,
+                                      )
+                                    : null,
                           ),
-                          child: isSelected
+
+                          SizedBox(width: 8.w),
+
+                          // Option content
+                          Expanded(
+                            child: isLoading
+                                ? Center(
+                                    child: CupertinoActivityIndicator(
+                                        radius: 12.r),
+                                  )
+                                : 
+                                // HtmlWidget(
+                                //     option.title +
+                                //         "-" +
+                                //         isCorrectAns.toString() +
+                                //         "-selected-" +
+                                //         isSelected.toString() +
+                                //         "-right=" +
+                                //         question.rightAnswer.toString() +
+                                //         "=order=" +
+                                //         controller
+                                //             .getOptionAns(
+                                //                 int.tryParse(option.order) ?? 0)
+                                //             .toString(),
+                                //     textStyle: TextStyle(
+                                //       fontSize: 14
+                                //           .sp, // Slightly smaller font for grid layout
+                                //       color: Colors.black87,
+                                //     ),
+                                //   ),
+                                HtmlWidget(
+                                    option.title ,
+                                    textStyle: TextStyle(
+                                      fontSize: 14
+                                          .sp, // Slightly smaller font for grid layout
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            );
+          }),
+        );
+      } else {
+        // SINGLE COLUMN LAYOUT - Original implementation
+        return Column(
+          children: List.generate(question.options!.length, (optionIndex) {
+            final option = question.options![optionIndex];
+            final isSelected =
+                controller.isOptionSelected(question.id, option.order);
+            final isLoading = loadingOptionIndex.value == optionIndex;
+            List<String> optionOrderList =
+                question.options!.map((e) => e.order).toList();
+            final isCorrectAns = question.rightAnswer?.toLowerCase() ==
+                controller
+                    .getOptionAns(int.tryParse(option.order) ?? 0)
+                    .toLowerCase();
+            final isAnswered = controller.isAnswered(
+                question.id, question.options!.map((e) => e.order).toList());
+            return GestureDetector(
+              onTap: () async {
+                if (isAnswered) return; // Prevent selection if already answered
+                loadingOptionIndex.value = optionIndex;
+                controller.selectOption(question.id, option.order);
+
+                bool success = await controller.submitAnswer(
+                  question.id,
+                  contestId,
+                  controller.getOptionAns(optionIndex + 1),
+                );
+                if (!success) {
+                  controller.resetSelectOption(question.id);
+                }
+
+                loadingOptionIndex.value = null;
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 12.h),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Option selector
+                    Container(
+                      width: 26.w,
+                      height: 26.w,
+                      margin: EdgeInsets.only(top: 4.h),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isCorrectAns
+                              ? Colors.green
+                              : isSelected && showCorrectAns
+                                  ? Colors.transparent
+                                  : isSelected && !showCorrectAns
+                                      ? AppColors.primary
+                                      : Colors.transparent,
+                          width: 1.5,
+                        ),
+                        color:
+                            isSelected ? AppColors.primary : Colors.transparent,
+                      ),
+                      child: isCorrectAns
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 16.sp,
+                            )
+                          : isSelected && showCorrectAns
                               ? Icon(
-                                  Icons.check,
-                                  color: Colors.white,
+                                  Icons.close,
+                                  color: Colors.red,
                                   size: 16.sp,
                                 )
                               : null,
-                        ),
-                        
-                        SizedBox(width: 8.w),
-                        
-                        // Option content
-                        Expanded(
-                          child: isLoading
-                              ? Center(
-                                  child: CupertinoActivityIndicator(radius: 12.r),
-                                )
-                              : HtmlWidget(
-                                  option.title,
-                                  textStyle: TextStyle(
-                                    fontSize: 14.sp, // Slightly smaller font for grid layout
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                        ),
-                      ],
                     ),
-                  ),
-                ),
-              );
-            }),
-          );
-        }),
-      );
-    } else {
-      // SINGLE COLUMN LAYOUT - Original implementation
-      return Column(
-        children: List.generate(question.options!.length, (optionIndex) {
-          final option = question.options![optionIndex];
-          final isSelected = controller.isOptionSelected(question.id, option.order);
-          final isLoading = loadingOptionIndex.value == optionIndex;
-          List<String> optionOrderList= question.options!.map((e) => e.order).toList();
-          final isAnswered = controller.isAnswered( 
-            question.id, optionOrderList);
 
-          return GestureDetector(
-            onTap: () async {
-              if(isAnswered) return; // Prevent selection if already answered
-              loadingOptionIndex.value = optionIndex;
-              controller.selectOption(question.id, option.order);
-         
-              bool success = await controller.submitAnswer(
-                question.id,
-                contestId,
-                controller.getOptionAns(optionIndex + 1),
-              );
-              if (!success) {
-                controller.resetSelectOption(question.id);
-              } 
-          
-              loadingOptionIndex.value = null;
-            },
-            child: Container(
-              margin: EdgeInsets.only(bottom: 12.h),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Option selector
-                  Container(
-                    width: 26.w,
-                    height: 26.w,
-                    margin: EdgeInsets.only(top: 4.h),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isSelected ? AppColors.primary : Colors.black54,
-                        width: 1.5,
-                      ),
-                      color: isSelected ? AppColors.primary : Colors.transparent,
-                    ),
-                    child: isSelected
-                        ? Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 16.sp,
-                          )
-                        : null,
-                  ),
-          
-                  SizedBox(width: 12.w),
-          
-                  // Option content
-                  Expanded(
-                    child: isLoading
-                        ? Center(
-                            child: CupertinoActivityIndicator(radius: 12.r),
-                          )
-                        : HtmlWidget(
-                            option.title,
-                            textStyle: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.black87,
+                    SizedBox(width: 12.w),
+
+                    // Option content
+                    Expanded(
+                      child: isLoading
+                          ? Center(
+                              child: CupertinoActivityIndicator(radius: 12.r),
+                            )
+                          : HtmlWidget(
+                              option.title,
+                              textStyle: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black87,
+                              ),
                             ),
-                          ),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
-      );
-    }
-  });
-}
+            );
+          }),
+        );
+      }
+    });
+  }
+
   Widget _buildExplanation() {
     return GestureDetector(
       onTap: () {
         UnlockFullAccessDialog.show();
       },
       child: Container(
-         width: Get.width,
+        width: Get.width,
         margin: EdgeInsets.only(top: 16.h),
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
