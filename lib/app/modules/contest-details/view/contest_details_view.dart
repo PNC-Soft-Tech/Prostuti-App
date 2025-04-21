@@ -132,10 +132,6 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       ],
                     ),
                   ),
-                // Text("Length: ${controller.filteredQuestions.length}"),
-                SizedBox(
-                  height: 20.h,
-                ),
 
                 // Subject Filter - Only display ONCE
 
@@ -170,7 +166,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
-                            color: Colors.tealAccent,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -198,7 +194,11 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
               ],
             );
           }),
-
+          Obx(() => (controller.isQuestionOpened.value)
+              ? SizedBox(
+                  height: 187.h,
+                )
+              : SizedBox.shrink()),
           const ContestActionWidget(),
 
           // Question navigator widget - only visible when questions are open
