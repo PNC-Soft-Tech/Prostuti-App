@@ -217,7 +217,17 @@ class ModelTestDetailsController extends GetxController
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;
   }
-
+  @override
+  bool isAnswered(String questionId, List<String> optionOrderList) {
+    bool isOptionAnswered = false;
+    for (var optionOrder in optionOrderList) {
+      if (selectedAnswers[questionId] == optionOrder) {
+        isOptionAnswered= true; // Answer is selected
+        break;
+      }
+    }
+    return isOptionAnswered;
+  }
   @override
   void markUnmarkQuestion(String questionId) {
     if (markedQuestionIds.contains(questionId)) {

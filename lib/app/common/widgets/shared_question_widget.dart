@@ -321,9 +321,13 @@ Widget _buildOptions() {
           final option = question.options![optionIndex];
           final isSelected = controller.isOptionSelected(question.id, option.order);
           final isLoading = loadingOptionIndex.value == optionIndex;
+          List<String> optionOrderList= question.options!.map((e) => e.order).toList();
+          final isAnswered = controller.isAnswered( 
+            question.id, optionOrderList);
 
           return GestureDetector(
             onTap: () async {
+              if(isAnswered) return; // Prevent selection if already answered
               loadingOptionIndex.value = optionIndex;
               controller.selectOption(question.id, option.order);
          

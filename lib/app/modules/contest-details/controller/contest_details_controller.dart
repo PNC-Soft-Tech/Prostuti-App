@@ -173,6 +173,18 @@ void resetSelectOption(String questionId) {
   }
 
   @override
+  bool isAnswered(String questionId, List<String> optionOrderList) {
+    bool isOptionAnswered = false;
+    for (var optionOrder in optionOrderList) {
+      if (selectedAnswers[questionId] == optionOrder) {
+        isOptionAnswered= true; // Answer is selected
+        break;
+      }
+    }
+    return isOptionAnswered;
+  }
+
+  @override
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId];
     if (index == null) return;
