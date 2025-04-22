@@ -280,9 +280,9 @@ bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == que
                         contestId,
                         controller.getOptionAns(optionIndex + 1),
                       );
-                      // if (!success) {
-                      //   controller.resetSelectOption(question.id);
-                      // }
+                      if (!success) {
+                        controller.resetSelectOption(question.id);
+                      }
 
                       loadingOptionIndex.value = null;
                     },
@@ -300,32 +300,33 @@ bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == que
                             height: 26.w,
                             margin: EdgeInsets.only(top: 4.h),
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.black54,
-                                width: 1.5,
-                              ),
-                              color: isCorrectAns
-                                  ? Colors.green
-                                  : isSelected && showCorrectAns
-                                      ? Colors.transparent
-                                      : isSelected && !showCorrectAns
-                                          ? AppColors.primary
-                                          : Colors.transparent,
-                            ),
-                            child: isCorrectAns
-                                ? Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 16.sp,
-                                  )
-                                : isSelected && showCorrectAns
-                                    ? Icon(
-                                        Icons.close,
-                                        color: Colors.red,
-                                        size: 16.sp,
-                                      )
-                                    : null,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color:  isCorrectAns  
+                              ? Colors.green
+                              :   Colors.black45,
+                          width: 1.5,
+                        ),
+                        color:
+                           isCorrectAns  
+                              ? Colors.green
+                              :  
+                                       Colors.transparent
+                                       ,
+                      ),
+                      child: isCorrectAns
+                          ? Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 16.sp,
+                            )
+                          :  isSelected && !isCorrectAns
+                              ? Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                  size: 16.sp,
+                                ):null
+                              ,
                           ),
 
                           SizedBox(width: 8.w),
@@ -338,33 +339,33 @@ bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == que
                                         radius: 12.r),
                                   )
                                 : 
-                                // HtmlWidget(
-                                //     option.title +
-                                //         "-" +
-                                //         isCorrectAns.toString() +
-                                //         "-selected-" +
-                                //         isSelected.toString() +
-                                //         "-right=" +
-                                //         question.rightAnswer.toString() +
-                                //         "=order=" +
-                                //         controller
-                                //             .getOptionAns(
-                                //                 int.tryParse(option.order) ?? 0)
-                                //             .toString(),
-                                //     textStyle: TextStyle(
-                                //       fontSize: 14
-                                //           .sp, // Slightly smaller font for grid layout
-                                //       color: Colors.black87,
-                                //     ),
-                                //   ),
                                 HtmlWidget(
-                                    option.title ,
+                                    option.title +
+                                        "-" +
+                                        isCorrectAns.toString() +
+                                        "-selected-" +
+                                        isSelected.toString() +
+                                        "-right=" +
+                                        question.rightAnswer.toString() +
+                                        "=order=" +
+                                        controller
+                                            .getOptionAns(
+                                                int.tryParse(option.order) ?? 0)
+                                            .toString(),
                                     textStyle: TextStyle(
                                       fontSize: 14
                                           .sp, // Slightly smaller font for grid layout
                                       color: Colors.black87,
                                     ),
                                   ),
+                                // HtmlWidget(
+                                //     option.title ,
+                                //     textStyle: TextStyle(
+                                //       fontSize: 14
+                                //           .sp, // Slightly smaller font for grid layout
+                                //       color: Colors.black87,
+                                //     ),
+                                //   ),
                           ),
                         ],
                       ),
@@ -421,17 +422,17 @@ bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == que
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isCorrectAns
+                          color:  isCorrectAns  
                               ? Colors.green
-                              : isSelected && showCorrectAns
-                                  ? Colors.transparent
-                                  : isSelected && !showCorrectAns
-                                      ? AppColors.primary
-                                      : Colors.transparent,
+                              :   Colors.black45,
                           width: 1.5,
                         ),
                         color:
-                            isSelected ? AppColors.primary : Colors.transparent,
+                           isCorrectAns  
+                              ? Colors.green
+                              :  
+                                       Colors.transparent
+                                       ,
                       ),
                       child: isCorrectAns
                           ? Icon(
@@ -439,13 +440,13 @@ bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == que
                               color: Colors.white,
                               size: 16.sp,
                             )
-                          : isSelected && showCorrectAns
+                          :  isSelected && !isCorrectAns
                               ? Icon(
                                   Icons.close,
                                   color: Colors.red,
                                   size: 16.sp,
-                                )
-                              : null,
+                                ):null
+                              ,
                     ),
 
                     SizedBox(width: 12.w),
@@ -456,13 +457,33 @@ bool isCorrectAns= controller.selectedAnswers[question.id]?.toLowerCase() == que
                           ? Center(
                               child: CupertinoActivityIndicator(radius: 12.r),
                             )
-                          : HtmlWidget(
-                              option.title,
-                              textStyle: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black87,
-                              ),
-                            ),
+                          : 
+                         HtmlWidget(
+                                    option.title +
+                                        "-" +
+                                        isCorrectAns.toString() +
+                                        "-selected-" +
+                                        isSelected.toString() +
+                                        "-right=" +
+                                        question.rightAnswer.toString() +
+                                        "=order=" +
+                                        controller
+                                            .getOptionAns(
+                                                int.tryParse(option.order) ?? 0)
+                                            .toString(),
+                                    textStyle: TextStyle(
+                                      fontSize: 14
+                                          .sp, // Slightly smaller font for grid layout
+                                      color: Colors.black87,
+                                    ),
+                                  ),  
+                          // HtmlWidget(
+                          //     option.title,
+                          //     textStyle: TextStyle(
+                          //       fontSize: 16.sp,
+                          //       color: Colors.black87,
+                          //     ),
+                          //   ),
                     ),
                   ],
                 ),
