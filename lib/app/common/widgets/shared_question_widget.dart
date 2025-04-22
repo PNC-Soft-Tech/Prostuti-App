@@ -504,7 +504,7 @@ class SharedQuestionWidget extends StatelessWidget {
       onTap: () {
         UnlockFullAccessDialog.show();
       },
-      child: Obx(() => Container(
+      child:Container(
             width: Get.width,
             margin: EdgeInsets.only(top: 16.h),
             padding: EdgeInsets.all(12.w),
@@ -563,7 +563,7 @@ class SharedQuestionWidget extends StatelessWidget {
                 // ),
               ],
             ),
-          )),
+          ),
     );
   }
 }
