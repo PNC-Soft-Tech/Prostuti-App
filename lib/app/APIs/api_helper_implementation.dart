@@ -11,6 +11,7 @@ import '../constant/app_config.dart';
 import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/contest_model.dart';
 import '../modules/custom-exam/models/custom_exam_request_model.dart';
+import '../modules/custom-exam-details/models/custom_exam_response_model.dart';
 import '../modules/exam-topics/models/exam_topics_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
@@ -298,7 +299,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     }
   }
   @override
-  Future<Either<CustomError, ContestDetailsResponse>> fetchSingleCustomExam(
+  Future<Either<CustomError, CustomExamDetailsResponse>> fetchSingleCustomExam(
       String customExamId) async {
     try {
       // Make GET request
@@ -306,7 +307,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
       if (response.statusCode == 200 && response.body['success'] == true) {
         // Parse the response into SingleContestResponse
-        final data = ContestDetailsResponse.fromJson(response.body['data']);
+        final data = CustomExamDetailsResponse.fromJson(response.body['data']);
         return Right(data);
       } else {
         // Handle API error

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
+import '../../../routes/app_pages.dart';
 import '../../exam-topics/models/exam_topics_model.dart';
 import '../models/custom_exam_model.dart';
 import '../models/custom_exam_request_model.dart';
@@ -274,6 +275,9 @@ class CustomExamController extends GetxController {
           Utils.showSnackbar(
               message: "Successfully generated custom exam", isSuccess: true);
           log('Successfully generated custom exam: ${response.body['data']['_id']}');
+          Get.toNamed(Routes.customExamDetails, arguments: {
+            "customExamId": response.body['data']['_id'],
+          });
         },
       );
     });
