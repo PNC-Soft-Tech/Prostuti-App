@@ -6,6 +6,7 @@ import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 
 import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/contest_model.dart';
+import '../modules/custom-exam/models/custom_exam_request_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
 import '../modules/login/models/login_request_model.dart';
@@ -53,4 +54,5 @@ abstract class ApiHelper {
     required String selectedAnswer,
   });
   Future<Either<CustomError, Response>> submitContest(String contestId);
+  Future<Either<CustomError, Response>> generateCustomExam(CustomExamRequestModel payload);
 }

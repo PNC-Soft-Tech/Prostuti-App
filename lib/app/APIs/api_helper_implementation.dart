@@ -10,6 +10,7 @@ import 'package:prostuti/app/routes/app_pages.dart';
 import '../constant/app_config.dart';
 import '../modules/contest-details/models/contest_details_model.dart';
 import '../modules/contests/models/contest_model.dart';
+import '../modules/custom-exam/models/custom_exam_request_model.dart';
 import '../modules/exam-topics/models/exam_topics_model.dart';
 import '../modules/exam-types/models/exam_type_model.dart';
 import '../modules/job-circulars/models/job-circulars-model.dart';
@@ -103,35 +104,6 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     }
   }
 
-  // @override
-  // Future<Either<CustomError, List<JobCategory>>> getJobCategories() async {
-  //   // final baseUrl = httpClient.baseUrl ?? 'unknown';
-  //   // log('url: ${baseUrl}job-categories');
-  //   log("Base URL being used: ${httpClient.baseUrl}"); // Debugging
-  //   // final baseUrl = httpClient.baseUrl ?? '${AppConfig.baseUrl}${AppConfig.apiVersion}/';
-  //   try {
-  //     // log('Making API call to: ${baseUrl}job-categories/');
-  //     Response response = await get('job-categories/');
-  //     log('API response status: 1 ${response.statusCode}, body: ${response.body}');
-  //     if (response.statusCode == null) response = await get("job-categories/");
-  //     if (response.statusCode == null) response = await get("job-categories/");
-  //     if (response.statusCode == null) response = await get("job-categories/");
-  //     log('API response status: ${response.statusCode}, body: ${response.body}');
-  //     if (response.statusCode == 200) {
-  //       List<JobCategory> categories = (response.body['data'] as List)
-  //           .map((item) => JobCategory.fromJson(item))
-  //           .toList();
-  //       return Right(categories);
-  //     } else {
-  //       return Left(CustomError(response.statusCode,
-  //           message: response.statusText ?? 'Error'));
-  //     }
-  //   } catch (e) {
-  //     log('API error: $e');
-  //     return Left(CustomError(500, message: 'Network error: $e'));
-  //   }
-  // }
-
   @override
   Future<Either<CustomError, List<ExamType>>> getExamTypes() async {
     final response = await get('exam-types');
@@ -205,26 +177,6 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
-
-  // @override
-  // Future<Either<CustomError, SingleContest>> fetchSingleContest(
-  //     String contestId) async {
-  //   try {
-  //     final response = await get('contests/$contestId');
-  //     if (response.statusCode == 200 && response.body['success'] == true) {
-  //       return Right(SingleContest.fromJson(response.body['data']));
-  //     } else {
-  //       return Left(
-  //         CustomError(
-  //           response.statusCode,
-  //           message: response.body['message'] ?? 'Failed to fetch contest',
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     return Left(CustomError(500, message: 'Network error: $e'));
-  //   }
-  // }
 
   @override
   Future<Either<CustomError, Response>> verifyOtp(
@@ -565,6 +517,32 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       }
     } catch (e) {
       log('Error submitting contest: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, Response>> generateCustomExam(
+      CustomExamRequestModel payload) async {
+    try {
+      final token = await StorageHelper.getToken();
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+      final response = await post('custom-exams/generate-contest', payload.toJson(), headers: headers);
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to generate custom exam',
+        ));
+      }
+    } catch (e) {
+      log('Error generating custom exam: $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
