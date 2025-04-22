@@ -37,6 +37,8 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<Contest>>> fetchRecentContests();
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       String contestId);
+        Future<Either<CustomError, ContestDetailsResponse>> fetchSingleCustomExam(
+      String customExamId) ;
   Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
       String modelTestId);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();

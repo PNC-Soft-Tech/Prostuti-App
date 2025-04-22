@@ -273,7 +273,7 @@ class CustomExamController extends GetxController {
         (response) {
           Utils.showSnackbar(
               message: "Successfully generated custom exam", isSuccess: true);
-          log('Successfully generated custom exam: ${response.body}');
+          log('Successfully generated custom exam: ${response.body['data']['_id']}');
         },
       );
     });

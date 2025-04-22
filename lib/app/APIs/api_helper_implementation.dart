@@ -297,6 +297,31 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+  @override
+  Future<Either<CustomError, ContestDetailsResponse>> fetchSingleCustomExam(
+      String customExamId) async {
+    try {
+      // Make GET request
+      final response = await get('custom-exams/$customExamId');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // Parse the response into SingleContestResponse
+        final data = ContestDetailsResponse.fromJson(response.body['data']);
+        return Right(data);
+      } else {
+        // Handle API error
+        return Left(CustomError(
+          response.statusCode,
+          message:
+              response.body['message'] ?? 'Failed to fetch custom exam details',
+        ));
+      }
+    } catch (e) {
+      // Handle network or parsing errors
+      log('Error fetching single custom exam: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
 
   @override
   Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
