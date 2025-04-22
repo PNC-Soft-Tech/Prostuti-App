@@ -275,6 +275,7 @@ class SharedQuestionWidget extends StatelessWidget {
                 return Expanded(
                   child: GestureDetector(
                     onTap: () async {
+                      if (isAnswered) return; // Prevent selection if already answered
                       loadingOptionIndex.value = optionIndex;
                       controller.selectOption(question.id, option.order);
 
