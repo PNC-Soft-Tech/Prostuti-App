@@ -36,7 +36,7 @@ class SharedQuestionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isCorrectAns =
-        controller.selectedAnswers[question.id]?.toLowerCase() ==
+        controller.getOptionAns(int.tryParse(controller.selectedAnswers[question.id]??'')??0) ==
             question.rightAnswer?.toLowerCase();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
@@ -103,7 +103,7 @@ class SharedQuestionWidget extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: isCorrectAns
-                                ? Colors.black54
+                                ? Colors.green
                                 : Colors.red.shade300,
                           )),
 
