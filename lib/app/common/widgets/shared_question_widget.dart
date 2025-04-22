@@ -275,7 +275,8 @@ class SharedQuestionWidget extends StatelessWidget {
                 return Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      if (isAnswered) return; // Prevent selection if already answered
+                      if (isAnswered || showCorrectAns)
+                        return; // Prevent selection if already answered
                       loadingOptionIndex.value = optionIndex;
                       controller.selectOption(question.id, option.order);
 
@@ -399,7 +400,7 @@ class SharedQuestionWidget extends StatelessWidget {
                 question.id, question.options!.map((e) => e.order).toList());
             return GestureDetector(
               onTap: () async {
-                if (isAnswered) return; // Prevent selection if already answered
+                if (isAnswered || showCorrectAns) return; // Prevent selection if already answered
                 loadingOptionIndex.value = optionIndex;
                 controller.selectOption(question.id, option.order);
 
@@ -503,66 +504,66 @@ class SharedQuestionWidget extends StatelessWidget {
       onTap: () {
         UnlockFullAccessDialog.show();
       },
-      child: Container(
-        width: Get.width,
-        margin: EdgeInsets.only(top: 16.h),
-        padding: EdgeInsets.all(12.w),
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8.r),
-          border: Border.all(
-            color: Colors.grey.withOpacity(0.3),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'ব্যাখ্যা',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-                color: Colors.black87,
+      child: Obx(() => Container(
+            width: Get.width,
+            margin: EdgeInsets.only(top: 16.h),
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8.r),
+              border: Border.all(
+                color: Colors.grey.withOpacity(0.3),
               ),
             ),
-            SizedBox(height: 6.h),
-            Blur(
-              blur: 2.5,
-              borderRadius: BorderRadius.circular(10.r),
-              blurColor: Colors.blueGrey.shade50,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: HtmlWidget(
-                  question.explanation
-                          ?.replaceAll('<pre>', '')
-                          .replaceAll('</pre>', '') ??
-                      ''.replaceAll('<pre>', '').replaceAll('</pre>', ''),
-                  customWidgetBuilder: (element) {
-                    print('explanation Element classes: ${question.title}');
-
-                    if (element.classes.contains('latex') ||
-                        element.classes.contains('ql-syntax')) {
-                      // Render LaTeX content
-                      return Math.tex(
-                        element.text,
-                        textStyle: TextStyle(fontSize: 20),
-                      );
-                    }
-                    return null; // Fallback to default rendering
-                  },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'ব্যাখ্যা',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
+                SizedBox(height: 6.h),
+                Blur(
+                  blur: 2.5,
+                  borderRadius: BorderRadius.circular(10.r),
+                  blurColor: Colors.blueGrey.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: HtmlWidget(
+                      question.explanation
+                              ?.replaceAll('<pre>', '')
+                              .replaceAll('</pre>', '') ??
+                          ''.replaceAll('<pre>', '').replaceAll('</pre>', ''),
+                      customWidgetBuilder: (element) {
+                        print('explanation Element classes: ${question.title}');
+
+                        if (element.classes.contains('latex') ||
+                            element.classes.contains('ql-syntax')) {
+                          // Render LaTeX content
+                          return Math.tex(
+                            element.text,
+                            textStyle: TextStyle(fontSize: 20),
+                          );
+                        }
+                        return null; // Fallback to default rendering
+                      },
+                    ),
+                  ),
+                ),
+                // HtmlWidget(
+                //   question.explanation ?? '',
+                //   textStyle: TextStyle(
+                //     fontSize: 14.sp,
+                //     color: Colors.black87,
+                //   ),
+                // ),
+              ],
             ),
-            // HtmlWidget(
-            //   question.explanation ?? '',
-            //   textStyle: TextStyle(
-            //     fontSize: 14.sp,
-            //     color: Colors.black87,
-            //   ),
-            // ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }
