@@ -16,4 +16,13 @@ class Subjects {
       slug: json['slug'] ?? '',
     );
   }
+
+    Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    if (id != null) data['id'] = id;
+    if (name != null) data['name'] = name;
+    if (slug != null) data['slug'] = slug;
+    // Add other fields if needed
+    return data;
+  }
 }

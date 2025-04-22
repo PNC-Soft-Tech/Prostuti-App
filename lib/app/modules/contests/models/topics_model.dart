@@ -26,4 +26,14 @@ class Topic {
       : null,
     );
   }
+  // tojson method to convert the object to JSON
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    if (id.isNotEmpty) data['_id'] = id;
+    if (name.isNotEmpty) data['name'] = name;
+    if (slug != null) data['slug'] = slug;
+    if (category != null) data['category'] = category;
+    if (subject != null) data['subject'] = subject?.toJson();
+    return data;
+  }
 }

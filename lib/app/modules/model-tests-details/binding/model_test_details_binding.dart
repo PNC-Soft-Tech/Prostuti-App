@@ -9,6 +9,9 @@ class ModelTestDetailsBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => ModelTestDetailsController());
-    Get.lazyPut(() => ContestDetailsController());
+    // Register ContestDetailsController if needed for shared functionality
+    if (!Get.isRegistered<ContestDetailsController>()) {
+      Get.lazyPut(() => ContestDetailsController());
+    }
   }
 }

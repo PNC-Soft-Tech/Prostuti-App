@@ -39,6 +39,7 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: [
+              SizedBox(height: 15.h,),
           _buildTimerWidget(),
           SizedBox(height: 15.h,),
           // CountDownTimerWidget(),
@@ -73,21 +74,26 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
   }
 
   Widget _buildCompleteButton() {
-    return ElevatedButton(
-      onPressed: onCompletePressed,
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(50.r),
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+      
+        onPressed: onCompletePressed,
+        style: ElevatedButton.styleFrom( 
+          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),
+          shape: RoundedRectangleBorder( 
+            borderRadius: BorderRadius.circular(50.r),
+          ),
+          backgroundColor: Colors.blue,
+          
         ),
-        backgroundColor: Colors.blue,
-      ),
-      child: Text(
-        'Complete Exam',
-        style: GoogleFonts.inter(
-          fontSize: 15.sp,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
+        child: Text(
+          'Complete Exam',
+          style: GoogleFonts.inter(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
       ),
     );

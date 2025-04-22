@@ -12,6 +12,7 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -89,14 +90,14 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
             color: color.withOpacity(0.5),
             width: 2,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
+          // boxShadow: [
+          //   BoxShadow(
+          //     // color: Colors.grey.withOpacity(0.2),
+          //     spreadRadius: 2,
+          //     blurRadius: 5,
+          //     offset: const Offset(0, 3),
+          //   ),
+          // ],
         ),
         padding: const EdgeInsets.all(16),
         child: Column(

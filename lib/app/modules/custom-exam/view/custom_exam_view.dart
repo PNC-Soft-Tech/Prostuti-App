@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/custom_simple_appbar.dart';
+import '../../../constant/app_color.dart';
 import '../../subjects/models/subjects_model.dart';
 import '../controller/custom_exam_controller.dart';
 import 'package:collection/collection.dart';
@@ -21,7 +23,7 @@ class CustomExamView extends GetView<CustomExamController> {
       appBar: CustomSimpleAppBar.appBar(title: "Custom Exam"),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator(color: AppColors.primary,));
         }
 
         return Padding(

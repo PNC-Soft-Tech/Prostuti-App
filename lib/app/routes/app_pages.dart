@@ -10,6 +10,8 @@ import 'package:prostuti/app/modules/register/views/register_view.dart';
 import 'package:prostuti/app/modules/splash/views/splash_view.dart';
 import '../modules/contests/bindings/contest_binding.dart';
 import '../modules/contests/views/contest_view.dart';
+import '../modules/custom-exam-details/binding/custom_exam_details_binding.dart';
+import '../modules/custom-exam-details/view/custom_exam_details_view.dart';
 import '../modules/custom-exam/binding/custom_exam_binding.dart';
 import '../modules/custom-exam/view/custom_exam_view.dart';
 import '../modules/email_varification/binding/email_varification_binding.dart';
@@ -53,6 +55,7 @@ class Routes {
   static const questions = '/questions';
   static const contests = '/contests';
   static const contestDetails = '/contest-details/';
+  static const customExamDetails = '/custom-exam-details/';
   static const modelTestDetails = '/model-test-details/';
   static const packageDetails = '/package-details/';
   static const ranking = '/ranking/';
@@ -128,6 +131,12 @@ class AppPages {
       page: () => const CustomExamView(),
       binding: CustomExamBinding(),
     ),
+       GetPage(
+      // name: '/contest/:id',
+      name: Routes.customExamDetails,
+      page: () => const CustomExamDetailsView(),
+      binding: CustomExamDetailsBinding(),
+    ),
     GetPage(
       name: Routes.contests,
       page: () => const ContestView(),
@@ -155,7 +164,6 @@ class AppPages {
       binding: RankingBinding(),
     ),
     GetPage(
-      // name: '/contest/:id',
       name: Routes.modelTestDetails,
       page: () => const ModelTestDetailsView(),
       binding: ModelTestDetailsBinding(),

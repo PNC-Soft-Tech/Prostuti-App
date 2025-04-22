@@ -1,78 +1,57 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
-import '../../../routes/app_pages.dart';
-import '../../contests/models/contest_model.dart';
-import '../../contests/models/contest_status.dart';
-import '../../questions/models/question_model.dart';
-import '../models/model_test_response_model.dart';
 import '../../../common/controllers/base_question_controller.dart';
+import '../../../common/utils/prostuti_utils.dart';
+import '../../../routes/app_pages.dart';
+import '../../exam-topics/models/exam_topics_model.dart';
 
-class ModelTestDetailsController extends GetxController implements BaseQuestionController {
+import '../../questions/models/question_model.dart';
+import '../../subjects/models/subjects_model.dart';
+import '../models/custom_exam_response_model.dart';
+
+class CustomExamDetailsController extends GetxController
+    implements BaseQuestionController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
-  var contestId = ''.obs;
-  var modelTestId = ''.obs;
-  var contests = <Contest>[].obs;
-  var contest = Rxn<Contest>();
-  var modelDetails = Rxn<ModelTestDetailsResponse>();
+
+  // Observable state
+  var customExamId = ''.obs;
+  var customExamDetails = Rxn<CustomExamDetailsResponse>();
   final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
-  final markedQuestions = <String>[].obs;
-  final currentQuestionIndex = 0.obs; // Track current question
+  final RxList<String> markedQuestionIds = <String>[].obs;
+  final currentQuestionIndex = 0.obs;
   final RxBool isReadModeSelected = true.obs;
   final RxBool isExamModeSelected = false.obs;
   final RxString currentSelectedModelTestId = ''.obs;
   final RxString currentSelectedModelTestMode = 'read'.obs;
+  final RxList<String> subjectLists = <String>[].obs;
+  final RxString selectedSubject = 'All'.obs;
+  RxList<String> visibleQuestions = <String>[].obs;
+  final RxBool isQuestionOpened = false.obs;
 
-  final isSubmittingContest =
-      false.obs; // This will track loading state for submitContest
-
+  // Loading states
   var isLoading = false.obs;
+  final isSubmittingContest = false.obs;
   final RxMap<String, bool> questionLoadingStatus = <String, bool>{}.obs;
+
+  // Timer state
   Rx<Duration> remainingTime = const Duration().obs;
   Timer? _timer;
-  Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
-  RxBool isQuestionOpened = false.obs;
+  // Navigation
   final scrollController = ScrollController();
   final questionKeys = <String, GlobalKey>{}.obs;
   final questionIdToIndexMap = <String, int>{}.obs;
-  final markedQuestionIndexes = <int>[].obs; // For UI scroll
-  final markedQuestionIds = <String>[].obs; // For API call if needed
-  final RxList<String> subjectLists =
-      <String>[].obs; // Change this in the controller
-  final RxString selectedSubject = 'All'.obs; // "All" is selected by default
-  RxList<String> visibleQuestions = <String>[].obs;
-RxBool isModelTestSubmitted = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
-    modelTestId.value = arguments["modelTestId"]; // Retrieve contestId
-    currentSelectedModelTestMode.value = arguments["mode"]; // Retrieve contestId
-    fetchModelTestDetails(modelTestId.value);
-    ever<int>(currentQuestionIndex, (index) {
-      scrollController.animateTo(
-        index * 300.h, // Approx height per question, tune if needed
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
-      );
-    });
-    // Ensure questions are opened in exam mode
-    ever(currentSelectedModelTestMode, (mode) {
-      if (mode == 'exam' && !isQuestionOpened.value) {
-        isQuestionOpened.value = true;
-      }
-    });
-  }
-
-  void toggleMode(bool isReadMode) {
-    currentSelectedModelTestMode.value = isReadMode ? 'read' : 'exam';
-    isReadModeSelected.value = isReadMode;
-    isExamModeSelected.value = !isReadMode;
+    customExamId.value = arguments["customExamId"]; // Retrieve customExamId
+    fetchCustomExamDetails(customExamId.value); // Fetch exam details
   }
 
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
@@ -86,21 +65,37 @@ RxBool isModelTestSubmitted = false.obs;
     }
   }
 
+  @override
   void scrollToQuestion(String questionId) {
-    final originalIndex =
-        modelDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+    final originalIndex = customExamDetails.value?.contest.questions
+        .indexWhere((q) => q.id == questionId);
 
     if (originalIndex == null || originalIndex == -1) return;
 
+    // Reset filter if needed
     if (!visibleQuestions.contains(questionId)) {
       selectedSubject.value = 'All';
     }
 
-    scrollController.animateTo(
-      originalIndex * 300.h,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
+    // Allow UI to update
+    Future.delayed(const Duration(milliseconds: 50), () {
+      final context = questionKeys[questionId]?.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+          alignment: 0.1,
+        );
+      } else {
+        // Fallback to estimated position
+        scrollController.animateTo(
+          originalIndex * 300.h,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   void updateVisibleQuestions(List<String> questionIds) {
@@ -112,6 +107,7 @@ RxBool isModelTestSubmitted = false.obs;
     return visibleQuestions.contains(questionId);
   }
 
+  @override
   String? getPreviousVisibleQuestion(String currentQuestionId) {
     final index = visibleQuestions.indexOf(currentQuestionId);
     debugPrint(
@@ -126,42 +122,55 @@ RxBool isModelTestSubmitted = false.obs;
     return null;
   }
 
+  @override
   String? getNextVisibleQuestion(String currentQuestionId) {
     final index = visibleQuestions.indexOf(currentQuestionId);
     debugPrint(
         "Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
-    return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
+    return index < visibleQuestions.length - 1
+        ? visibleQuestions[index + 1]
+        : null;
   }
 
-  void fetchModelTestDetails(String modelTestId) async {
+  void fetchCustomExamDetails(String customExamId) async {
     isLoading.value = true;
 
-    final result = await _apiHelper.fetchSingleModelTest(modelTestId);
+    final result = await _apiHelper.fetchSingleCustomExam(customExamId);
 
     result.fold(
       (error) {
         isLoading.value = false;
-        log('Error fetching model test details: ${error.message}');
+        log('Error fetching custom exam details: ${error.message}');
+        Get.snackbar('Error', 'Failed to load customexam: ${error.message}');
       },
       (data) {
-        modelDetails.value = data;
-        log("model test data: ${modelDetails.value}");
-        subjectLists.value = (modelDetails.value?.contest.questions ?? [])
+        customExamDetails.value = data;
+        subjectLists.value = (customExamDetails.value?.contest.questions ?? [])
             .map((qs) => qs.topic?.subject?.name)
             .whereType<String>()
             .toSet()
             .toList();
 
+        // Set up navigation
         setUpQuestionKeysAndIndexes(
-            modelDetails.value?.contest.questions ?? []);
+            customExamDetails.value?.contest.questions ?? []);
+
+        // Set visible questions (all at first)
+        updateVisibleQuestions(
+            (customExamDetails.value?.contest.questions ?? [])
+                .map((q) => q.id)
+                .toList());
+
+        // Start timer
         startTimer(data.contest.startContest, data.contest.endContest);
+
         isLoading.value = false;
       },
     );
   }
 
   List<Question> get filteredQuestions {
-    final allQuestions = modelDetails.value?.contest.questions ?? [];
+    final allQuestions = customExamDetails.value?.contest.questions ?? [];
     if (selectedSubject.value == 'All') {
       return allQuestions;
     }
@@ -172,50 +181,52 @@ RxBool isModelTestSubmitted = false.obs;
 
   void selectSubject(String subject) {
     selectedSubject.value = subject;
+
+    // Update visible questions based on filter
+    final visibleIds = filteredQuestions.map((q) => q.id).toList();
+    updateVisibleQuestions(visibleIds);
   }
 
   @override
   void selectOption(String questionId, String selectedOptionOrder) {
     selectedAnswers[questionId] = selectedOptionOrder;
   }
+
   @override
   void resetSelectOption(String questionId) {
-    selectedAnswers[questionId] = '';
+    selectedAnswers[questionId] = ''; // Reset selection for the question
+  }
+
+  @override
+  bool isCorrectAnswered(String questionId, String selectedAnswer) {
+    // Check if the selected answer is correct
+    final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
+    if (question == null) return false;
+    return question.rightAnswer == selectedAnswer;
   }
 
   @override
   bool isOptionSelected(String questionId, String optionOrder) {
     return selectedAnswers[questionId] == optionOrder;
   }
+
   @override
   bool isAnswered(String questionId, List<String> optionOrderList) {
     bool isOptionAnswered = false;
     for (var optionOrder in optionOrderList) {
       if (selectedAnswers[questionId] == optionOrder) {
-        isOptionAnswered= true; // Answer is selected
+        isOptionAnswered = true; // Answer is selected
         break;
       }
     }
     return isOptionAnswered;
   }
-@override 
-bool isCorrectAnswered(String questionId, String selectedAnswer) {
-    // Check if the selected answer is correct
-    final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
-    if (question == null) return false;
-    return question.rightAnswer == selectedAnswer;
-   
-  }
+
   @override
   void markUnmarkQuestion(String questionId) {
-    final index = questionIdToIndexMap[questionId] ?? -1;
-    if (index == -1) return;
-
-    if (markedQuestionIndexes.contains(index)) {
-      markedQuestionIndexes.remove(index);
+    if (markedQuestionIds.contains(questionId)) {
       markedQuestionIds.remove(questionId);
     } else {
-      markedQuestionIndexes.add(index);
       markedQuestionIds.add(questionId);
     }
   }
@@ -226,7 +237,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   }
 
   Question? questionAtIndex(int index) {
-    final questions = modelDetails.value?.contest.questions ?? [];
+    final questions = customExamDetails.value?.contest.questions ?? [];
     if (index < 0 || index >= questions.length) return null;
     return questions[index];
   }
@@ -241,6 +252,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     }).toList();
   }
 
+  @override
   Future<bool> submitAnswer(
     String questionId,
     String contestId,
@@ -347,6 +359,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   @override
   void onClose() {
     _timer?.cancel();
+    scrollController.dispose();
     super.onClose();
   }
 

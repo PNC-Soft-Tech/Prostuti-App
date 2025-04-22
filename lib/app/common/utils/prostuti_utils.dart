@@ -40,7 +40,7 @@ class Utils {
     String title = 'Notice',
     Color backgroundColor = AppColors.primary, // Default color
     Color textColor = Colors.white, // Default color
-    SnackPosition position = SnackPosition.TOP, // Default position
+    SnackPosition position = SnackPosition.BOTTOM, // Default position
     bool isSuccess = true, // Default icon state
     Duration duration = const Duration(seconds: 3), // Default duration
     IconData? icon, // Optional custom icon

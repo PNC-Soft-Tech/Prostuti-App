@@ -3,6 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../common/custom_simple_appbar.dart';
+import '../controller/custom_exam_controller.dart';
+
 class PreviewScreen extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> subjectsData;
 
@@ -12,22 +15,7 @@ class PreviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF50BDB4)),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Review Custom Exam',
-          style: GoogleFonts.inter(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-      ),
+      appBar: CustomSimpleAppBar.appBar(title: "Review Custom Exam"),
       body: Column(
         children: [
           Container(
@@ -77,8 +65,8 @@ class PreviewScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 String subject = subjectsData.keys.elementAt(index);
                 List<Map<String, dynamic>> topics = subjectsData[subject]!;
-                int subjectTotal = topics.fold(
-                    0, (sum, topic) => sum + (topic['questionCount'] ?? 0) as int);
+                int subjectTotal = topics.fold(0,
+                    (sum, topic) => sum + (topic['questionCount'] ?? 0) as int);
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,8 +198,8 @@ class PreviewScreen extends StatelessWidget {
                                 sum +
                                 topics.fold(
                                     0,
-                                    (sum, topic) =>
-                                        sum + (topic['questionCount'] ?? 0) as int)),
+                                    (sum, topic) => sum +
+                                        (topic['questionCount'] ?? 0) as int)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -311,6 +299,9 @@ class PreviewScreen extends StatelessWidget {
                         Get.back();
                         // Add your exam start logic here
                         // Get.toNamed('/exam_screen');
+
+                        // controller.generateCustomExam
+                        Get.find<CustomExamController>().generateCustomExam();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF50BDB4),

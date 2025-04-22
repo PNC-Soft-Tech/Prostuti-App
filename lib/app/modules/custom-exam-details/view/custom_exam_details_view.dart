@@ -10,15 +10,13 @@ import '../../../common/custom_simple_appbar.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../common/widgets/shared_question_widget.dart';
 import '../../../constant/app_color.dart';
-import '../controller/contest_details_controller.dart';
-import '../widgets/contest_action_widget.dart';
-import '../widgets/contest_details_widget.dart';
-import '../widgets/contest_status_widget.dart';
-import '../widgets/question_navigator.dart';
-import '../widgets/subject_tabs_widget.dart';
+import '../../contest-details/widgets/bottom_fixed_submit_contest_widget.dart';
+import '../../contest-details/widgets/question_navigator.dart';
+import '../../contest-details/widgets/subject_tabs_widget.dart';
+import '../controller/custom_exam_details_controller.dart';
 
-class ContestDetailsView extends GetView<ContestDetailsController> {
-  const ContestDetailsView({Key? key}) : super(key: key);
+class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
+  const CustomExamDetailsView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +25,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       appBar: CustomSimpleAppBar.appBar(
         titleWidget: Obx(() => Text(
               Utils.stripHtmlTags(
-                      controller.contestDetails.value?.contest.name ?? '') ??
-                  'Contest Details',
+                      controller.customExamDetails.value?.contest.name ?? '') ??
+                  'Custom Exam Details',
               style: const TextStyle(fontSize: 18, color: AppColors.primary),
             )),
       ),
@@ -56,13 +54,14 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       children: [
                         Row(
                           children: [
-                            controller.contestDetails.value?.contest.imageUrl !=
+                            controller.customExamDetails.value?.contest
+                                            .imageUrl !=
                                         null &&
-                                    controller
-                                        .contestDetails.value!.contest.imageUrl!
+                                    controller.customExamDetails.value!.contest
+                                        .imageUrl!
                                         .contains('http')
                                 ? Image.network(
-                                    controller.contestDetails.value?.contest
+                                    controller.customExamDetails.value?.contest
                                             .imageUrl ??
                                         '',
                                     height: 34.r,
@@ -82,8 +81,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             //         "Model Test -০১")
                             Text(
                               Utils.stripHtmlTags(controller
-                                      .contestDetails.value?.contest.name ??
-                                  "বিসিএস কনটেস্ট-০১"),
+                                      .customExamDetails.value?.contest.name ??
+                                  "বিসিএস কনটেস্ট-০১ custom exam"),
                               style: GoogleFonts.notoSansBengali(
                                   textStyle: TextStyle(
                                 fontSize: 20.sp,
@@ -98,7 +97,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         ),
                         Text(
                           Utils.stripHtmlTags(
-                              " ${controller.contestDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}"),
+                              " ${controller.customExamDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}"),
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
                             fontSize: 16.sp,
@@ -110,13 +109,12 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                           height: 16.h,
                         ),
 
-                        const ContestStatusWidget(), // ✅ Displays running or countdown UI
                         SizedBox(
                           height: 21.h,
                         ),
                         Text(
-                          Utils.stripHtmlTags(controller
-                                  .contestDetails.value?.contest.description ??
+                          Utils.stripHtmlTags(controller.customExamDetails.value
+                                  ?.contest.description ??
                               "বিসিএস কনটেস্ট-০১ desc"),
                           style: GoogleFonts.notoSansBengali(
                               textStyle: TextStyle(
@@ -128,7 +126,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         SizedBox(
                           height: 27.h,
                         ),
-                        const ContestDetailsWidget(),
+                        // const ContestDetailsWidget(),
                       ],
                     ),
                   ),
@@ -184,7 +182,7 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                         return SharedQuestionWidget(
                           key: controller.questionKeys[question.id],
                           question: question,
-                          contestId: controller.contestId.value,
+                          contestId: controller.customExamId.value,
                           controller: controller,
                           index: index,
                         );
@@ -199,7 +197,17 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                   height: 187.h,
                 )
               : SizedBox.shrink()),
-          const ContestActionWidget(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: BottomFixedSubmitContestWidget(
+              timeLeft: "00:00",
+              onCompletePressed: () {
+                // controller.onCompletePressed();
+              },
+              currentQuestionIndex: controller.currentQuestionIndex.value,
+              totalQuestions: controller.filteredQuestions.length,
+            ),
+          ),
 
           // Question navigator widget - only visible when questions are open
           Obx(() => controller.isQuestionOpened.value

@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/utils/prostuti_utils.dart';
+import '../../../routes/app_pages.dart';
 import '../../exam-topics/models/exam_topics_model.dart';
 import '../models/custom_exam_model.dart';
+import '../models/custom_exam_request_model.dart';
 import '../models/custom_exam_subject_model.dart';
 import '../../subjects/models/subjects_model.dart';
 
@@ -136,20 +139,20 @@ class CustomExamController extends GetxController {
 
       final availableTopics = subjectTopicsMap[subject.id]?.where((topic) {
         final isAlreadySelected =
-            subject.topics?.any((t) => t['topicName'] == topic.name) ?? false;
+            subject.topics?.any((t) => t['topic'] == topic.id) ?? false;
         log("Topic ${topic.name} isAlreadySelected: $isAlreadySelected");
         return !isAlreadySelected;
       }).toList();
 
       log("Available topics for subject ${subject.id}: ${availableTopics?.map((e) => e.name).toList()}");
 
-      // Ensure topics exist for the subject
       if (availableTopics != null && availableTopics.isNotEmpty) {
-        // Add the first available topic
         subject.topics ??= [];
+        // Store both topic id and topic name for reference.
         subject.topics!.add({
-          'topicName': availableTopics.first.name, // Fetch topic name from API
-          'questionCount': 1, // Default question count
+          'topic': availableTopics.first.id, // Use topic id
+          'topicName': availableTopics.first.name,
+          'questionCount': 1,
         });
 
         customExamQuestions.refresh();
@@ -197,5 +200,86 @@ class CustomExamController extends GetxController {
       customExamQuestions.refresh();
       log("Removed topic at index $topicIndex from subject at index $subjectIndex.");
     }
+  }
+
+  void generateCustomExam() {
+    if (customExamQuestions.value == null ||
+        customExamQuestions.value!.subjects == null ||
+        customExamQuestions.value!.subjects!.isEmpty) {
+      log("No subjects available to generate a custom exam.");
+      return;
+    }
+
+    final payload = {
+      "name": "Custom Exam ${DateTime.now().toIso8601String()}",
+      "description": "This is a custom exam",
+      "startCustomExam": DateTime.now().toIso8601String(),
+      "endCustomExam":
+          DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
+      "totalMarks":
+          customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
+        return sum +
+            (subject.topics?.fold<int>(0, (topicSum, topic) {
+                  return topicSum +
+                      ((topic['questionCount'] ?? 0) as num).toInt();
+                }) ??
+                0);
+      }),
+      "totalQuestions":
+          customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
+        return sum +
+            (subject.topics?.fold<int>(0, (topicSum, topic) {
+                  return topicSum +
+                      ((topic['questionCount'] ?? 0) as num).toInt();
+                }) ??
+                0);
+      }),
+      "totalTime":
+          customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
+        return sum +
+            (subject.topics?.fold<int>(0, (topicSum, topic) {
+                  return topicSum +
+                      ((topic['questionCount'] ?? 0) as num).toInt();
+                }) ??
+                0);
+      }),
+      // Map each topic to use its id ("topic" key) instead of topic name.
+      "selectedTopics": customExamQuestions.value!.subjects
+          ?.expand((subject) =>
+              subject.topics
+                  ?.where((topic) =>
+                      topic['_id'] != null &&
+                      topic['_id'].toString().trim().isNotEmpty)
+                  .map((topic) => {
+                        "topic": topic['_id'],
+                        "totalQuestions": topic['questionCount'] ?? 0,
+                      }) ??
+              [])
+          .toList(),
+      // "id": customExamQuestions.value!.id,
+      // "subjects": customExamQuestions.value!.subjects?.map((subject) => {
+      //       "id": subject.id,
+      //       "subjectName": subject.subjectName,
+      //       "topics": subject.topics,
+      //     }).toList(),
+    };
+    log("Generated custom exam payload: $payload");
+    final request = CustomExamRequestModel.fromJson(payload);
+    _apiHelper.generateCustomExam(request).then((result) {
+      result.fold(
+        (error) {
+          log('Error generating custom exam: ${error.message}');
+          Utils.showSnackbar(message: error.message, isSuccess: false);
+        },
+        (response) {
+          Utils.showSnackbar(
+              message: "Successfully generated custom exam", isSuccess: true);
+          log('Successfully generated custom exam: ${response.body['data']['_id']}');
+          Get.toNamed(Routes.customExamDetails, arguments: {
+            "customExamId": response.body['data']['_id'],
+          });
+        },
+      );
+    });
   }
 }

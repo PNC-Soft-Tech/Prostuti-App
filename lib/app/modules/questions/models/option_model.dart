@@ -16,4 +16,11 @@ class Option {
       isSelected: json['isSelected'] ?? false,
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'order': order,
+      'isSelected': isSelected,
+    };
+  }
 }

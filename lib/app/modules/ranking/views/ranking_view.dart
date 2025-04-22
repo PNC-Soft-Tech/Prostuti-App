@@ -163,7 +163,7 @@ class RankingView extends GetWidget<RankingController> {
 
   void _showBottomSheet(BuildContext context) {
     Get.bottomSheet(
-      const RankingFilterBottomSheet(),
+      RankingFilterBottomSheet(),
       isScrollControlled:
           false, // Optional, to allow for full-screen or scrollable content
       backgroundColor: Colors.white,
