@@ -189,6 +189,9 @@ class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
                       },
                     ),
                   ),
+                     SizedBox(
+                    height: 120.h,
+                  ),
               ],
             );
           }),

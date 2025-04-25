@@ -191,6 +191,9 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                       },
                     ),
                   ),
+                  SizedBox(
+                    height: 120.h,
+                  ),
               ],
             );
           }),

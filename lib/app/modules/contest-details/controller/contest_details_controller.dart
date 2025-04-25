@@ -35,6 +35,7 @@ class ContestDetailsController extends GetxController implements BaseQuestionCon
   Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
   RxBool isContestRunning = true.obs;
+  @override
   RxBool isQuestionOpened = false.obs;
   final scrollController = ScrollController();
   final questionKeys = <String, GlobalKey>{}.obs;
@@ -421,4 +422,11 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
       alignment: 0.1,
     );
   }
+  
+  @override
+ RxBool get isModelTestSubmitted => false.obs; // Placeholder, implement as needed
+  
+  @override
+  // TODO: implement selectedTestMode
+  RxString get selectedTestMode => 'exam'.obs; // Placeholder, implement as needed
 }

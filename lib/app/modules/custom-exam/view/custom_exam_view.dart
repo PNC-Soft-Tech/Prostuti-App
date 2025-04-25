@@ -20,6 +20,8 @@ class CustomExamView extends GetView<CustomExamController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       appBar: CustomSimpleAppBar.appBar(title: "Custom Exam"),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -88,6 +90,7 @@ class CustomExamView extends GetView<CustomExamController> {
     final subject = controller.customExamQuestions.value!.subjects![index];
 
     return Card(
+      color: Colors.white,
       margin: EdgeInsets.only(bottom: 16.h),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
@@ -102,6 +105,7 @@ class CustomExamView extends GetView<CustomExamController> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<Subjects>(
+                    dropdownColor: Colors.white,
                     isExpanded:
                         true, // Ensures the dropdown uses all available horizontal space
 
@@ -183,6 +187,7 @@ class CustomExamView extends GetView<CustomExamController> {
                         Expanded(
                           flex: 2,
                           child: DropdownButtonFormField<String>(
+                            dropdownColor: Colors.white,
                             borderRadius: BorderRadius.circular(50.r),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(

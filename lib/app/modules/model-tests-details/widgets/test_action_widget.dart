@@ -19,7 +19,7 @@ class TestActionWidget extends StatelessWidget {
     return Obx(() {
       final isExamMode = controller.currentSelectedModelTestMode.value == 'exam';
       
-      return Container(
+      return controller.isModelTestSubmittedLocal.value == false ? Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -62,7 +62,7 @@ class TestActionWidget extends StatelessWidget {
             ),
           ],
         ),
-      );
+      ):SizedBox.shrink();
     });
   }
 
@@ -136,7 +136,7 @@ class TestActionWidget extends StatelessWidget {
                       Get.back();
                       // controller.submitContest(
                       //     controller.modelDetails.value?.contest.id ?? '');
-                          controller.isModelTestSubmitted.value=true;
+                          controller.isModelTestSubmittedLocal.value=true;
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

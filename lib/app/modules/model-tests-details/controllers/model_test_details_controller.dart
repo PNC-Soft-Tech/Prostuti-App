@@ -46,7 +46,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
       <String>[].obs; // Change this in the controller
   final RxString selectedSubject = 'All'.obs; // "All" is selected by default
   RxList<String> visibleQuestions = <String>[].obs;
-RxBool isModelTestSubmitted = false.obs;
+RxBool isModelTestSubmittedLocal=false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -73,6 +73,19 @@ RxBool isModelTestSubmitted = false.obs;
     currentSelectedModelTestMode.value = isReadMode ? 'read' : 'exam';
     isReadModeSelected.value = isReadMode;
     isExamModeSelected.value = !isReadMode;
+
+      // When entering exam mode, reset all selected answers and marks
+  if (!isReadMode) {
+    // Clear selected answers
+    selectedAnswers.clear();
+    
+    // Clear marked questions (optional, based on your requirements)
+    markedQuestionIds.clear();
+    markedQuestionIndexes.clear();
+    
+    // Reset submission state
+    isModelTestSubmittedLocal.value = false;
+  }
   }
 
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
@@ -344,7 +357,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     }
   }
 
-  @override
+@override
   void onClose() {
     _timer?.cancel();
     super.onClose();
@@ -357,4 +370,10 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
         remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
   }
+
+  @override
+  RxString get selectedTestMode => currentSelectedModelTestMode;
+  @override
+  RxBool get isModelTestSubmitted => isModelTestSubmittedLocal;
+  
 }

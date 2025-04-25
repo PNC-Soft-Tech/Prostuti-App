@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
@@ -202,7 +203,32 @@ class CustomExamController extends GetxController {
     }
   }
 
-  void generateCustomExam() {
+String getFormattedExamName() {
+  final now = DateTime.now();
+
+  // Day with suffix (1st, 2nd, 3rd, 4th...)
+  String getDayWithSuffix(int day) {
+    if (day >= 11 && day <= 13) return '${day}th';
+    switch (day % 10) {
+      case 1:
+        return '${day}st';
+      case 2:
+        return '${day}nd';
+      case 3:
+        return '${day}rd';
+      default:
+        return '${day}th';
+    }
+  }
+
+  final day = getDayWithSuffix(now.day);
+  final month = DateFormat('MMM').format(now); // Jan, Feb, etc.
+  final year = now.year;
+  final time = DateFormat('hh_mm_a').format(now); // 12_00_PM
+
+  return '${day}_${month}_$year\_$time';
+}
+  void  generateCustomExam() {
     if (customExamQuestions.value == null ||
         customExamQuestions.value!.subjects == null ||
         customExamQuestions.value!.subjects!.isEmpty) {
@@ -211,7 +237,9 @@ class CustomExamController extends GetxController {
     }
 
     final payload = {
-      "name": "Custom Exam ${DateTime.now().toIso8601String()}",
+      "name": "Custom Exam ${getFormattedExamName()}", 
+      //use current date fiormat DD_MM_YYYY
+      
       "description": "This is a custom exam",
       "startCustomExam": DateTime.now().toIso8601String(),
       "endCustomExam":
