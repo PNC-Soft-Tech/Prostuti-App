@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/models/division_model.dart';
 import 'package:prostuti/app/models/district_model.dart';
+import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/models/upazila_model.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
@@ -27,6 +28,8 @@ class RankingController extends GetxController {
 
   /// Institution types (from API)
   var institutionTypes = <InstitutionType>[].obs;
+  var allInstitutions = <Institution>[].obs;
+  var institutions = <Institution>[].obs;
 
   /// Selected filters
   var selectedDivision = Rxn<Division>();
@@ -46,11 +49,13 @@ class RankingController extends GetxController {
     if (contestId.isEmpty) {
       _getContestIdFromSharedPreferences();
     } else {
-      displayLeaderboardRanks(contestId);
+      displayLeaderboardRanks();
     }
 
     // listen to ranking type changes
     ever(selectedRankingType, _onRankingTypeChanged);
+    ever(selectedInstitutionType, (_) => _filterInstitutions());
+
     // trigger initial load for default 'overall'
     _onRankingTypeChanged(selectedRankingType.value);
   }
@@ -75,6 +80,7 @@ class RankingController extends GetxController {
         break;
       case 'institution':
         loadInstitutionTypes();
+
         break;
       default:
         // no data load for 'overall'
@@ -86,13 +92,43 @@ class RankingController extends GetxController {
     await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
     contestId = await StorageHelper.getLatestContestId();
     if (contestId.isNotEmpty) {
-      displayLeaderboardRanks(contestId);
+      displayLeaderboardRanks();
     }
   }
 
-  Future<void> displayLeaderboardRanks(String contestId) async {
+  Future<void> displayLeaderboardRanks() async {
     isRankLoading.value = true;
-    final result = await _apiHelper.getLeaderboardRanks(contestId);
+
+    // prepare only the one filter that applies
+    String? divisionParam;
+    String? districtParam;
+    String? upazilaParam;
+    String? institutionTypeParam;
+
+    switch (selectedRankingType.value) {
+      case 'division':
+        divisionParam = selectedDivision.value?.id;
+        break;
+      case 'district':
+        districtParam = selectedDistrict.value?.id;
+        break;
+      case 'upazila':
+        upazilaParam = selectedUpazila.value?.id;
+        break;
+      case 'institution':
+        institutionTypeParam = selectedInstitutionType.value?.id;
+        break;
+      // for 'overall', leave all as null
+    }
+
+    final result = await _apiHelper.getLeaderboardRanks(
+      contestId: contestId,
+      division: divisionParam,
+      district: districtParam,
+      upazila: upazilaParam,
+      institutionType: institutionTypeParam,
+    );
+
     result.fold(
       (error) {
         isRankLoading.value = false;
@@ -133,8 +169,34 @@ class RankingController extends GetxController {
     final res = await _apiHelper.getInstitutionTypes();
     res.fold(
       (err) => Utils.showSnackbar(message: err.message, isSuccess: false),
-      (list) => institutionTypes.value = list,
+      (list) {
+        institutionTypes.value = list;
+        ;
+        _loadInstitutions();
+      },
     );
+  }
+
+  Future<void> _loadInstitutions() async {
+    final res = await _apiHelper.getInstitutions();
+    res.fold(
+      (err) => Utils.showSnackbar(message: err.message, isSuccess: false),
+      (list) {
+        allInstitutions.value = list;
+        _filterInstitutions();
+      },
+    );
+  }
+
+  void _filterInstitutions() {
+    final type = selectedInstitutionType.value;
+    if (type != null) {
+      institutions.value = allInstitutions
+          .where((ins) => ins.institutionType?.id == type.id)
+          .toList();
+    } else {
+      institutions.value = allInstitutions;
+    }
   }
 
   // Update ranking type from UI

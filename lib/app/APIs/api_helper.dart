@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
+import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/modules/exam-topics/models/exam_topics_model.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
@@ -38,8 +39,8 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<Contest>>> fetchRecentContests();
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       String contestId);
-        Future<Either<CustomError, CustomExamDetailsResponse>> fetchSingleCustomExam(
-      String customExamId) ;
+  Future<Either<CustomError, CustomExamDetailsResponse>> fetchSingleCustomExam(
+      String customExamId);
   Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
       String modelTestId);
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
@@ -47,9 +48,16 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<SubjectTopics>>>
       fetchSubCategoriesByCategoryId(String categoryId);
 
-  Future<Either<CustomError, ContestData>> getLeaderboardRanks(
-      String contestId);
+  Future<Either<CustomError, ContestData>> getLeaderboardRanks({
+    required String contestId,
+    String? division,
+    String? district,
+    String? upazila,
+    String? institutionType,
+  });
+
   Future<Either<CustomError, List<InstitutionType>>> getInstitutionTypes();
+  Future<Either<CustomError, List<Institution>>> getInstitutions();
 
   Future<Either<CustomError, Response>> submitContestAnswer({
     required String questionId,
@@ -57,5 +65,6 @@ abstract class ApiHelper {
     required String selectedAnswer,
   });
   Future<Either<CustomError, Response>> submitContest(String contestId);
-  Future<Either<CustomError, Response>> generateCustomExam(CustomExamRequestModel payload);
+  Future<Either<CustomError, Response>> generateCustomExam(
+      CustomExamRequestModel payload);
 }

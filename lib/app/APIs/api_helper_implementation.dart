@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
+import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
@@ -441,29 +442,39 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
   }
 
   @override
-  Future<Either<CustomError, ContestData>> getLeaderboardRanks(
-      String contestId) async {
+  Future<Either<CustomError, ContestData>> getLeaderboardRanks({
+    required String contestId,
+    String? division,
+    String? district,
+    String? upazila,
+    String? institutionType,
+  }) async {
     try {
-      final response = await get('leaderboard?contestId=$contestId');
+      // Build a map of only the non-null params
+      final queryParams = <String, String>{
+        'contestId': contestId,
+        if (division != null) 'division': division,
+        if (district != null) 'district': district,
+        if (upazila != null) 'upazila': upazila,
+        if (institutionType != null) 'institutionType': institutionType,
+      };
+
+      // Turn them into a query string
+      final qs = Uri(queryParameters: queryParams).query;
+      final response = await get('leaderboard?$qs');
       inspect(response);
 
       if (response.statusCode == 200 && !response.hasError) {
-        print('---------------------into if');
         final Map<String, dynamic> data = response.body['data'];
-        print(data);
-
         final rankingData = ContestData.fromJson(data);
         return Right(rankingData);
       } else {
-        print('---------------------into else');
         return Left(CustomError(
           response.statusCode,
-          message:
-              response.body['message'] ?? 'Failed to fetch recent leaderboard',
+          message: response.body['message'] ?? 'Failed to fetch leaderboard',
         ));
       }
     } catch (e) {
-      log('Error fetching recent leaderboard: $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
@@ -490,6 +501,30 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       }
     } catch (e, st) {
       log('Error fetching institution types: $e\n$st');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<Institution>>> getInstitutions() async {
+    try {
+      final response = await get('institutions');
+
+      if (response.statusCode == 200 && !response.hasError) {
+        final List<dynamic> dataList = response.body['data'] as List<dynamic>;
+
+        final List<Institution> institutions = dataList
+            .map((json) => Institution.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        return Right(institutions);
+      } else {
+        final message =
+            response.body['message'] ?? 'Failed to fetch institutions';
+        return Left(CustomError(response.statusCode, message: message));
+      }
+    } catch (e, st) {
+      log('Error fetching institutions: $e\n$st');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
@@ -583,7 +618,9 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       final headers = {
         'Authorization': 'Bearer $token',
       };
-      final response = await post('custom-exams/generate-contest', payload.toJson(), headers: headers);
+      final response = await post(
+          'custom-exams/generate-contest', payload.toJson(),
+          headers: headers);
       if (response.statusCode == 200 && response.body['success'] == true) {
         return Right(response);
       } else {
