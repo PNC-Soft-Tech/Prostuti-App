@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/models/district_model.dart';
 import 'package:prostuti/app/models/division_model.dart';
+import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/models/upazila_model.dart';
 import 'package:prostuti/app/modules/ranking/controllers/ranking_controller.dart';
@@ -54,10 +55,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                     ),
                   );
                 }),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: const Divider(),
-                ),
 
                 Obx(() {
                   return ListTile(
@@ -115,10 +112,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                         .shrink(); // Empty widget if not 'division'
                   }
                 }),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: const Divider(),
-                ),
 
                 Obx(() {
                   return ListTile(
@@ -176,10 +169,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                         .shrink(); // Empty widget if not 'district'
                   }
                 }),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: const Divider(),
-                ),
 
                 Obx(() {
                   return ListTile(
@@ -237,10 +226,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                         .shrink(); // Empty widget if not 'upazila'
                   }
                 }),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: const Divider(),
-                ),
 
                 Obx(() {
                   return ListTile(
@@ -300,20 +285,34 @@ class RankingFilterBottomSheet extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 15.h),
-                        DropdownButton<String>(
-                          hint: const Text("Select Institution Name"),
-                          value: controller.selectedInstitutionName.value,
-                          onChanged: (String? newValue) {
-                            controller.updateFilters(institutionName: newValue);
-                          },
-                          items: const [
-                            DropdownMenuItem(
-                                value: 'University of Barishal',
-                                child: Text('University of Barishal')),
-                            DropdownMenuItem(
-                                value: 'Dhaka University',
-                                child: Text('Dhaka University')),
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: DropdownSearch<Institution>(
+                            selectedItem: controller.institutions
+                                .firstWhereOrNull((i) =>
+                                    i.name ==
+                                    controller.selectedInstitutionName.value),
+                            items: (filter, infiniteScrollProps) =>
+                                controller.institutions,
+                            itemAsString: (inst) => inst.name,
+                            decoratorProps: const DropDownDecoratorProps(
+                              decoration: InputDecoration(
+                                labelText: 'Select Institution Name',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            compareFn: (item1, item2) =>
+                                item1.name.toLowerCase() ==
+                                item2.name.toLowerCase(),
+                            popupProps: const PopupProps.dialog(
+                              showSearchBox: true,
+                              fit: FlexFit.tight,
+                            ),
+                            onChanged: (inst) {
+                              controller.updateFilters(
+                                  institutionName: inst?.name);
+                            },
+                          ),
                         ),
                       ],
                     );
@@ -334,9 +333,10 @@ class RankingFilterBottomSheet extends StatelessWidget {
               padding: 10,
               isImageLeft: false,
               fontWeight: FontWeight.w500,
-              onPressed: () {
+              onPressed: () async {
                 // Handle Apply Ranking logic here
-                print("Apply Ranking Button Pressed");
+                Get.back();
+                await controller.displayLeaderboardRanks();
               },
             ),
           ],
