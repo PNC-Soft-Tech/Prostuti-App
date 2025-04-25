@@ -90,6 +90,9 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                     },
                   ),
                 ),
+                   SizedBox(
+                    height: 120.h,
+                  ),
               ],
             );
           }),
