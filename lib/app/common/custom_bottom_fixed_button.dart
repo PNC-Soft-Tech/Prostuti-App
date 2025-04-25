@@ -5,28 +5,33 @@ import 'package:prostuti/app/common/custom_buttons.dart';
 class CustomBottomFixedButton extends StatelessWidget {
   final String buttonText;
   final VoidCallback onPressed;
+  final bool isDisabled;
 
   const CustomBottomFixedButton({
     super.key,
     required this.buttonText,
     required this.onPressed,
+    this.isDisabled = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-        child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.r),
-                  color: Colors.grey.withOpacity(.01),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
-                child: CustomButton.button(
-                  mainAxisSize: MainAxisSize.max,
-                  text: buttonText,
-                  onPressed: onPressed,
-                ))));
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.r),
+            color: Colors.grey.withOpacity(.01),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
+          child: CustomButton.button(
+            mainAxisSize: MainAxisSize.max,
+            text: buttonText,
+            onPressed: isDisabled ? () {} : onPressed,
+          ),
+        ),
+      ),
+    );
   }
 }
