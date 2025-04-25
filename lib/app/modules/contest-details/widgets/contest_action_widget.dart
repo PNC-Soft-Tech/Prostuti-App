@@ -49,7 +49,7 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
           isButtonEnabled = false;
         } else if (contestDetails.contest.isSubmitted == true) {
           // Contest already completed
-          buttonText = "Completed";
+          buttonText = "Completed ${contestDetails.contest.isSubmitted}";
           isButtonEnabled = false;
         } else if (contestDetails.contest.isRegistered == true && status?.isRunning == true) {
           // Registered and contest is running - can enter

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
@@ -273,31 +274,55 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     }
   }
 
-  @override
-  Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
-      String contestId) async {
-    try {
-      // Make GET request
-      final response = await get('contests/$contestId');
+  // @override
+  // Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
+  //     String contestId) async {
+  //   try {
+  //     // Make GET request
+  //     final response = await get('contests/$contestId');
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        // Parse the response into SingleContestResponse
-        final data = ContestDetailsResponse.fromJson(response.body['data']);
-        return Right(data);
-      } else {
-        // Handle API error
-        return Left(CustomError(
-          response.statusCode,
-          message:
-              response.body['message'] ?? 'Failed to fetch contest details',
-        ));
-      }
-    } catch (e) {
-      // Handle network or parsing errors
-      log('Error fetching single contest: $e');
-      return Left(CustomError(500, message: 'Network error: $e'));
+  //     if (response.statusCode == 200 && response.body['success'] == true) {
+  //       // Parse the response into SingleContestResponse
+  //       final data = ContestDetailsResponse.fromJson(response.body['data']);
+  //       return Right(data);
+  //     } else {
+  //       // Handle API error
+  //       return Left(CustomError(
+  //         response.statusCode,
+  //         message:
+  //             response.body['message'] ?? 'Failed to fetch contest details',
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     // Handle network or parsing errors
+  //     log('Error fetching single contest: $e');
+  //     return Left(CustomError(500, message: 'Network error: $e'));
+  //   }
+  // }
+
+
+@override
+Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
+    String contestId) async {
+  try {
+    final response = await get('contests/$contestId');
+
+    if (response.statusCode == 200 && response.body['success'] == true) {
+      final data = ContestDetailsResponse.fromJson(response.body['data']);
+      return Right(data);
+    } else {
+      return Left(CustomError(
+        response.statusCode,
+        message: response.body['message'] ?? 'Failed to fetch contest details',
+      ));
     }
+  } catch (e) {
+    log('Error fetching single contest: $e');
+    return Left(CustomError(500, message: 'Network error: $e'));
   }
+}
+
+
   @override
   Future<Either<CustomError, CustomExamDetailsResponse>> fetchSingleCustomExam(
       String customExamId) async {
