@@ -32,7 +32,7 @@ class ModelTestDetailsController extends GetxController
   final RxString selectedSubject = 'All'.obs;
   RxList<String> visibleQuestions = <String>[].obs;
   final RxBool isQuestionOpened = false.obs;
-
+RxBool isModelTestSubmittedLocal=false.obs;
   // Loading states
   var isLoading = false.obs;
   final isSubmittingContest = false.obs;
@@ -384,4 +384,11 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
         remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
   }
+    @override
+  RxString get selectedTestMode => currentSelectedModelTestMode;
+  
+  @override
+    RxBool get isModelTestSubmitted => isModelTestSubmittedLocal;
+
+
 }

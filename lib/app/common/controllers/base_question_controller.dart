@@ -8,6 +8,8 @@ abstract class BaseQuestionController extends GetxController {
   RxList<String> get markedQuestionIds;
   RxBool get isQuestionOpened;
   RxString get selectedSubject;
+  RxString get selectedTestMode;
+  RxBool get isModelTestSubmitted;
   
   // Navigation methods
   void scrollToQuestion(String questionId);

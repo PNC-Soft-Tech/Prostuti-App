@@ -35,9 +35,6 @@ class SharedQuestionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isCorrectAns =
-        controller.getOptionAns(int.tryParse(controller.selectedAnswers[question.id]??'')??0) ==
-            question.rightAnswer?.toLowerCase();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -56,17 +53,18 @@ class SharedQuestionWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Marking indicator
-            if (controller.isMarkedQuestion(question.id))
-              Container(
-                width: 4.w,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFF8143),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    bottomLeft: Radius.circular(12),
-                  ),
-                ),
-              ),
+            Obx(() => controller.isMarkedQuestion(question.id)
+                ? Container(
+                    width: 4.w,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFF8143),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink()),
 
             // Question content
             Expanded(
@@ -95,44 +93,73 @@ class SharedQuestionWidget extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 8.h),
-                    // Question description
-                    if (showCorrectAns)
-                      //show if correct ans
 
-                      Text(isCorrectAns ? "Correct" : "Incorrect",
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: isCorrectAns
-                                ? Colors.green
-                                : Colors.red.shade300,
-                          )),
+                    // Correct/Incorrect indicator
+                    Obx(() {
+                      final isAnswered = controller.isAnswered(question.id,
+                          question.options!.map((e) => e.order).toList());
+
+                      // Determine if we should show correct/incorrect status
+                      final shouldShowStatus =
+                          ((controller.isModelTestSubmitted.value &&
+                                  controller.selectedTestMode.value ==
+                                      'exam') || // For read mode
+                              (controller.selectedTestMode.value ==
+                                  'read')); // For exam mode after submission
+
+                      if (isAnswered && shouldShowStatus) {
+                        final String userAnswer =
+                            controller.selectedAnswers[question.id] ?? '';
+                        final int userOptionNumber =
+                            int.tryParse(userAnswer) ?? 0;
+                        final String userOptionLetter =
+                            controller.getOptionAns(userOptionNumber);
+                        final bool isCorrectAns =
+                            question.rightAnswer?.toLowerCase() ==
+                                userOptionLetter.toLowerCase();
+
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 8.h),
+                          child: Text(isCorrectAns ? "Correct" : "Incorrect",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: isCorrectAns
+                                    ? Colors.green
+                                    : Colors.red.shade300,
+                              )),
+                        );
+                      }
+                      return SizedBox.shrink();
+                    }),
 
                     SizedBox(height: 16.h),
 
                     // Mark question button
                     GestureDetector(
                       onTap: () => controller.markUnmarkQuestion(question.id),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.flag,
-                            color: controller.isMarkedQuestion(question.id)
-                                ? const Color(0xFFFF8143)
-                                : Colors.black54,
-                            size: 20.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            'Mark this Question',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: controller.isMarkedQuestion(question.id)
-                                  ? const Color(0xFFFF8143)
-                                  : Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: Obx(() => Row(
+                            children: [
+                              Icon(
+                                Icons.flag,
+                                color: controller.isMarkedQuestion(question.id)
+                                    ? const Color(0xFFFF8143)
+                                    : Colors.black54,
+                                size: 20.sp,
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                'Mark this Question',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color:
+                                      controller.isMarkedQuestion(question.id)
+                                          ? const Color(0xFFFF8143)
+                                          : Colors.black54,
+                                ),
+                              ),
+                            ],
+                          )),
                     ),
                     SizedBox(height: 16.h),
 
@@ -164,88 +191,23 @@ class SharedQuestionWidget extends StatelessWidget {
     );
   }
 
-  // Widget _buildOptions() {
-  //   return Obx(() {
-  //     return Column(
-  //       children: List.generate(question.options!.length, (optionIndex) {
-  //         final option = question.options![optionIndex];
-  //         final isSelected =
-  //             controller.isOptionSelected(question.id, option.order);
-  //         final isLoading = loadingOptionIndex.value == optionIndex;
-
-  //         return GestureDetector(
-  //           onTap: () async {
-  //             loadingOptionIndex.value = optionIndex;
-  //             controller.selectOption(question.id, option.order);
-
-  //             bool success = await controller.submitAnswer(
-  //               question.id,
-  //               contestId,
-  //               controller.getOptionAns(optionIndex + 1),
-  //             );
-  //             if (!success) {
-  //               controller.resetSelectOption(question.id);
-  //             }
-
-  //             loadingOptionIndex.value = null;
-  //           },
-  //           child: Container(
-  //             margin: EdgeInsets.only(bottom: 12.h),
-  //             child: Row(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 // Option selector
-  //                 Container(
-  //                   width: 26.w,
-  //                   height: 26.w,
-  //                   margin: EdgeInsets.only(top: 4.h),
-  //                   decoration: BoxDecoration(
-  //                     shape: BoxShape.circle,
-  //                     border: Border.all(
-  //                       color: isSelected ? AppColors.primary : Colors.black54,
-  //                       width: 1.5,
-  //                     ),
-  //                     color:
-  //                         isSelected ? AppColors.primary : Colors.transparent,
-  //                   ),
-  //                   child: isSelected
-  //                       ? Icon(
-  //                           Icons.check,
-  //                           color: Colors.white,
-  //                           size: 16.sp,
-  //                         )
-  //                       : null,
-  //                 ),
-
-  //                 SizedBox(width: 12.w),
-
-  //                 // Option content
-  //                 Expanded(
-  //                   child: isLoading
-  //                       ? Center(
-  //                           child: CupertinoActivityIndicator(radius: 12.r),
-  //                         )
-  //                       : HtmlWidget(
-  //                           option.title,
-  //                           textStyle: TextStyle(
-  //                             fontSize: 16.sp,
-  //                             color: Colors.black87,
-  //                           ),
-  //                         ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       }),
-  //     );
-  //   });
-  // }
   Widget _buildOptions() {
     return Obx(() {
+      // Determine if answers can be selected based on mode
+      final bool isExamMode = controller.selectedTestMode.value == 'exam';
+      final bool isReadMode = controller.selectedTestMode.value == 'read';
+      final bool isSubmitted = controller.isModelTestSubmitted.value;
+      final bool canSelectAnswers = showExplanation ||
+          (isExamMode && !isSubmitted) ||
+          (!isExamMode); // Can select in read mode and in exam mode before submission
+
+      // Determine if correct answers should be shown
+      final bool shouldShowCorrectAnswers = 
+          (isSubmitted &&
+              isExamMode) || (isReadMode && !isSubmitted); // Show correct answers in read mode or after submission
+
       if (question.isGrid == true) {
         // GRID LAYOUT - 2 options per row
-        // Calculate the number of rows needed (ceiling division)
         final int rowCount = (question.options!.length + 1) ~/ 2;
 
         return Column(
@@ -264,19 +226,20 @@ class SharedQuestionWidget extends StatelessWidget {
                 final isSelected =
                     controller.isOptionSelected(question.id, option.order);
                 final isLoading = loadingOptionIndex.value == optionIndex;
+                final optionNumber = int.tryParse(option.order) ?? 0;
+                final optionLetter = controller.getOptionAns(optionNumber);
                 final isCorrectAns = question.rightAnswer?.toLowerCase() ==
-                    controller
-                        .getOptionAns(int.tryParse(option.order) ?? 0)
-                        .toLowerCase();
-
+                    optionLetter.toLowerCase();
                 final isAnswered = controller.isAnswered(question.id,
                     question.options!.map((e) => e.order).toList());
 
                 return Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      if (isAnswered || showCorrectAns)
-                        return; // Prevent selection if already answered
+                      // Prevent selection if already answered or if we shouldn't allow selection
+                      if (!canSelectAnswers || (isAnswered && isExamMode))
+                        return;
+
                       loadingOptionIndex.value = optionIndex;
                       controller.selectOption(question.id, option.order);
 
@@ -303,38 +266,8 @@ class SharedQuestionWidget extends StatelessWidget {
                           SharedQuestionCircleWidget(
                             isCorrectAns: isCorrectAns,
                             isSelected: isSelected,
-                            showCorrectAns: showCorrectAns,
+                            showCorrectAns: shouldShowCorrectAnswers,
                           ),
-                          // Container(
-                          //   width: 26.w,
-                          //   height: 26.w,
-                          //   margin: EdgeInsets.only(top: 4.h),
-                          //   decoration: BoxDecoration(
-                          //     shape: BoxShape.circle,
-                          //     border: Border.all(
-                          //       color: isCorrectAns
-                          //           ? Colors.green
-                          //           : Colors.black45,
-                          //       width: 1.5,
-                          //     ),
-                          //     color: isCorrectAns
-                          //         ? Colors.green
-                          //         : Colors.transparent,
-                          //   ),
-                          //   child: isCorrectAns
-                          //       ? Icon(
-                          //           Icons.check,
-                          //           color: Colors.white,
-                          //           size: 16.sp,
-                          //         )
-                          //       : isSelected && !isCorrectAns
-                          //           ? Icon(
-                          //               Icons.close,
-                          //               color: Colors.red,
-                          //               size: 16.sp,
-                          //             )
-                          //           : null,
-                          // ),
 
                           SizedBox(width: 8.w),
 
@@ -346,32 +279,13 @@ class SharedQuestionWidget extends StatelessWidget {
                                         radius: 12.r),
                                   )
                                 : HtmlWidget(
-                                    option.title +
-                                        "-" +
-                                        isCorrectAns.toString() +
-                                        "-selected-" +
-                                        isSelected.toString() +
-                                        "-right=" +
-                                        question.rightAnswer.toString() +
-                                        "=order=" +
-                                        controller
-                                            .getOptionAns(
-                                                int.tryParse(option.order) ?? 0)
-                                            .toString(),
+                                    option.title,
                                     textStyle: TextStyle(
                                       fontSize: 14
                                           .sp, // Slightly smaller font for grid layout
                                       color: Colors.black87,
                                     ),
                                   ),
-                            // HtmlWidget(
-                            //     option.title ,
-                            //     textStyle: TextStyle(
-                            //       fontSize: 14
-                            //           .sp, // Slightly smaller font for grid layout
-                            //       color: Colors.black87,
-                            //     ),
-                            //   ),
                           ),
                         ],
                       ),
@@ -390,17 +304,18 @@ class SharedQuestionWidget extends StatelessWidget {
             final isSelected =
                 controller.isOptionSelected(question.id, option.order);
             final isLoading = loadingOptionIndex.value == optionIndex;
-            List<String> optionOrderList =
-                question.options!.map((e) => e.order).toList();
+            final optionNumber = int.tryParse(option.order) ?? 0;
+            final optionLetter = controller.getOptionAns(optionNumber);
             final isCorrectAns = question.rightAnswer?.toLowerCase() ==
-                controller
-                    .getOptionAns(int.tryParse(option.order) ?? 0)
-                    .toLowerCase();
+                optionLetter.toLowerCase();
             final isAnswered = controller.isAnswered(
                 question.id, question.options!.map((e) => e.order).toList());
+
             return GestureDetector(
               onTap: () async {
-                if (isAnswered || showCorrectAns) return; // Prevent selection if already answered
+                // Prevent selection if already answered or if we shouldn't allow selection
+                if (!canSelectAnswers || (isAnswered && isExamMode)) return;
+
                 loadingOptionIndex.value = optionIndex;
                 controller.selectOption(question.id, option.order);
 
@@ -424,35 +339,8 @@ class SharedQuestionWidget extends StatelessWidget {
                     SharedQuestionCircleWidget(
                       isCorrectAns: isCorrectAns,
                       isSelected: isSelected,
-                      showCorrectAns: showCorrectAns,
+                      showCorrectAns: shouldShowCorrectAnswers,
                     ),
-
-                    // Container(
-                    //   width: 26.w,
-                    //   height: 26.w,
-                    //   margin: EdgeInsets.only(top: 4.h),
-                    //   decoration: BoxDecoration(
-                    //     shape: BoxShape.circle,
-                    //     border: Border.all(
-                    //       color: isCorrectAns ? Colors.green : Colors.black45,
-                    //       width: 1.5,
-                    //     ),
-                    //     color: isCorrectAns ? Colors.green : Colors.transparent,
-                    //   ),
-                    //   child: isCorrectAns
-                    //       ? Icon(
-                    //           Icons.check,
-                    //           color: Colors.white,
-                    //           size: 16.sp,
-                    //         )
-                    //       : isSelected && !isCorrectAns
-                    //           ? Icon(
-                    //               Icons.close,
-                    //               color: Colors.red,
-                    //               size: 16.sp,
-                    //             )
-                    //           : null,
-                    // ),
 
                     SizedBox(width: 12.w),
 
@@ -463,31 +351,12 @@ class SharedQuestionWidget extends StatelessWidget {
                               child: CupertinoActivityIndicator(radius: 12.r),
                             )
                           : HtmlWidget(
-                              option.title +
-                                  "-" +
-                                  isCorrectAns.toString() +
-                                  "-selected-" +
-                                  isSelected.toString() +
-                                  "-right=" +
-                                  question.rightAnswer.toString() +
-                                  "=order=" +
-                                  controller
-                                      .getOptionAns(
-                                          int.tryParse(option.order) ?? 0)
-                                      .toString(),
+                              option.title,
                               textStyle: TextStyle(
-                                fontSize: 14
-                                    .sp, // Slightly smaller font for grid layout
+                                fontSize: 16.sp,
                                 color: Colors.black87,
                               ),
                             ),
-                      // HtmlWidget(
-                      //     option.title,
-                      //     textStyle: TextStyle(
-                      //       fontSize: 16.sp,
-                      //       color: Colors.black87,
-                      //     ),
-                      //   ),
                     ),
                   ],
                 ),
@@ -504,66 +373,57 @@ class SharedQuestionWidget extends StatelessWidget {
       onTap: () {
         UnlockFullAccessDialog.show();
       },
-      child:Container(
-            width: Get.width,
-            margin: EdgeInsets.only(top: 16.h),
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8.r),
-              border: Border.all(
-                color: Colors.grey.withOpacity(0.3),
+      child: Container(
+        width: Get.width,
+        margin: EdgeInsets.only(top: 16.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: Colors.grey.withOpacity(0.3),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'ব্যাখ্যা',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.sp,
+                color: Colors.black87,
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'ব্যাখ্যা',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.sp,
-                    color: Colors.black87,
-                  ),
+            SizedBox(height: 6.h),
+            Blur(
+              blur: 2.5,
+              borderRadius: BorderRadius.circular(10.r),
+              blurColor: Colors.blueGrey.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: HtmlWidget(
+                  question.explanation
+                          ?.replaceAll('<pre>', '')
+                          .replaceAll('</pre>', '') ??
+                      '',
+                  customWidgetBuilder: (element) {
+                    if (element.classes.contains('latex') ||
+                        element.classes.contains('ql-syntax')) {
+                      // Render LaTeX content
+                      return Math.tex(
+                        element.text,
+                        textStyle: TextStyle(fontSize: 20),
+                      );
+                    }
+                    return null; // Fallback to default rendering
+                  },
                 ),
-                SizedBox(height: 6.h),
-                Blur(
-                  blur: 2.5,
-                  borderRadius: BorderRadius.circular(10.r),
-                  blurColor: Colors.blueGrey.shade50,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: HtmlWidget(
-                      question.explanation
-                              ?.replaceAll('<pre>', '')
-                              .replaceAll('</pre>', '') ??
-                          ''.replaceAll('<pre>', '').replaceAll('</pre>', ''),
-                      customWidgetBuilder: (element) {
-                        print('explanation Element classes: ${question.title}');
-
-                        if (element.classes.contains('latex') ||
-                            element.classes.contains('ql-syntax')) {
-                          // Render LaTeX content
-                          return Math.tex(
-                            element.text,
-                            textStyle: TextStyle(fontSize: 20),
-                          );
-                        }
-                        return null; // Fallback to default rendering
-                      },
-                    ),
-                  ),
-                ),
-                // HtmlWidget(
-                //   question.explanation ?? '',
-                //   textStyle: TextStyle(
-                //     fontSize: 14.sp,
-                //     color: Colors.black87,
-                //   ),
-                // ),
-              ],
+              ),
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 }

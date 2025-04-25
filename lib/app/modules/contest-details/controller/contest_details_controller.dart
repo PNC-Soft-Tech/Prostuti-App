@@ -421,4 +421,11 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
       alignment: 0.1,
     );
   }
+  
+  @override
+ RxBool get isModelTestSubmitted => throw UnimplementedError();
+  
+  @override
+  // TODO: implement selectedTestMode
+  RxString get selectedTestMode => throw UnimplementedError();
 }

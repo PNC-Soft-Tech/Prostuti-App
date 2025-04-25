@@ -370,4 +370,10 @@ class CustomExamDetailsController extends GetxController
         remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
   }
+
+  @override
+  RxBool get isModelTestSubmitted => false.obs;
+
+  @override
+  RxString get selectedTestMode => currentSelectedModelTestMode;
 }
