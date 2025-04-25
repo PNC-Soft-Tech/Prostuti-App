@@ -28,17 +28,17 @@ class HomeMainWidget extends GetWidget<HomeController> {
                   style: TextStyle(fontSize: 16.sp),
                 )),
             SizedBox(height: 10.h),
-            GestureDetector(
-                onTap: () async {
-                  log("clickeddddd");
-                  //  final result = await Get.bottomSheet(
-                  //     ModelTestAccessBottomSheet(),
-                  //     backgroundColor: Colors.transparent,
-                  //     isDismissible: true,
-                  //   );
-                  // Get.toNamed(Routes.modelTestDetails);
-                },
-                child: const Text("Model Test Page")),
+            // GestureDetector(
+            //     onTap: () async {
+            //       log("clickeddddd");
+            //       //  final result = await Get.bottomSheet(
+            //       //     ModelTestAccessBottomSheet(),
+            //       //     backgroundColor: Colors.transparent,
+            //       //     isDismissible: true,
+            //       //   );
+            //       // Get.toNamed(Routes.modelTestDetails);
+            //     },
+            //     child: const Text("Model Test Page")),
             // CustomButton.button(
             //     text: "Logout",
             //     onPressed: () {
