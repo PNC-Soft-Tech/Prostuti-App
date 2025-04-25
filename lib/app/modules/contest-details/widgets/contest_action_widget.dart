@@ -42,21 +42,21 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
           alignment: Alignment.bottomCenter,
           child: CustomBottomFixedButton(
             buttonText: status?.isRunning == true &&
-                    controller.contestDetails.value?.contest.isRegistered == true
+                    controller.contestDetails.value?.contest.isRegistered == true  && controller.contestDetails.value?.contest.isRegistered == false
                 ? "Enter Now"
                 : ((status?.isScheduled == true &&
                             controller.contestDetails.value?.contest.isRegistered == false) ||
                         (status?.isRunning == true &&
                             controller.contestDetails.value?.contest.isRegistered == false))
                     ? "Register Now"
-                    : status?.isRunning == true? "Completed":"Loading...",
+                    : controller.contestDetails.value?.contest.isSubmitted == true? "Completed":"Loading...",
             onPressed: () {
               if (controller.contestDetails.value?.contest.isRegistered == false &&
                   (status?.isRunning == true || status?.isScheduled == true)) {
                 Get.find<ContestController>()
                     .registerForContest(controller.contestDetails.value!.contest.id);
                 controller.isQuestionOpened.value = true;
-              } else if (status?.isDone == false || status?.isRunning == true) {
+              } else if ((controller.contestDetails.value?.contest.isSubmitted == false && status?.isDone == false) || (controller.contestDetails.value?.contest.isSubmitted == false && status?.isRunning == true)) {
                 controller.isQuestionOpened.value = true;
               }
             },

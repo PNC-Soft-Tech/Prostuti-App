@@ -19,146 +19,148 @@ class RankingView extends GetWidget<RankingController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      if (controller.isRankLoading.value == true) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      }
-
-      ContestData? rankingData = controller.contestRankData.value;
-
-      RankingInfo? rankingInfo = rankingData?.info;
-      List<ContestResult>? firstThree = rankingInfo?.firstThreeResults;
-      List<ContestResult>? results = rankingData?.results;
-
-      if (rankingInfo == null) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text(
-              "No Contest Found",
-              style: CustomStyles.textStyle,
-            ),
-          ),
-        );
-      }
-
-      return Stack(
-        clipBehavior: Clip.hardEdge,
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  contestDetailsWidget(rankingInfo),
-                  SizedBox(height: 10.h),
-                  // Profile Section
-                  if (firstThree != null && firstThree.length > 2)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RankProfileCard(
-                              rank: '2',
-                              name: firstThree[1].userFullName,
-                              city: 'Barishal',
-                              imageUrl: '',
-                              rankIcon: 'assets/leaderboard/rank-2.svg'),
-                          RankProfileCard(
-                              rank: '1',
-                              name: firstThree[0].userFullName,
-                              city: 'Dhaka',
-                              imageUrl: '',
-                              rankIcon: 'assets/leaderboard/rank-1.svg'),
-                          RankProfileCard(
-                              rank: '3',
-                              name: firstThree[2].userFullName,
-                              city: 'Khulna',
-                              imageUrl: '',
-                              rankIcon: 'assets/leaderboard/rank-3.svg'),
-                        ],
-                      ),
-                    ),
-                  SizedBox(height: 5.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Leaderboard',
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          _showBottomSheet(context);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                controller.selectedRankingType.value,
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 14),
-                              ),
-                              const Icon(Icons.arrow_drop_down, size: 20),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 5.h),
-
-                  if (results != null && results.isNotEmpty)
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: results.length,
-                      itemBuilder: (context, index) {
-                        ContestResult result = results[index];
-                        return LeaderBoardEntry(
-                          position: '${index + 1}',
-                          name: result.userFullName,
-                          city: 'Dhaka',
-                          score: result.points,
-                          institution: 'University of Barishal',
-                          avatarUrl: '',
-                        );
-                      },
-                    ),
-
-                  SizedBox(height: 20.h),
-                ],
+    return Scaffold(
+      body: Obx(() {
+        if (controller.isRankLoading.value == true) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      
+        ContestData? rankingData = controller.contestRankData.value;
+      
+        RankingInfo? rankingInfo = rankingData?.info;
+        List<ContestResult>? firstThree = rankingInfo?.firstThreeResults;
+        List<ContestResult>? results = rankingData?.results;
+      
+        if (rankingInfo == null) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                "No Contest Found",
+                style: CustomStyles.textStyle,
               ),
             ),
-          ),
-          Align(
-              alignment: Alignment.bottomCenter,
+          );
+        }
+      
+        return Stack(
+          clipBehavior: Clip.hardEdge,
+          children: [
+            SingleChildScrollView(
               child: Container(
-                  padding: const EdgeInsets.only(bottom: 0),
-                  child: CustomButton.button(
-                      mainAxisSize: MainAxisSize.min,
-                      text: "See My Position",
-                      fontSize: 14,
-                      padding: 10,
-                      isImageLeft: false,
-                      fontWeight: FontWeight.w500,
-                      onPressed: () {}))),
-        ],
-      );
-    });
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    contestDetailsWidget(rankingInfo),
+                    SizedBox(height: 10.h),
+                    // Profile Section
+                    if (firstThree != null && firstThree.length > 2)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RankProfileCard(
+                                rank: '2',
+                                name: firstThree[1].userFullName,
+                                city: 'Barishal',
+                                imageUrl: '',
+                                rankIcon: 'assets/leaderboard/rank-2.svg'),
+                            RankProfileCard(
+                                rank: '1',
+                                name: firstThree[0].userFullName,
+                                city: 'Dhaka',
+                                imageUrl: '',
+                                rankIcon: 'assets/leaderboard/rank-1.svg'),
+                            RankProfileCard(
+                                rank: '3',
+                                name: firstThree[2].userFullName,
+                                city: 'Khulna',
+                                imageUrl: '',
+                                rankIcon: 'assets/leaderboard/rank-3.svg'),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: 5.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Leaderboard',
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _showBottomSheet(context);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  controller.selectedRankingType.value,
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 14),
+                                ),
+                                const Icon(Icons.arrow_drop_down, size: 20),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 5.h),
+      
+                    if (results != null && results.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: results.length,
+                        itemBuilder: (context, index) {
+                          ContestResult result = results[index];
+                          return LeaderBoardEntry(
+                            position: '${index + 1}',
+                            name: result.userFullName,
+                            city: 'Dhaka',
+                            score: result.points,
+                            institution: 'University of Barishal',
+                            avatarUrl: '',
+                          );
+                        },
+                      ),
+      
+                    SizedBox(height: 20.h),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                    padding: const EdgeInsets.only(bottom: 0),
+                    child: CustomButton.button(
+                        mainAxisSize: MainAxisSize.min,
+                        text: "See My Position",
+                        fontSize: 14,
+                        padding: 10,
+                        isImageLeft: false,
+                        fontWeight: FontWeight.w500,
+                        onPressed: () {}))),
+          ],
+        );
+      }),
+    );
   }
 
   void _showBottomSheet(BuildContext context) {

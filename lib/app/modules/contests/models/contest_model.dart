@@ -15,6 +15,7 @@ class Contest {
   final dynamic totalTime;
   final bool? isSubjectWise;
    bool? isRegistered;
+   bool? isSubmitted;
   final DateTime startContest;
   final DateTime endContest;
   final List<Topic> topics;
@@ -32,6 +33,7 @@ class Contest {
     required this.totalTime,
      this.isSubjectWise,
      this.isRegistered,
+     this.isSubmitted=false,
     required this.startContest,
     required this.endContest,
     required this.topics,
@@ -51,6 +53,7 @@ totalMarks: (json['totalMarks'] ?? 0).toDouble(),
 
       totalTime: json['totalTime'] ?? 0,
       isRegistered: json['isRegistered'] ?? true,
+      isSubmitted: json['isSubmitted'] ?? true,
       isSubjectWise: json['isSubjectWise'] ?? true,
       startContest: parseDate(json['startContest']),
       endContest: parseDate(json['endContest']),
