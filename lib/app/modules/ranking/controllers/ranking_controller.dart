@@ -89,7 +89,7 @@ class RankingController extends GetxController {
   }
 
   Future<void> _getContestIdFromSharedPreferences() async {
-    await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
+    // await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
     contestId = await StorageHelper.getLatestContestId();
     if (contestId.isNotEmpty) {
       displayLeaderboardRanks();
@@ -220,6 +220,25 @@ class RankingController extends GetxController {
     }
     if (institutionName != null) {
       selectedInstitutionName.value = institutionName;
+    }
+  }
+
+  String get rankingTitle {
+    switch (selectedRankingType.value) {
+      case 'division':
+        final name = selectedDivision.value?.name ?? '—';
+        return 'Top 10 : $name';
+      case 'district':
+        final name = selectedDistrict.value?.name ?? '—';
+        return 'Top 10 : $name';
+      case 'upazila':
+        final name = selectedUpazila.value?.name ?? '—';
+        return 'Top 10 : $name';
+      case 'institution':
+        final name = selectedInstitutionName.value ?? '—';
+        return 'Top 10 : $name';
+      default:
+        return 'Top 10 : Overall';
     }
   }
 }

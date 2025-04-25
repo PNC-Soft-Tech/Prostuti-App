@@ -26,13 +26,13 @@ class RankingView extends GetWidget<RankingController> {
             child: CircularProgressIndicator(),
           );
         }
-      
+
         ContestData? rankingData = controller.contestRankData.value;
-      
+
         RankingInfo? rankingInfo = rankingData?.info;
         List<ContestResult>? firstThree = rankingInfo?.firstThreeResults;
         List<ContestResult>? results = rankingData?.results;
-      
+
         if (rankingInfo == null) {
           return Center(
             child: Padding(
@@ -44,7 +44,7 @@ class RankingView extends GetWidget<RankingController> {
             ),
           );
         }
-      
+
         return Stack(
           clipBehavior: Clip.hardEdge,
           children: [
@@ -94,34 +94,22 @@ class RankingView extends GetWidget<RankingController> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            _showBottomSheet(context);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  controller.selectedRankingType.value,
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 14),
-                                ),
-                                const Icon(Icons.arrow_drop_down, size: 20),
-                              ],
-                            ),
-                          ),
-                        )
+                        CustomButton.button(
+                            mainAxisSize: MainAxisSize.min,
+                            text: controller.rankingTitle,
+                            fontSize: 14,
+                            padding: 10,
+                            isImageLeft: false,
+                            fontWeight: FontWeight.w500,
+                            onPressed: () {
+                              print(controller.selectedRankingType.value);
+                              print(controller.selectedDistrict.value);
+                              _showBottomSheet(context);
+                            })
                       ],
                     ),
                     SizedBox(height: 5.h),
-      
+
                     if (results != null && results.isNotEmpty)
                       ListView.builder(
                         shrinkWrap: true,
@@ -139,7 +127,7 @@ class RankingView extends GetWidget<RankingController> {
                           );
                         },
                       ),
-      
+
                     SizedBox(height: 20.h),
                   ],
                 ),

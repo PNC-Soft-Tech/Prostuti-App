@@ -81,12 +81,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                         items: (filter, infiniteScrollProps) =>
                             controller.divisions,
                         itemAsString: (Division division) => division.name,
-                        decoratorProps: const DropDownDecoratorProps(
-                          decoration: InputDecoration(
-                            labelText: 'Select Division',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
                         compareFn: (item1, item2) =>
                             item1.name.toLowerCase() ==
                             item2.name.toLowerCase(),
@@ -105,6 +99,10 @@ class RankingFilterBottomSheet extends StatelessWidget {
                           return division.name.toLowerCase().contains(
                               filter.toLowerCase()); // Filter by division name
                         },
+                        onChanged: (Division? newDiv) =>
+                            controller.updateFilters(division: newDiv),
+                        decoratorProps: getDropdownDecorationProps(
+                            labelText: 'Select Division'),
                       ),
                     );
                   } else {
@@ -138,12 +136,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                         items: (filter, infiniteScrollProps) =>
                             controller.districts,
                         itemAsString: (District district) => district.name,
-                        decoratorProps: const DropDownDecoratorProps(
-                          decoration: InputDecoration(
-                            labelText: 'Select District',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
                         compareFn: (item1, item2) =>
                             item1.name.toLowerCase() ==
                             item2.name.toLowerCase(),
@@ -162,6 +154,9 @@ class RankingFilterBottomSheet extends StatelessWidget {
                           return district.name.toLowerCase().contains(
                               filter.toLowerCase()); // Filter by district name
                         },
+                        onChanged: (d) => controller.updateFilters(district: d),
+                        decoratorProps: getDropdownDecorationProps(
+                            labelText: 'Select District'),
                       ),
                     );
                   } else {
@@ -195,12 +190,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                         items: (filter, infiniteScrollProps) =>
                             controller.upazilas,
                         itemAsString: (Upazila upazila) => upazila.name,
-                        decoratorProps: const DropDownDecoratorProps(
-                          decoration: InputDecoration(
-                            labelText: 'Select Upazila',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
                         compareFn: (item1, item2) =>
                             item1.name.toLowerCase() ==
                             item2.name.toLowerCase(),
@@ -219,6 +208,9 @@ class RankingFilterBottomSheet extends StatelessWidget {
                           return upazila.name.toLowerCase().contains(
                               filter.toLowerCase()); // Filter by upazila name
                         },
+                        onChanged: (u) => controller.updateFilters(upazila: u),
+                        decoratorProps: getDropdownDecorationProps(
+                            labelText: 'Select Upazila'),
                       ),
                     );
                   } else {
@@ -256,12 +248,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                                 controller.institutionTypes,
                             itemAsString: (InstitutionType institutionType) =>
                                 institutionType.name,
-                            decoratorProps: const DropDownDecoratorProps(
-                              decoration: InputDecoration(
-                                labelText: 'Select Institution Type',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
                             compareFn: (item1, item2) =>
                                 item1.name.toLowerCase() ==
                                 item2.name.toLowerCase(),
@@ -282,6 +268,10 @@ class RankingFilterBottomSheet extends StatelessWidget {
                                   .contains(filter
                                       .toLowerCase()); // Filter by institutionType name
                             },
+                            onChanged: (it) =>
+                                controller.updateFilters(institutionType: it),
+                            decoratorProps: getDropdownDecorationProps(
+                                labelText: 'Select Institution Type'),
                           ),
                         ),
                         SizedBox(height: 15.h),
@@ -295,12 +285,6 @@ class RankingFilterBottomSheet extends StatelessWidget {
                             items: (filter, infiniteScrollProps) =>
                                 controller.institutions,
                             itemAsString: (inst) => inst.name,
-                            decoratorProps: const DropDownDecoratorProps(
-                              decoration: InputDecoration(
-                                labelText: 'Select Institution Name',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
                             compareFn: (item1, item2) =>
                                 item1.name.toLowerCase() ==
                                 item2.name.toLowerCase(),
@@ -312,6 +296,8 @@ class RankingFilterBottomSheet extends StatelessWidget {
                               controller.updateFilters(
                                   institutionName: inst?.name);
                             },
+                            decoratorProps: getDropdownDecorationProps(
+                                labelText: 'Select Institution Name'),
                           ),
                         ),
                       ],
@@ -341,6 +327,32 @@ class RankingFilterBottomSheet extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  DropDownDecoratorProps getDropdownDecorationProps(
+      {required String labelText}) {
+    return DropDownDecoratorProps(
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: TextStyle(
+          fontSize: 14.sp,
+          color: AppColors.charcoalGray,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: BorderSide(color: Colors.grey.shade400),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(color: AppColors.primary),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
     );
   }
