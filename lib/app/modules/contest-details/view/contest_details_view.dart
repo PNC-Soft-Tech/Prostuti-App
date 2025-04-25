@@ -27,8 +27,8 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
       appBar: CustomSimpleAppBar.appBar(
         titleWidget: Obx(() => Text(
               Utils.stripHtmlTags(
-                      controller.contestDetails.value?.contest.name ?? '') ??
-                  'Contest Details',
+                     controller.isQuestionOpened.value? (controller.contestDetails.value?.contest.name ?? ''):"Contest Details") 
+                  ,
               style: const TextStyle(fontSize: 18, color: AppColors.primary),
             )),
       ),
