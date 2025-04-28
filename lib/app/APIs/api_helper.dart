@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
+import 'package:prostuti/app/models/user_model.dart';
 import 'package:prostuti/app/modules/exam-topics/models/exam_topics_model.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 
@@ -34,7 +35,7 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests();
 // Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId);
   Future<Either<CustomError, Response>> verifyOtp(Map<String, dynamic> data);
-  // Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
+  Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
   Future<Either<CustomError, Response>> registerContest(String contestId);
   Future<Either<CustomError, List<Contest>>> fetchRecentContests();
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
