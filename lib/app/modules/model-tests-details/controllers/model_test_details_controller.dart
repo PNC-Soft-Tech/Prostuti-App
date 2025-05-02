@@ -36,7 +36,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
   Timer? _timer;
   Rx<ContestStatus?> contestStatus = Rx<ContestStatus?>(null);
 
-  RxBool isQuestionOpened = false.obs;
+  RxBool isQuestionOpened = true.obs; // Always keep questions open by default
   final scrollController = ScrollController();
   final questionKeys = <String, GlobalKey>{}.obs;
   final questionIdToIndexMap = <String, int>{}.obs;
@@ -46,26 +46,46 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
       <String>[].obs; // Change this in the controller
   final RxString selectedSubject = 'All'.obs; // "All" is selected by default
   RxList<String> visibleQuestions = <String>[].obs;
-RxBool isModelTestSubmittedLocal=false.obs;
+  RxBool isModelTestSubmittedLocal = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
-    modelTestId.value = arguments["modelTestId"]; // Retrieve contestId
-    currentSelectedModelTestMode.value = arguments["mode"]; // Retrieve contestId
+    modelTestId.value = arguments["modelTestId"]; // Retrieve model test ID
+    
+    // Always set exam mode from arguments if provided
+    if (arguments.containsKey("mode")) {
+      currentSelectedModelTestMode.value = arguments["mode"];
+      
+      // Update mode selection state
+      isReadModeSelected.value = currentSelectedModelTestMode.value == 'read';
+      isExamModeSelected.value = currentSelectedModelTestMode.value == 'exam';
+      
+      // Always ensure questions are shown
+      isQuestionOpened.value = true;
+    }
+    
     fetchModelTestDetails(modelTestId.value);
+    
+    // Set up visibleQuestions listener to ensure it's never empty
+    ever(visibleQuestions, (_) {
+      if (visibleQuestions.isEmpty && filteredQuestions.isNotEmpty) {
+        // If we have questions but none are marked as visible, update the visible list
+        updateVisibleQuestions(filteredQuestions.map((q) => q.id).toList());
+      }
+    });
+    
+    // Listen for question index changes
     ever<int>(currentQuestionIndex, (index) {
+      // Don't scroll if no controller or current index invalid
+      if (!scrollController.hasClients || index < 0) return;
+      
       scrollController.animateTo(
         index * 300.h, // Approx height per question, tune if needed
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
-    });
-    // Ensure questions are opened in exam mode
-    ever(currentSelectedModelTestMode, (mode) {
-      if (mode == 'exam' && !isQuestionOpened.value) {
-        isQuestionOpened.value = true;
-      }
     });
   }
 
@@ -73,19 +93,22 @@ RxBool isModelTestSubmittedLocal=false.obs;
     currentSelectedModelTestMode.value = isReadMode ? 'read' : 'exam';
     isReadModeSelected.value = isReadMode;
     isExamModeSelected.value = !isReadMode;
+    
+    // Always ensure questions are visible
+    isQuestionOpened.value = true;
 
-      // When entering exam mode, reset all selected answers and marks
-  if (!isReadMode) {
-    // Clear selected answers
-    selectedAnswers.clear();
-    
-    // Clear marked questions (optional, based on your requirements)
-    markedQuestionIds.clear();
-    markedQuestionIndexes.clear();
-    
-    // Reset submission state
-    isModelTestSubmittedLocal.value = false;
-  }
+    // When entering exam mode, reset all selected answers and marks
+    if (!isReadMode) {
+      // Clear selected answers
+      selectedAnswers.clear();
+      
+      // Clear marked questions (optional, based on your requirements)
+      markedQuestionIds.clear();
+      markedQuestionIndexes.clear();
+      
+      // Reset submission state
+      isModelTestSubmittedLocal.value = false;
+    }
   }
 
   void setUpQuestionKeysAndIndexes(List<Question> questions) {
@@ -97,6 +120,9 @@ RxBool isModelTestSubmittedLocal=false.obs;
       questionKeys[question.id] = GlobalKey();
       questionIdToIndexMap[question.id] = i;
     }
+    
+    // Initialize visibleQuestions with all question IDs
+    updateVisibleQuestions(questions.map((q) => q.id).toList());
   }
 
   void scrollToQuestion(String questionId) {
@@ -108,6 +134,9 @@ RxBool isModelTestSubmittedLocal=false.obs;
     if (!visibleQuestions.contains(questionId)) {
       selectedSubject.value = 'All';
     }
+
+    // Update current question index
+    currentQuestionIndex.value = originalIndex;
 
     scrollController.animateTo(
       originalIndex * 300.h,

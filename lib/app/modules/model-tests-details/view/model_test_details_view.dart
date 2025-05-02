@@ -48,8 +48,6 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                       subjects: controller.subjectLists,
                       selectedSubject: controller.selectedSubject.value,
                       onSubjectSelected: controller.selectSubject,
-                      // isQuestionOpened: controller.currentSelectedModelTestMode.value ==
-                      //     'exam',
                       isQuestionOpened: true,
                     )),
 
@@ -85,31 +83,40 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
                                     'exam'
                                 ? false
                                 : true, 
-                                showCorrectAns:  controller.isModelTestSubmitted.value
+                                showCorrectAns: controller.isModelTestSubmitted.value
                       );
                     },
                   ),
                 ),
-                   SizedBox(
-                    height: 120.h,
-                  ),
+                SizedBox(
+                  height: 120.h,
+                ),
               ],
             );
           }),
+          
+          // Bottom action widget
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
             child: TestActionWidget(controller: controller),
           ),
+          
+          // Question navigator - ALWAYS show it when we have questions
           Positioned(
             bottom: 100.h,
             right: 16.w,
-            child: Obx(() =>
-                controller.currentSelectedModelTestMode.value == 'exam' ||
-                        controller.isQuestionOpened.value
-                    ? QuestionNavigatorWidget(controller: controller)
-                    : const SizedBox.shrink()),
+            child: Obx(() {
+              // The navigator should be visible when:
+              // 1. Questions are loaded
+              // 2. We're in any mode with questions visible
+              final hasQuestions = controller.filteredQuestions.isNotEmpty;
+              
+              return hasQuestions 
+                ? QuestionNavigatorWidget(controller: controller)
+                : const SizedBox.shrink();
+            }),
           ),
         ],
       ),

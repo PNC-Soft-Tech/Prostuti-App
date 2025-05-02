@@ -17,20 +17,29 @@ class QuestionNavigatorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (!controller.isQuestionOpened.value) {
-        return const SizedBox.shrink();
+      // Make sure we have questions to display
+      final questions = controller.filteredQuestions;
+      if (questions.isEmpty) return const SizedBox.shrink();
+      
+      // Ensure currentIndex is valid
+      int currentIndex = controller.currentQuestionIndex.value;
+      if (currentIndex < 0 || currentIndex >= questions.length) {
+        currentIndex = 0;
+        // Only update if needed to avoid loops
+        if (controller.currentQuestionIndex.value != currentIndex) {
+          controller.currentQuestionIndex.value = currentIndex;
+        }
       }
-
-      final questions = controller.modelDetails.value?.contest.questions ?? [];
-      final currentIndex = controller.currentQuestionIndex.value;
-      final totalQuestions = questions.length;
-      final markedQuestions = controller.markedQuestionIds;
-      final totalMarked = markedQuestions.length;
       
-      if (totalQuestions == 0) return const SizedBox.shrink();
-      
+      // Get current question details
       final currentQuestion = questions[currentIndex];
       final isMarked = controller.isMarkedQuestion(currentQuestion.id);
+      final totalMarked = controller.markedQuestionIds.length;
+      
+      // If no questions are visible, update the list
+      if (controller.visibleQuestions.isEmpty) {
+        controller.updateVisibleQuestions(questions.map((q) => q.id).toList());
+      }
       
       // Create reactive properties to properly update the UI
       final RxInt markedCount = RxInt(totalMarked);
@@ -64,7 +73,7 @@ class QuestionNavigatorWidget extends StatelessWidget {
 
       return UnifiedQuestionNavigator(
         currentIndex: controller.currentQuestionIndex,
-        totalQuestions: totalQuestions,
+        totalQuestions: questions.length,
         totalMarked: markedCount,
         isCurrentMarked: isCurrentMarked,
         onPrevious: () {
