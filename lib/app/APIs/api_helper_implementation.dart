@@ -611,26 +611,35 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
   Future<Either<CustomError, Response>> generateCustomExam(
       CustomExamRequestModel payload) async {
     try {
-      final token = await StorageHelper.getToken();
-      if (token == null) {
-        return Left(CustomError(401, message: 'Unauthorized: No token found'));
-      }
-      final headers = {
-        'Authorization': 'Bearer $token',
-      };
-      final response = await post(
-          'custom-exams/generate-contest', payload.toJson(),
-          headers: headers);
+      final response = await post('custom-exams', payload.toJson());
       if (response.statusCode == 200 && response.body['success'] == true) {
         return Right(response);
       } else {
-        return Left(CustomError(
-          response.statusCode ?? 500,
-          message: response.body['message'] ?? 'Failed to generate custom exam',
-        ));
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to generate custom exam'));
       }
     } catch (e) {
       log('Error generating custom exam: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, int>> fetchQuestionCountByTopicId(String topicId) async {
+    try {
+      final response = await get('questions/topics/num-of-question/$topicId');
+      log('Response for topic count: ${response.body}');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // The API returns count in the 'count' field, not 'data'
+        final count = response.body['count'] as int? ?? 0;
+        return Right(count);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch question count'));
+      }
+    } catch (e) {
+      log('Error fetching question count: $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }

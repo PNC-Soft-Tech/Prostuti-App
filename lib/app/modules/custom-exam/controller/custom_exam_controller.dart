@@ -20,6 +20,9 @@ class CustomExamController extends GetxController {
   RxString selectedSubjectId = ''.obs;
   RxMap<int, List<String>> selectedTopics = <int, List<String>>{}
       .obs; // Map to track selected topics for each subject
+  
+  // Map to store available question count for each topic
+  RxMap<String, int> topicQuestionCounts = <String, int>{}.obs;
 
   // Reactive custom exam model
   Rxn<CustomExamModel> customExamQuestions = Rxn<CustomExamModel>();
@@ -30,6 +33,12 @@ class CustomExamController extends GetxController {
   void onInit() {
     super.onInit();
 
+    // Initialize with a default empty model
+    customExamQuestions.value = CustomExamModel(
+      id: 'exam-1',
+      subjects: [],
+    );
+
     // Fetch subjects when the controller is initialized
     fetchSubjects().then((_) {
       if (subjects.isNotEmpty) {
@@ -39,21 +48,14 @@ class CustomExamController extends GetxController {
         fetchTopicsBySubjectId(firstSubject.id).then((_) {
           // Initialize the custom exam data with the first subject and its topics
           selectedSubjectId.value = firstSubject.id;
+          
           customExamQuestions.value = CustomExamModel(
             id: 'exam-1',
             subjects: [
               CustomExamSubject(
                 id: firstSubject.id, // Use API-provided ID
-                subjectName: firstSubject.name, // Name of the first subject
-                // topics: subjectTopicsMap[firstSubject.id]?.isNotEmpty ?? false
-                //     ? [
-                //         {
-                //           'topicName':
-                //               subjectTopicsMap[firstSubject.id]!.first.name,
-                //           'questionCount': 1, // Default question count
-                //         }
-                //       ]
-                //     : [], // No topics if the first subject has none
+                subjectName: firstSubject.name ?? "", // Ensure not null
+                topics: [], // Initialize with empty list
               ),
             ],
           );
@@ -97,6 +99,11 @@ class CustomExamController extends GetxController {
         subjectTopicsMap[subjectId] = data; // Store topics for this subject
         log('Fetched ${data.length} topics for subject $subjectId');
         log('Fetched ${data.length} topics for subject length ${subjectTopicsMap[subjectId]?.length} - $selectedSubjectId');
+        
+        // Preload question counts for all topics of this subject
+        for (var topic in data) {
+          fetchQuestionCountForTopic(topic.id);
+        }
       },
     );
   }
@@ -112,16 +119,8 @@ class CustomExamController extends GetxController {
       customExamQuestions.value!.subjects?.add(
         CustomExamSubject(
           id: selectedSubject.id, // Use the API-provided id
-          subjectName: selectedSubject.name,
-          // topics: subjectTopicsMap[selectedSubject.id]?.isNotEmpty ?? false
-          //     ? [
-          //         {
-          //           'topicName':
-          //               subjectTopicsMap[selectedSubject.id]!.first.name,
-          //           'questionCount': 1, // Default question count
-          //         }
-          //       ]
-          //     : [], // No topics if the subject's topics list is empty
+          subjectName: selectedSubject.name ?? "Unnamed Subject", // Default value to avoid null
+          topics: [], // Initialize with empty list to avoid null
         ),
       );
 
@@ -129,6 +128,7 @@ class CustomExamController extends GetxController {
       log("Added a new subject. Total: ${customExamQuestions.value?.subjects?.length}");
     } else {
       log("No subjects available to add.");
+      Utils.showSnackbar(message: "No subjects available to add", isSuccess: false);
     }
   }
 
@@ -137,6 +137,13 @@ class CustomExamController extends GetxController {
         subjectIndex < customExamQuestions.value!.subjects!.length) {
       CustomExamSubject subject =
           customExamQuestions.value!.subjects![subjectIndex];
+
+      // Ensure we have topics for this subject
+      if (subjectTopicsMap[subject.id] == null || subjectTopicsMap[subject.id]!.isEmpty) {
+        log("No topics available for subject ${subject.id}");
+        Utils.showSnackbar(message: "No topics available for this subject", isSuccess: false);
+        return;
+      }
 
       final availableTopics = subjectTopicsMap[subject.id]?.where((topic) {
         final isAlreadySelected =
@@ -149,19 +156,68 @@ class CustomExamController extends GetxController {
 
       if (availableTopics != null && availableTopics.isNotEmpty) {
         subject.topics ??= [];
+        
+        // Get the selected topic
+        final selectedTopic = availableTopics.first;
+        
+        // Fetch the question count for this topic
+        if (selectedTopic.id != null && selectedTopic.id.isNotEmpty) {
+          fetchQuestionCountForTopic(selectedTopic.id);
+        }
+        
         // Store both topic id and topic name for reference.
         subject.topics!.add({
-          'topic': availableTopics.first.id, // Use topic id
-          'topicName': availableTopics.first.name,
+          'topic': selectedTopic.id, // Use topic id
+          'topicName': selectedTopic.name ?? '', // Ensure no null value
           'questionCount': 1,
         });
 
         customExamQuestions.refresh();
-        log("Added topic '${availableTopics.first.name}' with 1 question to subject at index $subjectIndex.");
+        log("Added topic '${selectedTopic.name}' with 1 question to subject at index $subjectIndex.");
       } else {
         log("No available topics to add for subject at index $subjectIndex.");
+        Utils.showSnackbar(message: "All topics for this subject have been added", isSuccess: false);
       }
     }
+  }
+
+  // Fetch and store the available question count for a topic
+  Future<void> fetchQuestionCountForTopic(String topicId) async {
+    if (topicId == null || topicId.isEmpty) {
+      log('Cannot fetch question count for empty topic ID');
+      return;
+    }
+    
+    try {
+      final result = await _apiHelper.fetchQuestionCountByTopicId(topicId);
+      result.fold(
+        (error) {
+          log('Error fetching question count for topic $topicId: ${error.message}');
+          // Default to 0 if there was an error
+          topicQuestionCounts[topicId] = 0;
+        },
+        (count) {
+          // Store the count in our map
+          topicQuestionCounts[topicId] = count;
+          log('Topic $topicId has $count available questions');
+        },
+      );
+    } catch (e) {
+      log('Exception when fetching question count: $e');
+      // Default to 0 if there was an exception
+      topicQuestionCounts[topicId] = 0;
+    }
+  }
+  
+  // Get the available question count for a topic
+  int getAvailableQuestionCount(String topicId) {
+    return topicQuestionCounts[topicId] ?? 0;
+  }
+  
+  // Check if the requested question count is available for a topic
+  bool isQuestionCountAvailable(String topicId, int requestedCount) {
+    final availableCount = topicQuestionCounts[topicId] ?? 0;
+    return requestedCount <= availableCount;
   }
 
   void removeSubject(int subjectIndex) {
@@ -228,11 +284,38 @@ String getFormattedExamName() {
 
   return '${day}_${month}_$year\_$time';
 }
-  void  generateCustomExam() {
+  void generateCustomExam() {
     if (customExamQuestions.value == null ||
         customExamQuestions.value!.subjects == null ||
         customExamQuestions.value!.subjects!.isEmpty) {
       log("No subjects available to generate a custom exam.");
+      Utils.showSnackbar(message: "No subjects selected for custom exam", isSuccess: false);
+      return;
+    }
+    
+    // Check if any topic has more questions requested than available
+    bool hasExceededCounts = false;
+    String exceededTopicName = "";
+    
+    for (var subject in customExamQuestions.value!.subjects!) {
+      for (var topic in subject.topics ?? []) {
+        final topicId = topic['topic'];
+        final requestedCount = (topic['questionCount'] ?? 0) as int;
+        
+        if (!isQuestionCountAvailable(topicId, requestedCount)) {
+          hasExceededCounts = true;
+          exceededTopicName = topic['topicName'];
+          break;
+        }
+      }
+      if (hasExceededCounts) break;
+    }
+    
+    if (hasExceededCounts) {
+      Utils.showSnackbar(
+        message: "Topic '$exceededTopicName' has more questions requested than available. Please reduce the count.",
+        isSuccess: false
+      );
       return;
     }
 
@@ -276,10 +359,10 @@ String getFormattedExamName() {
           ?.expand((subject) =>
               subject.topics
                   ?.where((topic) =>
-                      topic['_id'] != null &&
-                      topic['_id'].toString().trim().isNotEmpty)
+                      topic['topic'] != null &&
+                      topic['topic'].toString().trim().isNotEmpty)
                   .map((topic) => {
-                        "topic": topic['_id'],
+                        "topic": topic['topic'],
                         "totalQuestions": topic['questionCount'] ?? 0,
                       }) ??
               [])

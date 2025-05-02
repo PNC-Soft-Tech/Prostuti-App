@@ -67,4 +67,7 @@ abstract class ApiHelper {
   Future<Either<CustomError, Response>> submitContest(String contestId);
   Future<Either<CustomError, Response>> generateCustomExam(
       CustomExamRequestModel payload);
+      
+  // New method to fetch question count by topic ID
+  Future<Either<CustomError, int>> fetchQuestionCountByTopicId(String topicId);
 }
