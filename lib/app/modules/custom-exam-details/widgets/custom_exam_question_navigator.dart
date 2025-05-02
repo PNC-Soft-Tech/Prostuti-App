@@ -1,27 +1,23 @@
-// lib/modules/model_tests/widgets/question_navigator_widget.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../common/widgets/unified_question_navigator.dart';
-import '../controllers/model_test_details_controller.dart';
+import '../controller/custom_exam_details_controller.dart';
 
-class QuestionNavigatorWidget extends StatelessWidget {
-  final ModelTestDetailsController controller;
+class CustomExamQuestionNavigator extends StatelessWidget {
+  final CustomExamDetailsController controller = Get.find<CustomExamDetailsController>();
 
-  const QuestionNavigatorWidget({
-    Key? key,
-    required this.controller,
-  }) : super(key: key);
+  CustomExamQuestionNavigator({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      // If questions aren't open, don't show the navigator
       if (!controller.isQuestionOpened.value) {
         return const SizedBox.shrink();
       }
 
-      final questions = controller.modelDetails.value?.contest.questions ?? [];
+      final questions = controller.customExamDetails.value?.contest.questions ?? [];
       final currentIndex = controller.currentQuestionIndex.value;
       final totalQuestions = questions.length;
       final markedQuestions = controller.markedQuestionIds;
@@ -139,7 +135,7 @@ class QuestionNavigatorWidget extends StatelessWidget {
     if (!controller.scrollController.hasClients) return;
     
     // Get the total number of questions for boundary checks
-    final questions = controller.modelDetails.value?.contest.questions ?? [];
+    final questions = controller.customExamDetails.value?.contest.questions ?? [];
     if (questions.isEmpty) return;
     
     // First attempt: Try direct scroll using context if available
@@ -270,4 +266,4 @@ class QuestionNavigatorWidget extends StatelessWidget {
       isScrollControlled: true,
     );
   }
-}
+} 

@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../controller/contest_details_controller.dart';
+import 'question_navigator_floating_widget.dart';
 
-void showFlaggedQuestionsBottomSheet(List<String> flaggedQuestionIds) {
+void showFlaggedQuestionsBottomSheet(RxList<String> flaggedIds) {
   final controller = Get.find<ContestDetailsController>();
-
-  if (flaggedQuestionIds.isEmpty) {
-    Get.snackbar('No Flagged Questions', 'You have not flagged any questions yet.');
+  
+  if (flaggedIds.isEmpty) {
+    Get.snackbar('No Marked Questions', 'No questions have been flagged yet.');
     return;
   }
 
   Get.bottomSheet(
     Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
@@ -25,50 +24,44 @@ void showFlaggedQuestionsBottomSheet(List<String> flaggedQuestionIds) {
         children: [
           Text(
             'Flagged Questions',
-            style: GoogleFonts.inter(
+            style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 16.h),
-
-          Wrap(
-            spacing: 12.w,
-            runSpacing: 12.h,
-            children: flaggedQuestionIds.map((questionId) {
-              final questionIndex = controller.questionIdToIndexMap[questionId];
-
-              if (questionIndex == null) {
-                return const SizedBox(); // Handle unexpected case (shouldn't happen if map is correctly initialized)
-              }
-
-              final questionNumber = questionIndex + 1; // 1-based numbering
-
-              return GestureDetector(
-                onTap: () {
-                  Get.back(); // Close the bottom sheet
-                  controller.scrollToQuestion(questionId); // Scroll using GlobalKey
-                },
-                child: Container(
-                  padding: EdgeInsets.all(12.r),
-                  decoration: BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Text(
-                    questionNumber.toString(),
-                    style: GoogleFonts.inter(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+          Obx(() => Wrap(
+                spacing: 12.w,
+                runSpacing: 12.h,
+                children: flaggedIds.map((id) {
+                  final index = controller.questionIdToIndexMap[id] ?? 0;
+                  return GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      // Use the new navigation method that ensures scrolling
+                      QuestionNavigatorFloating.ensureScrollToQuestion(id);
+                    },
+                    child: Container(
+                      width: 50.w,
+                      height: 50.w,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF8143),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-
-          SizedBox(height: 16.h),
+                  );
+                }).toList(),
+              )),
         ],
       ),
     ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../common/widgets/unified_question_navigator.dart';
 import '../controller/contest_details_controller.dart';
 
 class QuestionNavigatorFloating extends StatelessWidget {
@@ -27,94 +27,181 @@ class QuestionNavigatorFloating extends StatelessWidget {
 
       final isMarked = controller.isMarkedQuestion(currentQuestion.id);
 
-      // ✅ Get the nearest previous and next visible questions
-      final prevVisible = controller.getPreviousVisibleQuestion(currentQuestion.id);
-      final nextVisible = controller.getNextVisibleQuestion(currentQuestion.id);
-  // Replace prevVisible/nextVisible with flagged navigation
-  final nextFlagged = controller.getNextFlaggedQuestion(currentQuestion.id);
-  final prevFlagged = controller.getPreviousFlaggedQuestion(currentQuestion.id);
+      // Create reactive properties to properly update the UI
+      final RxInt markedCount = RxInt(totalFlagged);
+      final RxBool isCurrentMarked = RxBool(isMarked);
+      
+      // Scroll position reactive values
+      final RxBool canScrollUp = RxBool(false);
+      final RxBool canScrollDown = RxBool(false);
+      
+      // Update scroll position values whenever the scroll controller changes position
+      if (controller.scrollController.hasClients) {
+        canScrollUp.value = controller.scrollController.position.pixels > 0;
+        canScrollDown.value = controller.scrollController.position.pixels < 
+                              controller.scrollController.position.maxScrollExtent;
+        
+        // Listen to scroll controller changes
+        controller.scrollController.addListener(() {
+          canScrollUp.value = controller.scrollController.position.pixels > 0;
+          canScrollDown.value = controller.scrollController.position.pixels < 
+                                controller.scrollController.position.maxScrollExtent;
+        });
+      }
 
-      final currentFlaggedIndex = totalFlagged > 0
-          ? flaggedQuestions.indexOf(currentQuestion.id) + 1
-          : 0;
+      // Listen to changes in the marked questions list
+      ever(controller.markedQuestionIds, (_) {
+        markedCount.value = controller.markedQuestionIds.length;
+        if (currentQuestion != null) {
+          isCurrentMarked.value = controller.isMarkedQuestion(currentQuestion.id);
+        }
+      });
 
-      return GestureDetector(
+      return UnifiedQuestionNavigator(
+        currentIndex: controller.currentQuestionIndex,
+        totalQuestions: questions.length,
+        totalMarked: markedCount,
+        isCurrentMarked: isCurrentMarked,
+        onPrevious: () {
+          if (canScrollUp.value) {
+            _scrollUp();
+          }
+        },
+        onNext: () {
+          if (canScrollDown.value) {
+            _scrollDown();
+          }
+        },
         onTap: onOpenFlaggedSheet,
-        child: Container(
-          width: 60.w,
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF8143),
-            borderRadius: BorderRadius.circular(30.r),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ✅ Enable UP button only if a previous visible question exists
-              _navButton(Icons.arrow_upward, () => controller.scrollToQuestion(prevFlagged), enabled: prevFlagged != null),
-              SizedBox(height: 4.h),
-
-              if (isMarked) const Icon(Icons.flag, color: Colors.white),
-              SizedBox(height: 4.h),
-
-              if (totalFlagged > 0)
-                Text(
-                  "$currentFlaggedIndex / $totalFlagged",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.sp),
-                )
-              else
-                Text(
-                  "${currentIndex + 1} / ${questions.length}",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.sp),
-                ),
-
-              SizedBox(height: 4.h),
-
-              // ✅ Enable DOWN button only if a next visible question exists
-              _navButton(Icons.arrow_downward, () => controller.scrollToQuestion(nextFlagged), enabled: nextFlagged != null),
-            ],
-          ),
-        ),
+        canScrollUp: canScrollUp,
+        canScrollDown: canScrollDown,
       );
     });
   }
-
-  /// ✅ Navigation Button Widget
-  Widget _navButton(IconData icon, VoidCallback onPressed, {required bool enabled}) {
-    return IconButton(
-      icon: Icon(icon, color: enabled ? Colors.white : Colors.white.withOpacity(0.5)),
-      onPressed: enabled ? onPressed : null,
-      constraints: const BoxConstraints(),
-      padding: EdgeInsets.zero,
+  
+  void _scrollUp() {
+    if (!controller.scrollController.hasClients) return;
+    
+    final currentPos = controller.scrollController.position.pixels;
+    final viewportHeight = controller.scrollController.position.viewportDimension;
+    final target = (currentPos - viewportHeight).clamp(
+      0.0, 
+      controller.scrollController.position.maxScrollExtent
+    );
+    
+    controller.scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
-
-  /// ✅ Scroll to a Specific Question
-  // void _scrollToQuestion(String? questionId) {
-  //   if (questionId != null) {
-  //     controller.scrollToQuestion(questionId);
-  //   }
-  // }
-
-void _scrollToQuestion(String? questionId) async {
-  if (questionId == null) return;
-
-  final controller = Get.find<ContestDetailsController>();
   
-  // Always reset filter first
-  controller.selectedSubject.value = 'All';
+  void _scrollDown() {
+    if (!controller.scrollController.hasClients) return;
+    
+    final currentPos = controller.scrollController.position.pixels;
+    final viewportHeight = controller.scrollController.position.viewportDimension;
+    final target = (currentPos + viewportHeight).clamp(
+      0.0, 
+      controller.scrollController.position.maxScrollExtent
+    );
+    
+    controller.scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
   
-  // Wait for UI rebuild
-  await Future.delayed(const Duration(milliseconds: 50));
-
-  final context = controller.questionKeys[questionId]?.currentContext;
-  if (context == null) return;
-
-  Scrollable.ensureVisible(
-    context,
-    duration: const Duration(milliseconds: 500),
-    curve: Curves.easeInOut,
-    alignment: 0.1, // Adjust this value (0.0 = top, 0.5 = center)
-  );
-}
+  // Override controller's scrollToQuestion to ensure proper scrolling to specific questions
+  static void ensureScrollToQuestion(String questionId) {
+    final controller = Get.find<ContestDetailsController>();
+    
+    // Make sure all questions are visible by resetting filters if needed
+    controller.selectedSubject.value = 'All';
+    
+    // Update currentQuestionIndex first to ensure the question is loaded
+    final targetIndex = controller.questionIdToIndexMap[questionId] ?? 0;
+    controller.currentQuestionIndex.value = targetIndex;
+    
+    // Give the UI time to rebuild with filter changes
+    Future.delayed(const Duration(milliseconds: 150), () {
+      // Try sequential scrolling method for more reliable navigation
+      _incrementalScrollToQuestion(questionId, targetIndex);
+    });
+  }
+  
+  // Improved scrolling method that handles variable question heights
+  static void _incrementalScrollToQuestion(String questionId, int targetIndex) {
+    final controller = Get.find<ContestDetailsController>();
+    if (!controller.scrollController.hasClients) return;
+    
+    // Get the total number of questions for boundary checks
+    final questions = controller.contestDetails.value?.contest.questions ?? [];
+    if (questions.isEmpty) return;
+    
+    // First attempt: Try direct scroll using context if available
+    final questionKey = controller.questionKeys[questionId];
+    if (questionKey?.currentContext != null) {
+      Scrollable.ensureVisible(
+        questionKey!.currentContext!,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+        alignment: 0.1,
+      );
+      return;
+    }
+    
+    // Second attempt: If context isn't available, use a smarter scrolling approach
+    // Calculate a variable height estimation based on question position
+    // Assume questions can be very tall (500-800px)
+    final averageHeight = 600.0; // Higher estimate for potentially taller questions
+    
+    // Start with a rough position estimate
+    double targetPosition = targetIndex * averageHeight;
+    
+    // Ensure we don't exceed scroll bounds
+    targetPosition = targetPosition.clamp(
+      0.0, 
+      controller.scrollController.position.maxScrollExtent
+    );
+    
+    // Scroll to the estimated position
+    controller.scrollController.animateTo(
+      targetPosition,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+    
+    // Add a follow-up check to refine the position if needed
+    Future.delayed(const Duration(milliseconds: 300), () {
+      // Try again with context after initial scroll
+      final updatedKey = controller.questionKeys[questionId];
+      if (updatedKey?.currentContext != null) {
+        Scrollable.ensureVisible(
+          updatedKey!.currentContext!,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.1,
+        );
+      }
+    });
+  }
+  
+  // Legacy method preserved for compatibility
+  static void _directScrollToQuestion(String questionId, int questionIndex) {
+    final controller = Get.find<ContestDetailsController>();
+    
+    if (!controller.scrollController.hasClients) return;
+    
+    // Use a larger height estimate for potentially taller questions
+    final estimatedPosition = questionIndex * 600.0;
+    
+    // Scroll to the estimated position
+    controller.scrollController.animateTo(
+      estimatedPosition.clamp(0.0, controller.scrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
 }

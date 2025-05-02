@@ -11,9 +11,9 @@ import '../../../common/utils/prostuti_utils.dart';
 import '../../../common/widgets/shared_question_widget.dart';
 import '../../../constant/app_color.dart';
 import '../../contest-details/widgets/bottom_fixed_submit_contest_widget.dart';
-import '../../contest-details/widgets/question_navigator.dart';
 import '../../contest-details/widgets/subject_tabs_widget.dart';
 import '../controller/custom_exam_details_controller.dart';
+import '../widgets/custom_exam_question_navigator.dart';
 
 class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
   const CustomExamDetailsView({Key? key}) : super(key: key);
@@ -217,7 +217,7 @@ class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
               ? Positioned(
                   right: 16.w,
                   bottom: 100.h,
-                  child: QuestionNavigatorWidget(),
+                  child: CustomExamQuestionNavigator(),
                 )
               : const SizedBox.shrink()),
         ],
