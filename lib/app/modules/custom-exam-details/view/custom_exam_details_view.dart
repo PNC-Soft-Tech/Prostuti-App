@@ -190,14 +190,45 @@ class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: BottomFixedSubmitContestWidget(
-              timeLeft: "00:00",
+            child: Obx(() => BottomFixedSubmitContestWidget(
+              timeLeft: controller.formattedCountdownTime,
               onCompletePressed: () {
-                // controller.onCompletePressed();
+                // Only allow submission if time hasn't expired
+                if (controller.canCompleteExam()) {
+                  // Handle exam submission
+                  Get.dialog(
+                    AlertDialog(
+                      title: const Text('Submit Exam'),
+                      content: const Text('Are you sure you want to complete and submit this exam?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Get.back(),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Get.back();
+                            controller.submitContest(controller.customExamId.value);
+                          },
+                          child: const Text('Submit'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Show error message if time has expired
+                  Get.snackbar(
+                    'Time Expired',
+                    'The exam time has ended. Your answers have been submitted.',
+                    backgroundColor: Colors.red.withOpacity(0.8),
+                    colorText: Colors.white,
+                    snackPosition: SnackPosition.TOP,
+                  );
+                }
               },
               currentQuestionIndex: controller.currentQuestionIndex.value,
               totalQuestions: controller.filteredQuestions.length,
-            ),
+            )),
           ),
 
           // Question navigator widget - always visible

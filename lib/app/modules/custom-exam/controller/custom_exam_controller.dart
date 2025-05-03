@@ -352,6 +352,16 @@ String getFormattedExamName() {
       return; // Error already shown by buildSelectedTopicsPayload
     }
 
+    // Calculate total questions count
+    final int totalQuestions = customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
+      return sum +
+          (subject.topics?.fold<int>(0, (topicSum, topic) {
+                return topicSum +
+                    ((topic['questionCount'] ?? 0) as num).toInt();
+              }) ??
+              0);
+    }) ?? 0;
+
     final payload = {
       "name": "Custom Exam ${getFormattedExamName()}", 
       //use current date fiormat DD_MM_YYYY
@@ -359,42 +369,12 @@ String getFormattedExamName() {
       "description": "This is a custom exam",
       "startCustomExam": DateTime.now().toIso8601String(),
       "endCustomExam":
-          DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
-      "totalMarks":
-          customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
-        return sum +
-            (subject.topics?.fold<int>(0, (topicSum, topic) {
-                  return topicSum +
-                      ((topic['questionCount'] ?? 0) as num).toInt();
-                }) ??
-                0);
-      }),
-      "totalQuestions":
-          customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
-        return sum +
-            (subject.topics?.fold<int>(0, (topicSum, topic) {
-                  return topicSum +
-                      ((topic['questionCount'] ?? 0) as num).toInt();
-                }) ??
-                0);
-      }),
-      "totalTime":
-          customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
-        return sum +
-            (subject.topics?.fold<int>(0, (topicSum, topic) {
-                  return topicSum +
-                      ((topic['questionCount'] ?? 0) as num).toInt();
-                }) ??
-                0);
-      }),
-      // Map each topic to use its id ("topic" key) instead of topic name.
+          DateTime.now().add(Duration(minutes: totalQuestions)).toIso8601String(), // 1 minute per question
+      "totalMarks": totalQuestions, // Total marks equal to number of questions
+      "totalQuestions": totalQuestions,
+      "totalTime": totalQuestions, // Total time in minutes equal to number of questions
+      "marksPerQuestion": 1, // 1 mark per question
       "selectedTopics": selectedTopics,
-      // "id": customExamQuestions.value!.id,
-      // "subjects": customExamQuestions.value!.subjects?.map((subject) => {
-      //       "id": subject.id,
-      //       "subjectName": subject.subjectName,
-      //       "topics": subject.topics,
-      //     }).toList(),
     };
     log("Generated custom exam payload: $payload");
     final request = CustomExamRequestModel.fromJson(payload);

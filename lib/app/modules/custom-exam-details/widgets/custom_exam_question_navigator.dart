@@ -12,6 +12,11 @@ class CustomExamQuestionNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      // Safety check for controller and custom exam details
+      if (controller.customExamDetails.value == null) {
+        return const SizedBox.shrink();
+      }
+      
       // If questions aren't open, don't show the navigator
       if (!controller.isQuestionOpened.value) {
         return const SizedBox.shrink();
@@ -39,16 +44,28 @@ class CustomExamQuestionNavigator extends StatelessWidget {
       
       // Update scroll position values whenever the scroll controller changes position
       if (controller.scrollController.hasClients) {
-        canScrollUp.value = controller.scrollController.position.pixels > 0;
-        canScrollDown.value = controller.scrollController.position.pixels < 
-                              controller.scrollController.position.maxScrollExtent;
-        
-        // Listen to scroll controller changes
-        controller.scrollController.addListener(() {
+        try {
           canScrollUp.value = controller.scrollController.position.pixels > 0;
           canScrollDown.value = controller.scrollController.position.pixels < 
-                                controller.scrollController.position.maxScrollExtent;
-        });
+                              controller.scrollController.position.maxScrollExtent;
+          
+          // Make sure not to add multiple listeners
+          controller.scrollController.removeListener(() {});
+          controller.scrollController.addListener(() {
+            try {
+              if (controller.scrollController.hasClients) {
+                canScrollUp.value = controller.scrollController.position.pixels > 0;
+                canScrollDown.value = controller.scrollController.position.pixels < 
+                                  controller.scrollController.position.maxScrollExtent;
+              }
+            } catch (e) {
+              debugPrint("Scroll listener error: $e");
+            }
+          });
+        } catch (e) {
+          // Handle any exceptions with scroll controller
+          debugPrint("Scroll controller error: $e");
+        }
       }
 
       // Listen to changes in the marked questions list

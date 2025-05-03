@@ -50,22 +50,48 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
   }
 
   Widget _buildTimerWidget() {
+    // Extract time components to check if time is low
+    final timeParts = timeLeft.split(':');
+    final isTimeRunningLow = timeParts.length <= 2 && 
+                            int.parse(timeParts[0]) < 5; // Less than 5 minutes
+    final isTimeCritical = timeParts.length <= 2 && 
+                           int.parse(timeParts[0]) < 2; // Less than 2 minutes
+    
+    // Change colors based on time remaining
+    final backgroundColor = isTimeCritical 
+                          ? Colors.red.shade50 
+                          : (isTimeRunningLow 
+                             ? Colors.orange.shade50 
+                             : Colors.blue.shade50);
+    
+    final textColor = isTimeCritical 
+                    ? Colors.red.shade800 
+                    : (isTimeRunningLow 
+                       ? Colors.orange.shade800 
+                       : Colors.blue.shade800);
+    
+    final iconColor = isTimeCritical 
+                    ? Colors.red 
+                    : (isTimeRunningLow 
+                       ? Colors.orange 
+                       : Colors.blue);
+      
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(50.r),
       ),
       child: Row(
         children: [
-          Icon(Icons.access_time, color: Colors.blue, size: 20.sp),
+          Icon(Icons.access_time, color: iconColor, size: 20.sp),
           SizedBox(width: 6.w),
           Text(
             "Time Left: $timeLeft",
             style: GoogleFonts.inter(
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,
-              color: Colors.blue.shade800,
+              color: textColor,
             ),
           ),
         ],

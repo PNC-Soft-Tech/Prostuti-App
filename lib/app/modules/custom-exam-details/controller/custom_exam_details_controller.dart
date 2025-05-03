@@ -41,6 +41,7 @@ class CustomExamDetailsController extends GetxController
 
   // Timer state
   Rx<Duration> remainingTime = const Duration().obs;
+  RxBool isTimeExpired = false.obs;
   Timer? _timer;
 
   // Navigation
@@ -354,7 +355,31 @@ class CustomExamDetailsController extends GetxController
       remainingTime.value = endTime.difference(now);
     } else {
       remainingTime.value = Duration.zero;
+      isTimeExpired.value = true;
       _timer?.cancel();
+      
+      // Auto-submit and navigate home after a short delay
+      if (!isModelTestSubmittedValue.value) {
+        isModelTestSubmittedValue.value = true; // Prevent multiple submissions
+        
+        Get.snackbar(
+          'Time\'s Up!',
+          'Your exam time has ended. Your answers have been submitted.',
+          duration: const Duration(seconds: 3),
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+        );
+        
+        // Submit exam answers
+        Future.delayed(const Duration(seconds: 1), () {
+          submitContest(customExamId.value).then((_) {
+            // Navigate to home after submission
+            Future.delayed(const Duration(seconds: 2), () {
+              Get.offAllNamed('/home');
+            });
+          });
+        });
+      }
     }
   }
 
@@ -366,11 +391,16 @@ class CustomExamDetailsController extends GetxController
   }
 
   String get formattedCountdownTime {
-    final minutes =
-        remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds =
-        remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$minutes:$seconds";
+    if (remainingTime.value.inHours > 0) {
+      final hours = remainingTime.value.inHours;
+      final minutes = remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
+      final seconds = remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
+      return "$hours:$minutes:$seconds";
+    } else {
+      final minutes = remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
+      final seconds = remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
+      return "$minutes:$seconds";
+    }
   }
 
   @override
@@ -378,4 +408,9 @@ class CustomExamDetailsController extends GetxController
 
   @override
   RxString get selectedTestMode => currentSelectedModelTestMode;
+
+  // Add method to check if exam can be completed
+  bool canCompleteExam() {
+    return !isTimeExpired.value;
+  }
 }
