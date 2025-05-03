@@ -6,6 +6,7 @@ class Topic {
   final String? slug;
   final String? category;
   final Subjects? subject;
+  final int? totalQuestions;
 
   Topic({
     required this.id,
@@ -13,9 +14,18 @@ class Topic {
     this.slug,
     this.category,
     this.subject,
+    this.totalQuestions,
   });
 
   factory Topic.fromJson(Map<String, dynamic> json) {
+    if (json.containsKey('topic') && json.containsKey('totalQuestions')) {
+      return Topic(
+        id: json['topic'] ?? '',
+        name: '',
+        totalQuestions: json['totalQuestions'] as int? ?? 0,
+      );
+    }
+
     return Topic(
       id: json['_id'] ?? '',
       name: json['name'] ?? '',
@@ -28,6 +38,13 @@ class Topic {
   }
   // tojson method to convert the object to JSON
   Map<String, dynamic> toJson() {
+    if (totalQuestions != null) {
+      return {
+        'topic': id,
+        'totalQuestions': totalQuestions,
+      };
+    }
+    
     final Map<String, dynamic> data = {};
     if (id.isNotEmpty) data['_id'] = id;
     if (name.isNotEmpty) data['name'] = name;

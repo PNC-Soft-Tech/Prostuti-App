@@ -13,6 +13,7 @@ import '../../subjects/models/subjects_model.dart';
 import '../controller/custom_exam_controller.dart';
 import 'package:collection/collection.dart';
 
+import '../models/custom_exam_subject_model.dart';
 import 'preview_screen.dart';
 
 class CustomExamView extends GetView<CustomExamController> {
@@ -166,35 +167,50 @@ class CustomExamView extends GetView<CustomExamController> {
                           .toList(),
                       onChanged: (selectedSubject) {
                         if (selectedSubject != null) {
-                          subject.subjectName = selectedSubject.name;
+                          // Since 'id' is final, we need to replace the entire subject instead of updating it directly
+                          final oldSubject = subject;
+                          
+                          // Create a new CustomExamSubject with the selected subject's details
+                          final newSubject = CustomExamSubject(
+                            id: selectedSubject.id,
+                            subjectName: selectedSubject.name,
+                            topics: [], // Start with empty topics list
+                          );
+                          
+                          // Find the index of the current subject in the list and replace it
+                          final subjectIndex = controller.customExamQuestions.value!.subjects!.indexOf(oldSubject);
+                          if (subjectIndex >= 0) {
+                            controller.customExamQuestions.value!.subjects![subjectIndex] = newSubject;
+                          }
+                          
                           controller.selectedSubjectId.value = selectedSubject.id;
-                          // controller.fetchTopicsBySubjectId(selectedSubject.id);
-                          subject.topics = [];
-                          // controller.customExamQuestions.refresh();
-                          // Fetch topics for the newly selected subject
-                          controller
-                              .fetchTopicsBySubjectId(selectedSubject.id)
-                              .then((_) {
-                            // Fetch topics for the selected subject
-                            final newTopics =
-                                controller.subjectTopicsMap[selectedSubject.id] ??
-                                    [];
-                            controller.selectedTopics[index]?.map((t) {
-                              log(" old topics: $t");
-                            });
-                            log(" new topic: ${newTopics.first.name}");
-                            // Add only the first topic if available
-                            subject.topics = newTopics.isNotEmpty
-                                ? [
-                                    {
-                                      'topicName': newTopics.first.name,
-                                      'questionCount':
-                                          null, // Reset question count for the first topic
-                                    }
-                                  ]
-                                : []; // No topics if the list is empty
-
-                            // Refresh custom exam data
+                          
+                          // Fetch topics for this specific subject
+                          controller.fetchTopicsBySubjectId(selectedSubject.id).then((_) {
+                            final newTopics = controller.subjectTopicsMap[selectedSubject.id] ?? [];
+                            
+                            if (newTopics.isNotEmpty) {
+                              // Create a new topic from the first available topic
+                              final firstTopic = newTopics.first;
+                              
+                              // Fetch count for this topic
+                              controller.fetchQuestionCountForTopic(firstTopic.id);
+                              
+                              // Add the first topic to the subject
+                              newSubject.topics ??= [];
+                              newSubject.topics!.add({
+                                'topic': firstTopic.id,
+                                'topicName': firstTopic.name ?? '',
+                                'questionCount': 1,
+                              });
+                            } else {
+                              Utils.showSnackbar(
+                                message: "No topics available for this subject",
+                                isSuccess: false
+                              );
+                            }
+                            
+                            // Notify UI to update
                             controller.customExamQuestions.refresh();
                           });
                         }
@@ -231,19 +247,18 @@ class CustomExamView extends GetView<CustomExamController> {
                                   borderRadius: BorderRadius.circular(20.r),
                                 ),
                               ),
-
-                              isExpanded:
-                                  true, // Ensures the dropdown uses all available horizontal space
+                              isExpanded: true,
                               value: findTopicDropdownValue(index, j),
-                              items: (controller.subjectTopicsMap[subject.id] ?? [])
-                                  .map<DropdownMenuItem<String>>(
-                                      (topic) => DropdownMenuItem(
-                                            value: topic.name, // Ensure value is unique and matches topic.name
-                                            child: Text(topic.name), // Display the topic name in the dropdown
-                                          ))
+                              items: (subject.id != null ? controller.subjectTopicsMap[subject.id] ?? [] : [])
+                                  .map<DropdownMenuItem<String>>((topic) => 
+                                    DropdownMenuItem(
+                                      value: topic.name,
+                                      child: Text(topic.name ?? "Unnamed Topic"),
+                                    )
+                                  )
                                   .toList(),
                               onChanged: (value) {
-                                if (value != null && subject.topics != null && j < subject.topics!.length) {
+                                if (value != null && subject.topics != null && j < subject.topics!.length && subject.id != null) {
                                   // Remove previously selected topic from selectedTopics
                                   final previousTopic = subject.topics![j]['topicName'];
                                   if (previousTopic != null) {
@@ -272,9 +287,9 @@ class CustomExamView extends GetView<CustomExamController> {
                                   }
                                 }
                               },
-                              hint: Text(controller.topics.isEmpty
-                                  ? "No Topics Available"
-                                  : "Select Topic"),
+                              hint: Text(
+                                controller.topics.isEmpty ? "No Topics Available" : "Select Topic"
+                              ),
                             ),
                           ),
                           SizedBox(width: 10.w),
@@ -282,10 +297,13 @@ class CustomExamView extends GetView<CustomExamController> {
                             flex: 1,
                             child: FutureBuilder(
                               future: subject.topics?[j]?['topic'] != null 
-                                ? controller.fetchQuestionCountForTopic(subject.topics![j]['topic'] ?? '')
+                                ? controller.fetchQuestionCountForTopic(subject.topics![j]['topic'].toString())
                                 : null,
                               builder: (context, snapshot) {
-                                final topicId = subject.topics?[j]?['topic'] ?? '';
+                                String topicId = '';
+                                if (subject.topics?[j]?['topic'] != null) {
+                                  topicId = subject.topics![j]['topic'].toString();
+                                }
                                 final available = controller.getAvailableQuestionCount(topicId);
                                 final current = subject.topics?[j]?['questionCount'] ?? 1;
                                 final isExceeded = current > available;

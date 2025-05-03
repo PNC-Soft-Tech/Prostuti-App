@@ -5,6 +5,7 @@ import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
 import '../../exam-topics/models/exam_topics_model.dart';
+import '../../contests/models/topics_model.dart';
 import '../models/custom_exam_model.dart';
 import '../models/custom_exam_request_model.dart';
 import '../models/custom_exam_subject_model.dart';
@@ -89,6 +90,8 @@ class CustomExamController extends GetxController {
   }
 
   Future<void> fetchTopicsBySubjectId(String subjectId) async {
+    log("Fetching topics for subject ID: $subjectId");
+    
     final result = await _apiHelper.fetchSubCategoriesByCategoryId(subjectId);
     result.fold(
       (error) {
@@ -98,7 +101,6 @@ class CustomExamController extends GetxController {
       (data) {
         subjectTopicsMap[subjectId] = data; // Store topics for this subject
         log('Fetched ${data.length} topics for subject $subjectId');
-        log('Fetched ${data.length} topics for subject length ${subjectTopicsMap[subjectId]?.length} - $selectedSubjectId');
         
         // Preload question counts for all topics of this subject
         for (var topic in data) {
@@ -138,6 +140,13 @@ class CustomExamController extends GetxController {
       CustomExamSubject subject =
           customExamQuestions.value!.subjects![subjectIndex];
 
+      // Ensure we have the correct topics map using subject.id instead of selectedSubjectId
+      if (subject.id == null || subject.id!.isEmpty) {
+        log("Subject ID is missing");
+        Utils.showSnackbar(message: "Subject ID is missing", isSuccess: false);
+        return;
+      }
+
       // Ensure we have topics for this subject
       if (subjectTopicsMap[subject.id] == null || subjectTopicsMap[subject.id]!.isEmpty) {
         log("No topics available for subject ${subject.id}");
@@ -167,7 +176,7 @@ class CustomExamController extends GetxController {
         
         // Store both topic id and topic name for reference.
         subject.topics!.add({
-          'topic': selectedTopic.id, // Use topic id
+          'topic': selectedTopic.id ?? '', // Ensure we always have a string value
           'topicName': selectedTopic.name ?? '', // Ensure no null value
           'questionCount': 1,
         });
@@ -293,18 +302,36 @@ String getFormattedExamName() {
       return;
     }
     
+    // Check if any subjects have topics
+    bool hasTopics = false;
+    for (var subject in customExamQuestions.value!.subjects!) {
+      if (subject.topics != null && subject.topics!.isNotEmpty) {
+        hasTopics = true;
+        break;
+      }
+    }
+    
+    if (!hasTopics) {
+      Utils.showSnackbar(message: "Please add at least one topic to create an exam", isSuccess: false);
+      return;
+    }
+    
     // Check if any topic has more questions requested than available
     bool hasExceededCounts = false;
     String exceededTopicName = "";
     
     for (var subject in customExamQuestions.value!.subjects!) {
       for (var topic in subject.topics ?? []) {
-        final topicId = topic['topic'];
+        final topicId = topic['topic']?.toString();
+        if (topicId == null || topicId.isEmpty) {
+          continue;
+        }
+        
         final requestedCount = (topic['questionCount'] ?? 0) as int;
         
         if (!isQuestionCountAvailable(topicId, requestedCount)) {
           hasExceededCounts = true;
-          exceededTopicName = topic['topicName'];
+          exceededTopicName = topic['topicName'] ?? 'Unknown';
           break;
         }
       }
@@ -317,6 +344,12 @@ String getFormattedExamName() {
         isSuccess: false
       );
       return;
+    }
+
+    // Build the selectedTopics payload first, as this is the most critical part
+    final selectedTopics = buildSelectedTopicsPayload();
+    if (selectedTopics.isEmpty) {
+      return; // Error already shown by buildSelectedTopicsPayload
     }
 
     final payload = {
@@ -355,18 +388,7 @@ String getFormattedExamName() {
                 0);
       }),
       // Map each topic to use its id ("topic" key) instead of topic name.
-      "selectedTopics": customExamQuestions.value!.subjects
-          ?.expand((subject) =>
-              subject.topics
-                  ?.where((topic) =>
-                      topic['topic'] != null &&
-                      topic['topic'].toString().trim().isNotEmpty)
-                  .map((topic) => {
-                        "topic": topic['topic'],
-                        "totalQuestions": topic['questionCount'] ?? 0,
-                      }) ??
-              [])
-          .toList(),
+      "selectedTopics": selectedTopics,
       // "id": customExamQuestions.value!.id,
       // "subjects": customExamQuestions.value!.subjects?.map((subject) => {
       //       "id": subject.id,
@@ -383,14 +405,83 @@ String getFormattedExamName() {
           Utils.showSnackbar(message: error.message, isSuccess: false);
         },
         (response) {
-          Utils.showSnackbar(
-              message: "Successfully generated custom exam", isSuccess: true);
-          log('Successfully generated custom exam: ${response.body['data']['_id']}');
-          Get.toNamed(Routes.customExamDetails, arguments: {
-            "customExamId": response.body['data']['_id'],
-          });
+          try {
+            log('Response body: ${response.body}');
+            if (response.body['success'] == true && response.body['data'] != null && response.body['data']['_id'] != null) {
+              Utils.showSnackbar(
+                  message: "Successfully generated custom exam", isSuccess: true);
+              log('Successfully generated custom exam: ${response.body['data']['_id']}');
+              Get.toNamed(Routes.customExamDetails, arguments: {
+                "customExamId": response.body['data']['_id'],
+              });
+            } else {
+              log('Invalid response format or missing _id: ${response.body}');
+              Utils.showSnackbar(
+                  message: "Error creating exam: Invalid response format", 
+                  isSuccess: false);
+            }
+          } catch (e) {
+            log('Error processing success response: $e');
+            Utils.showSnackbar(
+                message: "Error processing response", isSuccess: false);
+          }
         },
       );
     });
+  }
+
+  List<Map<String, dynamic>> buildSelectedTopicsPayload() {
+    if (customExamQuestions.value == null ||
+        customExamQuestions.value!.subjects == null ||
+        customExamQuestions.value!.subjects!.isEmpty) {
+      return [];
+    }
+    
+    List<Map<String, dynamic>> result = [];
+    
+    // Loop through each subject and topic to build the payload
+    for (var subject in customExamQuestions.value!.subjects!) {
+      if (subject.topics == null || subject.topics!.isEmpty) {
+        continue;
+      }
+      
+      for (var topic in subject.topics!) {
+        // Check if topic ID exists and is not empty
+        if (topic['topic'] == null || topic['topic'].toString().trim().isEmpty) {
+          log("WARNING: Topic ID is null or empty for topic: ${topic['topicName']}");
+          continue;
+        }
+        
+        // Get topic ID and ensure it's a string
+        String topicId = topic['topic'].toString().trim();
+        
+        // Get question count with default of 1
+        int questionCount = (topic['questionCount'] ?? 1) as int;
+        
+        // Create topic using the Topic class
+        Topic topicObj = Topic(
+          id: topicId,
+          name: topic['topicName']?.toString() ?? '',
+          totalQuestions: questionCount
+        );
+        
+        // Add the topic's JSON representation
+        Map<String, dynamic> topicEntry = topicObj.toJson();
+        log("Adding topic to payload: $topicEntry");
+        result.add(topicEntry);
+      }
+    }
+    
+    if (result.isEmpty) {
+      log("ERROR: No valid topics found for the custom exam!");
+      Utils.showSnackbar(
+        message: "Please add at least one valid topic with a question count",
+        isSuccess: false
+      );
+      return [];
+    }
+    
+    log("Final selectedTopics payload: $result");
+    return result;
   }
 }
