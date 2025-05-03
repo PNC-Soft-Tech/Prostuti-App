@@ -10,6 +10,7 @@ import '../../../storage/storage_helper.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../models/user_model.dart'; // assumes UserProfile is here
+import '../../../routes/app_pages.dart';
 
 class ProfileController extends GetxController {
   // -- existing state --
@@ -18,6 +19,11 @@ class ProfileController extends GetxController {
   RxInt currentIndex = 0.obs;
 
   void updateTitle(String newTitle) => title.value = newTitle;
+
+  // Navigate to a specific tab in the home view
+  void navigateToIndex(int index) {
+    Get.offNamed(Routes.home, arguments: {'tabIndex': index});
+  }
 
   // -- form controllers --
   final fullNameController = TextEditingController();

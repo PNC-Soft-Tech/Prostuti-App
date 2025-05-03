@@ -50,32 +50,34 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
   }
 
   Widget _buildTimerWidget() {
-    // Extract time components to check if time is low
-    final timeParts = timeLeft.split(':');
-    final isTimeRunningLow = timeParts.length <= 2 && 
-                            int.parse(timeParts[0]) < 5; // Less than 5 minutes
-    final isTimeCritical = timeParts.length <= 2 && 
-                           int.parse(timeParts[0]) < 2; // Less than 2 minutes
+    // Default colors
+    Color backgroundColor = Colors.blue.shade50;
+    Color textColor = Colors.blue.shade800;
+    Color iconColor = Colors.blue;
     
-    // Change colors based on time remaining
-    final backgroundColor = isTimeCritical 
-                          ? Colors.red.shade50 
-                          : (isTimeRunningLow 
-                             ? Colors.orange.shade50 
-                             : Colors.blue.shade50);
+    // Only try to parse if it's a time format (MM:SS) and not a human-readable string
+    if (!timeLeft.contains('in') && timeLeft.contains(':')) {
+      try {
+        final timeParts = timeLeft.split(':');
+        if (timeParts.length == 2) {
+          final minutes = int.tryParse(timeParts[0]) ?? 0;
+          
+          // Set colors based on remaining time
+          if (minutes < 2) {
+            backgroundColor = Colors.red.shade50;
+            textColor = Colors.red.shade800;
+            iconColor = Colors.red;
+          } else if (minutes < 5) {
+            backgroundColor = Colors.orange.shade50;
+            textColor = Colors.orange.shade800;
+            iconColor = Colors.orange;
+          }
+        }
+      } catch (e) {
+        // Fallback to default colors if parsing fails
+      }
+    }
     
-    final textColor = isTimeCritical 
-                    ? Colors.red.shade800 
-                    : (isTimeRunningLow 
-                       ? Colors.orange.shade800 
-                       : Colors.blue.shade800);
-    
-    final iconColor = isTimeCritical 
-                    ? Colors.red 
-                    : (isTimeRunningLow 
-                       ? Colors.orange 
-                       : Colors.blue);
-      
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
       decoration: BoxDecoration(

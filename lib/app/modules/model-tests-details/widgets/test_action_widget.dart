@@ -67,20 +67,47 @@ class TestActionWidget extends StatelessWidget {
   }
 
   Widget _buildTimerRow() {
+    // Determine color based on time format
+    Color backgroundColor = Colors.blue.shade50;
+    Color textColor = Colors.blue.shade800;
+    Color iconColor = Colors.blue;
+
+    // Only try to parse countdown when in MM:SS format
+    final timeLeft = controller.formattedCountdownTime;
+    if (timeLeft.contains(':') && !timeLeft.contains('and')) {
+      try {
+        final timeParts = timeLeft.split(':');
+        if (timeParts.length == 2) {
+          final minutes = int.tryParse(timeParts[0]) ?? 0;
+          if (minutes < 2) {
+            backgroundColor = Colors.red.shade50;
+            textColor = Colors.red.shade800;
+            iconColor = Colors.red;
+          } else if (minutes < 5) {
+            backgroundColor = Colors.orange.shade50;
+            textColor = Colors.orange.shade800;
+            iconColor = Colors.orange;
+          }
+        }
+      } catch (e) {
+        // Fallback to default color if parsing fails
+      }
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(
         children: [
-          Icon(Icons.timer, size: 20.sp, color: Colors.blue),
+          Icon(Icons.timer, size: 20.sp, color: iconColor),
           SizedBox(width: 8.w),
           Text(
             'Time Left: ${controller.formattedCountdownTime}',
             style: TextStyle(
-              color: Colors.blue.shade800,
+              color: textColor,
               fontWeight: FontWeight.w500,
               fontSize: 14.sp,
             ),

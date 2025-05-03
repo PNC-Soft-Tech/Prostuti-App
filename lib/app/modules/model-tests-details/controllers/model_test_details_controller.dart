@@ -393,11 +393,31 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   }
 
   String get formattedCountdownTime {
-    final minutes =
-        remainingTime.value.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds =
-        remainingTime.value.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$minutes:$seconds";
+    if (remainingTime.value <= Duration.zero) {
+      return 'Time Up';
+    }
+
+    // Extract time components
+    final days = remainingTime.value.inDays;
+    final hours = remainingTime.value.inHours.remainder(24);
+    final minutes = remainingTime.value.inMinutes.remainder(60);
+    final seconds = remainingTime.value.inSeconds.remainder(60);
+
+    // For short time periods (less than 10 minutes), show MM:SS format for better precision
+    if (days == 0 && hours == 0 && minutes < 10) {
+      return "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+    }
+
+    // For longer periods, use human-readable format
+    final parts = <String>[];
+    if (days > 0) parts.add('$days day${days != 1 ? 's' : ''}');
+    if (hours > 0) parts.add('$hours hour${hours != 1 ? 's' : ''}');
+    if (minutes > 0 && parts.length < 2) parts.add('$minutes minute${minutes != 1 ? 's' : ''}');
+    if (seconds > 0 && parts.isEmpty) parts.add('$seconds second${seconds != 1 ? 's' : ''}');
+
+    // Take up to two most significant units
+    final displayParts = parts.take(2).toList();
+    return displayParts.join(' and ');
   }
 
   @override
