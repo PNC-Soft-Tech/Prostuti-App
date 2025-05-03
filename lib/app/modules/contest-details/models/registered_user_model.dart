@@ -13,10 +13,20 @@ class RegisteredUser {
 
   factory RegisteredUser.fromJson(Map<String, dynamic> json) {
     return RegisteredUser(
-      id: json['_id'],
-      fullName: json['fullName'],
-      email: json['email'],
-      profilePic: json['profilePic'],
+      id: json['_id'] ?? '',
+      fullName: json['fullName'] ?? '',
+      email: json['email'] ?? '',
+      profilePic: json['profilePic'] ?? '',
+    );
+  }
+  
+  // Create an empty registered user for error cases
+  factory RegisteredUser.empty() {
+    return RegisteredUser(
+      id: '',
+      fullName: '',
+      email: '',
+      profilePic: '',
     );
   }
 }

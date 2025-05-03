@@ -26,11 +26,13 @@ class CustomExamDetailsController extends GetxController
   final RxBool isReadModeSelected = true.obs;
   final RxBool isExamModeSelected = false.obs;
   final RxString currentSelectedModelTestId = ''.obs;
-  final RxString currentSelectedModelTestMode = 'read'.obs;
+  final RxString currentSelectedModelTestMode = 'exam'.obs;
   final RxList<String> subjectLists = <String>[].obs;
   final RxString selectedSubject = 'All'.obs;
   RxList<String> visibleQuestions = <String>[].obs;
-  final RxBool isQuestionOpened = false.obs;
+  @override
+  final RxBool isQuestionOpened = true.obs;
+  final RxBool isModelTestSubmittedValue = false.obs;
 
   // Loading states
   var isLoading = false.obs;
@@ -372,7 +374,7 @@ class CustomExamDetailsController extends GetxController
   }
 
   @override
-  RxBool get isModelTestSubmitted => false.obs;
+  RxBool get isModelTestSubmitted => isModelTestSubmittedValue;
 
   @override
   RxString get selectedTestMode => currentSelectedModelTestMode;

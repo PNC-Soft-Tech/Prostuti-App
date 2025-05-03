@@ -16,6 +16,15 @@ class Option {
       isSelected: json['isSelected'] ?? false,
     );
   }
+  
+  // Empty factory constructor for error cases
+  factory Option.empty() {
+    return Option(
+      title: '',
+      order: '',
+    );
+  }
+  
   Map<String, dynamic> toJson() {
     return {
       'title': title,

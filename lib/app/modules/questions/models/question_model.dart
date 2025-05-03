@@ -34,7 +34,13 @@ class Question {
       isGrid: json['isGrid'] ?? true,
       isFlagged: json['isFlagged'] ?? false,
       options: (json['options'] as List?)
-              ?.map((option) => Option.fromJson(option as Map<String, dynamic>))
+              ?.map((option) {
+                if (option is Map<String, dynamic>) {
+                  return Option.fromJson(option);
+                } else {
+                  return Option.empty();
+                }
+              })
               .toList() ??
           [],
       topic: json['topic'] != null
@@ -43,6 +49,15 @@ class Question {
       explanation: json['explanation'],
       subCategory: json['subCategory'],
       rightAnswer: json['rightAnswer'],
+    );
+  }
+  
+  // Create an empty Question for error cases
+  factory Question.empty() {
+    return Question(
+      id: '',
+      title: '',
+      options: [],
     );
   }
 }

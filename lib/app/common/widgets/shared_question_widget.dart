@@ -103,11 +103,15 @@ class SharedQuestionWidget extends StatelessWidget {
                       final shouldShowStatus =
                           ((controller.isModelTestSubmitted.value &&
                                   controller.selectedTestMode.value ==
-                                      'exam') || // For read mode
+                                      'exam') || // For exam mode after submission
                               (controller.selectedTestMode.value ==
-                                  'read')); // For exam mode after submission
+                                  'read')); // For read mode
+                      
+                      // Don't show status for custom exams
+                      final isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
+                      final finalShowStatus = isCustomExam ? false : shouldShowStatus;
 
-                      if (isAnswered && shouldShowStatus) {
+                      if (isAnswered && finalShowStatus) {
                         final String userAnswer =
                             controller.selectedAnswers[question.id] ?? '';
                         final int userOptionNumber =
@@ -197,14 +201,22 @@ class SharedQuestionWidget extends StatelessWidget {
       final bool isExamMode = controller.selectedTestMode.value == 'exam';
       final bool isReadMode = controller.selectedTestMode.value == 'read';
       final bool isSubmitted = controller.isModelTestSubmitted.value;
+      
+      // Allow selection in custom exams
+      final bool isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
       final bool canSelectAnswers = showExplanation ||
+          isCustomExam || // Always allow selection in custom exams
           (isExamMode && !isSubmitted) ||
           (!isExamMode); // Can select in read mode and in exam mode before submission
 
       // Determine if correct answers should be shown
       final bool shouldShowCorrectAnswers = 
-          (isSubmitted &&
-              isExamMode) || (isReadMode && !isSubmitted); // Show correct answers in read mode or after submission
+          (isSubmitted && isExamMode) || // Only after submission in exam mode
+          (isReadMode && !isSubmitted) || // Show in read mode
+          showCorrectAns; // Explicit parameter override
+      
+      // For custom exams, never show correct answers during the exam
+      final bool finalShowCorrectAnswers = isCustomExam ? showCorrectAns : shouldShowCorrectAnswers;
 
       if (question.isGrid == true) {
         // GRID LAYOUT - 2 options per row
@@ -266,7 +278,7 @@ class SharedQuestionWidget extends StatelessWidget {
                           SharedQuestionCircleWidget(
                             isCorrectAns: isCorrectAns,
                             isSelected: isSelected,
-                            showCorrectAns: shouldShowCorrectAnswers,
+                            showCorrectAns: finalShowCorrectAnswers,
                           ),
 
                           SizedBox(width: 8.w),
@@ -339,7 +351,7 @@ class SharedQuestionWidget extends StatelessWidget {
                     SharedQuestionCircleWidget(
                       isCorrectAns: isCorrectAns,
                       isSelected: isSelected,
-                      showCorrectAns: shouldShowCorrectAnswers,
+                      showCorrectAns: finalShowCorrectAnswers,
                     ),
 
                     SizedBox(width: 12.w),

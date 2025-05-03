@@ -21,6 +21,7 @@ class Contest {
   final List<Topic> topics;
   final List<Question> questions;
   final List<RegisteredUser> registeredUsers;
+  final List<SelectedTopic>? selectedTopics;
 
   Contest({
     required this.id,
@@ -39,9 +40,22 @@ class Contest {
     required this.topics,
     required this.questions,
     required this.registeredUsers,
+    this.selectedTopics,
   });
 
   factory Contest.fromJson(Map<String, dynamic> json) {
+    // Handle custom exam response format
+    List<SelectedTopic> selectedTopicsList = [];
+    if (json.containsKey('selectedTopics') && json['selectedTopics'] is List) {
+      try {
+        selectedTopicsList = (json['selectedTopics'] as List)
+            .map((topic) => SelectedTopic.fromJson(topic))
+            .toList();
+      } catch (e) {
+        log('Error parsing selectedTopics: $e');
+      }
+    }
+
     return Contest(
       id: json['_id'] ?? '',
       name: json['name'],
@@ -57,19 +71,41 @@ class Contest {
       startContest: parseDate(json['startContest']),
       endContest: parseDate(json['endContest']),
       topics: (json['topics'] as List?)
-              ?.map((topic) => Topic.fromJson(topic as Map<String, dynamic>))
+              ?.map((topic) {
+                if (topic is String) {
+                  return Topic(id: topic, name: '');
+                } else if (topic is Map<String, dynamic>) {
+                  return Topic.fromJson(topic);
+                } else {
+                  log('Invalid topic format: $topic');
+                  return Topic(id: '', name: '');
+                }
+              })
               .toList() ??
           [],
       questions: (json['questions'] as List?)
-              ?.map((question) =>
-                  Question.fromJson(question as Map<String, dynamic>))
+              ?.map((question) {
+                if (question is Map<String, dynamic>) {
+                  return Question.fromJson(question);
+                } else {
+                  log('Invalid question format: $question');
+                  return Question.empty();
+                }
+              })
               .toList() ??
           [],
       registeredUsers: (json['registeredUsers'] as List?)
-              ?.map((user) =>
-                  RegisteredUser.fromJson(user as Map<String, dynamic>))
+              ?.map((user) {
+                if (user is Map<String, dynamic>) {
+                  return RegisteredUser.fromJson(user);
+                } else {
+                  log('Invalid user format: $user');
+                  return RegisteredUser.empty();
+                }
+              })
               .toList() ??
           [],
+      selectedTopics: selectedTopicsList,
     );
   }
 
@@ -81,5 +117,25 @@ class Contest {
       log('Invalid date format: $dateStr');
       return DateTime.now(); // Fallback date
     }
+  }
+}
+
+class SelectedTopic {
+  final Topic? topic;
+  final int totalQuestions;
+  final String id;
+
+  SelectedTopic({
+    this.topic,
+    required this.totalQuestions,
+    required this.id,
+  });
+
+  factory SelectedTopic.fromJson(Map<String, dynamic> json) {
+    return SelectedTopic(
+      topic: json['topic'] != null ? Topic.fromJson(json['topic']) : null,
+      totalQuestions: json['totalQuestions'] ?? 0,
+      id: json['_id'] ?? '',
+    );
   }
 }

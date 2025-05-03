@@ -26,11 +26,9 @@ class LoginView extends StatelessWidget {
           ),
           child: Obx(
             () => controller.isLoading.value
-                ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(child: CustomLoaderWidget()),
-                    ],
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height - 80,
+                    child: const Center(child: CustomLoaderWidget()),
                   )
                 : Column(
                     // mainAxisAlignment: MainAxisAlignment.center,

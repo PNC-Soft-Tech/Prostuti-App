@@ -44,162 +44,150 @@ class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
 
             return Column(
               children: [
+                // Remove the conditional rendering of the details
                 // if (!controller.isQuestionOpened.value)
-                if (!controller.isQuestionOpened.value)
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            controller.customExamDetails.value?.contest
-                                            .imageUrl !=
-                                        null &&
-                                    controller.customExamDetails.value!.contest
-                                        .imageUrl!
-                                        .contains('http')
-                                ? Image.network(
-                                    controller.customExamDetails.value?.contest
-                                            .imageUrl ??
-                                        '',
-                                    height: 34.r,
-                                    width: 34.r,
-                                  )
-                                : Image.asset(
-                                    'assets/govt-bd.png',
-                                    height: 34.r,
-                                    width: 34.r,
-                                  ),
-                            SizedBox(
-                              width: 12.w,
-                            ),
-                            // Text("Mode: ${controller.currentQuestionIndex}"),
-                            // HtmlWidget(
-                            //     controller.contestDetails.value?.contest.name ??
-                            //         "Model Test -০১")
-                            Text(
-                              Utils.stripHtmlTags(controller
-                                      .customExamDetails.value?.contest.name ??
-                                  "বিসিএস কনটেস্ট-০১ custom exam"),
-                              style: GoogleFonts.notoSansBengali(
-                                  textStyle: TextStyle(
-                                fontSize: 20.sp,
-                                color: AppColors.textPrimaryColor,
-                                fontWeight: FontWeight.w600,
-                              )),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 19.h,
-                        ),
-                        Text(
-                          Utils.stripHtmlTags(
-                              " ${controller.customExamDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}"),
-                          style: GoogleFonts.notoSansBengali(
-                              textStyle: TextStyle(
-                            fontSize: 16.sp,
-                            color: AppColors.textPrimaryColor,
-                            fontWeight: FontWeight.w500,
-                          )),
-                        ),
-                        SizedBox(
-                          height: 16.h,
-                        ),
+                //   Container(
+                //     padding:
+                //         EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Row(
+                //           children: [
+                //             controller.customExamDetails.value?.contest
+                //                             .imageUrl !=
+                //                         null &&
+                //                     controller.customExamDetails.value!.contest
+                //                         .imageUrl!
+                //                         .contains('http')
+                //                 ? Image.network(
+                //                     controller.customExamDetails.value?.contest
+                //                             .imageUrl ??
+                //                         '',
+                //                     height: 34.r,
+                //                     width: 34.r,
+                //                   )
+                //                 : Image.asset(
+                //                     'assets/govt-bd.png',
+                //                     height: 34.r,
+                //                     width: 34.r,
+                //                   ),
+                //             SizedBox(
+                //               width: 12.w,
+                //             ),
+                //             Text(
+                //               Utils.stripHtmlTags(controller
+                //                       .customExamDetails.value?.contest.name ??
+                //                   "বিসিএস কনটেস্ট-০১ custom exam"),
+                //               style: GoogleFonts.notoSansBengali(
+                //                   textStyle: TextStyle(
+                //                 fontSize: 20.sp,
+                //                 color: AppColors.textPrimaryColor,
+                //                 fontWeight: FontWeight.w600,
+                //               )),
+                //             )
+                //           ],
+                //         ),
+                //         SizedBox(
+                //           height: 19.h,
+                //         ),
+                //         Text(
+                //           Utils.stripHtmlTags(
+                //               " ${controller.customExamDetails.value?.contest.stringTopics ?? 'গনিত - জ্যামিতি'}"),
+                //           style: GoogleFonts.notoSansBengali(
+                //               textStyle: TextStyle(
+                //             fontSize: 16.sp,
+                //             color: AppColors.textPrimaryColor,
+                //             fontWeight: FontWeight.w500,
+                //           )),
+                //         ),
+                //         SizedBox(
+                //           height: 16.h,
+                //         ),
 
-                        SizedBox(
-                          height: 21.h,
+                //         SizedBox(
+                //           height: 21.h,
+                //         ),
+                //         Text(
+                //           Utils.stripHtmlTags(controller.customExamDetails.value
+                //                   ?.contest.description ??
+                //               "বিসিএস কনটেস্ট-০১ desc"),
+                //           style: GoogleFonts.notoSansBengali(
+                //               textStyle: TextStyle(
+                //             fontSize: 15.sp,
+                //             color: AppColors.textPrimaryColor,
+                //             fontWeight: FontWeight.w400,
+                //           )),
+                //         ),
+                //         SizedBox(
+                //           height: 27.h,
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+
+                // Subject Filter - Always display
+                SubjectTabsWidget(
+                  onSubjectSelected: (subject) {
+                    controller.selectSubject(subject);
+                  },
+                  selectedSubject: controller.selectedSubject.value,
+                  subjects: controller.subjectLists,
+                  isQuestionOpened: true,
+                ),
+
+                // Status Bar - Question/Marking count - Always display
+                Container(
+                  padding: EdgeInsets.all(8.w),
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Questions: ${questions.length}',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
                         ),
-                        Text(
-                          Utils.stripHtmlTags(controller.customExamDetails.value
-                                  ?.contest.description ??
-                              "বিসিএস কনটেস্ট-০১ desc"),
-                          style: GoogleFonts.notoSansBengali(
-                              textStyle: TextStyle(
-                            fontSize: 15.sp,
-                            color: AppColors.textPrimaryColor,
-                            fontWeight: FontWeight.w400,
-                          )),
+                      ),
+                      Text(
+                        'Marked: ${controller.markedQuestionIds.length}',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
                         ),
-                        SizedBox(
-                          height: 27.h,
-                        ),
-                        // const ContestDetailsWidget(),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                // Subject Filter - Only display ONCE
-
-                Obx(() => (controller.isQuestionOpened.value)
-                    ? SubjectTabsWidget(
-                        onSubjectSelected: (subject) {
-                          controller.selectSubject(subject);
-                        },
-                        selectedSubject: controller.selectedSubject.value,
-                        subjects: controller.subjectLists,
-                        isQuestionOpened: controller.isQuestionOpened.value,
-                      )
-                    : SizedBox.shrink()),
-
-                // Status Bar - Question/Marking count
-                if (controller.isQuestionOpened.value)
-                  Container(
-                    padding: EdgeInsets.all(8.w),
-                    color: Colors.white,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Questions: ${questions.length}',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          'Marked: ${controller.markedQuestionIds.length}',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
+                // Questions List - Always display
+                Expanded(
+                  child: ListView.builder(
+                    controller: controller.scrollController,
+                    itemCount: questions.length,
+                    itemBuilder: (context, index) {
+                      final question = questions[index];
+                      return SharedQuestionWidget(
+                        key: controller.questionKeys[question.id],
+                        question: question,
+                        contestId: controller.customExamId.value,
+                        controller: controller,
+                        index: index,
+                      );
+                    },
                   ),
-
-                // Questions List
-                if (controller.isQuestionOpened.value)
-                  Expanded(
-                    child: ListView.builder(
-                      controller: controller.scrollController,
-                      itemCount: questions.length,
-                      itemBuilder: (context, index) {
-                        final question = questions[index];
-                        return SharedQuestionWidget(
-                          key: controller.questionKeys[question.id],
-                          question: question,
-                          contestId: controller.customExamId.value,
-                          controller: controller,
-                          index: index,
-                        );
-                      },
-                    ),
-                  ),
+                ),
                      SizedBox(
                     height: 120.h,
                   ),
               ],
             );
           }),
-          Obx(() => (controller.isQuestionOpened.value)
-              ? SizedBox(
-                  height: 187.h,
-                )
-              : SizedBox.shrink()),
+          SizedBox(
+            height: 187.h,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: BottomFixedSubmitContestWidget(
@@ -212,14 +200,12 @@ class CustomExamDetailsView extends GetView<CustomExamDetailsController> {
             ),
           ),
 
-          // Question navigator widget - only visible when questions are open
-          Obx(() => controller.isQuestionOpened.value
-              ? Positioned(
-                  right: 16.w,
-                  bottom: 100.h,
-                  child: CustomExamQuestionNavigator(),
-                )
-              : const SizedBox.shrink()),
+          // Question navigator widget - always visible
+          Positioned(
+            right: 16.w,
+            bottom: 100.h,
+            child: CustomExamQuestionNavigator(),
+          ),
         ],
       ),
     );

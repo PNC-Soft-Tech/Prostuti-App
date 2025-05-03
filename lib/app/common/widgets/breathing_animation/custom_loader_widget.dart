@@ -37,21 +37,24 @@ class _CustomLoaderWidgetState extends State<CustomLoaderWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Center(
-          child: ScaleTransition(
-            scale: _breathAnimation,
-            child: Image.asset(
-              logoPath,
-              width: size,
-              height: size,
-            ),
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        alignment: Alignment.center,
+        child: ScaleTransition(
+          scale: _breathAnimation,
+          child: Image.asset(
+            logoPath,
+            width: size,
+            height: size,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(Icons.image_not_supported, size: 80, color: Colors.grey);
+            },
           ),
         ),
-      ],
+      ),
     );
   }
 }

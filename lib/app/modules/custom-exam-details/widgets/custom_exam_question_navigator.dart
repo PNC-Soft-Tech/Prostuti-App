@@ -25,8 +25,9 @@ class CustomExamQuestionNavigator extends StatelessWidget {
       
       if (totalQuestions == 0) return const SizedBox.shrink();
       
-      final currentQuestion = questions[currentIndex];
-      final isMarked = controller.isMarkedQuestion(currentQuestion.id);
+      // Add null safety to prevent null exception
+      final currentQuestion = currentIndex < questions.length ? questions[currentIndex] : null;
+      final isMarked = currentQuestion != null ? controller.isMarkedQuestion(currentQuestion.id) : false;
       
       // Create reactive properties to properly update the UI
       final RxInt markedCount = RxInt(totalMarked);

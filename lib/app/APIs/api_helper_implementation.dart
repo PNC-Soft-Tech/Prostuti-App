@@ -329,12 +329,24 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
       String customExamId) async {
     try {
       // Make GET request
+      log('Request: get custom-exams/$customExamId');
+      // log('token: ${_storageService.getToken()}');
       final response = await get('custom-exams/$customExamId');
+      
+      log('Response: ${response.statusCode}, Body: ${response.body}');
 
       if (response.statusCode == 200 && response.body['success'] == true) {
-        // Parse the response into SingleContestResponse
-        final data = CustomExamDetailsResponse.fromJson(response.body['data']);
-        return Right(data);
+        try {
+          // Parse the response into CustomExamDetailsResponse
+          final data = CustomExamDetailsResponse.fromJson(response.body['data']);
+          return Right(data);
+        } catch (parseError) {
+          log('Error parsing custom exam response: $parseError');
+          return Left(CustomError(
+            500,
+            message: 'Failed to parse custom exam details: $parseError',
+          ));
+        }
       } else {
         // Handle API error
         return Left(CustomError(
@@ -611,7 +623,7 @@ Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
   Future<Either<CustomError, Response>> generateCustomExam(
       CustomExamRequestModel payload) async {
     try {
-      final response = await post('custom-exams', payload.toJson());
+      final response = await post('custom-exams/generate-contest', payload.toJson());
       if (response.statusCode == 200 && response.body['success'] == true) {
         return Right(response);
       } else {
