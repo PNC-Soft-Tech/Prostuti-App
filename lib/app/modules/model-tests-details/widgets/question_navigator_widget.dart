@@ -31,13 +31,20 @@ class QuestionNavigatorWidget extends StatelessWidget {
         }
       }
       
-      // Get current question details
-      final currentQuestion = questions[currentIndex];
-      final isMarked = controller.isMarkedQuestion(currentQuestion.id);
-      final totalMarked = controller.markedQuestionIds.length;
+      // Get current question details - safely handle null case
+      final currentQuestion = questions.isNotEmpty ? questions[currentIndex] : null;
+      
+      // Initialize with defaults in case currentQuestion is null
+      bool isMarked = false;
+      int totalMarked = controller.markedQuestionIds.length;
+      
+      // Only check for marking if we have a valid question
+      if (currentQuestion != null) {
+        isMarked = controller.isMarkedQuestion(currentQuestion.id);
+      }
       
       // If no questions are visible, update the list
-      if (controller.visibleQuestions.isEmpty) {
+      if (controller.visibleQuestions.isEmpty && questions.isNotEmpty) {
         controller.updateVisibleQuestions(questions.map((q) => q.id).toList());
       }
       
