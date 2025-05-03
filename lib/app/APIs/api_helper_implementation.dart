@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/APIs/custom_error.dart';
 import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
+import 'package:prostuti/app/models/user_model.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 
@@ -209,6 +210,33 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
+  Future<Either<CustomError, UserProfile>> getUserProfile(String userId) async {
+    final response = await get('users/$userId');
+    if (response.statusCode == 200) {
+      try {
+        // Assume the API returns the user object under "data"
+        final Map<String, dynamic> data = response.body['data'];
+        final profile = UserProfile.fromJson(data);
+        return Right(profile);
+      } catch (e) {
+        return Left(
+          CustomError(
+            response.statusCode,
+            message: 'Parsing error: $e',
+          ),
+        );
+      }
+    } else {
+      return Left(
+        CustomError(
+          response.statusCode,
+          message: response.statusText ?? 'Error fetching user profile',
+        ),
+      );
+    }
+  }
+
+  @override
   Future<Either<CustomError, Response>> registerContest(
       String contestId) async {
     try {
@@ -301,28 +329,27 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   //   }
   // }
 
+  @override
+  Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
+      String contestId) async {
+    try {
+      final response = await get('contests/$contestId');
 
-@override
-Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
-    String contestId) async {
-  try {
-    final response = await get('contests/$contestId');
-
-    if (response.statusCode == 200 && response.body['success'] == true) {
-      final data = ContestDetailsResponse.fromJson(response.body['data']);
-      return Right(data);
-    } else {
-      return Left(CustomError(
-        response.statusCode,
-        message: response.body['message'] ?? 'Failed to fetch contest details',
-      ));
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final data = ContestDetailsResponse.fromJson(response.body['data']);
+        return Right(data);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message:
+              response.body['message'] ?? 'Failed to fetch contest details',
+        ));
+      }
+    } catch (e) {
+      log('Error fetching single contest: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
-  } catch (e) {
-    log('Error fetching single contest: $e');
-    return Left(CustomError(500, message: 'Network error: $e'));
   }
-}
-
 
   @override
   Future<Either<CustomError, CustomExamDetailsResponse>> fetchSingleCustomExam(
