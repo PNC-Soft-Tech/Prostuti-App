@@ -46,8 +46,10 @@ class HomeView extends GetView<HomeController> {
                   ignoreSafeArea: false,
                   isDismissible: true,
                 );
+              } else if (value == controller.currentIndex.value) {
+                // Already on this tab, no action needed
               } else {
-                controller.currentIndex.value = value;
+                controller.navigateToTab(value);
               }
             },
           )),

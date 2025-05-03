@@ -110,7 +110,7 @@ class ProfileView extends GetView<ProfileController> {
                   isDismissible: true,
                 );
               } else {
-                controller.currentIndex.value = value;
+                controller.navigateToIndex(value);
               }
             },
           )),
