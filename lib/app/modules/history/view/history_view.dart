@@ -18,7 +18,7 @@ class HistoryView extends GetWidget<HistoryController> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
+      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16.h),
@@ -214,7 +214,7 @@ class HistoryView extends GetWidget<HistoryController> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+            children: [
             Text(
               'Custom Exams List',
               style: TextStyle(
@@ -309,7 +309,7 @@ class TabSelector extends StatelessWidget {
         padding: EdgeInsets.all(4.r),
         child: Obx(() {
           return Row(
-            children: [
+        children: [
               _buildTabButton('Contests', 0, controller),
               _buildTabButton('Model Tests', 1, controller),
               _buildTabButton('Custom Exams', 2, controller),
@@ -336,8 +336,8 @@ class TabSelector extends StatelessWidget {
             borderRadius: BorderRadius.circular(26.r),
             onTap: () => controller.changeTab(index),
             child: Center(
-              child: Text(
-                title,
+      child: Text(
+        title,
                 style: TextStyle(
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
@@ -403,8 +403,8 @@ class ContestCard extends StatelessWidget {
               // Content section
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                     Text(
                       contestName,
                       style: TextStyle(
@@ -428,20 +428,20 @@ class ContestCard extends StatelessWidget {
                       ),
                     ],
                     SizedBox(height: 8.h),
-                    Row(
-                      children: [
-                        Text(
+                  Row(
+                    children: [
+                      Text(
                           '$score',
                           style: TextStyle(
-                            fontSize: 16.sp,
+                                fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimaryColor,
+                                color: AppColors.textPrimaryColor,
                           ),
-                        ),
-                        Text(
+                      ),
+                      Text(
                           '/$maxScore',
                           style: TextStyle(
-                            fontSize: 14.sp,
+                                fontSize: 14.sp,
                             color: Colors.grey,
                           ),
                         ),
@@ -844,10 +844,10 @@ class CustomExamCard extends StatelessWidget {
                 ],
               ),
               Text(
-                'View Details',
-                style: TextStyle(
+                  'View Details',
+                  style: TextStyle(
                   fontSize: 12.sp,
-                  color: AppColors.primary,
+                      color: AppColors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),

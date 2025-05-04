@@ -211,28 +211,42 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
   @override
   Future<Either<CustomError, UserProfile>> getUserProfile(String userId) async {
-    final response = await get('users/$userId');
-    if (response.statusCode == 200) {
-      try {
-        // Assume the API returns the user object under "data"
-        final Map<String, dynamic> data = response.body['data'];
-        final profile = UserProfile.fromJson(data);
-        return Right(profile);
-      } catch (e) {
-        return Left(
-          CustomError(
-            response.statusCode,
-            message: 'Parsing error: $e',
-          ),
-        );
-      }
-    } else {
-      return Left(
-        CustomError(
+    try {
+      final response = await get('users/$userId');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final userData = response.body['data'] as Map<String, dynamic>;
+        return Right(UserProfile.fromJson(userData));
+      } else {
+        return Left(CustomError(
           response.statusCode,
-          message: response.statusText ?? 'Error fetching user profile',
-        ),
-      );
+          message: response.body['message'] ?? 'Failed to fetch user profile'
+        ));
+      }
+    } catch (error) {
+      log('getUserProfile error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, UserProfile>> updateUserProfile(UserProfile profile) async {
+    try {
+      final data = profile.toJson();
+      final response = await put('users/', data);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final updatedData = response.body['data'] as Map<String, dynamic>;
+        return Right(UserProfile.fromJson(updatedData));
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to update user profile'
+        ));
+      }
+    } catch (error) {
+      log('updateUserProfile error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
     }
   }
 
@@ -519,52 +533,53 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, List<InstitutionType>>>
-      getInstitutionTypes() async {
+  Future<Either<CustomError, List<InstitutionType>>> getInstitutionTypes() async {
     try {
-      final response = await get('institution-types');
-
-      if (response.statusCode == 200 && !response.hasError) {
-        final List<dynamic> dataList = response.body['data'] as List<dynamic>;
-
-        final List<InstitutionType> types = dataList
-            .map((json) =>
-                InstitutionType.fromJson(json as Map<String, dynamic>))
-            .toList();
-
-        return Right(types);
+      final response = await get('institution-types/');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<InstitutionType> institutionTypes = 
+            data.map((item) => InstitutionType.fromJson(item as Map<String, dynamic>)).toList();
+        
+        return Right(institutionTypes);
       } else {
-        final message =
-            response.body['message'] ?? 'Failed to fetch institution types';
-        return Left(CustomError(response.statusCode, message: message));
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch institution types'
+        ));
       }
-    } catch (e, st) {
-      log('Error fetching institution types: $e\n$st');
-      return Left(CustomError(500, message: 'Network error: $e'));
+    } catch (error) {
+      log('getInstitutionTypes error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
     }
   }
 
   @override
-  Future<Either<CustomError, List<Institution>>> getInstitutions() async {
+  Future<Either<CustomError, List<Institution>>> getInstitutions({String? institutionTypeId}) async {
     try {
-      final response = await get('institutions');
-
-      if (response.statusCode == 200 && !response.hasError) {
-        final List<dynamic> dataList = response.body['data'] as List<dynamic>;
-
-        final List<Institution> institutions = dataList
-            .map((json) => Institution.fromJson(json as Map<String, dynamic>))
-            .toList();
-
+      String endpoint = 'institutions';
+      if (institutionTypeId != null) {
+        endpoint = 'institutions?institutionType=$institutionTypeId';
+      }
+      
+      final response = await get(endpoint);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<Institution> institutions = 
+            data.map((item) => Institution.fromJson(item as Map<String, dynamic>)).toList();
+        
         return Right(institutions);
       } else {
-        final message =
-            response.body['message'] ?? 'Failed to fetch institutions';
-        return Left(CustomError(response.statusCode, message: message));
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch institutions'
+        ));
       }
-    } catch (e, st) {
-      log('Error fetching institutions: $e\n$st');
-      return Left(CustomError(500, message: 'Network error: $e'));
+    } catch (error) {
+      log('getInstitutions error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
     }
   }
 
@@ -703,9 +718,9 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
           message: response.body['message'] ?? 'Failed to fetch custom exams'
         ));
       }
-    } catch (e) {
-      log('Error fetching custom exams: $e');
-      return Left(CustomError(500, message: 'Network error: $e'));
+    } catch (error) {
+      log('fetchCustomExams error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
     }
   }
 }

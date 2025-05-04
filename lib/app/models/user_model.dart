@@ -1,3 +1,6 @@
+import 'institution.dart';
+import 'institution_type.dart';
+
 class UserProfile {
   final String? id;
   final String? username;
@@ -10,7 +13,9 @@ class UserProfile {
   final int? otp;
   final bool isVerified;
   final String? institution; // MongoDB ObjectId as String
+  final Institution? institutionObj; // For full institution object
   final String? institutionType; // MongoDB ObjectId as String
+  final InstitutionType? institutionTypeObj; // For full institution type object
   final double honsGpa;
   final double profileCompleted;
   final String? permanentAddress;
@@ -40,7 +45,9 @@ class UserProfile {
     this.otp,
     this.isVerified = false,
     this.institution,
+    this.institutionObj,
     this.institutionType,
+    this.institutionTypeObj,
     this.honsGpa = 0.0,
     this.profileCompleted = 0.0,
     this.permanentAddress,
@@ -71,8 +78,18 @@ class UserProfile {
       authType: json['authType'] as String?,
       otp: json['otp'] as int?,
       isVerified: json['isVerified'] as bool? ?? false,
-      institution: json['institution'] as String?,
-      institutionType: json['institutionType'] as String?,
+      institution: json['institution'] is String 
+          ? json['institution'] 
+          : json['institution']?['_id'] as String?,
+      institutionObj: json['institution'] is Map 
+          ? Institution.fromJson(json['institution']) 
+          : null,
+      institutionType: json['institutionType'] is String 
+          ? json['institutionType'] 
+          : json['institutionType']?['_id'] as String?,
+      institutionTypeObj: json['institutionType'] is Map 
+          ? InstitutionType.fromJson(json['institutionType']) 
+          : null,
       honsGpa: (json['honsGpa'] as num?)?.toDouble() ?? 0.0,
       profileCompleted: (json['profileCompleted'] as num?)?.toDouble() ?? 0.0,
       permanentAddress: json['permanentAddress'] as String?,
@@ -126,5 +143,72 @@ class UserProfile {
       'profilePic': profilePic,
       if (aboutMe != null) 'about_me': aboutMe,
     };
+  }
+
+  // Create a copy with updated fields
+  UserProfile copyWith({
+    String? id,
+    String? username,
+    String? fullName,
+    String? fname,
+    String? lname,
+    String? email,
+    String? phone,
+    String? authType,
+    int? otp,
+    bool? isVerified,
+    String? institution,
+    Institution? institutionObj,
+    String? institutionType,
+    InstitutionType? institutionTypeObj,
+    double? honsGpa,
+    double? profileCompleted,
+    String? permanentAddress,
+    String? presentAddress,
+    String? postCode,
+    String? userPlan,
+    String? userType,
+    String? userRole,
+    DateTime? dateOfBirth,
+    String? district,
+    String? upzilla,
+    String? gender,
+    String? division,
+    String? country,
+    String? profilePic,
+    String? aboutMe,
+  }) {
+    return UserProfile(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      fullName: fullName ?? this.fullName,
+      fname: fname ?? this.fname,
+      lname: lname ?? this.lname,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      authType: authType ?? this.authType,
+      otp: otp ?? this.otp,
+      isVerified: isVerified ?? this.isVerified,
+      institution: institution ?? this.institution,
+      institutionObj: institutionObj ?? this.institutionObj,
+      institutionType: institutionType ?? this.institutionType,
+      institutionTypeObj: institutionTypeObj ?? this.institutionTypeObj,
+      honsGpa: honsGpa ?? this.honsGpa,
+      profileCompleted: profileCompleted ?? this.profileCompleted,
+      permanentAddress: permanentAddress ?? this.permanentAddress,
+      presentAddress: presentAddress ?? this.presentAddress,
+      postCode: postCode ?? this.postCode,
+      userPlan: userPlan ?? this.userPlan,
+      userType: userType ?? this.userType,
+      userRole: userRole ?? this.userRole,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      district: district ?? this.district,
+      upzilla: upzilla ?? this.upzilla,
+      gender: gender ?? this.gender,
+      division: division ?? this.division,
+      country: country ?? this.country,
+      profilePic: profilePic ?? this.profilePic,
+      aboutMe: aboutMe ?? this.aboutMe,
+    );
   }
 }

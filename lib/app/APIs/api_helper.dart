@@ -36,6 +36,7 @@ abstract class ApiHelper {
 // Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId);
   Future<Either<CustomError, Response>> verifyOtp(Map<String, dynamic> data);
   Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
+  Future<Either<CustomError, UserProfile>> updateUserProfile(UserProfile profile);
   Future<Either<CustomError, Response>> registerContest(String contestId);
   Future<Either<CustomError, List<Contest>>> fetchRecentContests();
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
@@ -58,7 +59,7 @@ abstract class ApiHelper {
   });
 
   Future<Either<CustomError, List<InstitutionType>>> getInstitutionTypes();
-  Future<Either<CustomError, List<Institution>>> getInstitutions();
+  Future<Either<CustomError, List<Institution>>> getInstitutions({String? institutionTypeId});
 
   Future<Either<CustomError, Response>> submitContestAnswer({
     required String questionId,

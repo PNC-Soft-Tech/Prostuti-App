@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageHelper {
@@ -29,14 +30,19 @@ class StorageHelper {
     return prefs.containsKey(_tokenKey);
   }
 
-  // Set token
+  // Set user data - properly encode to JSON string
   static Future<void> setUserData(Map<String, dynamic> userData) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userKey, userData.toString());
-    await prefs.setString('userId', userData.toString());
+    final String jsonString = jsonEncode(userData);
+    await prefs.setString(_userKey, jsonString);
+    
+    // Only set userId if it exists in the userData
+    if (userData.containsKey('_id')) {
+      await prefs.setString(_userId, userData['_id']);
+    }
   }
 
-  // Get token
+  // Get user data
   static Future<String?> getUserData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userKey);
@@ -49,9 +55,9 @@ class StorageHelper {
   }
 
   // Set user Id
-  static Future<void> setUserId(String userData) async {
+  static Future<void> setUserId(String userId) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_userId, userData.toString());
+    await prefs.setString(_userId, userId);
   }
 
   // Get user id

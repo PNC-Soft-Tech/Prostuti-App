@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_view.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,8 @@ import 'package:prostuti/app/common/custom_simple_appbar.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/common/widgets/bottom_nav_bar_widget.dart';
 import 'package:prostuti/app/constant/app_color.dart';
+import 'package:prostuti/app/models/institution.dart';
+import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/modules/profile/controllers/profile_controller.dart';
 import 'package:prostuti/app/modules/profile/widgets/progress_circle.dart';
 
@@ -93,12 +96,12 @@ class ProfileEditView extends GetView<ProfileController> {
                   width: 20.w,
                 ),
                 Expanded(
-                  child: dropdownField(
+                  child: Obx(() => dropdownField<String>(
                       labelText: 'Gender',
                       hintText: 'Select',
-                      value: 'Male',
+                      value: controller.selectedGender.value,
                       items: ['Male', 'Female', 'Other'],
-                      onChanged: (newValue) => print(newValue)),
+                      onChanged: (newValue) => controller.selectedGender.value = newValue)),
                 ),
               ],
             ),
@@ -109,23 +112,23 @@ class ProfileEditView extends GetView<ProfileController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: dropdownField(
+                  child: Obx(() => dropdownField<String>(
                       labelText: 'Division',
                       hintText: 'Select',
-                      value: 'Barishal',
-                      items: ['Barishal', 'Dhaka', 'Rangpur'],
-                      onChanged: (newValue) => print(newValue)),
+                      value: controller.selectedDivision.value,
+                      items: ['Barishal', 'Dhaka', 'Rangpur', 'Chittagong', 'Khulna', 'Sylhet', 'Rajshahi', 'Mymensingh'],
+                      onChanged: (newValue) => controller.selectedDivision.value = newValue)),
                 ),
                 SizedBox(
                   width: 20.w,
                 ),
                 Expanded(
-                  child: dropdownField(
+                  child: Obx(() => dropdownField<String>(
                       labelText: 'District',
                       hintText: 'Select',
-                      value: 'Barishal',
-                      items: ['Barishal', 'Patuakhali', 'Barguna'],
-                      onChanged: (newValue) => print(newValue)),
+                      value: controller.selectedDistrict.value,
+                      items: ['Barishal', 'Patuakhali', 'Barguna', 'Dhaka', 'Gazipur'],
+                      onChanged: (newValue) => controller.selectedDistrict.value = newValue)),
                 ),
               ],
             ),
@@ -136,12 +139,12 @@ class ProfileEditView extends GetView<ProfileController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: dropdownField(
+                  child: Obx(() => dropdownField<String>(
                       labelText: 'Upazilla',
                       hintText: 'Select',
-                      value: 'Barishal Sadar',
-                      items: ['Barishal Sadar', 'Bakerganj', 'Babuganj'],
-                      onChanged: (newValue) => print(newValue)),
+                      value: controller.selectedUpazilla.value,
+                      items: ['Barishal Sadar', 'Bakerganj', 'Babuganj', 'Savar', 'Dhamrai'],
+                      onChanged: (newValue) => controller.selectedUpazilla.value = newValue)),
                 ),
                 SizedBox(
                   width: 20.w,
@@ -175,12 +178,13 @@ class ProfileEditView extends GetView<ProfileController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: dropdownField(
+                  child: Obx(() => dropdownField<InstitutionType>(
                       labelText: 'Hon\'s Institution Type',
                       hintText: 'Select',
-                      value: 'National',
-                      items: ['National', 'Public', 'Private'],
-                      onChanged: (newValue) => print(newValue)),
+                      value: controller.selectedInstitutionType.value,
+                      items: controller.institutionTypes,
+                      itemToString: (type) => type.name,
+                      onChanged: (newValue) => controller.onInstitutionTypeChanged(newValue))),
                 ),
                 SizedBox(
                   width: 20.w,
@@ -196,16 +200,24 @@ class ProfileEditView extends GetView<ProfileController> {
             SizedBox(
               height: 20.w,
             ),
-            profileTextField(
+            // Institution name as a dropdown
+            Obx(() => dropdownField<Institution>(
                 labelText: 'Institution Name',
-                hintText: 'ex: University of Dhaka, Dhaka',
-                controller: controller.institutionNameController),
+                hintText: 'Select Institution',
+                value: controller.selectedInstitution.value,
+                items: controller.institutions,
+                itemToString: (institution) => institution.name,
+                isLoading: controller.isLoadingInstitutions.value,
+                onChanged: (newValue) => controller.onInstitutionChanged(newValue))),
             SizedBox(
               height: 20.w,
             ),
           ]))),
       bottomNavigationBar:
-          CustomBottomNavButton(buttonText: 'Save Details', onPressed: () {}),
+          CustomBottomNavButton(
+            buttonText: 'Save Details', 
+            onPressed: () => controller.saveProfile(),
+          ),
     );
   }
 
@@ -213,7 +225,7 @@ class ProfileEditView extends GetView<ProfileController> {
       {required String labelText,
       required String hintText,
       required TextEditingController controller,
-      isPhoneNumber = false}) {
+      bool isPhoneNumber = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -230,30 +242,77 @@ class ProfileEditView extends GetView<ProfileController> {
               fontSize: 14.sp,
               color: AppColors.charcoalGray,
               fontWeight: FontWeight.normal),
-          decoration: // !isPhoneNumber ?
-              CustomStyles.profileInputDecoration(hintText),
-          // : CustomStyles.profileInputDecoration(hintText).copyWith(
-          //     prefixIcon: Padding(
-          //       padding: const EdgeInsets.all(0),
-          //       child: Image.asset(
-          //         "assets/profile/flag-bd.png",
-          //         height: 23,
-          //       ),
-          //     ),
-          //   )
+          decoration: !isPhoneNumber 
+              ? CustomStyles.profileInputDecoration(hintText)
+              : CustomStyles.profileInputDecoration(hintText).copyWith(
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      "assets/profile/flag-bd.png",
+                      height: 23,
+                    ),
+                  ),
+                ),
           validator: (value) =>
-              value == null || value.isEmpty ? 'Full Name is required' : null,
+              value == null || value.isEmpty ? 'This field is required' : null,
         ),
       ],
     );
   }
 
-  Column dropdownField({
+  Column datePickerField(BuildContext context,
+      {required String labelText,
+      required String hintText,
+      required TextEditingController controller}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          labelText,
+          style: TextStyle(fontSize: 12.sp, color: AppColors.gray),
+        ),
+        SizedBox(
+          height: 5.w,
+        ),
+        InkWell(
+          onTap: () async {
+            final selectedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(1950),
+              lastDate: DateTime.now(),
+            );
+            if (selectedDate != null) {
+              controller.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+            }
+          },
+          child: TextFormField(
+            controller: controller,
+            enabled: false,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: AppColors.charcoalGray,
+                fontWeight: FontWeight.normal),
+            decoration: CustomStyles.profileInputDecoration(hintText).copyWith(
+              suffixIcon: Icon(
+                Icons.calendar_today_outlined,
+                color: AppColors.gray,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column dropdownField<T>({
     required String labelText,
     required String hintText,
-    required String? value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
+    required T? value,
+    required List<T> items,
+    String Function(T)? itemToString,
+    bool isLoading = false,
+    required void Function(T?) onChanged,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,102 +324,44 @@ class ProfileEditView extends GetView<ProfileController> {
         SizedBox(
           height: 5.w,
         ),
-        DropdownButtonFormField<String>(
-          value: value,
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: TextStyle(
-              fontSize: 12.sp,
-              color: AppColors.charcoalGray,
-              fontWeight: FontWeight.normal,
-            ),
-            labelStyle: TextStyle(
-              fontSize: 12.sp,
-              color: AppColors.charcoalGray,
-              fontWeight: FontWeight.normal,
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 4), // Reduced padding to make the field more compact
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              borderSide: BorderSide(
-                  color: AppColors.blueGray.withOpacity(0.4), width: 0.5),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30)),
-              borderSide: BorderSide(color: AppColors.primary, width: 0.5),
-            ),
+        Container(
+          height: 48.h,
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.gray.withOpacity(0.3)),
+            borderRadius: BorderRadius.circular(8.r),
           ),
-          items: items.map((item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item,
-                  style: TextStyle(
-                      fontSize: 14.sp, color: AppColors.charcoalGray)),
-            );
-          }).toList(),
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: AppColors.charcoalGray,
-            fontWeight: FontWeight.normal,
-          ),
-          isDense: true, // Ensures that the input field itself is dense
-        ),
-      ],
-    );
-  }
-
-  Widget datePickerField(
-    BuildContext context, {
-    required String labelText,
-    required String hintText,
-    required TextEditingController controller,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          labelText,
-          style: TextStyle(fontSize: 12.sp, color: AppColors.gray),
-        ),
-        SizedBox(height: 5.w),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: TextStyle(fontSize: 12.sp),
-            labelStyle: TextStyle(fontSize: 12.sp),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            floatingLabelBehavior: FloatingLabelBehavior.never,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              borderSide: BorderSide(
-                color: AppColors.blueGray.withOpacity(0.4),
-                width: 0.5,
-              ),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30)),
-              borderSide: BorderSide(color: AppColors.primary, width: 0.5),
-            ),
-          ),
-          readOnly: true,
-          style: TextStyle(fontSize: 14.sp, color: AppColors.charcoalGray),
-          onTap: () async {
-            final selectedDate = await showDatePicker(
-              context: context, // now valid
-              initialDate: DateTime.now(),
-              firstDate: DateTime(1900),
-              lastDate: DateTime(2100),
-            );
-            if (selectedDate != null) {
-              controller.text = DateFormat('yyyy-MM-dd').format(selectedDate);
-            }
-          },
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : DropdownButtonHideUnderline(
+                  child: DropdownButton<T>(
+                    isExpanded: true,
+                    value: value,
+                    hint: Text(
+                      hintText,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.gray,
+                      ),
+                    ),
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    onChanged: onChanged,
+                    items: items.map<DropdownMenuItem<T>>((T item) {
+                      return DropdownMenuItem<T>(
+                        value: item,
+                        child: Text(
+                          itemToString != null 
+                              ? itemToString(item) 
+                              : item.toString(),
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.charcoalGray,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
         ),
       ],
     );
