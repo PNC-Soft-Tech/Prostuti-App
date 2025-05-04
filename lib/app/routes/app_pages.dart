@@ -37,6 +37,8 @@ import '../modules/ranking/views/ranking_view.dart';
 import '../modules/search-page/binding/search_binding.dart';
 import '../modules/search-page/view/search_view.dart';
 import '../modules/testing/text_page.dart';
+import '../modules/history/binding/history_binding.dart';
+import '../modules/history/view/history_view.dart';
 
 class Routes {
   static const splash = '/splash';
@@ -60,6 +62,7 @@ class Routes {
   static const packageDetails = '/package-details/';
   static const ranking = '/ranking/';
   static const tex = '/tex/';
+  static const history = '/history';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
   static String singleModelTest(String id) => '/model-test/$id';
@@ -173,6 +176,11 @@ class AppPages {
       name: Routes.tex,
       page: () => const TeXPage(),
       // binding: ModelTestDetailsBinding(),
+    ),
+    GetPage(
+      name: Routes.history,
+      page: () => const HistoryView(),
+      binding: HistoryBinding(),
     ),
   ];
 }

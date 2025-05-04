@@ -71,4 +71,10 @@ abstract class ApiHelper {
       
   // New method to fetch question count by topic ID
   Future<Either<CustomError, int>> fetchQuestionCountByTopicId(String topicId);
+
+  // New method to fetch custom exams with pagination
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams({
+    int page = 1,
+    int limit = 10
+  });
 }

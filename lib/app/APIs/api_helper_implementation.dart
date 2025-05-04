@@ -682,4 +682,30 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
+
+  @override
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams({
+    int page = 1,
+    int limit = 10
+  }) async {
+    try {
+      final response = await get('custom-exams/?page=$page&limit=$limit');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<Map<String, dynamic>> customExams = 
+            data.map((item) => item as Map<String, dynamic>).toList();
+        
+        return Right(customExams);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to fetch custom exams'
+        ));
+      }
+    } catch (e) {
+      log('Error fetching custom exams: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
 }
