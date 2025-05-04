@@ -14,15 +14,46 @@ class HistoryView extends GetWidget<HistoryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 16.h),
-              const BorderedButtonGroup(),
+              // User greeting
+              Text(
+                'Hi Rahat!',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimaryColor,
+                ),
+              ),
               SizedBox(height: 16.h),
-              Obx(() => _buildTabContent()),
+              // Tab buttons
+              const TabSelector(),
+              SizedBox(height: 16.h),
+              // Tab content
+              Expanded(
+                child: Obx(() => AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0.05, 0),
+                          end: Offset.zero,
+                        ).animate(animation),
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: _buildTabContent(key: ValueKey(controller.selectedTabIndex.value)),
+                )),
+              ),
             ],
           ),
         ),
@@ -30,28 +61,33 @@ class HistoryView extends GetWidget<HistoryController> {
     );
   }
 
-  Widget _buildTabContent() {
+  Widget _buildTabContent({Key? key}) {
     if (controller.isLoading.value) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+      return Center(
+        key: key,
+        child: const CircularProgressIndicator(color: AppColors.primary),
       );
     }
 
     switch (controller.selectedTabIndex.value) {
       case 0:
-        return _buildContestList();
+        return _buildContestList(key: key);
       case 1:
-        return _buildModelTestList();
+        return _buildModelTestList(key: key);
       case 2:
-        return _buildCustomExamList();
+        return _buildCustomExamList(key: key);
       default:
-        return const Center(child: Text('Invalid tab index'));
+        return Center(
+          key: key,
+          child: const Text('Invalid tab index'),
+        );
     }
   }
 
-  Widget _buildContestList() {
+  Widget _buildContestList({Key? key}) {
     if (controller.contests.isEmpty) {
       return Center(
+        key: key,
         child: Text(
           'No contest history found',
           style: TextStyle(
@@ -63,64 +99,50 @@ class HistoryView extends GetWidget<HistoryController> {
     }
 
     return Column(
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Contest List',
+              'Contests List',
               style: TextStyle(
                 fontSize: 18.sp,
                 color: AppColors.textPrimaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            DropdownButton<String>(
-              value: 'Sort By Date',
-              icon: Icon(Icons.arrow_drop_down, size: 20.sp),
-              underline: Container(),
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14.sp,
-              ),
-              onChanged: (String? newValue) {
-                print('Selected: $newValue');
-              },
-              items: <String>['Sort By Date', 'Sort By Rank', 'Sort By Point']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+            _buildSortDropdown('Sort by Date'),
           ],
         ),
         SizedBox(height: 8.h),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.contests.length,
-          itemBuilder: (context, index) {
-            final contest = controller.contests[index];
-            return Padding(
-              padding: EdgeInsets.only(bottom: 15.h),
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed(Routes.contestDetails, arguments: {'contestId': contest.id});
-                },
-                child: ContestCard(contest: contest),
-              ),
-            );
-          },
+        Expanded(
+          child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            itemCount: controller.contests.length,
+            itemBuilder: (context, index) {
+              final contest = controller.contests[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: 15.h),
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed(Routes.contestDetails, arguments: {'contestId': contest.id});
+                  },
+                  child: ContestCard(contest: contest),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildModelTestList() {
+  Widget _buildModelTestList({Key? key}) {
     if (controller.modelTests.isEmpty) {
       return Center(
+        key: key,
         child: Text(
           'No model test history found',
           style: TextStyle(
@@ -132,64 +154,50 @@ class HistoryView extends GetWidget<HistoryController> {
     }
 
     return Column(
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Model Test List',
+              'Model Tests List',
               style: TextStyle(
                 fontSize: 18.sp,
                 color: AppColors.textPrimaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            DropdownButton<String>(
-              value: 'Sort By Date',
-              icon: Icon(Icons.arrow_drop_down, size: 20.sp),
-              underline: Container(),
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14.sp,
-              ),
-              onChanged: (String? newValue) {
-                print('Selected: $newValue');
-              },
-              items: <String>['Sort By Date', 'Sort By Score']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+            _buildSortDropdown('Latest Tests'),
           ],
         ),
         SizedBox(height: 8.h),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.modelTests.length,
-          itemBuilder: (context, index) {
-            final modelTest = controller.modelTests[index];
-            return Padding(
-              padding: EdgeInsets.only(bottom: 15.h),
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed(Routes.modelTestDetails, arguments: {'modelTestId': modelTest.id});
-                },
-                child: ModelTestCard(modelTest: modelTest),
-              ),
-            );
-          },
+        Expanded(
+          child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            itemCount: controller.modelTests.length,
+            itemBuilder: (context, index) {
+              final modelTest = controller.modelTests[index];
+              return Padding(
+                padding: EdgeInsets.only(bottom: 15.h),
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed(Routes.modelTestDetails, arguments: {'modelTestId': modelTest.id});
+                  },
+                  child: ModelTestCard(modelTest: modelTest),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildCustomExamList() {
+  Widget _buildCustomExamList({Key? key}) {
     if (controller.customExams.isEmpty) {
       return Center(
+        key: key,
         child: Text(
           'No custom exam history found',
           style: TextStyle(
@@ -201,130 +209,146 @@ class HistoryView extends GetWidget<HistoryController> {
     }
 
     return Column(
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Custom Exam List',
+              'Custom Exams List',
               style: TextStyle(
                 fontSize: 18.sp,
                 color: AppColors.textPrimaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            DropdownButton<String>(
-              value: 'Sort By Date',
-              icon: Icon(Icons.arrow_drop_down, size: 20.sp),
-              underline: Container(),
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14.sp,
-              ),
-              onChanged: (String? newValue) {
-                print('Selected: $newValue');
-              },
-              items: <String>['Sort By Date', 'Sort By Score']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+            _buildSortDropdown('Latest Tests'),
           ],
         ),
         SizedBox(height: 8.h),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: controller.customExams.length,
-          itemBuilder: (context, index) {
-            final customExam = controller.customExams[index];
-            
-            // Load more data when reaching the end
-            if (index == controller.customExams.length - 2 && controller.customExamsHasMore.value) {
-              controller.loadMoreCustomExams();
-            }
-            
-            return Padding(
-              padding: EdgeInsets.only(bottom: 15.h),
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed(Routes.customExamDetails, arguments: {'customExamId': customExam['_id']});
-                },
-                child: CustomExamCard(customExam: customExam),
-              ),
-            );
-          },
-        ),
-        
-        // Show loading indicator when loading more data
-        Obx(() => Visibility(
-          visible: controller.isLoading.value && controller.customExamsPage.value > 1,
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+                controller.loadMoreCustomExams();
+              }
+              return true;
+            },
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: controller.customExams.length + (controller.customExamsHasMore.value ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == controller.customExams.length) {
+                  return Padding(
+                    padding: EdgeInsets.all(16.h),
+                    child: const Center(
+                      child: CircularProgressIndicator(color: AppColors.primary),
+                    ),
+                  );
+                }
+                
+                final customExam = controller.customExams[index];
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 15.h),
+                  child: InkWell(
+                    onTap: () {
+                      Get.toNamed(Routes.customExamDetails, arguments: {'customExamId': customExam['_id']});
+                    },
+                    child: CustomExamCard(customExam: customExam),
+                  ),
+                );
+              },
             ),
           ),
-        )),
+        ),
       ],
+    );
+  }
+  
+  Widget _buildSortDropdown(String value) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4.r),
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.grey,
+            ),
+          ),
+          SizedBox(width: 4.w),
+          Icon(Icons.arrow_drop_down, size: 20.sp, color: Colors.grey),
+        ],
+      ),
     );
   }
 }
 
-class BorderedButtonGroup extends StatelessWidget {
-  const BorderedButtonGroup({super.key});
+class TabSelector extends StatelessWidget {
+  const TabSelector({super.key});
 
   @override
   Widget build(BuildContext context) {
     final HistoryController controller = Get.find<HistoryController>();
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-      height: 50.w,
+      height: 50.h,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: AppColors.textPrimaryColor.withOpacity(0.2),
-          width: 1,
-        ),
+        color: Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(30.r),
       ),
-      child: Row(
-        children: [
-          Expanded(child: _buildButton('Contests', 0, controller)),
-          Expanded(child: _buildButton('Model Tests', 1, controller)),
-          Expanded(child: _buildButton('Custom Exams', 2, controller)),
-        ],
+      child: Padding(
+        padding: EdgeInsets.all(4.r),
+        child: Obx(() {
+          return Row(
+            children: [
+              _buildTabButton('Contests', 0, controller),
+              _buildTabButton('Model Tests', 1, controller),
+              _buildTabButton('Custom Exams', 2, controller),
+            ],
+          );
+        }),
       ),
     );
   }
 
-  Widget _buildButton(String title, int index, HistoryController controller) {
-    return Obx(() {
-      final isSelected = controller.selectedTabIndex.value == index;
-      
-      return TextButton(
-        onPressed: () {
-          controller.changeTab(index);
-        },
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 7),
-          minimumSize: const Size(0, 0),
-          foregroundColor: isSelected ? Colors.white : Colors.black,
-          backgroundColor: isSelected ? AppColors.primary : Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
+  Widget _buildTabButton(String title, int index, HistoryController controller) {
+    final isSelected = controller.selectedTabIndex.value == index;
+    
+    return Expanded(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(26.r),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(26.r),
+            onTap: () => controller.changeTab(index),
+            child: Center(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
           ),
         ),
-        child: Text(
-          title,
-          style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    });
+      ),
+    );
   }
 }
 
@@ -337,100 +361,106 @@ class ContestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final String contestName = contest.name?.replaceAll(RegExp(r'<[^>]*>'), '') ?? 'Unnamed Contest';
     final String? description = contest.description?.replaceAll(RegExp(r'<[^>]*>'), '');
+    final int score = (contest.totalMarks as num?)?.toInt() ?? 0;
+    final int maxScore = 100;
     
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
+      padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(color: AppColors.lightGray),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      if (contest.imageUrl != null)
-                        Image.network(
-                          contest.imageUrl,
-                          height: 28,
-                          width: 28,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/govt-bd.png',
-                              height: 28,
-                              width: 28,
-                            );
-                          },
-                        )
-                      else
-                        Image.asset(
-                          'assets/govt-bd.png',
-                          height: 28,
-                          width: 28,
-                        ),
-                      SizedBox(width: 9.w),
-                      SizedBox(
-                        width: 200.w,
-                        child: Text(
-                          contestName,
-                          style: GoogleFonts.notoSansBengali(
-                            textStyle: TextStyle(
-                              fontSize: 15.sp,
-                              color: AppColors.textPrimaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+              // Logo section
+              if (contest.imageUrl != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.r),
+                  child: Image.network(
+                    contest.imageUrl,
+                    height: 40.h,
+                    width: 40.w,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => _buildDefaultContestIcon(),
                   ),
-                  if (description != null) ...[
-                    SizedBox(height: 5.h),
-                    SizedBox(
-                      width: 200.w,
-                      child: Text(
+                )
+              else
+                _buildDefaultContestIcon(),
+              SizedBox(width: 12.w),
+              
+              // Content section
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      contestName,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimaryColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (description != null && description.isNotEmpty) ...[
+                      SizedBox(height: 4.h),
+                      Text(
                         description,
-                        style: GoogleFonts.notoSansBengali(
-                          textStyle: TextStyle(
-                            fontSize: 12.sp,
-                            color: AppColors.textPrimaryColor,
-                          ),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                    ],
+                    SizedBox(height: 8.h),
+                    Row(
+                      children: [
+                        Text(
+                          '$score',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimaryColor,
+                          ),
+                        ),
+                        Text(
+                          '/$maxScore',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  '${contest.totalMarks} Marks',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
                 ),
               ),
+              
+              // Rank badge
+              _buildRankBadge(23),
             ],
           ),
-          SizedBox(height: 8.h),
+          
+          SizedBox(height: 12.h),
+          Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+          SizedBox(height: 12.h),
+          
+          // Footer
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -447,17 +477,80 @@ class ContestCard extends StatelessWidget {
                   ),
                 ],
               ),
+              Row(
+                children: [
+                  Icon(Icons.calendar_today, size: 16.sp, color: Colors.grey),
+                  SizedBox(width: 4.w),
+                  Text(
+                    DateFormat('dd MMM').format(contest.startContest),
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
               Text(
-                'Date: ${DateFormat('dd/MM/yyyy').format(contest.startContest)}',
+                'View Details',
                 style: TextStyle(
                   fontSize: 12.sp,
-                  color: Colors.grey,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+  
+  Widget _buildDefaultContestIcon() {
+    return Container(
+      height: 40.h,
+      width: 40.w,
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Icon(
+        Icons.emoji_events,
+        color: AppColors.primary,
+        size: 24.sp,
+      ),
+    );
+  }
+  
+  Widget _buildRankBadge(int rank) {
+    return Column(
+      children: [
+        Container(
+          width: 42.w,
+          height: 36.h,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(8.r),
+              topRight: Radius.circular(8.r),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              rank.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 15.sp,
+              ),
+            ),
+          ),
+        ),
+        Icon(
+          Icons.star,
+          color: Colors.amber,
+          size: 20.sp,
+        ),
+      ],
     );
   }
 }
@@ -471,85 +564,119 @@ class ModelTestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final String modelTestName = modelTest.name?.replaceAll(RegExp(r'<[^>]*>'), '') ?? 'Unnamed Model Test';
     final String? description = modelTest.description?.replaceAll(RegExp(r'<[^>]*>'), '');
+    final int score = (modelTest.totalMarks as num?)?.toInt() ?? 0;
+    final int maxScore = 100;
     
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
+      padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(color: AppColors.lightGray),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.rule_folder, size: 28, color: AppColors.primary),
-                      SizedBox(width: 9.w),
-                      SizedBox(
-                        width: 200.w,
-                        child: Text(
-                          modelTestName,
-                          style: GoogleFonts.notoSansBengali(
-                            textStyle: TextStyle(
-                              fontSize: 15.sp,
-                              color: AppColors.textPrimaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+              // Icon
+              Container(
+                height: 40.h,
+                width: 40.w,
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Icon(
+                  Icons.description,
+                  color: Colors.blue,
+                  size: 24.sp,
+                ),
+              ),
+              SizedBox(width: 12.w),
+              
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      modelTestName,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimaryColor,
                       ),
-                    ],
-                  ),
-                  if (description != null) ...[
-                    SizedBox(height: 5.h),
-                    SizedBox(
-                      width: 200.w,
-                      child: Text(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (description != null && description.isNotEmpty) ...[
+                      SizedBox(height: 4.h),
+                      Text(
                         description,
-                        style: GoogleFonts.notoSansBengali(
-                          textStyle: TextStyle(
-                            fontSize: 12.sp,
-                            color: AppColors.textPrimaryColor,
-                          ),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.grey,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                    ],
+                    SizedBox(height: 8.h),
+                    Row(
+                      children: [
+                        Text(
+                          '$score',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimaryColor,
+                          ),
+                        ),
+                        Text(
+                          '/$maxScore',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Text(
-                  '${modelTest.questions.length} Q',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          
+          SizedBox(height: 12.h),
+          Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+          SizedBox(height: 12.h),
+          
+          // Footer
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Row(
+                children: [
+                  Icon(Icons.help_outline, size: 16.sp, color: Colors.grey),
+                  SizedBox(width: 4.w),
+                  Text(
+                    '${modelTest.questions.length} questions',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
               Row(
                 children: [
                   Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
@@ -564,10 +691,11 @@ class ModelTestCard extends StatelessWidget {
                 ],
               ),
               Text(
-                DateFormat('dd/MM/yyyy').format(modelTest.startContest),
+                'View Details',
                 style: TextStyle(
                   fontSize: 12.sp,
-                  color: Colors.grey,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -602,80 +730,106 @@ class CustomExamCard extends StatelessWidget {
       }
     }
     
+    // Create subject chips
+    final List<Widget> subjectChips = subjects.map((subject) => 
+      Container(
+        margin: EdgeInsets.only(right: 4.w),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Text(
+          subject,
+          style: TextStyle(
+            fontSize: 10.sp,
+            color: Colors.grey,
+          ),
+        ),
+      )
+    ).toList();
+    
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
+      padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(color: AppColors.lightGray),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.assignment, size: 28, color: AppColors.primary),
-                      SizedBox(width: 9.w),
-                      SizedBox(
-                        width: 200.w,
-                        child: Text(
-                          examName,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            color: AppColors.textPrimaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (subjects.isNotEmpty) ...[
-                    SizedBox(height: 5.h),
-                    SizedBox(
-                      width: 200.w,
-                      child: Text(
-                        subjects.join(', '),
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppColors.textPrimaryColor,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+              // Icon
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                height: 40.h,
+                width: 40.w,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12.r),
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Text(
-                  '$totalMarks Marks',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Icon(
+                  Icons.assignment,
+                  color: Colors.green,
+                  size: 24.sp,
+                ),
+              ),
+              SizedBox(width: 12.w),
+              
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      examName,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimaryColor,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8.h),
+                    if (subjectChips.isNotEmpty) 
+                      Wrap(children: subjectChips),
+                  ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 8.h),
+          
+          SizedBox(height: 12.h),
+          Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+          SizedBox(height: 12.h),
+          
+          // Footer
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Row(
+                children: [
+                  Icon(Icons.help_outline, size: 16.sp, color: Colors.grey),
+                  SizedBox(width: 4.w),
+                  Text(
+                    '$totalMarks questions',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
               Row(
                 children: [
                   Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
@@ -690,10 +844,11 @@ class CustomExamCard extends StatelessWidget {
                 ],
               ),
               Text(
-                'Topics: ${selectedTopics.length}',
+                'View Details',
                 style: TextStyle(
                   fontSize: 12.sp,
-                  color: Colors.grey,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
