@@ -37,6 +37,7 @@ class ProfileView extends GetView<ProfileController> {
             const ProgressCircle(
               progress: 0.4,
             ),
+            // Text( controller.userProfile.value?.profilePic??'--'),
             SizedBox(
               height: 25.h,
             ),
@@ -118,30 +119,38 @@ class ProfileView extends GetView<ProfileController> {
   }
 }
 
-class BorderedCircleAvatar extends StatelessWidget {
+class BorderedCircleAvatar extends GetView<ProfileController> {
   const BorderedCircleAvatar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: AppColors.primary,
-            width: 3.w,
-          ),
-        ),
-        child: CircleAvatar(
-          radius: 50.w,
-          backgroundColor: Colors.transparent,
-          child: SvgPicture.asset(
-            "assets/default-male.svg",
-            width: 70.w,
-            height: 70.h,
-          ),
-        ),
-      ),
-    );
+    return Obx(() => Center(
+          child: controller.userProfile.value?.profilePic != null
+              ? CircleAvatar(
+                  radius: 50.w,
+                  backgroundColor: Colors.transparent,
+                  backgroundImage: NetworkImage(
+                    controller.userProfile.value!.profilePic,
+                  ),
+                )
+              : Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.primary,
+                      width: 3.w,
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 50.w,
+                    backgroundColor: Colors.transparent,
+                    child: SvgPicture.asset(
+                      "assets/default-male.svg",
+                      width: 70.w,
+                      height: 70.h,
+                    ),
+                  ),
+                ),
+        ));
   }
 }
