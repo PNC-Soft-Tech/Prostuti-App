@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../constant/app_color.dart';
 import '../controller/question_controller.dart';
 import '../widgets/question_widgets.dart';
 
@@ -14,7 +16,7 @@ class QuestionView extends GetView<QuestionController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator(color: AppColors.primary ,));
         }
 
         if (controller.questions.isEmpty) {

@@ -23,11 +23,11 @@ class HomeMainWidget extends GetWidget<HomeController> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Obx(() => Text(
-                  'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
-                  style: TextStyle(fontSize: 16.sp),
-                )),
-            SizedBox(height: 10.h),
+            // Obx(() => Text(
+            //       'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
+            //       style: TextStyle(fontSize: 16.sp),
+            //     )),
+            // SizedBox(height: 10.h),
             // GestureDetector(
             //     onTap: () async {
             //       log("clickeddddd");

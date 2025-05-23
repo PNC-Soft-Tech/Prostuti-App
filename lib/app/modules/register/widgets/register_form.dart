@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
@@ -124,7 +125,9 @@ class _RegisterFormState extends State<RegisterForm> {
             const SizedBox(height: 20),
             Obx(() {
               return controller.isLoading.value
-                  ? const CircularProgressIndicator()
+                  ? const CupertinoActivityIndicator( 
+                      color: AppColors.primary,
+                    )
                   : SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

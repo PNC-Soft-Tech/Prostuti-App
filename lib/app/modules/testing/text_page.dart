@@ -30,7 +30,7 @@ class TeXPage extends StatelessWidget {
           //         textAlign: TeXViewTextAlign.left,
           //       ),
           //     ),
-          //     loadingWidgetBuilder: (_) => const CircularProgressIndicator(),
+          //     loadingWidgetBuilder: (_) => const CupertinoActivityIndicator(),
           //   ),
           // TeXView(
           //     child: TeXViewDocument(
@@ -48,7 +48,7 @@ class TeXPage extends StatelessWidget {
           //         textAlign: TeXViewTextAlign.left,
           //       ),
           //     ),
-          //     loadingWidgetBuilder: (_) => const CircularProgressIndicator(),
+          //     loadingWidgetBuilder: (_) => const CupertinoActivityIndicator(),
           //   ),
         ],
       )

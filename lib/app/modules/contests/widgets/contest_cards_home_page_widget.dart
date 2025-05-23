@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../constant/app_color.dart';
 import '../controller/contest_controller.dart';
 import '../models/contest_model.dart';
 import 'contest_card_home_page_widget.dart';
@@ -16,7 +18,7 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
       child: Obx(() {
         if (controller.isLoadingUpcomingContest.value == true) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(color: AppColors.primary ,),
           );
         }
         return Container(

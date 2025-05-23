@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../constant/app_color.dart';
 import '../controllers/job-category-controller.dart';
 
 class JobCategoryView extends StatelessWidget {
@@ -15,7 +17,7 @@ class JobCategoryView extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator(color: AppColors.primary ,));
         }
         if (controller.jobCategories.isEmpty) {
           return const Center(child: Text('No categories found.'));

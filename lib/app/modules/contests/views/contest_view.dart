@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_appbar.dart';
@@ -13,7 +14,7 @@ class ContestView extends GetView<ContestController> {
       appBar: CustomAppBar.appBar(title: 'Contests', centerTitle: true),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator());
         }
 
         if (controller.contests.isEmpty) {

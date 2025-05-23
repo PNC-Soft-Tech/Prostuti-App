@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../constant/app_color.dart';
 import '../controllers/job-circulars-controller.dart';
 
 class JobCircularView extends StatelessWidget {
@@ -15,7 +17,7 @@ class JobCircularView extends StatelessWidget {
       ),
       body: Obx(
         () => controller.isLoading.value
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CupertinoActivityIndicator(color: AppColors.primary,))
             : ListView.builder(
                 itemCount: controller.jobCirculars.length,
                 itemBuilder: (context, index) {

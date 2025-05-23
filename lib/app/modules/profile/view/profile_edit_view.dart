@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -332,7 +333,7 @@ class ProfileEditView extends GetView<ProfileController> {
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: CupertinoActivityIndicator(color: AppColors.primary))
               : DropdownButtonHideUnderline(
                   child: DropdownButton<T>(
                     isExpanded: true,

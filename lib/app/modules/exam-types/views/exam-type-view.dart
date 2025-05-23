@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../constant/app_color.dart';
 import '../controllers/exam-type-controller.dart';
 
 class ExamTypeView extends StatelessWidget {
@@ -15,7 +17,7 @@ class ExamTypeView extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator( color: AppColors.primary));
         }
         if (controller.examTypes.isEmpty) {
           return const Center(child: Text('No exam types found.'));

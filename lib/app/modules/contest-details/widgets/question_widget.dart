@@ -86,7 +86,7 @@ class QuestionWidget extends StatelessWidget {
                     //                   ),
                     //                 ),
                     //                 loadingWidgetBuilder: (_) =>
-                    //                     Center(child: CircularProgressIndicator()),
+                    //                     Center(child: CupertinoActivityIndicator()),
                     //               )
                     //             : HtmlWidget(
                     //                 "${index + 1}) ${question.title.replaceAll('<p>', '')}"),

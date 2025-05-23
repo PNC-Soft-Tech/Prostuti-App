@@ -244,7 +244,7 @@ class HistoryView extends GetWidget<HistoryController> {
                     padding: EdgeInsets.all(16.h),
                     child: const Center(
                       child:
-                          CircularProgressIndicator(color: AppColors.primary),
+                          CupertinoActivityIndicator(color: AppColors.primary),
                     ),
                   );
                 }
