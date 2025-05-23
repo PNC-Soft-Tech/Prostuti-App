@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,8 +6,7 @@ import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 
-import 'controller/app_controller.dart';
-import 'utils/prostuti_utils.dart';
+import '../storage/storage_helper.dart';
 
 class CustomAppBar {
   // Static method to create a custom app bar
@@ -23,8 +23,6 @@ class CustomAppBar {
     String? profilePicture,
     VoidCallback? onLeadingPressed,
   }) {
-    final AppController appController = Utils.getAppController();
-
     return AppBar(
       scrolledUnderElevation: 0,
       leadingWidth: leadingWidth ?? 180,
@@ -69,10 +67,86 @@ class CustomAppBar {
                       ))),
                       child: CircleAvatar(
                         radius: 25,
-                        backgroundColor: Colors.transparent,
-                        child: profilePicture != null
-                            ? Image.network(profilePicture)
-                            : SvgPicture.asset("assets/default-male.svg"),
+                        backgroundColor: Colors.transparent,                        child: FutureBuilder<String?>(
+                          future: StorageHelper.getUserData(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              // Show loading indicator
+                              return const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              );
+                            }
+                            
+                            if (snapshot.hasData && snapshot.data != null) {
+                              try {
+                                final userData = jsonDecode(snapshot.data!);
+                                final userProfilePic = userData['profilePic'] as String?;
+                                
+                                if (userProfilePic != null && 
+                                    userProfilePic.isNotEmpty && 
+                                    userProfilePic != 'https://picsum.photos/id/1/200/300') {
+                                  return ClipOval(
+                                    child: Image.network(
+                                      userProfilePic,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return SvgPicture.asset("assets/default-male.svg");
+                                      },
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                print('Error parsing profile picture: $e');
+                              }
+                            }
+                            
+                            // Fallback to provided profilePicture parameter or default
+                            if (profilePicture != null && profilePicture.isNotEmpty) {
+                              return ClipOval(
+                                child: Image.network(
+                                  profilePicture,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return SvgPicture.asset("assets/default-male.svg");
+                                  },
+                                ),
+                              );
+                            }
+                            
+                            return SvgPicture.asset("assets/default-male.svg");
+                          },
+                        ),
                       )),
                 ),
               ],
@@ -91,11 +165,61 @@ class CustomAppBar {
                 ),
                 SizedBox(
                   height: 5.h,
+                ),     
+                // Text(
+                //         'Hi ${name ?? "User"}!',
+                //         style: TextStyle(
+                //           fontSize: 16.sp,
+                //           color: Colors.white,
+                //           fontWeight: FontWeight.w500,
+                //         ),
+                //       ),           
+                FutureBuilder<String?>(
+                  future: StorageHelper.getUserData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Show loading state with fallback name
+                      return Text(
+                        'Hi ${name ?? "User"}!',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    }
+                    
+                    if (snapshot.hasData && snapshot.data != null) {
+                      try {
+                        final userData = jsonDecode(snapshot.data!);
+                        final fullName = userData['fullName'] as String?;
+                        
+                        if (fullName != null && fullName.isNotEmpty) {
+                          return Text(
+                            'Hi $fullName!',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        print('Error parsing user data in appbar: $e');
+                      }
+                    }
+                    
+                    // Fallback to provided name parameter or default
+                    return Text(
+                      'Hi ${name ?? "User"}!',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    );
+                  },
                 ),
-                Obx(() => Text(
-                      'Hi ${name ?? "Rahat"} ${appController.userId.value}!',
-                      style: TextStyle(fontSize: 16.sp),
-                    ))
               ],
             ),
           ),

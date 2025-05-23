@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../storage/storage_helper.dart';
 import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
@@ -74,7 +75,35 @@ class HomeMainWidget extends GetWidget<HomeController> {
             //       () => Get.back(),
             //     ],
             //   );
-            // }),
+            // }),          
+             FutureBuilder<String?>(
+              future: StorageHelper.getUserData(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  try {
+                    final userData = jsonDecode(snapshot.data!);
+                    final fullName = userData['fullName'] as String? ?? 'User';
+                    return Text(
+                      'Hi $fullName',
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                    );
+                  } catch (e) {
+                    print('Error parsing user data: $e');
+                    return Text(
+                      'Hi User',
+                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                    );
+                  }
+                }
+                if (snapshot.hasError) {
+                  return Text(
+                    'Hi User',
+                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                  );
+                }
+                return const CircularProgressIndicator();
+              },
+            ),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),

@@ -40,18 +40,29 @@ class LoginController extends GetxController {
 
     result.fold(
       (error) {
-        log("log: ${error.message}");
-        Get.snackbar("Login Failed", error.message ?? "Unknown error occurred",
+        log("log: ${error.message}");        Get.snackbar("Login Failed", error.message,
             backgroundColor: Colors.redAccent, colorText: Colors.white);
-      },
-      (response) async {
+      },      (response) async {
         await StorageHelper.setToken(response.token);
-        await StorageHelper.setUserData({
-          "_id": response.userId,
-        });
         await StorageHelper.setUserId(response.userId);
         appController.decodeJWT(response
             .token); // saving the jwt payload ( id & userRole) into appcontroller variable
+        
+        // Fetch complete user profile data after successful login
+        final profileResult = await _apiHelper.getUserProfile(response.userId);        profileResult.fold(
+          (profileError) async {
+            log("Failed to fetch profile: ${profileError.message}");
+            // Still store basic user ID even if profile fetch fails
+            await StorageHelper.setUserData({
+              "_id": response.userId,
+            });
+          },
+          (profile) async {
+            // Store complete profile data including fullName
+            await StorageHelper.setUserData(profile.toJson());
+          },
+        );
+        
         Get.snackbar("Login Success", "Welcome back!",
             backgroundColor: Colors.green, colorText: Colors.white);
 
