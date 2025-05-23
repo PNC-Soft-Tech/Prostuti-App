@@ -21,6 +21,7 @@ class RankingView extends GetWidget<RankingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Obx(() {
         if (controller.isRankLoading.value == true) {
           return const Center(

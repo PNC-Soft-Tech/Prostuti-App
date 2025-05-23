@@ -65,8 +65,12 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadCachedOrFetchProfile();
-    fetchInstitutionTypes();
+    
+    // First fetch institution types (needed for the dropdown)
+    fetchInstitutionTypes().then((_) {
+      // After institution types are loaded, load the user profile
+      _loadCachedOrFetchProfile();
+    });
   }
 
   Future<void> _loadCachedOrFetchProfile() async {
@@ -144,11 +148,55 @@ class ProfileController extends GetxController {
     // Handle institution data
     if (p.institutionTypeObj != null) {
       selectedInstitutionType.value = p.institutionTypeObj;
-      fetchInstitutionsByType(p.institutionTypeObj!.id);
-    }
-    
-    if (p.institutionObj != null) {
-      selectedInstitution.value = p.institutionObj;
+      // We'll fetch institutions first, then set the selected institution
+      fetchInstitutionsByType(p.institutionTypeObj!.id).then((_) {
+        // Now that institutions are loaded, set selected institution if available
+        if (p.institutionObj != null) {
+          try {
+            // Find matching institution in the loaded list
+            final matchingInstitution = institutions.firstWhere(
+              (inst) => inst.id == p.institutionObj!.id,
+            );
+            selectedInstitution.value = matchingInstitution;
+          } catch (e) {
+            // If not found in the list, use the original object
+            selectedInstitution.value = p.institutionObj;
+          }
+        }
+      });
+    } else if (p.institutionType != null) {
+      // If only the ID is available but not the full object, try to find it in the fetched types
+      try {
+        final matchingType = institutionTypes.firstWhere(
+          (type) => type.id == p.institutionType,
+        );
+        selectedInstitutionType.value = matchingType;
+        fetchInstitutionsByType(matchingType.id).then((_) {
+          if (p.institution != null) {
+            try {
+              // Try to find the institution after loading
+              final matchingInst = institutions.firstWhere(
+                (inst) => inst.id == p.institution,
+              );
+              selectedInstitution.value = matchingInst;
+            } catch (e) {
+              // If not found in the list but we have the ID, create a temporary object
+              selectedInstitution.value = Institution(
+                id: p.institution!, 
+                name: 'Unknown Institution', 
+                slug: 'unknown'
+              );
+            }
+          }
+        });
+      } catch (e) {
+        // If institution type not found in list, create a temporary object
+        selectedInstitutionType.value = InstitutionType(
+          id: p.institutionType!, 
+          name: 'Unknown Type', 
+          slug: 'unknown'
+        );
+      }
     }
     
     cgpaController.text = p.honsGpa.toString();
@@ -171,7 +219,11 @@ class ProfileController extends GetxController {
 
   Future<void> fetchInstitutionsByType(String typeId) async {
     isLoadingInstitutions.value = true;
+    institutions.clear(); // Clear existing institutions
+    
     final result = await _api.getInstitutions(institutionTypeId: typeId);
+    
+    // Always set loading to false, regardless of result
     isLoadingInstitutions.value = false;
     
     result.fold(
@@ -180,9 +232,25 @@ class ProfileController extends GetxController {
           message: 'Failed to load institutions: ${err.message}',
           isSuccess: false,
         );
+        // Set empty list on error
+        institutions.value = [];
       },
       (data) {
         institutions.value = data;
+        
+        // If we have a user profile with an institution and it matches one in this list,
+        // select it automatically
+        if (userProfile.value?.institution != null) {
+          final institutionId = userProfile.value!.institution!;
+          try {
+            final matchingInstitution = institutions.firstWhere(
+              (inst) => inst.id == institutionId,
+            );
+            selectedInstitution.value = matchingInstitution;
+          } catch (e) {
+            // No matching institution found, do nothing
+          }
+        }
       },
     );
   }
@@ -190,8 +258,17 @@ class ProfileController extends GetxController {
   void onInstitutionTypeChanged(InstitutionType? type) {
     if (type == null) return;
     
+    // Set the selected institution type
     selectedInstitutionType.value = type;
+    
+    // Clear the currently selected institution since the type has changed
     selectedInstitution.value = null;
+    
+    // Clear the list of institutions and set loading state
+    institutions.clear();
+    isLoadingInstitutions.value = true;
+    
+    // Fetch institutions for the selected type
     fetchInstitutionsByType(type.id);
   }
 

@@ -558,28 +558,29 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   @override
   Future<Either<CustomError, List<Institution>>> getInstitutions({String? institutionTypeId}) async {
     try {
-      String endpoint = 'institutions';
-      if (institutionTypeId != null) {
-        endpoint = 'institutions?institutionType=$institutionTypeId';
-      }
+      // Construct URL with query parameter if provided
+      final String url = institutionTypeId != null 
+          ? 'institutions?institutionType=$institutionTypeId' 
+          : 'institutions';
       
-      final response = await get(endpoint);
-      
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'] as List<dynamic>;
-        final List<Institution> institutions = 
-            data.map((item) => Institution.fromJson(item as Map<String, dynamic>)).toList();
-        
+      final response = await get(url);
+
+      if (response.statusCode == 200 && !response.hasError) {
+        final List<dynamic> dataList = response.body['data'] as List<dynamic>;
+
+        final List<Institution> institutions = dataList
+            .map((json) => Institution.fromJson(json as Map<String, dynamic>))
+            .toList();
+
         return Right(institutions);
       } else {
-        return Left(CustomError(
-          response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch institutions'
-        ));
+        final message =
+            response.body['message'] ?? 'Failed to fetch institutions';
+        return Left(CustomError(response.statusCode, message: message));
       }
-    } catch (error) {
-      log('getInstitutions error: $error');
-      return Left(CustomError(500, message: 'Internal server error'));
+    } catch (e, st) {
+      log('Error fetching institutions: $e\n$st');
+      return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
 
