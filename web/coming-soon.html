@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Prostuti - Coming Soon!</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }        
+    body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }        
+        .container {
+            max-width: 1200px;
+            background: white;
+            position: relative;
+        }
+
+        .poster {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .logo {
+            width: 200px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: #2C3E50;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 24px;
+            color: #3498DB;
+            margin-bottom: 30px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            color: #34495E;
+        }
+
+        .feature img {
+            width: 30px;
+            height: 30px;
+        }        .coming-soon {
+            background: #3498DB;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 24px;
+            display: inline-block;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .illustration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .illustration img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .countdown {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #2C3E50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 18px;
+        }        @media (max-width: 768px) {
+            .poster {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .tagline {
+                font-size: 20px;
+            }
+        }
+
+        .download-poster-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #3498DB;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .download-poster-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="countdown">Launch in: 10 Days</div>
+        <div class="poster">
+            <div class="content">
+                <img src="../assets/main-logo.svg" alt="Prostuti Logo" class="logo">
+                <h1>প্রস্তুতি</h1>
+                <p class="tagline">আপনার ক্যারিয়ার প্রস্তুতির সেরা সঙ্গী</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <img src="../assets/all-contests.png" alt="Contest">
+                        <span>লাইভ কনটেস্ট</span>
+                    </div>
+                    <div class="feature">
+                        <img src="../assets/model-tests.png" alt="Model Test">
+                        <span>মডেল টেস্ট</span>
+                    </div>
+                    <div class="feature">
+                        <img src="../assets/job-alerts.png" alt="Job">
+                        <span>জব সার্কুলার</span>                    </div>                    <div class="feature">
+                        <img src="../assets/rank/rank-top.svg" alt="Leaderboard">
+                        <span>লাইভ লিডারবোর্ড</span>
+                    </div>
+                    <div class="feature">
+                        <img src="../assets/question-banks.png" alt="Questions">
+                        <span>প্রশ্ন ব্যাংক</span>
+                    </div>
+                    <div class="feature">
+                        <img src="../assets/primary.png" alt="Custom">
+                        <span>কাস্টম এক্সাম</span>
+                    </div>
+                </div>                <div class="coming-soon">শীঘ্রই আসছে!</div>
+            </div>
+            <div class="illustration">
+                <img src="../assets/blue-banner.svg" alt="App Preview">
+            </div>
+        </div>    </div>
+    <button class="download-poster-btn" onclick="downloadPoster()">পোস্টার ডাউনলোড করুন</button>    <script>
+        window.onload = function() {
+            // Pre-load all images
+            const images = document.getElementsByTagName('img');
+            for(let img of images) {
+                const newImg = new Image();
+                newImg.src = img.src;
+            }
+        }
+        
+        function downloadPoster() {
+            const poster = document.querySelector('.container');
+            const downloadBtn = document.querySelector('.download-poster-btn');
+            
+            // Disable button and show loading state
+            downloadBtn.textContent = 'ডাউনলোড হচ্ছে...';
+            downloadBtn.disabled = true;
+            
+            // Set fixed dimensions for better quality
+            const originalWidth = poster.offsetWidth;
+            const originalHeight = poster.offsetHeight;
+            poster.style.width = '1200px';
+            
+            html2canvas(poster, {
+                width: 1200,
+                height: Math.round(1200 * (originalHeight / originalWidth)),
+                scale: 2,
+                backgroundColor: '#ffffff',
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                foreignObjectRendering: true,
+                imageTimeout: 0,
+                onclone: function(clonedDoc) {
+                    const clonedPoster = clonedDoc.querySelector('.container');
+                    clonedPoster.style.transform = 'none';
+                    clonedPoster.style.boxShadow = 'none';
+                }
+            }).then(canvas => {
+                // Convert to high quality PNG
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const date = new Date().toLocaleDateString('bn-BD').replace(/[/]/g, '-');
+                    link.download = `prostuti-poster-${date}.png`;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    // Reset
+                    poster.style.width = '';
+                    downloadBtn.textContent = 'পোস্টার ডাউনলোড করুন';
+                    downloadBtn.disabled = false;
+                }, 'image/png', 1.0);
+            }).catch(error => {
+                console.error('Error:', error);
+                downloadBtn.textContent = 'পোস্টার ডাউনলোড করুন';
+                downloadBtn.disabled = false;
+                alert('দুঃখিত! কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+            });
+        }
+    </script>
+</body>
+</html>
