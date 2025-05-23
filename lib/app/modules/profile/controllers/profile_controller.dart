@@ -62,6 +62,7 @@ class ProfileController extends GetxController {
 
   // reactive holder for profile
   final Rxn<UserProfile> userProfile = Rxn<UserProfile>();
+  final RxBool isLoadingProfilePic = false.obs;
 
   // API
   final ApiHelper _api = Get.find<ApiHelper>();
@@ -87,6 +88,7 @@ class ProfileController extends GetxController {
   }
 
   Future<void> _loadCachedOrFetchProfile() async {
+    isLoadingProfilePic.value = true;
     // 1) Try loading cached JSON
     final cached = await StorageHelper.getUserData();
     if (cached != null) {
@@ -94,10 +96,12 @@ class ProfileController extends GetxController {
         final Map<String, dynamic> json = jsonDecode(cached);
         final profil = UserProfile.fromJson(json);
         userProfile.value = profil;
+        isLoadingProfilePic.value = false;
         profileImageUrl.value = profil.profilePic; // Set profile image URL
         _populateFields(profil);
         return;
       } catch (e) {
+        isLoadingProfilePic.value = false;
         // parsing failed—fall through to API fetch
         print('Error decoding cached profile: $e');
       }

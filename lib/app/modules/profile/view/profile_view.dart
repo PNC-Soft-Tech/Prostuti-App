@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -125,32 +126,34 @@ class BorderedCircleAvatar extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Center(
-          child: controller.userProfile.value?.profilePic != null
-              ? CircleAvatar(
-                  radius: 50.w,
-                  backgroundColor: Colors.transparent,
-                  backgroundImage: NetworkImage(
-                    controller.userProfile.value!.profilePic,
-                  ),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.primary,
-                      width: 3.w,
+          child: controller.isLoadingProfilePic.value == true
+              ? CupertinoActivityIndicator(color: AppColors.primary ,)
+              : controller.userProfile.value?.profilePic != null
+                  ? CircleAvatar(
+                      radius: 50.w,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: NetworkImage(
+                        controller.userProfile.value!.profilePic,
+                      ),
+                    )
+                  : Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.primary,
+                          width: 3.w,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 50.w,
+                        backgroundColor: Colors.transparent,
+                        child: SvgPicture.asset(
+                          "assets/default-male.svg",
+                          width: 70.w,
+                          height: 70.h,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: CircleAvatar(
-                    radius: 50.w,
-                    backgroundColor: Colors.transparent,
-                    child: SvgPicture.asset(
-                      "assets/default-male.svg",
-                      width: 70.w,
-                      height: 70.h,
-                    ),
-                  ),
-                ),
         ));
   }
 }
