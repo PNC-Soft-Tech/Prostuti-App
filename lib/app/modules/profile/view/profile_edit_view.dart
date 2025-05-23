@@ -15,6 +15,8 @@ import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/modules/profile/controllers/profile_controller.dart';
 import 'package:prostuti/app/modules/profile/widgets/progress_circle.dart';
 
+import '../../../common/utils/prostuti_utils.dart';
+
 class ProfileEditView extends GetView<ProfileController> {
   const ProfileEditView({super.key});
 
@@ -374,6 +376,8 @@ class BorderedCircleAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ProfileController>();
+    
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -385,25 +389,117 @@ class BorderedCircleAvatar extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            CircleAvatar(
-              radius: 75.w,
-              backgroundColor: Colors.transparent,
-              child: SvgPicture.asset(
-                "assets/default-male.svg",
-                width: 100.w,
-                height: 100.h,
-              ),
-            ),
+            Obx(() {
+              // Show loading spinner when uploading
+              if (controller.isUploadingImage.value) {
+                return SizedBox(
+                  width: 150.w,
+                  height: 150.w,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                );
+              }
+              
+              // Check if there's a selected image to display
+              if (controller.selectedImage.value != null) {
+                try {
+                  return ClipOval(
+                    child: SizedBox(
+                      width: 150.w,
+                      height: 150.w,
+                      child: Image.file(
+                        controller.selectedImage.value!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          print("Error showing file image: $error");
+                          return _buildDefaultImage();
+                        },
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  print("Error showing file image: $e");
+                  return _buildDefaultImage();
+                }
+              }
+              
+              // Check if there's a profile image URL to display
+              if (controller.profileImageUrl.value.isNotEmpty) {
+                try {
+                  return ClipOval(
+                    child: SizedBox(
+                      width: 150.w,
+                      height: 150.w,
+                      child: Image.network(
+                        controller.profileImageUrl.value,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / 
+                                    loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          print("Error showing network image: $error");
+                          return _buildDefaultImage();
+                        },
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  print("Error showing network image: $e");
+                  return _buildDefaultImage();
+                }
+              }
+              
+              // Default fallback image
+              return _buildDefaultImage();
+            }),
             Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  try {
+                    controller.showImagePickerOptions();
+                  } catch (e) {
+                    print("Error showing image picker: $e");
+                    Utils.showSnackbar(
+                      message: 'Error accessing camera or gallery. Please check app permissions.',
+                      isSuccess: false,
+                    );
+                  }
+                },
                 child: SvgPicture.asset(
                   "assets/profile/camera-gray-bg.svg",
                   width: 46.w,
                   height: 46.h,
-                ))
+                ),
+              ),
+            )
           ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildDefaultImage() {
+    return ClipOval(
+      child: SizedBox(
+        width: 150.w,
+        height: 150.w,
+        child: SvgPicture.asset(
+          "assets/default-male.svg",
+          fit: BoxFit.cover,
         ),
       ),
     );

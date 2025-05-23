@@ -44,11 +44,16 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
+	<true/>	<key>NSAppTransportSecurity</key>
   <dict>
     <key>NSAllowsArbitraryLoads</key> <true/>
   </dict>
+  <key>NSCameraUsageDescription</key>
+  <string>This app requires access to the camera to take photos for your profile picture.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>This app requires access to the photo library to select images for your profile picture.</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>This app requires microphone access for recording videos with the camera.</string>
 <key>io.flutter.embedded_views_preview</key> <true/>
 </dict>
 </plist>

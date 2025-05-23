@@ -1,9 +1,13 @@
 // lib/modules/profile/profile_controller.dart
 
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../storage/storage_helper.dart';
@@ -62,6 +66,15 @@ class ProfileController extends GetxController {
   // API
   final ApiHelper _api = Get.find<ApiHelper>();
 
+  // Profile image variables
+  final Rxn<File> selectedImage = Rxn<File>();
+  final RxBool isUploadingImage = false.obs;
+  final RxString profileImageUrl = ''.obs;
+  final ImagePicker _imagePicker = ImagePicker();
+  
+  // ImgBB API key
+  final String imgbbApiKey = '7b2df886bbb1704f6ffd66486cd13fdb';
+
   @override
   void onInit() {
     super.onInit();
@@ -81,6 +94,7 @@ class ProfileController extends GetxController {
         final Map<String, dynamic> json = jsonDecode(cached);
         final profil = UserProfile.fromJson(json);
         userProfile.value = profil;
+        profileImageUrl.value = profil.profilePic; // Set profile image URL
         _populateFields(profil);
         return;
       } catch (e) {
@@ -115,6 +129,7 @@ class ProfileController extends GetxController {
       },
       (profil) {
         userProfile.value = profil;
+        profileImageUrl.value = profil.profilePic; // Set profile image URL
         _populateFields(profil);
         // cache the fresh data
         StorageHelper.setUserData(profil.toJson());
@@ -198,6 +213,9 @@ class ProfileController extends GetxController {
         );
       }
     }
+    
+    // Set profile image URL
+    profileImageUrl.value = p.profilePic;
     
     cgpaController.text = p.honsGpa.toString();
   }
@@ -304,6 +322,7 @@ class ProfileController extends GetxController {
       institutionType: selectedInstitutionType.value?.id,
       institutionTypeObj: selectedInstitutionType.value,
       honsGpa: double.tryParse(cgpaController.text) ?? 0.0,
+      profilePic: profileImageUrl.value.isNotEmpty ? profileImageUrl.value : userProfile.value!.profilePic,
     );
 
     final result = await _api.updateUserProfile(updated);
@@ -321,6 +340,166 @@ class ProfileController extends GetxController {
         Utils.showSnackbar(message: 'Profile saved!', isSuccess: true);
       },
     );
+  }
+
+  // Pick image from camera or gallery
+  Future<void> pickImage(ImageSource source) async {
+    try {
+      // Try to pick the image with error handling
+      final pickedFile = await _imagePicker.pickImage(
+        source: source,
+        imageQuality: 70, // Reduce image size while maintaining quality
+        maxWidth: 800,    // Limit image dimensions to reduce size
+        maxHeight: 800,
+      );
+      
+      if (pickedFile != null) {
+        try {
+          // Create a file from the XFile
+          selectedImage.value = File(pickedFile.path);
+          // Start uploading as soon as image is picked
+          await uploadImageToImgbb();
+        } catch (fileError) {
+          Utils.showSnackbar(
+            message: 'Error processing selected image: $fileError',
+            isSuccess: false,
+          );
+          print("File error: $fileError");
+        }
+      }
+    } catch (e) {
+      Utils.showSnackbar(
+        message: 'Error selecting image: $e',
+        isSuccess: false,
+      );
+      print("Image picker error: $e");
+      
+      // Show a more helpful message based on the error
+      if (e.toString().contains("PlatformException")) {
+        Utils.showSnackbar(
+          message: 'Permission denied or image selection cancelled',
+          isSuccess: false,
+        );
+      }
+    }
+  }
+  
+  // Show image source selection dialog
+  void showImagePickerOptions() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Select Image Source'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Gallery'),
+              onTap: () {
+                Get.back();
+                pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Camera'),
+              onTap: () {
+                Get.back();
+                pickImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  // Upload image to ImgBB and get URL
+  Future<void> uploadImageToImgbb() async {
+    if (selectedImage.value == null) return;
+    
+    isUploadingImage.value = true;
+    
+    try {
+      // Verify the file exists and is accessible
+      if (!await selectedImage.value!.exists()) {
+        throw Exception("Image file doesn't exist or isn't accessible");
+      }
+      
+      // Check file size (limit to 2MB)
+      final fileSize = await selectedImage.value!.length();
+      if (fileSize > 2 * 1024 * 1024) {
+        Utils.showSnackbar(
+          message: 'Image is too large (${(fileSize / 1024 / 1024).toStringAsFixed(1)}MB). Maximum size is 2MB.',
+          isSuccess: false,
+        );
+        isUploadingImage.value = false;
+        return;
+      }
+      
+      // Create multipart request with timeout
+      final uri = Uri.parse('https://api.imgbb.com/1/upload');
+      final request = http.MultipartRequest('POST', uri)
+        ..fields['key'] = imgbbApiKey;
+      
+      // Add image file
+      final multipartFile = await http.MultipartFile.fromPath(
+        'image',
+        selectedImage.value!.path,
+      );
+      
+      request.files.add(multipartFile);
+      
+      // Send request with timeout
+      final streamedResponse = await request.send()
+          .timeout(const Duration(seconds: 30), onTimeout: () {
+        throw TimeoutException('Request timed out after 30 seconds');
+      });
+      
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      // Check if response is valid JSON
+      Map<String, dynamic>? jsonData;
+      try {
+        jsonData = jsonDecode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        throw FormatException('Invalid response format: ${response.body}');
+      }
+      
+      // Check response
+      if (response.statusCode == 200 && jsonData?['success'] == true) {
+        // Get image URL from response
+        final imageUrl = jsonData!['data']['url'] as String;
+        profileImageUrl.value = imageUrl;
+        
+        Utils.showSnackbar(
+          message: 'Image uploaded successfully!',
+          isSuccess: true,
+        );
+      } else {
+        final errorMessage = jsonData?['error']?['message'] as String? ?? 'Unknown error';
+        Utils.showSnackbar(
+          message: 'Failed to upload image: $errorMessage',
+          isSuccess: false,
+        );
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+      String errorMessage = 'Error uploading image';
+      
+      if (e.toString().contains('SocketException')) {
+        errorMessage = 'Network error: Please check your internet connection';
+      } else if (e.toString().contains('TimeoutException')) {
+        errorMessage = 'Upload timed out: Please try again';
+      }
+      
+      Utils.showSnackbar(
+        message: errorMessage,
+        isSuccess: false,
+      );
+    } finally {
+      isUploadingImage.value = false;
+    }
   }
 
   @override
