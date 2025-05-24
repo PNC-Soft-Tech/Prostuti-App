@@ -107,14 +107,18 @@ class Contest {
       selectedTopics: selectedTopicsList,
     );
   }
-
   static DateTime parseDate(String? dateStr) {
-    if (dateStr == null) return DateTime.now(); // Handle null date string
+    if (dateStr == null) {
+      log('Date string is null, using distant past as fallback');
+      return DateTime(1970); // Use distant past instead of now for null dates
+    }
     try {
-      return DateTime.parse(dateStr); // ISO 8601 parsing
+      final parsed = DateTime.parse(dateStr);
+      log('Successfully parsed date: $dateStr -> $parsed');
+      return parsed; // ISO 8601 parsing
     } catch (e) {
-      log('Invalid date format: $dateStr');
-      return DateTime.now(); // Fallback date
+      log('Invalid date format: $dateStr, error: $e');
+      return DateTime(1970); // Use distant past instead of now for failed parsing
     }
   }
 }

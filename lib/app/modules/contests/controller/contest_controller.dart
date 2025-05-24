@@ -24,7 +24,7 @@ class ContestController extends GetxController {
 
   Future<void> displayRecentContests() async {
     isLoadingUpcomingContest.value = true;
-    final result = await _apiHelper.fetchRecentContests();
+    final result = await _apiHelper.fetchAllContests();
 
     result.fold(
       (error) {
@@ -33,15 +33,33 @@ class ContestController extends GetxController {
         Utils.showSnackbar(
           message: 'Failed to fetch contests: ${error.message}',
           isSuccess: false,
-        );
-      },
+        );      },
       (contests) {
         isLoadingUpcomingContest.value = false;
-        // ✅ Initialize the registration map from API data
-        upcomingContests.value = contests;
-        for (var contest in contests) {
+        // ✅ Filter out completed contests - only show running/upcoming contests
+        final now = DateTime.now();
+        log('Current time: $now');
+        log('Total contests fetched: ${contests.length}');
+        
+        final activeContests = contests.where((contest) {
+          // Convert to local timezone for accurate comparison
+          final localEndTime = contest.endContest.toLocal();
+          final isActive = localEndTime.isAfter(now);
+          log('Contest: ${contest.name}');
+          log('  Start: ${contest.startContest}');
+          log('  End: ${contest.endContest}');
+          log('  End (Local): $localEndTime');
+          log('  Is Active: $isActive');
+          log('  ---');
+          return isActive;
+        }).toList();
+        
+        log('Active contests after filtering: ${activeContests.length}');
+        
+        upcomingContests.value = activeContests;
+        // ✅ Initialize the registration map from filtered data
+        for (var contest in activeContests) {
           registeredContests[contest.id] = contest.isRegistered ?? false;
-          log('Contest: ${contest.name}, Total Marks: ${contest.totalMarks}');
         }
 
         // Utils.showSnackbar(
@@ -78,7 +96,7 @@ class ContestController extends GetxController {
     final result = await _apiHelper.fetchAllContests();
     result.fold(
       (error) {
-        Get.snackbar('Error', error.message ?? 'Failed to load contests');
+        Get.snackbar('Error', error.message);
       },
       (data) {
         contests.assignAll(data);

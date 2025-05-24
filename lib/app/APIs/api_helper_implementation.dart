@@ -300,6 +300,11 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       if (response.statusCode == 200 && response.body['success'] == true) {
         // Parse the response data into a list of Contest models
         final List<dynamic> data = response.body['data'];
+        log('Raw API Response - Total contests: ${data.length}');
+        // Log first contest for debugging
+        if (data.isNotEmpty) {
+          log('Sample contest data: ${data.first}');
+        }
         final contests = data.map((json) => Contest.fromJson(json)).toList();
         return Right(contests); // Return the list of contests
       } else {

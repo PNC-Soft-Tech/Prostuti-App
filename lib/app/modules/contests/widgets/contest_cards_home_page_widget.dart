@@ -31,9 +31,8 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
           child: Column(
             children: [
               Row(
-                children: [
-                  Text(
-                    "Upcomming Contest",
+                children: [                  Text(
+                    "Running & Upcoming Contests",
                     style: GoogleFonts.inter(
                         textStyle: const TextStyle(
                       fontSize: 13,
