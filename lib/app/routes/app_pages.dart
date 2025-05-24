@@ -28,6 +28,8 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/model-tests-details/binding/model_test_details_binding.dart';
 import '../modules/model-tests-details/view/model_test_details_view.dart';
+import '../modules/model-tests-list/binding/model_tests_list_binding.dart';
+import '../modules/model-tests-list/view/model_tests_list_view.dart';
 import '../modules/package-details/binding/package_details_binding.dart';
 import '../modules/package-details/view/package_details_view.dart';
 import '../modules/questions/bindings/question_bindings.dart';
@@ -56,9 +58,9 @@ class Routes {
   static const customExam = '/custom-exam';
   static const questions = '/questions';
   static const contests = '/contests';
-  static const contestDetails = '/contest-details/';
-  static const customExamDetails = '/custom-exam-details/';
+  static const contestDetails = '/contest-details/';  static const customExamDetails = '/custom-exam-details/';
   static const modelTestDetails = '/model-test-details/';
+  static const modelTestsList = '/model-tests-list';
   static const packageDetails = '/package-details/';
   static const ranking = '/ranking/';
   static const tex = '/tex/';
@@ -165,11 +167,15 @@ class AppPages {
       name: Routes.ranking,
       page: () => RankingView(),
       binding: RankingBinding(),
-    ),
-    GetPage(
+    ),    GetPage(
       name: Routes.modelTestDetails,
       page: () => const ModelTestDetailsView(),
       binding: ModelTestDetailsBinding(),
+    ),
+    GetPage(
+      name: Routes.modelTestsList,
+      page: () => const ModelTestsListView(),
+      binding: ModelTestsListBinding(),
     ),
     GetPage(
       // name: '/contest/:id',

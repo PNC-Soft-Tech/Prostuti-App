@@ -5,10 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../routes/app_pages.dart';
-import '../../contests/models/contest_model.dart';
 import '../../model-tests-details/widgets/model_test_access_mode_bottomsheet.dart';
 import '../controller/model_test_controller.dart';
-import '../models/model_test_model.dart';
 import 'model_test_home_card.dart';
 
 class ModelTestHomeWidget extends GetWidget<ModelTestController> {
@@ -22,8 +20,7 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(color: const Color(0xff212d404d), width: 1)),
       child: Column(
-        children: [
-          Row(
+        children: [            Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Model Tests",
@@ -31,13 +28,18 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
                     textStyle:
                         TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
                   )),
-              Text("View All",
-                  style: GoogleFonts.inter(
-                    textStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.primary),
-                  )),
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed(Routes.modelTestsList);
+                },
+                child: Text("View All",
+                    style: GoogleFonts.inter(
+                      textStyle: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.primary),
+                    )),
+              ),
             ],
           ),
           SizedBox(
@@ -48,10 +50,9 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: controller.model_tests.map((modelTest) {
-                    return GestureDetector(
-                      onTap: () async {
+                    return GestureDetector(                      onTap: () async {
                         // log("clickeddddd");
-                        final result = await Get.bottomSheet(
+                        await Get.bottomSheet(
                           ModelTestAccessBottomSheet(
                             modelTestId: modelTest.id,
                           ),
