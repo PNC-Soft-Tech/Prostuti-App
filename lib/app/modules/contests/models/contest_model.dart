@@ -67,9 +67,8 @@ class Contest {
       totalTime: json['totalTime'] ?? 0,
       isRegistered: json['isRegistered'] ?? true,
       isSubmitted: json['isSubmitted'] ?? false,
-      isSubjectWise: json['isSubjectWise'] ?? true,
-      startContest: parseDate(json['startContest']),
-      endContest: parseDate(json['endContest']),
+      isSubjectWise: json['isSubjectWise'] ?? true,      startContest: parseDate(json['startContest'] ?? json['startCustomExam']),
+      endContest: parseDate(json['endContest'] ?? json['endCustomExam']),
       topics: (json['topics'] as List?)
               ?.map((topic) {
                 if (topic is String) {

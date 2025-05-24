@@ -350,9 +350,7 @@ String getFormattedExamName() {
     final selectedTopics = buildSelectedTopicsPayload();
     if (selectedTopics.isEmpty) {
       return; // Error already shown by buildSelectedTopicsPayload
-    }
-
-    // Calculate total questions count
+    }    // Calculate total questions count
     final int totalQuestions = customExamQuestions.value!.subjects?.fold<int>(0, (sum, subject) {
       return sum +
           (subject.topics?.fold<int>(0, (topicSum, topic) {
@@ -362,17 +360,32 @@ String getFormattedExamName() {
               0);
     }) ?? 0;
 
+    // Ensure we have at least one question
+    if (totalQuestions <= 0) {
+      Utils.showSnackbar(
+        message: "Please select at least one question to create an exam",
+        isSuccess: false
+      );
+      return;
+    }    // Calculate start and end times
+    final DateTime startTime = DateTime.now();
+    // Give users more reasonable time: 2 minutes per question (minimum 30 minutes)
+    final int examDurationMinutes = (totalQuestions * 2).clamp(30, 300); // Min 30 mins, Max 5 hours
+    final DateTime endTime = startTime.add(Duration(minutes: examDurationMinutes));
+    
+    log("Creating custom exam with $totalQuestions total questions");
+    log("Start time: ${startTime.toIso8601String()}");
+    log("End time: ${endTime.toIso8601String()}");
+    log("Total duration: $examDurationMinutes minutes (${(examDurationMinutes/60).toStringAsFixed(1)} hours)");
+
     final payload = {
       "name": "Custom Exam ${getFormattedExamName()}", 
-      //use current date fiormat DD_MM_YYYY
-      
-      "description": "This is a custom exam",
-      "startCustomExam": DateTime.now().toIso8601String(),
-      "endCustomExam":
-          DateTime.now().add(Duration(minutes: totalQuestions)).toIso8601String(), // 1 minute per question
+      "description": "This is a custom exam with $totalQuestions questions",
+      "startCustomExam": startTime.toIso8601String(),
+      "endCustomExam": endTime.toIso8601String(), // Current time + reasonable exam duration
       "totalMarks": totalQuestions, // Total marks equal to number of questions
       "totalQuestions": totalQuestions,
-      "totalTime": totalQuestions, // Total time in minutes equal to number of questions
+      "totalTime": examDurationMinutes, // Total time in minutes for the exam
       "marksPerQuestion": 1, // 1 mark per question
       "selectedTopics": selectedTopics,
     };
