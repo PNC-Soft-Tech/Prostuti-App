@@ -54,7 +54,10 @@ class Contest {
       } catch (e) {
         log('Error parsing selectedTopics: $e');
       }
-    }
+    }    // Log date fields for debugging
+    final startDateStr = json['startContest'] ?? json['startCustomExam'];
+    final endDateStr = json['endContest'] ?? json['endCustomExam'];
+    log('Contest: ${json['name']} - Start: $startDateStr, End: $endDateStr');
 
     return Contest(
       id: json['_id'] ?? '',
@@ -67,7 +70,8 @@ class Contest {
       totalTime: json['totalTime'] ?? 0,
       isRegistered: json['isRegistered'] ?? true,
       isSubmitted: json['isSubmitted'] ?? false,
-      isSubjectWise: json['isSubjectWise'] ?? true,      startContest: parseDate(json['startContest'] ?? json['startCustomExam']),
+      isSubjectWise: json['isSubjectWise'] ?? true,
+      startContest: parseDate(json['startContest'] ?? json['startCustomExam']),
       endContest: parseDate(json['endContest'] ?? json['endCustomExam']),
       topics: (json['topics'] as List?)
               ?.map((topic) {
