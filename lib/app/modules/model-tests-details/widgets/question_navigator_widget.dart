@@ -7,16 +7,24 @@ import '../../../common/widgets/unified_question_navigator.dart';
 import '../controllers/model_test_details_controller.dart';
 
 class QuestionNavigatorWidget extends StatelessWidget {
-  final ModelTestDetailsController controller;
-
   const QuestionNavigatorWidget({
     Key? key,
-    required this.controller,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
+    return GetX<ModelTestDetailsController>(
+      builder: (controller) {        
+        // Wrap in try-catch to handle any null reference errors
+        try {
+          // Use null-safe access
+          final isLoading = controller.isLoading.value;
+          final modelDetailsValue = controller.modelDetails.value;
+          
+          // Check if controller is loading or data is not ready
+          if (isLoading || modelDetailsValue == null) {
+            return const SizedBox.shrink();
+          }
+      
       // Make sure we have questions to display
       final questions = controller.filteredQuestions;
       if (questions.isEmpty) return const SizedBox.shrink();
@@ -76,31 +84,34 @@ class QuestionNavigatorWidget extends StatelessWidget {
         if (currentQuestion != null) {
           isCurrentMarked.value = controller.isMarkedQuestion(currentQuestion.id);
         }
-      });
-
-      return UnifiedQuestionNavigator(
-        currentIndex: controller.currentQuestionIndex,
-        totalQuestions: questions.length,
-        totalMarked: markedCount,
-        isCurrentMarked: isCurrentMarked,
-        onPrevious: () {
-          if (canScrollUp.value) {
-            _scrollUp();
-          }
-        },
-        onNext: () {
-          if (canScrollDown.value) {
-            _scrollDown();
-          }
-        },
-        onTap: () => _showFlaggedQuestionsSheet(context),
-        canScrollUp: canScrollUp,
-        canScrollDown: canScrollDown,
-      );
-    });
+      });        return UnifiedQuestionNavigator(
+          currentIndex: controller.currentQuestionIndex,
+          totalQuestions: questions.length,
+          totalMarked: markedCount,
+          isCurrentMarked: isCurrentMarked,
+          onPrevious: () {
+            if (canScrollUp.value) {
+              _scrollUp();
+            }
+          },
+          onNext: () {
+            if (canScrollDown.value) {
+              _scrollDown();
+            }
+          },
+          onTap: () => _showFlaggedQuestionsSheet(context),
+          canScrollUp: canScrollUp,
+          canScrollDown: canScrollDown,
+        );
+        } catch (e) {
+          // Handle any null reference or other errors gracefully
+          return const SizedBox.shrink();
+        }
+      },
+    );
   }
-  
-  void _scrollUp() {
+    void _scrollUp() {
+    final controller = Get.find<ModelTestDetailsController>();
     if (!controller.scrollController.hasClients) return;
     
     final currentPos = controller.scrollController.position.pixels;
@@ -118,6 +129,7 @@ class QuestionNavigatorWidget extends StatelessWidget {
   }
   
   void _scrollDown() {
+    final controller = Get.find<ModelTestDetailsController>();
     if (!controller.scrollController.hasClients) return;
     
     final currentPos = controller.scrollController.position.pixels;
@@ -133,9 +145,9 @@ class QuestionNavigatorWidget extends StatelessWidget {
       curve: Curves.easeInOut,
     );
   }
-  
-  // Enhanced scrolling method for more reliable navigation to specific questions
+    // Enhanced scrolling method for more reliable navigation to specific questions
   void _ensureScrollToQuestion(String questionId) {
+    final controller = Get.find<ModelTestDetailsController>();
     // Make sure all questions are visible by resetting filters if needed  
     controller.selectedSubject.value = 'All';
     
@@ -148,11 +160,13 @@ class QuestionNavigatorWidget extends StatelessWidget {
       // Try incremental scrolling method for more reliable navigation
       _incrementalScrollToQuestion(questionId, targetIndex);
     });
-  }
-  
-  // Improved scrolling method that handles variable question heights
+  }    // Improved scrolling method that handles variable question heights
   void _incrementalScrollToQuestion(String questionId, int targetIndex) {
+    final controller = Get.find<ModelTestDetailsController>();
     if (!controller.scrollController.hasClients) return;
+    
+    // Check if controller is properly initialized
+    if (controller.modelDetails.value == null) return;
     
     // Get the total number of questions for boundary checks
     final questions = controller.modelDetails.value?.contest.questions ?? [];
@@ -203,25 +217,9 @@ class QuestionNavigatorWidget extends StatelessWidget {
           alignment: 0.1,
         );
       }
-    });
-  }
-  
-  // Legacy method preserved for compatibility
-  void _directScrollToQuestion(String questionId, int questionIndex) {
-    if (!controller.scrollController.hasClients) return;
-    
-    // Use a larger height estimate for potentially taller questions
-    final estimatedPosition = questionIndex * 600.0;
-    
-    // Scroll to the estimated position
-    controller.scrollController.animateTo(
-      estimatedPosition.clamp(0.0, controller.scrollController.position.maxScrollExtent),
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
-  }
-
+    });}
   void _showFlaggedQuestionsSheet(BuildContext context) {
+    final controller = Get.find<ModelTestDetailsController>();
     final flaggedIds = controller.markedQuestionIds;
     
     if (flaggedIds.isEmpty) {

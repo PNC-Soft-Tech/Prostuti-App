@@ -20,11 +20,9 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomSimpleAppBar.appBar(
-        titleWidget: Obx(() => Text(
+      appBar: CustomSimpleAppBar.appBar(        titleWidget: Obx(() => Text(
               Utils.stripHtmlTags(
-                      controller.modelDetails.value?.contest.name ?? '') ??
-                  'Model Test',
+                      controller.modelDetails.value?.contest.name ?? 'Model Test'),
               style: const TextStyle(fontSize: 18, color: AppColors.primary),
             )),
       ),
@@ -102,19 +100,23 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
             right: 0,
             child: TestActionWidget(controller: controller),
           ),
-          
-          // Question navigator - ALWAYS show it when we have questions
+            // Question navigator - ALWAYS show it when we have questions
           Positioned(
             bottom: 100.h,
-            right: 16.w,
-            child: Obx(() {
+            right: 16.w,            child: Obx(() {
               // The navigator should be visible when:
-              // 1. Questions are loaded
-              // 2. We're in any mode with questions visible
+              // 1. Controller is initialized and not loading
+              // 2. Model details are loaded
+              // 3. Questions are available
+              if (controller.isLoading.value || 
+                  controller.modelDetails.value == null) {
+                return const SizedBox.shrink();
+              }
+              
               final hasQuestions = controller.filteredQuestions.isNotEmpty;
               
               return hasQuestions 
-                ? QuestionNavigatorWidget(controller: controller)
+                ? const QuestionNavigatorWidget()
                 : const SizedBox.shrink();
             }),
           ),
