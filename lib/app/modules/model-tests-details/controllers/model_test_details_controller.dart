@@ -282,12 +282,21 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
       };
     }).toList();
   }
-
   Future<bool> submitAnswer(
     String questionId,
     String contestId,
     String selectedAnswer,
   ) async {
+    // In read mode, don't make API calls - just return success
+    if (currentSelectedModelTestMode.value == 'read') {
+      // Simulate a brief loading state for UI consistency
+      questionLoadingStatus[questionId] = true;
+      await Future.delayed(const Duration(milliseconds: 100));
+      questionLoadingStatus[questionId] = false;
+      return true; // Always return success in read mode
+    }
+
+    // In exam mode, proceed with API call
     questionLoadingStatus[questionId] = true;
 
     try {

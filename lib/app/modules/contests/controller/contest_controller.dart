@@ -21,10 +21,13 @@ class ContestController extends GetxController {
     // fetchContests();
     displayRecentContests();
   }
-
+  /// Fetches recent contests from the server
+  /// FIXED: Changed from fetchAllContests() to fetchRecentContests() 
+  /// to use server-side filtering instead of client-side filtering.
+  /// This ensures only active contests are returned from the API.
   Future<void> displayRecentContests() async {
     isLoadingUpcomingContest.value = true;
-    final result = await _apiHelper.fetchAllContests();
+    final result = await _apiHelper.fetchRecentContests();
 
     result.fold(
       (error) {
@@ -36,29 +39,23 @@ class ContestController extends GetxController {
         );      },
       (contests) {
         isLoadingUpcomingContest.value = false;
-        // ✅ Filter out completed contests - only show running/upcoming contests
-        final now = DateTime.now();
-        log('Current time: $now');
-        log('Total contests fetched: ${contests.length}');
         
-        final activeContests = contests.where((contest) {
-          // Convert to local timezone for accurate comparison
+        log('=== RECENT CONTESTS API RESPONSE ===');
+        log('Total recent contests fetched: ${contests.length}');
+        for (var contest in contests) {
           final localEndTime = contest.endContest.toLocal();
-          final isActive = localEndTime.isAfter(now);
+          final isActive = localEndTime.isAfter(DateTime.now());
           log('Contest: ${contest.name}');
-          log('  Start: ${contest.startContest}');
           log('  End: ${contest.endContest}');
-          log('  End (Local): $localEndTime');
-          log('  Is Active: $isActive');
+          log('  End (Local): $localEndTime');          log('  Is Active: $isActive');
           log('  ---');
-          return isActive;
-        }).toList();
+        }
+        log('=== END DEBUG ===');
         
-        log('Active contests after filtering: ${activeContests.length}');
+        upcomingContests.value = contests;
         
-        upcomingContests.value = activeContests;
-        // ✅ Initialize the registration map from filtered data
-        for (var contest in activeContests) {
+        // ✅ Initialize the registration map from contests data
+        for (var contest in contests) {
           registeredContests[contest.id] = contest.isRegistered ?? false;
         }
 
