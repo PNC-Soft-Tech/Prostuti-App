@@ -8,6 +8,7 @@ import '../../constant/app_color.dart';
 import '../../modules/contests/models/contest_status.dart';
 import '../../storage/storage_helper.dart';
 import 'package:html/parser.dart' show parseFragment;
+
 class Utils {
   static Future<void> logoutUser() async {
     try {
@@ -83,7 +84,7 @@ class Utils {
   /// Formats a [DateTime] into "সোমবার, ২২ ডিসেম্বর, ২৪  10:00 AM" format
   static String formatDateToBangla(DateTime date) {
     final DateFormat formatter =
-        DateFormat('EEEE, dd MMMM, yy hh:mm a', 'bn_BD');
+        DateFormat('dd MMMM, hh:mm a', 'bn_BD'); //'EEEE, dd MMMM, yy hh:mm a'
     return formatter.format(date);
   }
 
@@ -133,31 +134,34 @@ class Utils {
 
     return bengaliNumber.toString();
   }
+
   static String formatLatexString(String title) {
-  // Ensuring LaTeX format is correct by adding the $ symbols
-  if (!title.startsWith(r'$\displaystyle') && !title.startsWith(r'$')) {
-    return r'$\displaystyle ' + title.replaceAll(RegExp(r'\$'), '\\\$') + r'$';
-
+    // Ensuring LaTeX format is correct by adding the $ symbols
+    if (!title.startsWith(r'$\displaystyle') && !title.startsWith(r'$')) {
+      return r'$\displaystyle ' +
+          title.replaceAll(RegExp(r'\$'), '\\\$') +
+          r'$';
+    }
+    return title; // Return the title if it's already correctly formatted
   }
-  return title; // Return the title if it's already correctly formatted
-}
 
-static String stripHtmlTags(String input) {
-  // Use a regular expression to remove HTML tags
-  return input.replaceAll(RegExp(r'<[^>]*>'), '');
-}
+  static String stripHtmlTags(String input) {
+    // Use a regular expression to remove HTML tags
+    return input.replaceAll(RegExp(r'<[^>]*>'), '');
+  }
+
 // Function to check if the title contains formula expressions
-static bool containsFormulaExpression(String title) {
-  // Regex pattern for common LaTeX formula expressions
-  RegExp formulaRegex = RegExp(r'\\frac{.*?}{.*?}|\\sqrt{.*?}|[a-zA-Z0-9]+[\^]{1}[a-zA-Z0-9]+|[a-zA-Z0-9]+\/[a-zA-Z0-9]+');
-  
-  // Check if the title matches any of the patterns
-  return formulaRegex.hasMatch(title);
-}
+  static bool containsFormulaExpression(String title) {
+    // Regex pattern for common LaTeX formula expressions
+    RegExp formulaRegex = RegExp(
+        r'\\frac{.*?}{.*?}|\\sqrt{.*?}|[a-zA-Z0-9]+[\^]{1}[a-zA-Z0-9]+|[a-zA-Z0-9]+\/[a-zA-Z0-9]+');
 
-static String decodeHtmlEntities(String input) {
-  final fragment = parseFragment(input);
-  return fragment.text ??'';
-}
+    // Check if the title matches any of the patterns
+    return formulaRegex.hasMatch(title);
+  }
 
+  static String decodeHtmlEntities(String input) {
+    final fragment = parseFragment(input);
+    return fragment.text ?? '';
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/history/controller/history_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,41 +18,37 @@ class HistoryView extends GetWidget<HistoryController> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 16.h),
-              // Tab buttons
-              const TabSelector(),
-              SizedBox(height: 16.h),
-              // Tab content
-              Expanded(
-                child: Obx(() => AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder:
-                          (Widget child, Animation<double> animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0.05, 0),
-                              end: Offset.zero,
-                            ).animate(animation),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: Container(
-                          color: Colors.white,
-                          child: _buildTabContent(
-                              key:
-                                  ValueKey(controller.selectedTabIndex.value))),
-                    )),
-              ),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 16.h),
+            // Tab buttons
+            const TabSelector(),
+            SizedBox(height: 16.h),
+            // Tab content
+            Expanded(
+              child: Obx(() => AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.05, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Container(
+                        color: Colors.white,
+                        child: _buildTabContent(
+                            key: ValueKey(controller.selectedTabIndex.value))),
+                  )),
+            ),
+          ],
         ),
       ),
     );
@@ -377,161 +374,166 @@ class ContestCard extends StatelessWidget {
     final String? description =
         contest.description?.replaceAll(RegExp(r'<[^>]*>'), '');
     final int score = (contest.totalMarks as num?)?.toInt() ?? 0;
-    final int maxScore = 100;
+    const int maxScore = 100;
+
+    print('\ncontest.totalTime: ${contest.totalTime}');
+    print('contest.startContest: ${contest.startContest}');
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(color: Color(0XFF212D4033)),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.grey.withOpacity(0.4),
-        //     spreadRadius: 0,
-        //     blurRadius: 6,
-        //     offset: const Offset(0, 2),
-        //   ),
-        // ],
+        border: Border.all(color: AppColors.lightGray),
       ),
       child: Column(
+        // divides two row
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            // name, desc mark | rank
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Logo section
-              if (contest.imageUrl != null)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: Image.network(
-                    contest.imageUrl,
-                    height: 40.h,
-                    width: 40.w,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
+              Column(
+                // name, desc, mark
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (contest.imageUrl != null)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.r),
+                          child: Image.network(
+                            contest.imageUrl,
+                            height: 28,
+                            width: 28,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                _buildDefaultContestIcon(),
+                          ),
+                        )
+                      else
                         _buildDefaultContestIcon(),
-                  ),
-                )
-              else
-                _buildDefaultContestIcon(),
-              SizedBox(width: 12.w),
-
-              // Content section
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      contestName,
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimaryColor,
+                      SizedBox(
+                        width: 9.w,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                      Container(
+                        width: double.infinity,
+                        constraints: BoxConstraints(maxWidth: 250.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              contestName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.notoSansBengali(
+                                  textStyle: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: AppColors.textPrimaryColor,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  if (description != null && description.isNotEmpty) ...[
+                    SizedBox(height: 10.w),
+                    Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(maxWidth: 300.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            description,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSansBengali(
+                              textStyle: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.textPrimaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          // other children...
+                        ],
+                      ),
+                    )
                   ],
-                ),
+                  SizedBox(height: 10.w),
+                  Row(
+                    children: [
+                      Text(
+                        '$score',
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.textPrimaryColor,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      Text(
+                        '/$maxScore',
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.textPrimaryColor)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-
-              // Rank badge
-              _buildRankBadge(23),
+              //
+              _buildRankBadge(123),
             ],
           ),
-
-          // SizedBox(height: 12.h),
-          // Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
-          // SizedBox(height: 12.h),
-          if (description != null && description.isNotEmpty) ...[
-            SizedBox(height: 4.h),
-            Text(
-              description,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: Colors.grey,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-          SizedBox(height: 8.h),
+          const SizedBox(height: 8),
           Row(
-            children: [
-              Text(
-                '$score',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimaryColor,
-                ),
-              ),
-              Text(
-                '/$maxScore',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12.h),
-          // Footer
-          Row(
+            // time, date | view details
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Row(
                 children: [
-                  Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
+                  Image.asset(
+                    'assets/total-time.png',
+                    scale: 1.5,
+                  ),
                   SizedBox(width: 4.w),
                   Text(
-                    '${contest.totalTime} mins',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey,
-                    ),
+                      '${Utils.convertNumberToBengali(contest.totalTime)} মিনিট',
+                      style: GoogleFonts.notoSansBengali(
+                          textStyle: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.textPrimaryColor))),
+                  SizedBox(width: 10.w),
+                  Image.asset(
+                    'assets/contest-start.png',
+                    scale: 1.5,
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Icon(Icons.calendar_today, size: 16.sp, color: Colors.grey),
                   SizedBox(width: 4.w),
-                  Text(
-                    DateFormat('dd MMM').format(contest.startContest),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  Text(Utils.formatDateToBangla(contest.startContest),
+                      style: GoogleFonts.notoSansBengali(
+                          textStyle: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.textPrimaryColor))),
                 ],
               ),
-              Stack(
-                children: [
-                  Text(
-                    'View Details',
-                    style: TextStyle(
-                      fontSize: 12.sp,
+              GestureDetector(
+                onTap: () {},
+                child: const Text(
+                  'View Details',
+                  style: TextStyle(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Divider(
-                      height: 1,
-                      color: AppColors.primary,
-                      thickness: 1,
-                      indent: 4.w,
-                      endIndent: 4.w,
-                    ),
-                  ),
-                ],
-              ),
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.bold,
+                      decorationColor: AppColors.primary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
             ],
           ),
         ],
@@ -541,8 +543,8 @@ class ContestCard extends StatelessWidget {
 
   Widget _buildDefaultContestIcon() {
     return Container(
-      height: 40.h,
-      width: 40.w,
+      height: 28.h,
+      width: 28.w,
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8.r),
@@ -556,33 +558,30 @@ class ContestCard extends StatelessWidget {
   }
 
   Widget _buildRankBadge(int rank) {
-    return Column(
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
-        Container(
-          width: 42.w,
-          height: 36.h,
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8.r),
-              topRight: Radius.circular(8.r),
-            ),
-          ),
-          child: Center(
-            child: Text(
-              rank.toString(),
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 15.sp,
-              ),
-            ),
+        SvgPicture.asset(
+          'assets/rank/rank-top.svg',
+          width: 50.w,
+        ),
+        Positioned(
+          bottom: -22.w,
+          left: 12.w,
+          child: SvgPicture.asset(
+            'assets/rank/rank-star.svg',
+            width: 25.w,
+            height: 25.h,
           ),
         ),
-        Icon(
-          Icons.star,
-          color: Colors.amber,
-          size: 20.sp,
+        Positioned(
+          top: 3.w,
+          left: 15.w,
+          right: 0,
+          child: const Text(
+            '20',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+          ),
         ),
       ],
     );
@@ -606,159 +605,161 @@ class ModelTestCard extends StatelessWidget {
     final int maxScore = 100;
 
     return Container(
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 14.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10.r),
-        border: Border.all(color: Color(0XFF212D4033)),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.grey.withOpacity(0.1),
-        //     spreadRadius: 0,
-        //     blurRadius: 6,
-        //     offset: const Offset(0, 2),
-        //   ),
-        // ],
+        border: Border.all(color: AppColors.lightGray),
       ),
       child: Column(
+        // divides two row
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            // name, desc mark | rank
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon
-              Container(
-                height: 40.h,
-                width: 40.w,
-                decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Icon(
-                  Icons.description,
-                  color: Colors.blue,
-                  size: 24.sp,
-                ),
-              ),
-              SizedBox(width: 12.w),
-
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      modelTestName,
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimaryColor,
+              Column(
+                // name, desc, mark
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 40.h,
+                        width: 40.w,
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Icon(
+                          Icons.description,
+                          color: Colors.blue,
+                          size: 24.sp,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                      SizedBox(
+                        width: 9.w,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        constraints: BoxConstraints(maxWidth: 250.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              modelTestName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.notoSansBengali(
+                                  textStyle: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: AppColors.textPrimaryColor,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  if (description != null && description.isNotEmpty) ...[
+                    SizedBox(height: 10.w),
+                    Container(
+                      width: double.infinity,
+                      constraints: BoxConstraints(maxWidth: 350.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            description,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.notoSansBengali(
+                              textStyle: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.textPrimaryColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          // other children...
+                        ],
+                      ),
+                    )
                   ],
-                ),
+                  SizedBox(height: 10.w),
+                  Row(
+                    children: [
+                      Text(
+                        '$score',
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.textPrimaryColor,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      Text(
+                        '/$maxScore',
+                        style: GoogleFonts.notoSansBengali(
+                            textStyle: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.textPrimaryColor)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
-
-          // SizedBox(height: 12.h),
-          // Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
-          // SizedBox(height: 12.h),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 8),
+          Row(
+            // time, date | view details
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              if (description != null && description.isNotEmpty) ...[
-                SizedBox(height: 4.h),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.question_mark_outlined,
+                      size: 16.sp, color: AppColors.textPrimaryColor),
+                  SizedBox(width: 4.w),
+                  Text(
+                      '${Utils.convertNumberToBengali(modelTest.questions.length)} প্রশ্ন',
+                      style: GoogleFonts.notoSansBengali(
+                          textStyle: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors.textPrimaryColor))),
+                  SizedBox(width: 10.w),
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/total-time.png',
+                        scale: 1.5,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                          '${Utils.convertNumberToBengali(modelTest.totalTime)} মিনিট',
+                          style: GoogleFonts.notoSansBengali(
+                              textStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: AppColors.textPrimaryColor))),
+                    ],
                   ),
-                  maxLines: 1,
+                ],
+              ),
+              GestureDetector(
+                onTap: () {},
+                child: const Text(
+                  'View Details',
+                  style: TextStyle(
+                      color: AppColors.primary,
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.bold,
+                      decorationColor: AppColors.primary),
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
-              SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Text(
-                    '$score',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimaryColor,
-                    ),
-                  ),
-                  Text(
-                    '/$maxScore',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-            ],
-          ),
-
-          // Footer
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.help_outline, size: 16.sp, color: Colors.grey),
-                  SizedBox(width: 4.w),
-                  Text(
-                    '${modelTest.questions.length} questions',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
-                  SizedBox(width: 4.w),
-                  Text(
-                    '${modelTest.totalTime} mins',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              Stack(
-                children: [
-                  Text(
-                    'View Details',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Divider(
-                        height: 1,
-                        color: AppColors.primary,
-                        thickness: 1,
-                        indent: 4.w,
-                        endIndent: 4.w,
-                      ))
-                ],
-              ),
+              )
             ],
           ),
         ],
@@ -767,6 +768,153 @@ class ModelTestCard extends StatelessWidget {
   }
 }
 
+/*
+
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Icon
+        Container(
+          height: 40.h,
+          width: 40.w,
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8.r),
+          ),
+          child: Icon(
+            Icons.description,
+            color: Colors.blue,
+            size: 24.sp,
+          ),
+        ),
+        SizedBox(width: 12.w),
+
+        // Content
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                modelTestName,
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimaryColor,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+
+    // SizedBox(height: 12.h),
+    // Divider(height: 1, color: Colors.grey.withOpacity(0.2)),
+    // SizedBox(height: 12.h),
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (description != null && description.isNotEmpty) ...[
+          SizedBox(height: 4.h),
+          Text(
+            description,
+            style: TextStyle(
+              fontSize: 12.sp,
+              color: Colors.black,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        SizedBox(height: 8.h),
+        Row(
+          children: [
+            Text(
+              '$score',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimaryColor,
+              ),
+            ),
+            Text(
+              '/$maxScore',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 12.h),
+      ],
+    ),
+
+    // Footer
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.help_outline, size: 16.sp, color: Colors.grey),
+            SizedBox(width: 4.w),
+            Text(
+              '${modelTest.questions.length} questions',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Icon(Icons.access_time, size: 16.sp, color: Colors.grey),
+            SizedBox(width: 4.w),
+            Text(
+              '${modelTest.totalTime} mins',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        Stack(
+          children: [
+            Text(
+              'View Details',
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Divider(
+                  height: 1,
+                  color: AppColors.primary,
+                  thickness: 1,
+                  indent: 4.w,
+                  endIndent: 4.w,
+                ))
+          ],
+        ),
+      ],
+    ),
+  ],
+)
+
+*/
 class CustomExamCard extends StatelessWidget {
   final Map<String, dynamic> customExam;
 
@@ -848,7 +996,7 @@ class CustomExamCard extends StatelessWidget {
               //   ),
               // ),
               // SizedBox(width: 12.w),
-                  Text(
+              Text(
                 examName,
                 style: TextStyle(
                   fontSize: 15.sp,
@@ -868,14 +1016,13 @@ class CustomExamCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          
               SizedBox(height: 8.h),
-              if (subjectChips.isNotEmpty) Wrap(
-                //color bg based on  primaryColor
-                spacing: 4.w,
-                runSpacing: 4.h,
-
-                children: subjectChips),
+              if (subjectChips.isNotEmpty)
+                Wrap(
+                    //color bg based on  primaryColor
+                    spacing: 4.w,
+                    runSpacing: 4.h,
+                    children: subjectChips),
             ],
           ),
           SizedBox(height: 12.h),
