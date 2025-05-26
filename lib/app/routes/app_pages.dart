@@ -16,6 +16,10 @@ import '../modules/custom-exam/binding/custom_exam_binding.dart';
 import '../modules/custom-exam/view/custom_exam_view.dart';
 import '../modules/email_varification/binding/email_varification_binding.dart';
 import '../modules/email_varification/view/email_varification_view.dart';
+import '../modules/forgot-password/bindings/forgot_password_binding.dart';
+import '../modules/forgot-password/views/forgot_password_view.dart';
+import '../modules/reset-password/bindings/reset_password_binding.dart';
+import '../modules/reset-password/views/reset_password_view.dart';
 import '../modules/exam-types/bindings/exam-type-binding.dart';
 import '../modules/exam-types/views/exam-type-view.dart';
 import '../modules/home/binding/home_binding.dart';
@@ -44,10 +48,11 @@ import '../modules/history/view/history_view.dart';
 
 class Routes {
   static const splash = '/splash';
-  static const onboarding = '/onboarding';
-  static const register = '/register';
+  static const onboarding = '/onboarding';  static const register = '/register';
   static const emailVarification = '/email-varification';
   static const login = '/login';
+  static const forgotPassword = '/forgot-password';
+  static const resetPassword = '/reset-password';
   static const profile = '/profile';
   static const profileEdit = '/profile-edit';
   static const home = '/home';
@@ -91,11 +96,20 @@ class AppPages {
       name: Routes.emailVarification,
       page: () => const EmailVarificationView(),
       binding: EmailVarificationBinding(),
-    ),
-    GetPage(
+    ),    GetPage(
       name: Routes.login,
       page: () => LoginView(),
       binding: LoginBinding(),
+    ),
+    GetPage(
+      name: Routes.forgotPassword,
+      page: () => ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: Routes.resetPassword,
+      page: () => ResetPasswordView(),
+      binding: ResetPasswordBinding(),
     ),
     GetPage(
         name: Routes.profile,

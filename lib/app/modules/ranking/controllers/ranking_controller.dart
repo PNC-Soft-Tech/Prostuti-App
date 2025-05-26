@@ -45,7 +45,7 @@ class RankingController extends GetxController {
     super.onInit();
 
     // initial load of leaderboard
-    contestId = Get.arguments ?? "";
+    contestId = Get.arguments ?? "6777fcb2c6c8d7d147c9b7eb";
     if (contestId.isEmpty) {
       _getContestIdFromSharedPreferences();
     } else {
@@ -89,7 +89,7 @@ class RankingController extends GetxController {
   }
 
   Future<void> _getContestIdFromSharedPreferences() async {
-    // await StorageHelper.saveLatestContestId("67823db383ec486ffce545d6");
+    // await StorageHelper.saveLatestContestId("6777fcb2c6c8d7d147c9b7eb");
     contestId = await StorageHelper.getLatestContestId();
     if (contestId.isNotEmpty) {
       displayLeaderboardRanks();

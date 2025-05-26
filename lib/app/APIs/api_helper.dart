@@ -27,6 +27,15 @@ abstract class ApiHelper {
       LoginRequestModel payload);
 
   Future<Either<CustomError, Response>> register(RegisterRequestModel register);
+  
+  // Forgot Password & Reset Password APIs
+  Future<Either<CustomError, Response>> forgotPassword(String email);
+  Future<Either<CustomError, Response>> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  });
+  
   // Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   // Future<Either<CustomError, List<JobCategory>>> getJobCategories();
   Future<Either<CustomError, List<ExamType>>> getExamTypes();

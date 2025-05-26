@@ -109,6 +109,54 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
+  Future<Either<CustomError, Response>> forgotPassword(String email) async {
+    try {
+      final payload = {"email": email};
+      final response = await post('users/forgot-password/', payload);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to send reset code',
+        ));
+      }
+    } catch (e) {
+      log('Error in forgotPassword: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, Response>> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    try {
+      final payload = {
+        "email": email,
+        "code": code,
+        "newPassword": newPassword,
+      };
+      final response = await post('users/reset-password/', payload);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response);
+      } else {
+        return Left(CustomError(
+          response.statusCode,
+          message: response.body['message'] ?? 'Failed to reset password',
+        ));
+      }
+    } catch (e) {
+      log('Error in resetPassword: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
   Future<Either<CustomError, List<ExamType>>> getExamTypes() async {
     final response = await get('exam-types');
     if (response.statusCode == 200) {

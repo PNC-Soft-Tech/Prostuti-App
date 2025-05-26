@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
@@ -94,10 +95,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                     style: CustomStyles.textStyle,
                   ),
                 ],
-              ),
-              GestureDetector(
+              ),              GestureDetector(
                 onTap: () {
-                  // Handle Forgot password tap
+                  Get.toNamed('/forgot-password');
                 },
                 child: Text(
                   "Forgot password?",
