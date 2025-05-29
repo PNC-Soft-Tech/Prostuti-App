@@ -294,11 +294,11 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     result.fold(
       (error) {
         Get.snackbar('Error', error.message ?? 'Failed to submit contest');
-      },
-      (response) {
+      },      (response) {
         Get.snackbar('Success',
             response.body['message'] ?? 'Contest submitted successfully');
-        Get.toNamed(Routes.ranking);
+        // Pass contestId as a string argument when navigating to the ranking page
+        Get.toNamed(Routes.ranking, arguments: contestId);
         // Optionally: Do further actions like navigating back, refreshing data, etc.
       },
     );

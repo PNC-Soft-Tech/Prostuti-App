@@ -39,13 +39,27 @@ class RankingController extends GetxController {
   var selectedInstitutionName = Rxn<String>();
 
   late String contestId;
-
   @override
   void onInit() {
     super.onInit();
 
     // initial load of leaderboard
-    contestId = Get.arguments ?? "6777fcb2c6c8d7d147c9b7eb";
+    if (Get.arguments != null) {
+      // Handle different argument types
+      if (Get.arguments is String) {
+        contestId = Get.arguments;
+      } else if (Get.arguments is Map) {
+        // Extract contestId from the map if it exists
+        contestId = (Get.arguments as Map)['contestId']?.toString() ?? "6777fcb2c6c8d7d147c9b7eb";
+      } else {
+        // Default value
+        contestId = "6777fcb2c6c8d7d147c9b7eb";
+      }
+    } else {
+      // Default value if no arguments
+      contestId = "6777fcb2c6c8d7d147c9b7eb";
+    }
+    
     if (contestId.isEmpty) {
       _getContestIdFromSharedPreferences();
     } else {

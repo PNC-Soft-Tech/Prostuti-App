@@ -329,11 +329,10 @@ class CustomExamDetailsController extends GetxController
     result.fold(
       (error) {
         Get.snackbar('Error', error.message ?? 'Failed to submit contest');
-      },
-      (response) {
+      },      (response) {
         Get.snackbar('Success',
             response.body['message'] ?? 'Contest submitted successfully');
-        Get.toNamed(Routes.ranking);
+        Get.toNamed(Routes.ranking, arguments: contestId);
       },
     );
   }
