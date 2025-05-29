@@ -36,23 +36,36 @@ class ContestController extends GetxController {
         Utils.showSnackbar(
           message: 'Failed to fetch contests: ${error.message}',
           isSuccess: false,
-        );      },
-      (contests) {
+        );      },      (contests) {
         isLoadingUpcomingContest.value = false;
         
         log('=== RECENT CONTESTS API RESPONSE ===');
         log('Total recent contests fetched: ${contests.length}');
-        for (var contest in contests) {
+        
+        // Filter out any completed contests that might have been returned
+        // Only keep contests that are running or scheduled (upcoming)
+        final filteredContests = contests.where((contest) {
+          final contestStatus = Utils.getContestStatus(contest.startContest, contest.endContest);
+          return contestStatus.isRunning || contestStatus.isScheduled;
+        }).toList();
+        
+        log('Contests after filtering: ${filteredContests.length}');
+        for (var contest in filteredContests) {
           final localEndTime = contest.endContest.toLocal();
           final isActive = localEndTime.isAfter(DateTime.now());
+          final status = Utils.getContestStatus(contest.startContest, contest.endContest);
           log('Contest: ${contest.name}');
           log('  End: ${contest.endContest}');
-          log('  End (Local): $localEndTime');          log('  Is Active: $isActive');
+          log('  End (Local): $localEndTime');
+          log('  Is Active: $isActive');
+          log('  isRunning: ${status.isRunning}');
+          log('  isScheduled: ${status.isScheduled}');
+          log('  isDone: ${status.isDone}');
           log('  ---');
         }
         log('=== END DEBUG ===');
         
-        upcomingContests.value = contests;
+        upcomingContests.value = filteredContests;
         
         // ✅ Initialize the registration map from contests data
         for (var contest in contests) {
