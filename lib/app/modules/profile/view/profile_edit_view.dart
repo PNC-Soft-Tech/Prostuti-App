@@ -363,6 +363,15 @@ class ProfileEditView extends GetView<ProfileController> {
                         ),
                       );
                     }).toList(),
+                    // Fix for dropdown comparison issue
+                    selectedItemBuilder: (BuildContext context) {
+                      return items.map<Widget>((T item) {
+                        return Text(
+                          itemToString != null ? itemToString(item) : item.toString(),
+                          style: TextStyle(fontSize: 14.sp, color: AppColors.charcoalGray),
+                        );
+                      }).toList();
+                    },
                   ),
                 ),
         ),
@@ -440,6 +449,7 @@ class BorderedCircleAvatar extends StatelessWidget {
                           if (loadingProgress == null) return child;
                           return Center(
                             child: CircularProgressIndicator(
+                              color: AppColors.primary,
                               value: loadingProgress.expectedTotalBytes != null
                                   ? loadingProgress.cumulativeBytesLoaded / 
                                     loadingProgress.expectedTotalBytes!
@@ -448,14 +458,14 @@ class BorderedCircleAvatar extends StatelessWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          print("Error showing network image: $error");
                           return _buildDefaultImage();
                         },
+                        cacheHeight: 300,
+                        cacheWidth: 300,
                       ),
                     ),
                   );
                 } catch (e) {
-                  print("Error showing network image: $e");
                   return _buildDefaultImage();
                 }
               }

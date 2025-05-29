@@ -1,6 +1,7 @@
 // lib/modules/profile/profile_controller.dart
 
 import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -80,71 +81,132 @@ class ProfileController extends GetxController {
   void onInit() {
     super.onInit();
     
+    print("DEBUG: ProfileController.onInit - Initializing controller");
+    
     // First fetch institution types (needed for the dropdown)
     fetchInstitutionTypes().then((_) {
       // After institution types are loaded, load the user profile
-      _loadCachedOrFetchProfile();
+      _loadCachedOrFetchProfile().then((_) {
+        // Start the refresh timer after initial profile load
+        startProfileRefreshTimer();
+      });
     });
   }
 
   Future<void> _loadCachedOrFetchProfile() async {
+    print("DEBUG: _loadCachedOrFetchProfile - Starting profile loading process");
     isLoadingProfilePic.value = true;
+    
     // 1) Try loading cached JSON
+    print("DEBUG: _loadCachedOrFetchProfile - Attempting to load from cache");
     final cached = await StorageHelper.getUserData();
+    
     if (cached != null) {
+      print("DEBUG: _loadCachedOrFetchProfile - Cache found, length: ${cached.length} chars");
       try {
         final Map<String, dynamic> json = jsonDecode(cached);
+        print("DEBUG: _loadCachedOrFetchProfile - Cache parsed as JSON");
+        
+        // Check if profilePic exists in the cached data
+        if (json.containsKey('profilePic')) {
+          print("DEBUG: _loadCachedOrFetchProfile - Cached profilePic: '${json['profilePic']}'");
+        } else {
+          print("DEBUG: _loadCachedOrFetchProfile - No profilePic in cached JSON");
+        }
+        
         final profil = UserProfile.fromJson(json);
+        print("DEBUG: _loadCachedOrFetchProfile - Created UserProfile from cache");
+        print("DEBUG: _loadCachedOrFetchProfile - profilePic after parsing: '${profil.profilePic}'");
+        
         userProfile.value = profil;
         isLoadingProfilePic.value = false;
-        profileImageUrl.value = profil.profilePic; // Set profile image URL
+        
+        // Ensure profile pic is valid
+        if (profil.profilePic.isNotEmpty && profil.profilePic != 'null') {
+          profileImageUrl.value = profil.profilePic;
+          print("DEBUG: _loadCachedOrFetchProfile - Set profileImageUrl from cache: '${profileImageUrl.value}'");
+        } else {
+          // Use default image if needed
+          profileImageUrl.value = 'https://picsum.photos/id/1/200/300';
+          print("DEBUG: _loadCachedOrFetchProfile - Using default image URL");
+        }
+        
         _populateFields(profil);
         return;
       } catch (e) {
+        print("ERROR: _loadCachedOrFetchProfile - Cache parsing failed: $e");
         isLoadingProfilePic.value = false;
         // parsing failed—fall through to API fetch
-        print('Error decoding cached profile: $e');
       }
+    } else {
+      print("DEBUG: _loadCachedOrFetchProfile - No cache found, will fetch from API");
     }
 
     // 2) No valid cache, fetch from API
+    print("DEBUG: _loadCachedOrFetchProfile - Fetching from API");
     final storedUserId = await StorageHelper.getUserId();
-    print('Stored userId from SharedPreferences: $storedUserId');
+    print("DEBUG: _loadCachedOrFetchProfile - Stored userId: $storedUserId");
     
     // Use a valid user ID - either from storage or hardcoded for testing
     String validUserId = storedUserId ?? '677ab9c32847a2fcc732028f';
     
     // Sanitize: if it looks like a full JSON object or contains invalid characters, use the hardcoded ID
     if (validUserId.contains('{') || validUserId.contains(':') || validUserId.contains(' ')) {
-      print('UserId appears to be corrupted, using fallback');
+      print("DEBUG: _loadCachedOrFetchProfile - Invalid userId format, using hardcoded ID");
       validUserId = '677ab9c32847a2fcc732028f';
     }
     
     userId.value = validUserId;
-    print('Final userId being used for API call: ${userId.value}');
+    print("DEBUG: _loadCachedOrFetchProfile - Using userId: ${userId.value}");
 
+    print("DEBUG: _loadCachedOrFetchProfile - Calling API getUserProfile");
     final result = await _api.getUserProfile(userId.value);
     result.fold(
       (err) {
+        print("ERROR: _loadCachedOrFetchProfile - API error: ${err.message}");
+        isLoadingProfilePic.value = false;
         Utils.showSnackbar(
           message: 'Failed to load profile: ${err.message}',
           isSuccess: false,
         );
       },
       (profil) {
+        print("DEBUG: Profile loaded from API - User ID: ${profil.id}, FullName: ${profil.fullName}");
+        print("DEBUG: Raw profile pic from API: '${profil.profilePic}'");
+        
         userProfile.value = profil;
-        profileImageUrl.value = profil.profilePic; // Set profile image URL
+        
+        // Ensure profile image URL is valid
+        if (profil.profilePic.isNotEmpty && profil.profilePic != 'null') {
+          profileImageUrl.value = profil.profilePic; // Set profile image URL
+          print("DEBUG: Setting profile image URL to: ${profil.profilePic}");
+        } else {
+          // Set a default profile image if none is provided
+          profileImageUrl.value = 'https://picsum.photos/id/1/200/300';
+          print("DEBUG: Using default profile image URL: ${profileImageUrl.value}");
+        }
+        
         _populateFields(profil);
+        
         // cache the fresh data
+        print("DEBUG: _loadCachedOrFetchProfile - Saving profile to cache");
         StorageHelper.setUserData(profil.toJson());
         
         // Make sure the userId is stored properly
         if (profil.id != null) {
           StorageHelper.setUserId(profil.id!);
+          print("DEBUG: _loadCachedOrFetchProfile - Saved userId: ${profil.id}");
         }
+        isLoadingProfilePic.value = false;
+        
+        // Log final state
+        print("DEBUG: Profile state after loading - profileImageUrl: '${profileImageUrl.value}'");
+        print("DEBUG: Profile state after loading - userProfile.profilePic: '${userProfile.value?.profilePic}'");
       },
     );
   }
+
+  // Nothing here - removed debug method
 
   void _populateFields(UserProfile p) {
     fullNameController.text = p.fullName;
@@ -300,16 +362,104 @@ class ProfileController extends GetxController {
   }
 
   Future<void> saveProfile() async {
-    if (userProfile.value == null) return;
+    print("DEBUG: saveProfile - Starting profile save process");
     
+    if (userProfile.value == null) {
+      print("ERROR: saveProfile - userProfile.value is null, cannot save");
+      return;
+    }
+    
+    // Display a loading indicator
+    Utils.showSnackbar(message: 'Saving profile...', isSuccess: true);
+    
+    // Log current profile image state
+    print("DEBUG: Before save - profileImageUrl.value: '${profileImageUrl.value}'");
+    print("DEBUG: Before save - userProfile.profilePic: '${userProfile.value?.profilePic}'");
+    
+    // Ensure profileImageUrl is valid
+    if (profileImageUrl.value.isNotEmpty && profileImageUrl.value != 'null') {
+      if (isValidImageUrl(profileImageUrl.value)) {
+        print("DEBUG: saveProfile - profileImageUrl validation passed");
+        
+        // Try to verify that the URL actually returns an image
+        try {
+          final isVerified = await verifyImageUrl(profileImageUrl.value);
+          print("DEBUG: saveProfile - profileImageUrl verification result: $isVerified");
+        } catch (e) {
+          print("WARNING: saveProfile - Error verifying image URL: $e");
+        }
+      } else {
+        print("WARNING: saveProfile - profileImageUrl failed validation: '${profileImageUrl.value}'");
+        
+        // Generate URL variants to try
+        final variants = generateUrlVariants(profileImageUrl.value);
+        
+        // Find a valid variant
+        for (final variant in variants.skip(1)) { // Skip the first one (original)
+          if (isValidImageUrl(variant)) {
+            print("DEBUG: saveProfile - Found valid URL variant: '$variant'");
+            profileImageUrl.value = variant;
+            break;
+          }
+        }
+      }
+    } else {
+      print("DEBUG: saveProfile - profileImageUrl is empty or 'null'");
+    }
+    
+    // Parse date of birth with proper error handling
     DateTime? dateOfBirth;
     if (dobController.text.isNotEmpty) {
       try {
         dateOfBirth = DateTime.parse(dobController.text);
-      } catch (_) {}
+      } catch (e) {
+        print('Error parsing date: $e');
+        Utils.showSnackbar(
+          message: 'Invalid date format. Please use YYYY-MM-DD format.',
+          isSuccess: false,
+        );
+        // Don't return, just continue with null date
+      }
     }
     
-    final updated = userProfile.value!.copyWith(
+    // Validate required fields
+    if (fullNameController.text.isEmpty || emailController.text.isEmpty) {
+      Utils.showSnackbar(
+        message: 'Name and email are required.',
+        isSuccess: false,
+      );
+      return;
+    }
+    
+    // Process profile picture URL
+    print("DEBUG: saveProfile - Starting profile image URL processing");
+    
+    String profilePicUrl = userProfile.value!.profilePic;
+    print("DEBUG: saveProfile - Current userProfile.profilePic: '$profilePicUrl'");
+    
+    if (profileImageUrl.value.isNotEmpty && profileImageUrl.value != 'null') {
+      print("DEBUG: saveProfile - Found non-empty profileImageUrl.value: '${profileImageUrl.value}'");
+      
+      // Validate the new URL before using it
+      if (isValidImageUrl(profileImageUrl.value)) {
+        profilePicUrl = profileImageUrl.value;
+        print("DEBUG: saveProfile - Using valid uploaded profile pic: '$profilePicUrl'");
+      } else {
+        print("WARNING: saveProfile - Invalid uploaded profileImageUrl: '${profileImageUrl.value}'");
+        // Keep the existing URL if the new one is invalid
+      }
+    } else {
+      print("DEBUG: saveProfile - No uploaded image, checking existing profile pic: '$profilePicUrl'");
+    }
+    
+    // Final validation to ensure we have a working URL
+    if (!isValidImageUrl(profilePicUrl)) {
+      profilePicUrl = 'https://picsum.photos/id/1/200/300';
+      print("DEBUG: saveProfile - Using default profile pic URL: '$profilePicUrl'");
+    }
+    
+    // Create updated profile
+    var updated = userProfile.value!.copyWith(
       fullName: fullNameController.text,
       email: emailController.text,
       phone: phoneController.text,
@@ -326,24 +476,47 @@ class ProfileController extends GetxController {
       institutionType: selectedInstitutionType.value?.id,
       institutionTypeObj: selectedInstitutionType.value,
       honsGpa: double.tryParse(cgpaController.text) ?? 0.0,
-      profilePic: profileImageUrl.value.isNotEmpty ? profileImageUrl.value : userProfile.value!.profilePic,
+      profilePic: profilePicUrl,
     );
 
-    final result = await _api.updateUserProfile(updated);
-    result.fold(
-      (err) => Utils.showSnackbar(message: err.message, isSuccess: false),
-      (fresh) {
-        userProfile.value = fresh;
-        StorageHelper.setUserData(fresh.toJson());
-        
-        // Make sure the userId is stored properly
-        if (fresh.id != null) {
-          StorageHelper.setUserId(fresh.id!);
-        }
-        
-        Utils.showSnackbar(message: 'Profile saved!', isSuccess: true);
-      },
-    );
+    print("DEBUG: Updated profile object profilePic: '${updated.profilePic}'");
+
+    try {
+      final result = await _api.updateUserProfile(updated);
+      result.fold(
+        (err) {
+          print("DEBUG: Error updating profile: ${err.message}");
+          Utils.showSnackbar(message: 'Error: ${err.message}', isSuccess: false);
+        },
+        (fresh) {
+          print("DEBUG: Profile updated successfully");
+          print("DEBUG: Updated profile pic from response: '${fresh.profilePic}'");
+          
+          userProfile.value = fresh;
+          profileImageUrl.value = fresh.profilePic;
+          
+          // Save updated profile to storage
+          try {
+            StorageHelper.setUserData(fresh.toJson());
+            
+            // Make sure the userId is stored properly
+            if (fresh.id != null) {
+              StorageHelper.setUserId(fresh.id!);
+            }
+          } catch (e) {
+            print('Error saving profile to storage: $e');
+          }
+          
+          Utils.showSnackbar(message: 'Profile saved!', isSuccess: true);
+        },
+      );
+    } catch (e) {
+      print('Error saving profile: $e');
+      Utils.showSnackbar(
+        message: 'Failed to save profile. Please try again.',
+        isSuccess: false,
+      );
+    }
   }
 
   // Pick image from camera or gallery
@@ -420,19 +593,29 @@ class ProfileController extends GetxController {
   
   // Upload image to ImgBB and get URL
   Future<void> uploadImageToImgbb() async {
-    if (selectedImage.value == null) return;
+    if (selectedImage.value == null) {
+      print("DEBUG: uploadImageToImgbb - No image selected");
+      return;
+    }
+    
+    print("DEBUG: uploadImageToImgbb - Starting upload process");
+    print("DEBUG: uploadImageToImgbb - Image path: ${selectedImage.value!.path}");
     
     isUploadingImage.value = true;
     
     try {
       // Verify the file exists and is accessible
       if (!await selectedImage.value!.exists()) {
+        print("ERROR: uploadImageToImgbb - Image file doesn't exist or isn't accessible");
         throw Exception("Image file doesn't exist or isn't accessible");
       }
       
       // Check file size (limit to 2MB)
       final fileSize = await selectedImage.value!.length();
+      print("DEBUG: uploadImageToImgbb - Image size: ${(fileSize / 1024 / 1024).toStringAsFixed(2)}MB");
+      
       if (fileSize > 2 * 1024 * 1024) {
+        print("ERROR: uploadImageToImgbb - Image too large");
         Utils.showSnackbar(
           message: 'Image is too large (${(fileSize / 1024 / 1024).toStringAsFixed(1)}MB). Maximum size is 2MB.',
           isSuccess: false,
@@ -443,6 +626,8 @@ class ProfileController extends GetxController {
       
       // Create multipart request with timeout
       final uri = Uri.parse('https://api.imgbb.com/1/upload');
+      print("DEBUG: uploadImageToImgbb - Using API endpoint: $uri");
+      
       final request = http.MultipartRequest('POST', uri)
         ..fields['key'] = imgbbApiKey;
       
@@ -453,42 +638,78 @@ class ProfileController extends GetxController {
       );
       
       request.files.add(multipartFile);
+      print("DEBUG: uploadImageToImgbb - Request prepared with file attached");
       
       // Send request with timeout
+      print("DEBUG: uploadImageToImgbb - Sending request...");
       final streamedResponse = await request.send()
           .timeout(const Duration(seconds: 30), onTimeout: () {
+        print("ERROR: uploadImageToImgbb - Request timed out");
         throw TimeoutException('Request timed out after 30 seconds');
       });
       
+      print("DEBUG: uploadImageToImgbb - Response status code: ${streamedResponse.statusCode}");
+      
       final response = await http.Response.fromStream(streamedResponse);
+      print("DEBUG: uploadImageToImgbb - Response body length: ${response.body.length} chars");
       
       // Check if response is valid JSON
       Map<String, dynamic>? jsonData;
       try {
         jsonData = jsonDecode(response.body) as Map<String, dynamic>;
+        print("DEBUG: uploadImageToImgbb - Response parsed successfully as JSON");
       } catch (e) {
+        print("ERROR: uploadImageToImgbb - Invalid response format: ${response.body}");
         throw FormatException('Invalid response format: ${response.body}');
       }
       
       // Check response
-      if (response.statusCode == 200 && jsonData?['success'] == true) {
+      if (response.statusCode == 200 && jsonData['success'] == true) {
         // Get image URL from response
-        final imageUrl = jsonData!['data']['url'] as String;
-        profileImageUrl.value = imageUrl;
+        final responseData = jsonData['data'];
+        print("DEBUG: ImgBB upload successful response: $responseData");
+        
+        final imageUrl = responseData['url'] as String;
+        print("DEBUG: ImgBB uploaded image URL: '$imageUrl'");
+        
+        // Also log the direct display URL and delete URL for debugging
+        if (responseData['display_url'] != null) {
+          print("DEBUG: ImgBB display URL: '${responseData['display_url']}'");
+        }
+        if (responseData['thumb'] != null) {
+          print("DEBUG: ImgBB thumbnail: '${responseData['thumb']}'");
+        }
+        
+        // CHANGE: Try using display_url instead if available
+        final finalUrl = responseData['display_url'] as String? ?? imageUrl;
+        
+        // Update the profile image URL
+        profileImageUrl.value = finalUrl;
+        print("DEBUG: Updated profileImageUrl.value to: '${profileImageUrl.value}'");
+        
+        // Important: Also update the userProfile object's profilePic field
+        if (userProfile.value != null) {
+          final updatedProfile = userProfile.value!.copyWith(profilePic: finalUrl);
+          userProfile.value = updatedProfile;
+          print("DEBUG: Also updated userProfile.value.profilePic: '${userProfile.value!.profilePic}'");
+        }
         
         Utils.showSnackbar(
           message: 'Image uploaded successfully!',
           isSuccess: true,
         );
       } else {
-        final errorMessage = jsonData?['error']?['message'] as String? ?? 'Unknown error';
+        final errorMessage = jsonData['error']?['message'] as String? ?? 'Unknown error';
+        print("ERROR: ImgBB upload error: $errorMessage");
+        print("ERROR: Full error response: ${jsonData['error']}");
+        
         Utils.showSnackbar(
           message: 'Failed to upload image: $errorMessage',
           isSuccess: false,
         );
       }
     } catch (e) {
-      print('Error uploading image: $e');
+      print('ERROR: Error uploading image: $e');
       String errorMessage = 'Error uploading image';
       
       if (e.toString().contains('SocketException')) {
@@ -506,8 +727,269 @@ class ProfileController extends GetxController {
     }
   }
 
+  // Try to fix common URL issues 
+  List<String> generateUrlVariants(String originalUrl) {
+    final List<String> variants = [];
+    
+    // Add the original URL
+    variants.add(originalUrl);
+    
+    try {
+      // Parse the original URL
+      final uri = Uri.parse(originalUrl);
+      
+      // URL might be encoded incorrectly, try different formats
+      if (originalUrl.contains('%')) {
+        // Try decoding if it has percent encoding
+        try {
+          final decoded = Uri.decodeFull(originalUrl);
+          if (decoded != originalUrl) {
+            variants.add(decoded);
+          }
+        } catch (e) {
+          print("DEBUG: Error decoding URL: $e");
+        }
+      } else {
+        // Try encoding if it doesn't have percent encoding
+        try {
+          final encoded = Uri.encodeFull(originalUrl);
+          if (encoded != originalUrl) {
+            variants.add(encoded);
+          }
+        } catch (e) {
+          print("DEBUG: Error encoding URL: $e");
+        }
+      }
+      
+      // Add variants with different schemes
+      if (uri.scheme == 'http') {
+        variants.add(originalUrl.replaceFirst('http://', 'https://'));
+      } else if (uri.scheme == 'https') {
+        variants.add(originalUrl.replaceFirst('https://', 'http://'));
+      }
+      
+      // Extract domain and path to create a simpler URL
+      final baseUrl = '${uri.scheme}://${uri.host}${uri.path}';
+      if (baseUrl != originalUrl) {
+        variants.add(baseUrl);
+      }
+      
+      // Log all variants for debugging
+      print("DEBUG: Generated URL variants:");
+      for (int i = 0; i < variants.length; i++) {
+        print("DEBUG:   [$i] ${variants[i]}");
+      }
+    } catch (e) {
+      print("DEBUG: Error generating URL variants: $e");
+    }
+    
+    return variants;
+  }
+
+  // Verify that an image URL actually returns an image
+  Future<bool> verifyImageUrl(String url) async {
+    print("DEBUG: verifyImageUrl - Checking image URL: '$url'");
+    
+    if (!isValidImageUrl(url)) {
+      print("DEBUG: verifyImageUrl - URL did not pass basic validation");
+      return false;
+    }
+    
+    try {
+      print("DEBUG: verifyImageUrl - Sending HEAD request to: '$url'");
+      
+      // Try a HEAD request first to check if the URL exists
+      final response = await http.head(Uri.parse(url)).timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          print("DEBUG: verifyImageUrl - HEAD request timed out");
+          return http.Response('Timeout', 408);
+        }
+      );
+      
+      print("DEBUG: verifyImageUrl - HEAD response status: ${response.statusCode}");
+      
+      // Check if content type is an image
+      final contentType = response.headers['content-type'] ?? '';
+      print("DEBUG: verifyImageUrl - Content-Type: $contentType");
+      
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (contentType.startsWith('image/')) {
+          print("DEBUG: verifyImageUrl - URL is verified as valid image");
+          return true;
+        } else {
+          print("DEBUG: verifyImageUrl - URL exists but is not an image");
+          return false;
+        }
+      } else {
+        print("DEBUG: verifyImageUrl - URL returned error status: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("ERROR: verifyImageUrl - Exception: $e");
+      return false;
+    }
+  }
+  
+  // Enhanced version of getValidProfileImageUrl that checks server response
+  Future<String> verifyAndGetValidProfileImageUrl() async {
+    String? url = userProfile.value?.profilePic;
+    print("DEBUG: verifyAndGetValidProfileImageUrl - Starting with: '$url'");
+    
+    // Check if the URL from userProfile is valid
+    if (url != null && url.isNotEmpty && url != 'null') {
+      if (await verifyImageUrl(url)) {
+        print("DEBUG: verifyAndGetValidProfileImageUrl - Using verified profile image URL from userProfile: '$url'");
+        return url;
+      }
+    }
+    
+    // Try the profileImageUrl value next
+    url = profileImageUrl.value;
+    if (url.isNotEmpty && url != 'null') {
+      if (await verifyImageUrl(url)) {
+        print("DEBUG: verifyAndGetValidProfileImageUrl - Using verified profile image URL from profileImageUrl: '$url'");
+        return url;
+      }
+    }
+    
+    // Fall back to default
+    const defaultUrl = 'https://picsum.photos/id/1/200/300';
+    print("DEBUG: verifyAndGetValidProfileImageUrl - Using default profile image URL: '$defaultUrl'");
+    return defaultUrl;
+  }
+
+  // Helper method to validate an image URL
+  bool isValidImageUrl(String? url) {
+    print("DEBUG: Validating image URL: '$url'");
+    
+    if (url == null || url.isEmpty || url == 'null') {
+      print("DEBUG: URL validation failed - URL is null or empty");
+      return false;
+    }
+    
+    try {
+      final uri = Uri.parse(url.trim());
+      if (!uri.isAbsolute) {
+        print("DEBUG: URL validation failed - URL is not absolute: '$url'");
+        return false;
+      }
+      
+      if (!uri.scheme.startsWith('http') && !uri.scheme.startsWith('https')) {
+        print("DEBUG: URL validation failed - Invalid scheme: '${uri.scheme}'");
+        return false;
+      }
+      
+      // URL looks valid
+      print("DEBUG: URL validation passed: '$url'");
+      return true;
+    } catch (e) {
+      print("DEBUG: URL validation failed - Parse error: $e");
+      return false;
+    }
+  }
+  
+  // This was removed because there's already an isValidImageUrl function defined above
+
+  // Get a valid profile image URL or default if none available
+  String getValidProfileImageUrl() {
+    // First try the URL from userProfile
+    String? url = userProfile.value?.profilePic;
+    print("DEBUG: getValidProfileImageUrl - userProfile.profilePic: '$url'");
+    
+    if (isValidImageUrl(url)) {
+      print("DEBUG: getValidProfileImageUrl - Using profile pic from userProfile: '$url'");
+      return url!;
+    }
+    
+    // Next, try the profileImageUrl 
+    url = profileImageUrl.value;
+    print("DEBUG: getValidProfileImageUrl - profileImageUrl.value: '$url'");
+    
+    if (isValidImageUrl(url)) {
+      print("DEBUG: getValidProfileImageUrl - Using profile pic from profileImageUrl: '$url'");
+      return url;
+    }
+    
+    // Use default if all else fails
+    const defaultUrl = 'https://picsum.photos/id/1/200/300';
+    print("DEBUG: getValidProfileImageUrl - Using default profile image URL: '$defaultUrl'");
+    return defaultUrl;
+  }
+  
+  // Refresh profile data periodically to ensure we have the latest information
+  void startProfileRefreshTimer() {
+    print("DEBUG: Starting periodic profile refresh timer");
+    
+    // Cancel existing timer if one exists
+    _refreshTimer?.cancel();
+    
+    // Refresh every 30 seconds while the profile view is active
+    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      // Only refresh if we're still on the profile page
+      if (currentIndex.value == 3) { // Assuming 3 is the profile tab index
+        print("DEBUG: Periodic profile refresh timer triggered");
+        
+        // Refresh profile data but avoid showing loading spinner again
+        _refreshProfileDataSilently();
+      }
+    });
+  }
+  
+  // Refresh profile data without showing loading indicators
+  Future<void> _refreshProfileDataSilently() async {
+    print("DEBUG: _refreshProfileDataSilently - Starting quiet refresh");
+    
+    if (userId.value.isEmpty) {
+      print("DEBUG: _refreshProfileDataSilently - No userId available");
+      return;
+    }
+    
+    final result = await _api.getUserProfile(userId.value);
+    result.fold(
+      (err) {
+        print("ERROR: _refreshProfileDataSilently - Failed to refresh profile: ${err.message}");
+      },
+      (profil) {
+        print("DEBUG: _refreshProfileDataSilently - Profile refreshed successfully");
+        
+        // Only update if there's a real change to avoid unnecessary rebuilds
+        if (userProfile.value?.profilePic != profil.profilePic) {
+          print("DEBUG: _refreshProfileDataSilently - Profile image URL updated from '${userProfile.value?.profilePic}' to '${profil.profilePic}'");
+          
+          // Update the profile data
+          userProfile.value = profil;
+          
+          // Update the profile image URL if it's valid
+          if (isValidImageUrl(profil.profilePic)) {
+            profileImageUrl.value = profil.profilePic;
+            
+            // Try to precache the new image in the background if context is available
+            if (Get.context != null) {
+              precacheProfileImage(Get.context);
+            }
+          }
+          
+          // Update the cached data
+          StorageHelper.setUserData(profil.toJson());
+        } else {
+          print("DEBUG: _refreshProfileDataSilently - No changes to profile image URL");
+        }
+      },
+    );
+  }
+  
+  // Timer for periodic profile refresh
+  Timer? _refreshTimer;
+  
   @override
   void onClose() {
+    print("DEBUG: ProfileController.onClose - Disposing controller");
+    
+    // Cancel timer if it's active
+    _refreshTimer?.cancel();
+    
+    // Dispose all text controllers
     fullNameController.dispose();
     emailController.dispose();
     phoneController.dispose();
@@ -522,6 +1004,33 @@ class ProfileController extends GetxController {
     institutionTypeController.dispose();
     cgpaController.dispose();
     institutionNameController.dispose();
+    
     super.onClose();
+  }
+
+  // Precache the profile image to ensure it loads faster when needed
+  Future<bool> precacheProfileImage(BuildContext? context) async {
+    if (context == null) return false;
+    
+    final imageUrl = getValidProfileImageUrl();
+    print("DEBUG: precacheProfileImage - Attempting to precache: '$imageUrl'");
+    
+    if (!isValidImageUrl(imageUrl)) {
+      print("DEBUG: precacheProfileImage - URL is invalid, not precaching");
+      return false;
+    }
+    
+    try {
+      // Create a network image provider
+      final imageProvider = NetworkImage(imageUrl);
+      
+      // Start precaching (no need to capture the result)
+      await precacheImage(imageProvider, context);
+      print("DEBUG: precacheProfileImage - Precaching completed for: '$imageUrl'");
+      return true;
+    } catch (e) {
+      print("ERROR: precacheProfileImage - Failed to precache image: $e");
+      return false;
+    }
   }
 }

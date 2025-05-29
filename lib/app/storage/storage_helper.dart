@@ -32,20 +32,45 @@ class StorageHelper {
 
   // Set user data - properly encode to JSON string
   static Future<void> setUserData(Map<String, dynamic> userData) async {
+    // Log for debugging
+    print("DEBUG: StorageHelper.setUserData - Saving user data");
+    print("DEBUG: StorageHelper.setUserData - profilePic: '${userData['profilePic']}'");
+    
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String jsonString = jsonEncode(userData);
+    
+    // Log to verify JSON encoding worked correctly
+    print("DEBUG: StorageHelper.setUserData - userData JSON string length: ${jsonString.length} chars");
+    
     await prefs.setString(_userKey, jsonString);
     
     // Only set userId if it exists in the userData
     if (userData.containsKey('_id')) {
       await prefs.setString(_userId, userData['_id']);
+      print("DEBUG: StorageHelper.setUserData - Set userId: ${userData['_id']}");
     }
   }
 
   // Get user data
   static Future<String?> getUserData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_userKey);
+    final String? userData = prefs.getString(_userKey);
+    
+    // Log for debugging
+    if (userData != null) {
+      print("DEBUG: StorageHelper.getUserData - Retrieved userData, length: ${userData.length} chars");
+      try {
+        // Check if we can parse it and extract the profile pic
+        final Map<String, dynamic> userMap = jsonDecode(userData);
+        print("DEBUG: StorageHelper.getUserData - Parsed profilePic: '${userMap['profilePic']}'");
+      } catch (e) {
+        print("DEBUG: StorageHelper.getUserData - Error parsing userData: $e");
+      }
+    } else {
+      print("DEBUG: StorageHelper.getUserData - No user data found in storage");
+    }
+    
+    return userData;
   }
 
   // Remove user data (optional, for logout)
@@ -81,4 +106,6 @@ class StorageHelper {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString("latest_contestId") ?? "";
   }
+
+  // Nothing here - removed debug method
 }

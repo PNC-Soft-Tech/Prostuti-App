@@ -67,6 +67,55 @@ class UserProfile {
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
+    // Helper function to safely parse nested objects
+    Map<String, dynamic>? safelyGetMap(dynamic value) {
+      if (value == null) return null;
+      if (value is Map<String, dynamic>) return value;
+      if (value is Map) {
+        return Map<String, dynamic>.from(value);
+      }
+      print('Cannot convert to Map<String, dynamic>: $value (${value.runtimeType})');
+      return null;
+    }
+    
+    // Handle institution data
+    String? institutionId;
+    Institution? institutionObject;
+    final institutionData = json['institution'];
+    
+    if (institutionData is String) {
+      institutionId = institutionData;
+    } else if (institutionData != null) {
+      final institutionMap = safelyGetMap(institutionData);
+      if (institutionMap != null) {
+        institutionId = institutionMap['_id'] as String?;
+        try {
+          institutionObject = Institution.fromJson(institutionMap);
+        } catch (e) {
+          print('Error creating Institution object: $e');
+        }
+      }
+    }
+    
+    // Handle institutionType data
+    String? institutionTypeId;
+    InstitutionType? institutionTypeObject;
+    final institutionTypeData = json['institutionType'];
+    
+    if (institutionTypeData is String) {
+      institutionTypeId = institutionTypeData;
+    } else if (institutionTypeData != null) {
+      final institutionTypeMap = safelyGetMap(institutionTypeData);
+      if (institutionTypeMap != null) {
+        institutionTypeId = institutionTypeMap['_id'] as String?;
+        try {
+          institutionTypeObject = InstitutionType.fromJson(institutionTypeMap);
+        } catch (e) {
+          print('Error creating InstitutionType object: $e');
+        }
+      }
+    }
+    
     return UserProfile(
       id: json['_id'] as String?,
       username: json['username'] as String?,
@@ -78,18 +127,10 @@ class UserProfile {
       authType: json['authType'] as String?,
       otp: json['otp'] as int?,
       isVerified: json['isVerified'] as bool? ?? false,
-      institution: json['institution'] is String 
-          ? json['institution'] 
-          : json['institution']?['_id'] as String?,
-      institutionObj: json['institution'] is Map 
-          ? Institution.fromJson(json['institution']) 
-          : null,
-      institutionType: json['institutionType'] is String 
-          ? json['institutionType'] 
-          : json['institutionType']?['_id'] as String?,
-      institutionTypeObj: json['institutionType'] is Map 
-          ? InstitutionType.fromJson(json['institutionType']) 
-          : null,
+      institution: institutionId,
+      institutionObj: institutionObject,
+      institutionType: institutionTypeId,
+      institutionTypeObj: institutionTypeObject,
       honsGpa: (json['honsGpa'] as num?)?.toDouble() ?? 0.0,
       profileCompleted: (json['profileCompleted'] as num?)?.toDouble() ?? 0.0,
       permanentAddress: json['permanentAddress'] as String?,
@@ -106,8 +147,25 @@ class UserProfile {
       gender: json['gender'] as String?,
       division: json['division'] as String?,
       country: json['country'] as String? ?? 'BD',
-      profilePic:
-          json['profilePic'] as String? ?? 'https://picsum.photos/id/1/200/300',
+      profilePic: (() {
+        final pic = json['profilePic'];
+        print("DEBUG: Raw profilePic value from JSON: '$pic' (type: ${pic?.runtimeType})");
+        
+        if (pic == null || pic.toString().isEmpty || pic == 'null') {
+          print("DEBUG: Using default profile pic URL due to empty/null value");
+          return 'https://picsum.photos/id/1/200/300';
+        }
+        
+        String imageUrl = pic.toString();
+        print("DEBUG: Using profile pic URL: '$imageUrl'");
+        
+        // Validate URL format
+        if (!imageUrl.startsWith('http')) {
+          print("DEBUG: Image URL doesn't start with http - might be invalid: '$imageUrl'");
+        }
+        
+        return imageUrl;
+      })(),
       aboutMe: json['about_me'] as String?,
     );
   }

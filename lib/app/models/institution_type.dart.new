@@ -31,11 +31,8 @@ class InstitutionType {
     if (identical(this, other)) return true;
     return other is InstitutionType && other.id == id;
   }
-    // Override hashCode to match equality
+  
+  // Override hashCode to match equality
   @override
   int get hashCode => id.hashCode;
-  
-  // Override toString for debugging
-  @override
-  String toString() => 'InstitutionType(id: $id, name: $name)';
 }
