@@ -73,6 +73,15 @@ class GlobalLoadingManager {
     }
   }
 
+  /// Show loading for navigation with auto-hide after a short delay
+  void showForNavigation({String message = 'Navigating...'}) {
+    show(message: message);
+    // Auto-hide after a brief moment to allow navigation to complete
+    Future.delayed(const Duration(milliseconds: 800), () {
+      hide();
+    });
+  }
+
   Widget _buildLoadingOverlay() {
     return Material(
       color: Colors.transparent,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/utils/prostuti_utils.dart';
+import '../../../common/widgets/breathing_animation/global_loading_manager.dart';
 import '../../../routes/app_pages.dart';
 
 class ResetPasswordController extends GetxController {
@@ -9,9 +10,8 @@ class ResetPasswordController extends GetxController {
   
   final codeController = TextEditingController();
   final newPasswordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
-  
-  var isLoading = false.obs;
+  final confirmPasswordController = TextEditingController();  
+  // Removed: var isLoading = false.obs; - Now using GlobalLoadingManager
   var isPasswordVisible = false.obs;
   var isConfirmPasswordVisible = false.obs;
   late String email;
@@ -59,8 +59,7 @@ class ResetPasswordController extends GetxController {
       );
       return;
     }
-    
-    if (newPassword != confirmPassword) {
+      if (newPassword != confirmPassword) {
       Utils.showSnackbar(
         message: 'Passwords do not match',
         isSuccess: false,
@@ -68,33 +67,42 @@ class ResetPasswordController extends GetxController {
       return;
     }
 
-    isLoading.value = true;
+    try {
+      final result = await GlobalLoadingManager.instance.showDuring(
+        _apiHelper.resetPassword(
+          email: email,
+          code: code,
+          newPassword: newPassword,
+        ),
+        message: 'Resetting your password...',
+      );
 
-    final result = await _apiHelper.resetPassword(
-      email: email,
-      code: code,
-      newPassword: newPassword,
-    );
-
-    result.fold(
-      (error) {
-        isLoading.value = false;
-        Utils.showSnackbar(
-          message: error.message,
-          isSuccess: false,
-        );
-      },
-      (response) {
-        isLoading.value = false;
-        Utils.showSnackbar(
-          message: 'Password has been reset successfully!',
-          isSuccess: true,
-        );
-        
-        // Navigate back to login screen
-        Get.offAllNamed(Routes.login);
-      },
-    );
+      result.fold(
+        (error) {
+          Utils.showSnackbar(
+            message: error.message,
+            isSuccess: false,
+          );
+        },
+        (response) {
+          Utils.showSnackbar(
+            message: 'Password has been reset successfully!',
+            isSuccess: true,
+          );
+          
+          // Show navigation loading
+          GlobalLoadingManager.instance.showForNavigation(message: 'Redirecting to login...');
+          
+          // Navigate back to login screen
+          Get.offAllNamed(Routes.login);
+        },
+      );
+    } catch (e) {
+      Utils.showSnackbar(
+        message: 'An unexpected error occurred',
+        isSuccess: false,
+      );
+    }
   }
 
   @override
