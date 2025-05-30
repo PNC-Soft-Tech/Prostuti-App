@@ -6,25 +6,31 @@ import '../controller/contest_details_controller.dart';
 class QuestionNavigatorFloating extends StatelessWidget {
   final VoidCallback onOpenFlaggedSheet;
   final controller = Get.find<ContestDetailsController>();
-
   QuestionNavigatorFloating({
     required this.onOpenFlaggedSheet,
     super.key,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final questions = controller.contestDetails.value?.contest.questions ?? [];
+      // Add null safety checks to prevent runtime errors
+      final contestDetails = controller.contestDetails.value;
+      if (contestDetails == null || 
+      contestDetails.contest == null || 
+      contestDetails.contest.questions == null || 
+      contestDetails.contest.questions.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      
+      final questions = contestDetails.contest.questions;
       final currentIndex = controller.currentQuestionIndex.value;
       final flaggedQuestions = controller.markedQuestionIds;
       final totalFlagged = flaggedQuestions.length;
-      final currentQuestion = questions.isNotEmpty ? questions[currentIndex] : null;
-
-      if (questions.isEmpty || currentQuestion == null) {
+        // Ensure currentIndex is within bounds
+      if (questions.isEmpty || currentIndex < 0 || currentIndex >= questions.length) {
         return const SizedBox.shrink();
       }
-
+      
+      final currentQuestion = questions[currentIndex];
       final isMarked = controller.isMarkedQuestion(currentQuestion.id);
 
       // Create reactive properties to properly update the UI
@@ -34,8 +40,7 @@ class QuestionNavigatorFloating extends StatelessWidget {
       // Scroll position reactive values
       final RxBool canScrollUp = RxBool(false);
       final RxBool canScrollDown = RxBool(false);
-      
-      // Update scroll position values whenever the scroll controller changes position
+        // Update scroll position values whenever the scroll controller changes position
       if (controller.scrollController.hasClients) {
         canScrollUp.value = controller.scrollController.position.pixels > 0;
         canScrollDown.value = controller.scrollController.position.pixels < 
@@ -48,13 +53,11 @@ class QuestionNavigatorFloating extends StatelessWidget {
                                 controller.scrollController.position.maxScrollExtent;
         });
       }
-
+      
       // Listen to changes in the marked questions list
       ever(controller.markedQuestionIds, (_) {
         markedCount.value = controller.markedQuestionIds.length;
-        if (currentQuestion != null) {
-          isCurrentMarked.value = controller.isMarkedQuestion(currentQuestion.id);
-        }
+        isCurrentMarked.value = controller.isMarkedQuestion(currentQuestion.id);
       });
 
       return UnifiedQuestionNavigator(
@@ -172,8 +175,7 @@ class QuestionNavigatorFloating extends StatelessWidget {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
-    
-    // Add a follow-up check to refine the position if needed
+      // Add a follow-up check to refine the position if needed
     Future.delayed(const Duration(milliseconds: 300), () {
       // Try again with context after initial scroll
       final updatedKey = controller.questionKeys[questionId];
@@ -186,22 +188,5 @@ class QuestionNavigatorFloating extends StatelessWidget {
         );
       }
     });
-  }
-  
-  // Legacy method preserved for compatibility
-  static void _directScrollToQuestion(String questionId, int questionIndex) {
-    final controller = Get.find<ContestDetailsController>();
-    
-    if (!controller.scrollController.hasClients) return;
-    
-    // Use a larger height estimate for potentially taller questions
-    final estimatedPosition = questionIndex * 600.0;
-    
-    // Scroll to the estimated position
-    controller.scrollController.animateTo(
-      estimatedPosition.clamp(0.0, controller.scrollController.position.maxScrollExtent),
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
   }
 }

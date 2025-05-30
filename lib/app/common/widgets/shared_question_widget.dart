@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:get/get.dart';
-import '../../constant/app_color.dart';
 import '../../common/controllers/base_question_controller.dart';
 import '../../modules/questions/models/question_model.dart';
 import '../modals/unlock_full_access_modal.dart';
@@ -20,16 +19,15 @@ class SharedQuestionWidget extends StatelessWidget {
   final BaseQuestionController controller;
   final bool showExplanation;
   final bool showCorrectAns;
-
   SharedQuestionWidget({
-    Key? key,
+    super.key,
     required this.question,
     required this.contestId,
     required this.index,
     required this.controller,
     this.showExplanation = false,
     this.showCorrectAns = false,
-  }) : super(key: key);
+  });
 
   final loadingOptionIndex = RxnInt();
 
@@ -92,12 +90,10 @@ class SharedQuestionWidget extends StatelessWidget {
                         height: 1.5,
                       ),
                     ),
-                    SizedBox(height: 8.h),
-
-                    // Correct/Incorrect indicator
+                    SizedBox(height: 8.h),                    // Correct/Incorrect indicator
                     Obx(() {
                       final isAnswered = controller.isAnswered(question.id,
-                          question.options!.map((e) => e.order).toList());
+                          question.options.map((e) => e.order).toList());
 
                       // Determine if we should show correct/incorrect status
                       final shouldShowStatus =
@@ -165,11 +161,8 @@ class SharedQuestionWidget extends StatelessWidget {
                             ],
                           )),
                     ),
-                    SizedBox(height: 16.h),
-
-                    // Options
-                    if (question.options != null &&
-                        question.options!.isNotEmpty)
+                    SizedBox(height: 16.h),                    // Options
+                    if (question.options.isNotEmpty)
                       _buildOptions()
                     else
                       Text(
@@ -203,22 +196,21 @@ class SharedQuestionWidget extends StatelessWidget {
       final bool isSubmitted = controller.isModelTestSubmitted.value;
       
       // Allow selection in custom exams
-      final bool isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
-      final bool canSelectAnswers = showExplanation ||
+      final bool isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');      final bool canSelectAnswers = showExplanation ||
           isCustomExam || // Always allow selection in custom exams
           (isExamMode && !isSubmitted) ||
-          (!isExamMode); // Can select in read mode and in exam mode before submission      // Determine if correct answers should be shown
+          (!isExamMode); // Can select in read mode and in exam mode before submission
+      
+      // Determine if correct answers should be shown
       final bool shouldShowCorrectAnswers = 
           (isSubmitted && isExamMode) || // Only after submission in exam mode
-          (isReadMode && controller.isAnswered(question.id, question.options!.map((e) => e.order).toList())) || // Show in read mode only after user selects an option
+          (isReadMode && controller.isAnswered(question.id, question.options.map((e) => e.order).toList())) || // Show in read mode only after user selects an option
           showCorrectAns; // Explicit parameter override
       
       // For custom exams, never show correct answers during the exam
-      final bool finalShowCorrectAnswers = isCustomExam ? showCorrectAns : shouldShowCorrectAnswers;
-
-      if (question.isGrid == true) {
+      final bool finalShowCorrectAnswers = isCustomExam ? showCorrectAns : shouldShowCorrectAnswers;      if (question.isGrid == true) {
         // GRID LAYOUT - 2 options per row
-        final int rowCount = (question.options!.length + 1) ~/ 2;
+        final int rowCount = (question.options.length + 1) ~/ 2;
 
         return Column(
           children: List.generate(rowCount, (rowIndex) {
@@ -228,11 +220,11 @@ class SharedQuestionWidget extends StatelessWidget {
                 final optionIndex = rowIndex * 2 + colIndex;
 
                 // Check if this option exists (handle odd number of options)
-                if (optionIndex >= question.options!.length) {
+                if (optionIndex >= question.options.length) {
                   return Expanded(child: Container());
                 }
 
-                final option = question.options![optionIndex];
+                final option = question.options[optionIndex];
                 final isSelected =
                     controller.isOptionSelected(question.id, option.order);
                 final isLoading = loadingOptionIndex.value == optionIndex;
@@ -241,7 +233,7 @@ class SharedQuestionWidget extends StatelessWidget {
                 final isCorrectAns = question.rightAnswer?.toLowerCase() ==
                     optionLetter.toLowerCase();
                 final isAnswered = controller.isAnswered(question.id,
-                    question.options!.map((e) => e.order).toList());
+                    question.options.map((e) => e.order).toList());
 
                 return Expanded(
                   child: GestureDetector(
@@ -309,12 +301,11 @@ class SharedQuestionWidget extends StatelessWidget {
               }),
             );
           }),
-        );
-      } else {
+        );      } else {
         // SINGLE COLUMN LAYOUT - Original implementation
         return Column(
-          children: List.generate(question.options!.length, (optionIndex) {
-            final option = question.options![optionIndex];
+          children: List.generate(question.options.length, (optionIndex) {
+            final option = question.options[optionIndex];
             final isSelected =
                 controller.isOptionSelected(question.id, option.order);
             final isLoading = loadingOptionIndex.value == optionIndex;
@@ -323,7 +314,7 @@ class SharedQuestionWidget extends StatelessWidget {
             final isCorrectAns = question.rightAnswer?.toLowerCase() ==
                 optionLetter.toLowerCase();
             final isAnswered = controller.isAnswered(
-                question.id, question.options!.map((e) => e.order).toList());
+                question.id, question.options.map((e) => e.order).toList());
 
             return GestureDetector(              onTap: () async {
                 // Prevent selection if already answered or if we shouldn't allow selection
