@@ -6,8 +6,8 @@ import 'package:prostuti/app/common/custom_buttons.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
-import '../../../common/custom_text_input_field.dart';
 import '../../../common/widgets/header_curve_logo_widget.dart';
+import '../../../common/widgets/otp_input_widget.dart';
 import '../controller/email_varification_controller.dart';
 
 class EmailVarificationView extends GetView<EmailVarificationController> {
@@ -39,84 +39,122 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
                     color: AppColors.midnightBlue.withOpacity(0.7),
                   ),
                 ),
-              ),
-              SizedBox(height: 60.h),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextInput(
-                        borderRadius: 10,
-                        controller: controller.code1,
-                        textAlign: TextAlign.center,
-                        onChange: controller.onCode1Change,
-                      ),
-                    ),
-                    SizedBox(width: 18.w),
-                    Expanded(
-                      child: CustomTextInput(
-                        borderRadius: 10,
-                        controller: controller.code2,
-                        textAlign: TextAlign.center,
-                        onChange: controller.onCode2Change,
-                        focusNode: controller.code2FocusNode,
-                      ),
-                    ),
-                    SizedBox(width: 18.w),
-                    Expanded(
-                      child: CustomTextInput(
-                        borderRadius: 10,
-                        controller: controller.code3,
-                        textAlign: TextAlign.center,
-                        onChange: controller.onCode3Change,
-                        focusNode: controller.code3FocusNode,
-                      ),
-                    ),
-                    SizedBox(width: 18.w),
-                    Expanded(
-                      child: CustomTextInput(
-                        borderRadius: 10,
-                        controller: controller.code4,
-                        textAlign: TextAlign.center,
-                        onChange: controller.onCode4Change,
-                        focusNode: controller.code4FocusNode,
-                      ),
-                    ),
-                  ],
+              ),              SizedBox(height: 60.h),
+                // OTP Input Widget
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Obx(() => OTPInputWidget(
+                  length: 4,
+                  fieldWidth: 65,
+                  fieldHeight: 65,
+                  spacing: 16,
+                  autoFocus: true,
+                  hasError: controller.otpError.value.isNotEmpty,
+                  errorText: controller.otpError.value.isNotEmpty 
+                      ? controller.otpError.value 
+                      : null,
+                  enableHapticFeedback: true,
+                  onChanged: controller.onOTPChanged,
+                  onCompleted: controller.onOTPCompleted,
+                )),              ),
+              
+              SizedBox(height: 40.h),SizedBox(height: 40.h),
+              
+              // Submit Button
+              Obx(() => Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: CustomButton.button(
+                  text: controller.isSubmitEnable.value 
+                      ? "Verify OTP" 
+                      : "Enter 4-digit OTP",
+                  onPressed: controller.isSubmitEnable.value 
+                      ? controller.verifyOtpAndHandleResponse
+                      : () {}, // Empty callback for disabled state
+                  backgroundColor: controller.isSubmitEnable.value 
+                      ? null // Use default primary color
+                      : Colors.grey[400], // Gray for disabled
+                  textColor: Colors.white,
                 ),
-              ),
-              Obx(() => controller.isSubmitEnable.value
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 5, 
-                        horizontal: 5,
+              )),
+              
+              SizedBox(height: 30.h),
+              
+              // Resend OTP Section
+              Obx(() => Column(
+                children: [
+                  if (!controller.canResend.value)
+                    Text(
+                      'Resend OTP in ${controller.resendTimer.value}s',
+                      style: CustomStyles.textStyle.copyWith(
+                        fontSize: 16.sp,
+                        color: AppColors.midnightBlue.withOpacity(0.6),
                       ),
-                      child: CustomButton.button(
-                        text: "Submit",
-                        onPressed: () {
-                          controller.verifyOtpAndHandleResponse();
-                        },
+                    ),
+                  
+                  SizedBox(height: 10.h),
+                  
+                  GestureDetector(
+                    onTap: controller.canResend.value ? controller.resendOTP : null,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12.h,
+                        horizontal: 24.w,
                       ),
-                    )
-                  : const SizedBox.shrink(),
-              ),
-              SizedBox(height: 55.h),
-              GestureDetector(
-                onTap: () {
-                  controller.resendOTP();
-                },
-                child: Center(
-                  child: Text(
-                    'Send Code Again',
-                    style: CustomStyles.textStyle.copyWith(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      decoration: BoxDecoration(
+                        color: controller.canResend.value 
+                            ? AppColors.primary.withOpacity(0.1)
+                            : Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(
+                          color: controller.canResend.value 
+                              ? AppColors.primary
+                              : Colors.grey.withOpacity(0.5),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (controller.isResendingOTP.value)
+                            SizedBox(
+                              width: 16.w,
+                              height: 16.h,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primary,
+                                ),
+                              ),
+                            )
+                          else
+                            Icon(
+                              Icons.refresh,
+                              size: 18.sp,
+                              color: controller.canResend.value 
+                                  ? AppColors.primary
+                                  : Colors.grey,
+                            ),
+                          SizedBox(width: 8.w),
+                          Text(
+                            controller.isResendingOTP.value 
+                                ? 'Sending...'
+                                : 'Resend OTP',
+                            style: CustomStyles.textStyle.copyWith(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: controller.canResend.value 
+                                  ? AppColors.primary
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ),
+                ],
+              )),
+              
+              SizedBox(height: 30.h),
             ],
           ),
         ),

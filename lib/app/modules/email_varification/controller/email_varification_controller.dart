@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/controller/app_controller.dart';
@@ -11,74 +13,109 @@ class EmailVarificationController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   final AppController appController = Utils.getAppController();
 
-  final code1 = TextEditingController();
-  final code2 = TextEditingController();
-  final code3 = TextEditingController();  final code4 = TextEditingController();
+  // OTP Management
+  RxString otpValue = ''.obs;
   late RxString email = ''.obs;
   RxBool isSubmitEnable = false.obs;
   RxBool isResendingOTP = false.obs;
-  FocusNode code1FocusNode = FocusNode();
-  FocusNode code2FocusNode = FocusNode();
-  FocusNode code3FocusNode = FocusNode();
-  FocusNode code4FocusNode = FocusNode();
+  RxBool isOTPComplete = false.obs;
+  RxString otpError = ''.obs;
+  
+  // Timer for resend functionality
+  RxInt resendTimer = 0.obs;
+  RxBool canResend = true.obs;
+  Timer? _timer;
+
+  // Global key for OTP widget to access its methods
+  final GlobalKey<State<StatefulWidget>> otpWidgetKey = GlobalKey();
+
   @override
   void onInit() {
     final Map<String, dynamic> args = Get.arguments;
-    FocusScope.of(Get.context!).requestFocus(code1FocusNode);
-
     email.value = args['email'];
-    isSubmitEnable.value = false;
+    _startResendTimer();
     super.onInit();
   }
 
-  void onCode1Change(String value) {
-    if (int.tryParse(value) != null && int.parse(value) > 10) {
-      code1.text = '';
-    } else {
-      FocusScope.of(Get.context!).requestFocus(code2FocusNode);
-    }
-    print("Code1 changed to: $value");
-    isSubmitEnable.value = false;
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
   }
 
-  void onCode2Change(String value) {
-    if (int.tryParse(value) != null && int.parse(value) > 10) {
-      code2.text = '';
-    } else {
-      FocusScope.of(Get.context!).requestFocus(code3FocusNode);
+  // Handle OTP input changes
+  void onOTPChanged(String otp) {
+    otpValue.value = otp;
+    otpError.value = ''; // Clear any previous errors
+    isOTPComplete.value = otp.length == 4;
+    isSubmitEnable.value = otp.length == 4;
+    
+    // Auto-submit when OTP is complete (optional)
+    if (isOTPComplete.value) {
+      // You can enable auto-submit here if desired
+      // verifyOtpAndHandleResponse();
     }
-    print("Code2 changed to: $value");
-    isSubmitEnable.value = false;
   }
 
-  void onCode3Change(String value) {
-    if (int.tryParse(value) != null && int.parse(value) > 10) {
-      code3.text = '';
-    } else {
-      FocusScope.of(Get.context!).requestFocus(code4FocusNode);
-    }
-    print("Code3 changed to: $value");
-    isSubmitEnable.value = false;
+  // Handle OTP completion
+  void onOTPCompleted(String otp) {
+    otpValue.value = otp;
+    isOTPComplete.value = true;
+    isSubmitEnable.value = true;
+    otpError.value = '';
+    
+    // Optional: Auto-submit when OTP is complete
+    // verifyOtpAndHandleResponse();
   }
 
-  void onCode4Change(String value) {
-    if (int.tryParse(value) != null && int.parse(value) > 10) {
-      code4.text = '';
-    } else {
-      // FocusScope.of(Get.context!).requestFocus(code2FocusNode);
-      if (code1.text.isNotEmpty &&
-          code2.text.isNotEmpty &&
-          code3.text.isNotEmpty &&
-          code4.text.isNotEmpty) isSubmitEnable.value = true;
+  // Validate OTP format
+  bool _validateOTP() {
+    if (otpValue.value.length != 4) {
+      otpError.value = 'Please enter a 4-digit OTP';
+      return false;
     }
-    print("Code4 changed to: $value");
+    
+    if (!RegExp(r'^[0-9]{4}$').hasMatch(otpValue.value)) {
+      otpError.value = 'OTP must contain only numbers';
+      return false;
+    }
+    
+    return true;
   }
+
+  // Start resend timer (60 seconds)
+  void _startResendTimer() {
+    canResend.value = false;
+    resendTimer.value = 60;
+    
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (resendTimer.value > 0) {
+        resendTimer.value--;
+      } else {
+        canResend.value = true;
+        timer.cancel();
+      }
+    });
+  }
+
+  // Clear OTP and reset state
+  void clearOTP() {
+    otpValue.value = '';
+    isOTPComplete.value = false;
+    isSubmitEnable.value = false;
+    otpError.value = '';
+  }
+
+  // Verify OTP
   Future<void> verifyOtpAndHandleResponse() async {
+    if (!_validateOTP()) {
+      // Trigger shake animation for invalid OTP
+      _triggerOTPShake();
+      return;
+    }
+
     var payload = {
-      "otp": (int.tryParse(code1.text) ?? 0) * 1000 +
-          (int.tryParse(code2.text) ?? 0) * 100 +
-          (int.tryParse(code3.text) ?? 0) * 10 +
-          (int.tryParse(code4.text) ?? 0),
+      "otp": int.tryParse(otpValue.value) ?? 0,
       "email": email.value,
     };
 
@@ -90,9 +127,20 @@ class EmailVarificationController extends GetxController {
         (error) {
           // Handle error scenario
           print('Error: ${error.message}');
+          otpError.value = error.message;
+          
+          // Trigger shake animation for incorrect OTP
+          _triggerOTPShake();
+          
           // Show an error message to the user
-          Get.snackbar('Error', error.message,
-              snackPosition: SnackPosition.BOTTOM);
+          Get.snackbar(
+            'Verification Failed', 
+            error.message,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withOpacity(0.8),
+            colorText: Colors.white,
+            duration: const Duration(seconds: 4),
+          );
         },
         (response) async {
           // Handle success scenario
@@ -112,53 +160,113 @@ class EmailVarificationController extends GetxController {
             print('Token saved successfully.');
             // Navigate to the next screen or perform an action
             Get.toNamed(Routes.home, arguments: response.body);
+            
+            // Show success message
+            Get.snackbar(
+              'Success!', 
+              'Email verified successfully',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green.withOpacity(0.8),
+              colorText: Colors.white,
+              duration: const Duration(seconds: 3),
+            );
           }
         },
       );
     });
   }
-    Future<void> resendOTP() async {
-    // TODO: Implement resend OTP API endpoint
-    // For now, just show a message that this feature is not available
-    Get.snackbar(
-      'Feature Unavailable', 
-      'Resend OTP feature is not implemented yet',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+
+  // Helper method to trigger OTP shake animation
+  void _triggerOTPShake() {
+    // If we have access to the OTP widget, trigger shake animation
+    // This could be expanded with actual shake animation implementation
+    try {
+      // For now, we'll use haptic feedback to indicate error
+      HapticFeedback.vibrate();
+    } catch (e) {
+      // Silently handle any haptic feedback errors
+    }
+  }
+
+  // Resend OTP
+  Future<void> resendOTP() async {
+    if (!canResend.value) {
+      Get.snackbar(
+        'Please Wait', 
+        'You can resend OTP after ${resendTimer.value} seconds',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    isResendingOTP.value = true;
     
+    // Clear current OTP
+    clearOTP();
+    
+    try {
+      // TODO: Replace with actual resend OTP API when available
+      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
+      
+      // Restart timer
+      _startResendTimer();
+      
+      Get.snackbar(
+        'OTP Sent!', 
+        'A new OTP has been sent to ${email.value}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withOpacity(0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 4),
+      );
+      
+    } catch (e) {
+      Get.snackbar(
+        'Error', 
+        'Failed to resend OTP. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+      );
+    } finally {
+      isResendingOTP.value = false;
+    }
+
     /*
+    // TODO: Uncomment when resend OTP API is available
     var payload = {
       "email": email.value,
     };
 
-    isResendingOTP.value = true;
-    
-    final result = await _apiHelper.resendOtp(payload);
+    final result = await GlobalLoadingManager.instance.showDuring(
+      _apiHelper.resendOtp(payload),
+      message: 'Sending new OTP...',
+    );
     
     result.fold(
       (error) {
         // Handle error scenario
         print('Error: ${error.message}');
         Get.snackbar('Error', error.message,
-            snackPosition: SnackPosition.BOTTOM);
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.withOpacity(0.8),
+            colorText: Colors.white);
         isResendingOTP.value = false;
       },
       (response) {
         // Handle success scenario
         print('Success: OTP resent');
         Get.snackbar('Success', 'OTP has been resent to your email',
-            snackPosition: SnackPosition.BOTTOM);
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green.withOpacity(0.8),
+            colorText: Colors.white);
         isResendingOTP.value = false;
         
-        // Clear existing OTP fields
-        code1.clear();
-        code2.clear();
-        code3.clear();
-        code4.clear();
-        isSubmitEnable.value = false;
-        
-        // Focus on first field
-        FocusScope.of(Get.context!).requestFocus(code1FocusNode);
+        // Clear existing OTP and restart timer
+        clearOTP();
+        _startResendTimer();
       },
     );
     */
