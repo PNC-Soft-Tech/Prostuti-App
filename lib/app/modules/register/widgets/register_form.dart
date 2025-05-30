@@ -121,35 +121,28 @@ class _RegisterFormState extends State<RegisterForm> {
               validator: (value) => value == null || value.length < 6
                   ? 'Password must be at least 6 characters'
                   : null,
-            ),
-            const SizedBox(height: 20),
-            Obx(() {
-              return controller.isLoading.value
-                  ? const CupertinoActivityIndicator( 
-                      color: AppColors.primary,
-                    )
-                  : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: CustomStyles.buttonStyle,
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            final model = RegisterRequestModel(
-                              fullName: fullNameController.text,
-                              email: emailController.text,
-                              phone: phoneController.text,
-                              password: passwordController.text,
-                            );
-                            controller.registerUser(model);
-                          }
-                        },
-                        child: const Text(
-                          'Register',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+            ),            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: CustomStyles.buttonStyle,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final model = RegisterRequestModel(
+                      fullName: fullNameController.text,
+                      email: emailController.text,
+                      phone: phoneController.text,
+                      password: passwordController.text,
                     );
-            }),
+                    controller.registerUser(model);
+                  }
+                },
+                child: const Text(
+                  'Register',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
           ],
         ),
       ),
