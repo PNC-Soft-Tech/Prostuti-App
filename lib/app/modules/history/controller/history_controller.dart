@@ -1,12 +1,13 @@
 import 'package:get/get.dart';
 import 'dart:developer';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 import '../../contests/models/contest_model.dart';
 import '../../model-tests/models/model_test_model.dart';
-import '../../custom-exam-details/models/custom_exam_response_model.dart';
 
 class HistoryController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
   
   // Observable variables
   var isLoading = false.obs;
@@ -24,7 +25,19 @@ class HistoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchDataForSelectedTab();
+    _checkAuthAndLoadHistory();
+  }
+
+  /// Check authentication and load history if authenticated
+  void _checkAuthAndLoadHistory() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'exam history',
+      customMessage: 'Please login to view your exam history and past results.',
+    );
+    
+    if (hasAccess) {
+      fetchDataForSelectedTab();
+    }
   }
   
   void changeTab(int index) {

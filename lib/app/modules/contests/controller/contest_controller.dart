@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../models/contest_model.dart';
 
 class ContestController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
 
   var contests = <Contest>[].obs;
   var contest = Rxn<Contest>();
@@ -14,12 +16,23 @@ class ContestController extends GetxController {
   var isLoading = false.obs;
   var isLoadingUpcomingContest = false.obs;
   final registeredContests = <String, bool>{}.obs; // Contest ID => isRegistered
-
   @override
   void onInit() {
     super.onInit();
-    // fetchContests();
-    displayRecentContests();
+    // Only fetch contests if user is authenticated
+    _checkAuthAndLoadContests();
+  }
+
+  /// Check authentication and load contests if authenticated
+  void _checkAuthAndLoadContests() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'contests',
+      customMessage: 'Please login to view contests and participate in competitions.',
+    );
+    
+    if (hasAccess) {
+      displayRecentContests();
+    }
   }
   /// Fetches recent contests from the server
   /// FIXED: Changed from fetchAllContests() to fetchRecentContests() 

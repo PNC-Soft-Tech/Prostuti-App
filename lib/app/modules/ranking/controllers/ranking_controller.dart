@@ -10,9 +10,11 @@ import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
 import 'package:prostuti/app/storage/storage_helper.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 
 class RankingController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
 
   var contestRankData = Rxn<ContestData>();
   var isLoading = false.obs;
@@ -42,7 +44,22 @@ class RankingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _checkAuthAndLoadRanking();
+  }
 
+  /// Check authentication and load ranking data if authenticated
+  void _checkAuthAndLoadRanking() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'leaderboard and rankings',
+      customMessage: 'Please login to view contest leaderboards and rankings.',
+    );
+    
+    if (hasAccess) {
+      _initializeRanking();
+    }
+  }
+
+  void _initializeRanking() {
     // initial load of leaderboard
     if (Get.arguments != null) {
       // Handle different argument types

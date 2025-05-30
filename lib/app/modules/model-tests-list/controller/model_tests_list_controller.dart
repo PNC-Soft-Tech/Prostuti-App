@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 import '../models/model_tests_list_response.dart';
 
 class ModelTestsListController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
 
   // Observable state
   var isLoading = false.obs;
@@ -37,7 +39,7 @@ class ModelTestsListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchModelTests();
+    _checkAuthAndLoadModelTests();
     
     // Listen to search changes
     searchController.addListener(() {
@@ -48,6 +50,18 @@ class ModelTestsListController extends GetxController {
     // Listen to filter changes
     ever(searchQuery, (_) => _filterModelTests());
     ever(selectedFilter, (_) => _filterModelTests());
+  }
+
+  /// Check authentication and load model tests if authenticated
+  void _checkAuthAndLoadModelTests() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'model tests list',
+      customMessage: 'Please login to browse available model tests and exams.',
+    );
+    
+    if (hasAccess) {
+      fetchModelTests();
+    }
   }
 
   @override

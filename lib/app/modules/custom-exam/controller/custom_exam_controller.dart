@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
 import '../../exam-topics/models/exam_topics_model.dart';
@@ -13,6 +14,7 @@ import '../../subjects/models/subjects_model.dart';
 
 class CustomExamController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
 
   var isLoading = false.obs;
   RxList<Subjects> subjects = <Subjects>[].obs;
@@ -29,7 +31,6 @@ class CustomExamController extends GetxController {
   Rxn<CustomExamModel> customExamQuestions = Rxn<CustomExamModel>();
   RxMap<String, List<SubjectTopics>> subjectTopicsMap =
       <String, List<SubjectTopics>>{}.obs;
-
   @override
   void onInit() {
     super.onInit();
@@ -39,6 +40,19 @@ class CustomExamController extends GetxController {
       id: 'exam-1',
       subjects: [],
     );
+
+    // Check authentication before fetching subjects
+    _checkAuthAndLoadSubjects();
+  }
+  void _checkAuthAndLoadSubjects() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'custom exams',
+      customMessage: 'Please log in to create custom exams',
+    );
+    
+    if (!hasAccess) {
+      return;
+    }
 
     // Fetch subjects when the controller is initialized
     fetchSubjects().then((_) {
@@ -52,10 +66,9 @@ class CustomExamController extends GetxController {
           
           customExamQuestions.value = CustomExamModel(
             id: 'exam-1',
-            subjects: [
-              CustomExamSubject(
+            subjects: [              CustomExamSubject(
                 id: firstSubject.id, // Use API-provided ID
-                subjectName: firstSubject.name ?? "", // Ensure not null
+                subjectName: firstSubject.name, // Remove null check as it's non-nullable
                 topics: [], // Initialize with empty list
               ),
             ],
@@ -118,10 +131,9 @@ class CustomExamController extends GetxController {
       final selectedSubject = subjects.first;
 
       // Add the subject using its API-provided id
-      customExamQuestions.value!.subjects?.add(
-        CustomExamSubject(
+      customExamQuestions.value!.subjects?.add(        CustomExamSubject(
           id: selectedSubject.id, // Use the API-provided id
-          subjectName: selectedSubject.name ?? "Unnamed Subject", // Default value to avoid null
+          subjectName: selectedSubject.name, // Remove null check as it's non-nullable
           topics: [], // Initialize with empty list to avoid null
         ),
       );
@@ -165,19 +177,18 @@ class CustomExamController extends GetxController {
 
       if (availableTopics != null && availableTopics.isNotEmpty) {
         subject.topics ??= [];
-        
-        // Get the selected topic
+          // Get the selected topic
         final selectedTopic = availableTopics.first;
         
         // Fetch the question count for this topic
-        if (selectedTopic.id != null && selectedTopic.id.isNotEmpty) {
+        if (selectedTopic.id.isNotEmpty) {
           fetchQuestionCountForTopic(selectedTopic.id);
         }
         
         // Store both topic id and topic name for reference.
         subject.topics!.add({
-          'topic': selectedTopic.id ?? '', // Ensure we always have a string value
-          'topicName': selectedTopic.name ?? '', // Ensure no null value
+          'topic': selectedTopic.id, // Remove null check as it's non-nullable
+          'topicName': selectedTopic.name, // Remove null check as it's non-nullable
           'questionCount': 1,
         });
 
@@ -189,10 +200,9 @@ class CustomExamController extends GetxController {
       }
     }
   }
-
   // Fetch and store the available question count for a topic
   Future<void> fetchQuestionCountForTopic(String topicId) async {
-    if (topicId == null || topicId.isEmpty) {
+    if (topicId.isEmpty) {
       log('Cannot fetch question count for empty topic ID');
       return;
     }
@@ -320,8 +330,7 @@ String getFormattedExamName() {
     bool hasExceededCounts = false;
     String exceededTopicName = "";
     
-    for (var subject in customExamQuestions.value!.subjects!) {
-      for (var topic in subject.topics ?? []) {
+    for (var subject in customExamQuestions.value!.subjects!) {      for (var topic in subject.topics ?? []) {
         final topicId = topic['topic']?.toString();
         if (topicId == null || topicId.isEmpty) {
           continue;

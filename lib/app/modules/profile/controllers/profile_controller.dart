@@ -1,6 +1,3 @@
-// lib/modules/profile/profile_controller.dart
-
-import 'dart:async';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -13,6 +10,7 @@ import 'package:intl/intl.dart';
 
 import '../../../storage/storage_helper.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 import '../../../common/utils/prostuti_utils.dart';
 import '../../../models/user_model.dart';
 import '../../../models/institution.dart';
@@ -67,6 +65,7 @@ class ProfileController extends GetxController {
 
   // API
   final ApiHelper _api = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
 
   // Profile image variables
   final Rxn<File> selectedImage = Rxn<File>();
@@ -83,14 +82,26 @@ class ProfileController extends GetxController {
     
     print("DEBUG: ProfileController.onInit - Initializing controller");
     
-    // First fetch institution types (needed for the dropdown)
-    fetchInstitutionTypes().then((_) {
-      // After institution types are loaded, load the user profile
-      _loadCachedOrFetchProfile().then((_) {
-        // Start the refresh timer after initial profile load
-        startProfileRefreshTimer();
+    _checkAuthAndLoadProfile();
+  }
+
+  /// Check authentication and load profile if authenticated
+  void _checkAuthAndLoadProfile() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'profile',
+      customMessage: 'Please login to view and manage your profile.',
+    );
+    
+    if (hasAccess) {
+      // First fetch institution types (needed for the dropdown)
+      fetchInstitutionTypes().then((_) {
+        // After institution types are loaded, load the user profile
+        _loadCachedOrFetchProfile().then((_) {
+          // Start the refresh timer after initial profile load
+          startProfileRefreshTimer();
+        });
       });
-    });
+    }
   }
 
   Future<void> _loadCachedOrFetchProfile() async {

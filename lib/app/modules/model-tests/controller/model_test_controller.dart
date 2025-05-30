@@ -1,12 +1,14 @@
 
 import 'package:get/get.dart';
 import '../../../APIs/api_helper.dart';
+import '../../../common/services/auth_service.dart';
 import '../../../common/utils/prostuti_utils.dart';
 
 import '../models/model_test_model.dart';
 
 class ModelTestController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
+  final AuthService _authService = Get.find<AuthService>();
 
   var model_tests = <ModelTest>[].obs;
   var model_test = Rxn<ModelTest>();
@@ -16,7 +18,19 @@ class ModelTestController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchAllModelTests();
+    _checkAuthAndLoadModelTests();
+  }
+
+  /// Check authentication and load model tests if authenticated
+  void _checkAuthAndLoadModelTests() async {
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'model tests',
+      customMessage: 'Please login to access model tests and practice exams.',
+    );
+    
+    if (hasAccess) {
+      fetchAllModelTests();
+    }
   }
 
 
