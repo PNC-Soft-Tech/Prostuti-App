@@ -13,7 +13,8 @@ import '../../questions/models/question_model.dart';
 import '../models/contest_details_model.dart';
 import '../../../common/controllers/base_question_controller.dart';
 
-class ContestDetailsController extends GetxController implements BaseQuestionController {
+class ContestDetailsController extends GetxController
+    implements BaseQuestionController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   var contestId = ''.obs;
   var contests = <Contest>[].obs;
@@ -38,6 +39,8 @@ class ContestDetailsController extends GetxController implements BaseQuestionCon
   @override
   RxBool isQuestionOpened = false.obs;
   final scrollController = ScrollController();
+  final RxBool canScrollUp = false.obs;
+  final RxBool canScrollDown = false.obs;
   final questionKeys = <String, GlobalKey>{}.obs;
   final questionIdToIndexMap = <String, int>{}.obs;
   final markedQuestionIndexes = <int>[].obs; // For UI scroll
@@ -59,6 +62,18 @@ class ContestDetailsController extends GetxController implements BaseQuestionCon
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
+    });
+
+    // Setup scroll listener
+    scrollController.addListener(() {
+      if (!scrollController.hasClients) {
+        canScrollUp.value = false;
+        canScrollDown.value = false;
+        return;
+      }
+      canScrollUp.value = scrollController.position.pixels > 0;
+      canScrollDown.value = scrollController.position.pixels <
+          scrollController.position.maxScrollExtent;
     });
   }
 
@@ -134,15 +149,15 @@ class ContestDetailsController extends GetxController implements BaseQuestionCon
   }
 
 // Update status check wherever needed
-void updateContestStatus() {
-  final contest = contestDetails.value?.contest;
-  if (contest != null) {
-    contestStatus.value = ContestStatus.fromDates(
-      contest.startContest.toLocal(),
-      contest.endContest.toLocal(),
-    );
+  void updateContestStatus() {
+    final contest = contestDetails.value?.contest;
+    if (contest != null) {
+      contestStatus.value = ContestStatus.fromDates(
+        contest.startContest.toLocal(),
+        contest.endContest.toLocal(),
+      );
+    }
   }
-}
 
   List<Question> get filteredQuestions {
     final allQuestions = contestDetails.value?.contest.questions ?? [];
@@ -163,8 +178,9 @@ void updateContestStatus() {
     selectedAnswers[questionId] =
         selectedOptionOrder; // ✅ Track selection per question
   }
+
   @override
-void resetSelectOption(String questionId) {
+  void resetSelectOption(String questionId) {
     selectedAnswers[questionId] = ''; // Reset selection for the question
   }
 
@@ -178,20 +194,21 @@ void resetSelectOption(String questionId) {
     bool isOptionAnswered = false;
     for (var optionOrder in optionOrderList) {
       if (selectedAnswers[questionId] == optionOrder) {
-        isOptionAnswered= true; // Answer is selected
+        isOptionAnswered = true; // Answer is selected
         break;
       }
     }
     return isOptionAnswered;
   }
-@override 
-bool isCorrectAnswered(String questionId, String selectedAnswer) {
+
+  @override
+  bool isCorrectAnswered(String questionId, String selectedAnswer) {
     // Check if the selected answer is correct
     final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
     if (question == null) return false;
     return question.rightAnswer == selectedAnswer;
-   
   }
+
   @override
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId];
@@ -294,7 +311,8 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     result.fold(
       (error) {
         Get.snackbar('Error', error.message ?? 'Failed to submit contest');
-      },      (response) {
+      },
+      (response) {
         Get.snackbar('Success',
             response.body['message'] ?? 'Contest submitted successfully');
         // Pass contestId as a string argument when navigating to the ranking page
@@ -305,35 +323,36 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   }
 
 // In ContestDetailsController
-void startTimer(DateTime startTime, DateTime endTime) {
-  // Convert to local timezone
-  final localStart = startTime.toLocal();
-  final localEnd = endTime.toLocal();
+  void startTimer(DateTime startTime, DateTime endTime) {
+    // Convert to local timezone
+    final localStart = startTime.toLocal();
+    final localEnd = endTime.toLocal();
 
-  _updateRemainingTime(localStart, localEnd);
-  _timer?.cancel();
-  _timer = Timer.periodic(const Duration(seconds: 1), (_) {
     _updateRemainingTime(localStart, localEnd);
-  });
-}
-
-void _updateRemainingTime(DateTime startTime, DateTime endTime) {
-  final status = ContestStatus.fromDates(startTime, endTime);
-  contestStatus.value = status;
-
-  final now = DateTime.now();
-  if (status.isScheduled) {
-    remainingTime.value = startTime.difference(now);
-  } else if (status.isRunning) {
-    remainingTime.value = endTime.difference(now);
-  } else {
-    remainingTime.value = Duration.zero;
     _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      _updateRemainingTime(localStart, localEnd);
+    });
   }
-}
+
+  void _updateRemainingTime(DateTime startTime, DateTime endTime) {
+    final status = ContestStatus.fromDates(startTime, endTime);
+    contestStatus.value = status;
+
+    final now = DateTime.now();
+    if (status.isScheduled) {
+      remainingTime.value = startTime.difference(now);
+    } else if (status.isRunning) {
+      remainingTime.value = endTime.difference(now);
+    } else {
+      remainingTime.value = Duration.zero;
+      _timer?.cancel();
+    }
+  }
 
   @override
   void onClose() {
+    scrollController.dispose();
     _timer?.cancel();
     super.onClose();
   }
@@ -366,21 +385,23 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
     final timeString = displayParts.join(' and ');
 
     // Add status context
-    return contestStatus.value!.isScheduled 
+    return contestStatus.value!.isScheduled
         ? 'Starts in $timeString'
         : 'Ends in $timeString';
   }
 
   String? getNextFlaggedQuestion(String currentQuestionId) {
     if (markedQuestionIds.isEmpty) return null;
-    
-    final sortedFlagged = markedQuestionIds
-      .where((id) => questionIdToIndexMap.containsKey(id))
-      .toList()
-      ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
 
-    final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
-    
+    final sortedFlagged = markedQuestionIds
+        .where((id) => questionIdToIndexMap.containsKey(id))
+        .toList()
+      ..sort((a, b) =>
+          questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+
+    final currentIndex =
+        sortedFlagged.indexWhere((id) => id == currentQuestionId);
+
     if (currentIndex == -1) return sortedFlagged.first;
     if (currentIndex >= sortedFlagged.length - 1) return sortedFlagged.first;
     return sortedFlagged[currentIndex + 1];
@@ -388,14 +409,16 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
 
   String? getPreviousFlaggedQuestion(String currentQuestionId) {
     if (markedQuestionIds.isEmpty) return null;
-    
-    final sortedFlagged = markedQuestionIds
-      .where((id) => questionIdToIndexMap.containsKey(id))
-      .toList()
-      ..sort((a, b) => questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
 
-    final currentIndex = sortedFlagged.indexWhere((id) => id == currentQuestionId);
-    
+    final sortedFlagged = markedQuestionIds
+        .where((id) => questionIdToIndexMap.containsKey(id))
+        .toList()
+      ..sort((a, b) =>
+          questionIdToIndexMap[a]!.compareTo(questionIdToIndexMap[b]!));
+
+    final currentIndex =
+        sortedFlagged.indexWhere((id) => id == currentQuestionId);
+
     if (currentIndex == -1) return sortedFlagged.last;
     if (currentIndex <= 0) return sortedFlagged.last;
     return sortedFlagged[currentIndex - 1];
@@ -405,10 +428,10 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
     if (questionId == null || !questionId.startsWith('ObjectId')) return;
 
     final controller = Get.find<ContestDetailsController>();
-    
+
     // Force show all questions
     controller.selectedSubject.value = 'All';
-    
+
     // Wait for UI rebuild
     await Future.delayed(const Duration(milliseconds: 50));
 
@@ -422,11 +445,13 @@ void _updateRemainingTime(DateTime startTime, DateTime endTime) {
       alignment: 0.1,
     );
   }
-  
+
   @override
- RxBool get isModelTestSubmitted => false.obs; // Placeholder, implement as needed
-  
+  RxBool get isModelTestSubmitted =>
+      false.obs; // Placeholder, implement as needed
+
   @override
   // TODO: implement selectedTestMode
-  RxString get selectedTestMode => 'exam'.obs; // Placeholder, implement as needed
+  RxString get selectedTestMode =>
+      'exam'.obs; // Placeholder, implement as needed
 }
