@@ -16,16 +16,19 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
       final status = controller.contestStatus.value;
       final isQuestionOpened = controller.isQuestionOpened.value;
       final contestDetails = controller.contestDetails.value;
-      
-      // If questions are opened, show the submit widget
+        // If questions are opened, show the submit widget
       if (isQuestionOpened) {
+        // Check if contest is already submitted
+        final isAlreadySubmitted = contestDetails?.contest.isSubmitted == true;
+        
         return Align(
           alignment: Alignment.bottomCenter,
           child: BottomFixedSubmitContestWidget(
             timeLeft: controller.formattedCountdownTime,
             currentQuestionIndex: 2, // Can be made dynamic if needed
             totalQuestions: contestDetails?.contest.questions.length ?? 0,
-            onCompletePressed: () {
+            isSubmitted: isAlreadySubmitted,
+            onCompletePressed: isAlreadySubmitted ? null : () {
               showDialog(
                 context: context,
                 builder: (context) => ExamCompletedDialog(
@@ -38,7 +41,7 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
             },
           ),
         );
-      } else {
+      }else {
         // Determine button text based on contest state
         String buttonText;
         bool isButtonEnabled = true;
@@ -68,9 +71,20 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
           alignment: Alignment.bottomCenter,
           child: CustomBottomFixedButton(
             buttonText: buttonText,
-            isDisabled: !isButtonEnabled,
-            onPressed: () {
+            isDisabled: !isButtonEnabled,            onPressed: () {
               if (!isButtonEnabled) return;
+              
+              // Prevent entering if already submitted
+              if (contestDetails?.contest.isSubmitted == true) {
+                Get.snackbar(
+                  'Contest Already Submitted',
+                  'You have already submitted this contest. Check the leaderboard for your position.',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.orange.withOpacity(0.8),
+                  colorText: Colors.white,
+                );
+                return;
+              }
               
               if (contestDetails?.contest.isRegistered == false &&
                   (status?.isRunning == true || status?.isScheduled == true)) {

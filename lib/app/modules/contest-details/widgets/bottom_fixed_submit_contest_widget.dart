@@ -5,16 +5,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 class BottomFixedSubmitContestWidget extends StatelessWidget {
   final String timeLeft;
-  final VoidCallback onCompletePressed;
+  final VoidCallback? onCompletePressed;
   final int currentQuestionIndex;
   final int totalQuestions;
+  final bool isSubmitted;
 
   const BottomFixedSubmitContestWidget({
     super.key,
     required this.timeLeft,
-    required this.onCompletePressed,
+    this.onCompletePressed,
     required this.currentQuestionIndex,
     required this.totalQuestions,
+    this.isSubmitted = false,
   });
 
   @override
@@ -100,28 +102,39 @@ class BottomFixedSubmitContestWidget extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildCompleteButton() {
     return Container(
       width: double.infinity,
       child: ElevatedButton(
-      
-        onPressed: onCompletePressed,
+        onPressed: isSubmitted ? null : onCompletePressed,
         style: ElevatedButton.styleFrom( 
           padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 24.w),
           shape: RoundedRectangleBorder( 
             borderRadius: BorderRadius.circular(50.r),
           ),
-          backgroundColor: Colors.blue,
-          
+          backgroundColor: isSubmitted ? Colors.grey : Colors.blue,
+          disabledBackgroundColor: Colors.grey.withOpacity(0.6),
         ),
-        child: Text(
-          'Complete Exam',
-          style: GoogleFonts.inter(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isSubmitted) ...[
+              Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                size: 18.sp,
+              ),
+              SizedBox(width: 8.w),
+            ],
+            Text(
+              isSubmitted ? 'Already Submitted' : 'Complete Exam',
+              style: GoogleFonts.inter(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );
