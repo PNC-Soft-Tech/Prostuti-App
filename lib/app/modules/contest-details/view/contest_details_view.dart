@@ -170,9 +170,61 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                               color: Colors.black,
                             ),
                           ),
+                        ],                      ),
+                    ),   
+                  //  Text(controller.contestDetails.value?.contest.isSubmitted.toString()??'False'),
+                  // Message for submitted contest
+                  if (controller.contestDetails.value?.contest.isSubmitted == true && 
+                      !controller.isQuestionOpened.value)
+                    Container(
+                      padding: EdgeInsets.all(16.w),
+                      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8.r),
+                        border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppColors.primary,
+                            size: 24.r,
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Contest Submitted Successfully!',
+                                  style: GoogleFonts.notoSansBengali(
+                                    textStyle: TextStyle(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  'You have already submitted this contest. Check the leaderboard for your position.',
+                                  style: GoogleFonts.notoSansBengali(
+                                    textStyle: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.textPrimaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
-                    ),                  // Questions List
+                    ),
+                   
+                                 // Questions List
                   if (controller.isQuestionOpened.value)
                     Expanded(
                       child: Stack(
