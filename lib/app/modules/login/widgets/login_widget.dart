@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/common/custom_styles.dart';
 import 'package:prostuti/app/constant/app_color.dart';
+import 'package:prostuti/app/modules/login/controllers/login_controller.dart';
 
 class LoginWidget extends StatefulWidget {
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
+  final LoginController controller;
   final VoidCallback onLoginPressed;
 
   const LoginWidget({
     super.key,
-    required this.emailController,
-    required this.passwordController,
+    required this.controller,
     required this.onLoginPressed,
   });
 
@@ -29,7 +28,6 @@ class _LoginWidgetState extends State<LoginWidget> {
       child: Column(
         children: [
           TextField(
-            controller: widget.emailController,
             decoration:
                 CustomStyles.inputDecoration('Email', 'Enter your email')
                     .copyWith(
@@ -43,10 +41,12 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
             ),
             keyboardType: TextInputType.emailAddress,
+            onChanged: (text) {
+              widget.controller.emailText.value = text;
+            },
           ),
           const SizedBox(height: 16),
           TextField(
-            controller: widget.passwordController,
             decoration:
                 CustomStyles.inputDecoration('Password', 'Enter your password')
                     .copyWith(
@@ -76,6 +76,9 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
             ),
             obscureText: !_isPasswordVisible,
+            onChanged: (text) {
+              widget.controller.passwordText.value = text;
+            },
           ),
           const SizedBox(height: 20),
           Row(
@@ -95,7 +98,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                     style: CustomStyles.textStyle,
                   ),
                 ],
-              ),              GestureDetector(
+              ),
+              GestureDetector(
                 onTap: () {
                   Get.toNamed('/forgot-password');
                 },

@@ -111,8 +111,7 @@ class LoginView extends StatelessWidget {
                         height: 40,
                       ),
                       LoginWidget(
-                        emailController: controller.emailController,
-                        passwordController: controller.passwordController,
+                        controller: controller,
                         onLoginPressed: controller.login,
                       ),
                       const SizedBox(
