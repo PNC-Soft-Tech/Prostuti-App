@@ -30,7 +30,7 @@ class HomeView extends GetView<HomeController> {
 
           name: "Rahat"),
       body: Obx(() => Container(
-          padding: EdgeInsets.fromLTRB(19.w, 12.h, 19.w, 12.h),
+          padding: EdgeInsets.fromLTRB(19.w, 0, 19.w, 0),
           color: Colors.white,
           child: _pages[controller.currentIndex.value])),
       bottomNavigationBar: Obx(() => CustomBottomNavBar(

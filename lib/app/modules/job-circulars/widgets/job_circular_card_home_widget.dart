@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:prostuti/app/constant/app_color.dart';
 
 import '../controllers/job-circulars-controller.dart';
 
@@ -30,11 +31,12 @@ class JobCircularHomeCard extends GetWidget<JobCircularController> {
         Container(
           width: 315.w,
           padding: EdgeInsets.all(20.r),
-          margin: EdgeInsets.only(right: 8.w),
+          // margin: EdgeInsets.only(right: 8.w),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20.r),
               color: Colors.white,
-              border: Border.all(color: Colors.white, width: 1)),
+              border: Border.all(
+                  color: AppColors.blueGray.withAlpha(70), width: 1)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -143,7 +145,6 @@ class JobCircularHomeCard extends GetWidget<JobCircularController> {
                       child: Text(
                         'Deadline: $deadline',
                         overflow: TextOverflow.ellipsis,
-                         
                         style: GoogleFonts.notoSansBengali(
                             textStyle: TextStyle(
                                 fontSize: 13.sp, fontWeight: FontWeight.w400)),

@@ -24,9 +24,10 @@ class ModelTestHomeCard extends GetWidget {
     return Column(
       children: [
         Container(
-          width: 200.w,
+          width: 260.w,
+          height: 200.w,
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 13.h),
-          margin: EdgeInsets.only(right: 8.w),
+          // margin: EdgeInsets.only(right: 8.w),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
               color: AppColors.primaryOpacity,
@@ -36,18 +37,24 @@ class ModelTestHomeCard extends GetWidget {
             children: [
               Row(
                 children: [
-                  Image.asset(image ?? ''),
+                  Image.asset(
+                    image ?? '',
+                    height: 30.w,
+                    width: 30.w,
+                  ),
                   SizedBox(
                     width: 8.w,
                   ),
                   Expanded(
                     child: Text(
-                     Utils.stripHtmlTags(title??'')  ?? 'NTRCA Exam',
+                      Utils.stripHtmlTags(title ?? '') ?? 'NTRCA Exam',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.notoSansBengali(
                           textStyle: TextStyle(
-                              fontSize: 15.sp, fontWeight: FontWeight.w400)),
+                              color: AppColors.blueGray,
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w400)),
                     ),
                   )
                 ],

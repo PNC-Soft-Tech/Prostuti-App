@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/custom_buttons.dart';
+import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 
 class CustomExamHomeCardWidget extends GetWidget {
@@ -12,9 +13,11 @@ class CustomExamHomeCardWidget extends GetWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20.sp),
+      margin: EdgeInsets.only(bottom: 40.w),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
-          border: Border.all(color: const Color(0xff212d404d))),
+          border:
+              Border.all(color: AppColors.blueGray.withAlpha(70), width: 1)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -37,6 +40,7 @@ class CustomExamHomeCardWidget extends GetWidget {
           Center(
             child: Text(
               "কাস্টম পরীক্ষা দিয়ে আপনার প্রস্তুতিকে এগিয়ে নিন। কাস্টম পরীক্ষার মাধ্যমে আপনি নির্দিষ্ট বিষয় ও টপিকের উপর আপনার জ্ঞান বাড়াতে পারবেন।",
+              textAlign: TextAlign.center,
               style: GoogleFonts.notoSansBengali(
                   textStyle: TextStyle(
                 fontSize: 14.sp,
@@ -53,9 +57,11 @@ class CustomExamHomeCardWidget extends GetWidget {
               CustomButton.button(
                   image: 'assets/give-custom-exam-button.svg',
                   isSvgImage: true,
-                  fontSize: 13.sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                   text: "Give A Custom Exam Now",
+                  paddingX: 20,
+                  paddingY: 0,
                   onPressed: () => Get.toNamed(Routes.customExam)),
             ],
           )

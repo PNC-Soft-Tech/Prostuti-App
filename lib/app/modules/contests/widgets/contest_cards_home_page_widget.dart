@@ -25,7 +25,7 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
         }
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.w),
-          // margin:  EdgeInsets.symmetric(horizontal: 19.w),
+          margin: EdgeInsets.only(top: 10.w),
           decoration: BoxDecoration(
               color: AppColors.primaryOpacity,
               border: Border.all(width: 1, color: AppColors.primaryOpacity),

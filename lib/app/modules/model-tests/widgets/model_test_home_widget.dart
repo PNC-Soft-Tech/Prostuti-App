@@ -15,43 +15,52 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 23.w, vertical: 18.h),
+      padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 16.w),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(color: const Color(0xff212d404d), width: 1)),
       child: Column(
-        children: [            Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Model Tests",
-                  style: GoogleFonts.inter(
-                    textStyle:
-                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
-                  )),
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(Routes.modelTestsList);
-                },
-                child: Text("View All",
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Model Tests",
                     style: GoogleFonts.inter(
                       textStyle: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.primary),
+                          fontSize: 14.sp, fontWeight: FontWeight.w400),
                     )),
-              ),
-            ],
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.modelTestsList);
+                  },
+                  child: Text("View All",
+                      style: GoogleFonts.inter(
+                        textStyle: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.primary),
+                      )),
+                ),
+              ],
+            ),
           ),
           SizedBox(
-            height: 18.h,
+            height: 10.h,
           ),
           // Text("model length: ${controller.model_tests.length}"),
           Obx(() => SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: controller.model_tests.map((modelTest) {
-                    return GestureDetector(                      onTap: () async {
-                        // log("clickeddddd");
+                  children: controller.model_tests.asMap().entries.map((entry) {
+                    int index = entry.key; // Access index here
+                    var modelTest = entry.value; // Access modelTest object here
+                    return GestureDetector(
+                      onTap: () async {
+                        // Access the index here if needed
+                        print("Clicked on item at index: $index");
+
                         await Get.bottomSheet(
                           ModelTestAccessBottomSheet(
                             modelTestId: modelTest.id,
@@ -59,12 +68,13 @@ class ModelTestHomeWidget extends GetWidget<ModelTestController> {
                           backgroundColor: Colors.transparent,
                           isDismissible: true,
                         );
-                        // Get.toNamed(Routes.modelTestDetails);
-
-                        // Get.toNamed(Routes.modelTestDetails, arguments: {"modelTestId": modelTest.id});
                       },
                       child: Padding(
-                        padding: EdgeInsets.only(right: 12.w),
+                        padding: index == 0
+                            ? EdgeInsets.only(left: 16.w, right: 8.w)
+                            : index == controller.model_tests.length - 1
+                                ? EdgeInsets.only(left: 8.w, right: 16.w)
+                                : EdgeInsets.symmetric(horizontal: 8.w),
                         child: ModelTestHomeCard(
                           title: modelTest.name ?? "NTRCA পরীক্ষা",
                           image: modelTest.imageUrl ?? 'assets/ntrca.png',

@@ -17,7 +17,7 @@ class JobCircularHomeWidget extends GetWidget<JobCircularController> {
     return Container(
       width: MediaQuery.of(context).size.width, // Full width
       margin: EdgeInsets.zero,
-      padding: EdgeInsets.fromLTRB(20.w, 15.h, 20.w, 28.h),
+      padding: EdgeInsets.fromLTRB(0, 15.h, 0, 28.h),
       color: AppColors.primaryOpacity,
       // decoration: BoxDecoration(
       //   color: AppColors.primaryOpacity,
@@ -25,47 +25,58 @@ class JobCircularHomeWidget extends GetWidget<JobCircularController> {
       //     border: Border.alFl(color: Color(0xFF212D404D), width: 1)),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Job Alerts",
-                  style: GoogleFonts.inter(
-                    textStyle:
-                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w400),
-                  )),
-              Text("View All",
-                  style: GoogleFonts.inter(
-                    textStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.primary),
-                  )),
-            ],
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Job Alerts",
+                    style: GoogleFonts.inter(
+                      textStyle: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.w400),
+                    )),
+                Text("View All",
+                    style: GoogleFonts.inter(
+                      textStyle: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.primary),
+                    )),
+              ],
+            ),
           ),
           SizedBox(
             height: 18.h,
           ),
           Obx(() => SizedBox(
-            height: 235.h,
-            child: ListView.builder(
+                height: 235.h,
+                child: ListView.builder(
                   reverse: false,
                   scrollDirection: Axis.horizontal,
                   itemCount: controller.jobCirculars.length,
                   itemBuilder: (context, index) {
                     JobCircular jobCircular = controller.jobCirculars[index];
-                    return JobCircularHomeCard(
-                      title: jobCircular.title,
-                      type: "Government",
-                      image: jobCircular.image,
-                      loation: jobCircular.address,
-                      eduationalQualification:
-                          jobCircular.educationalQualification,
-                      experience: jobCircular.experience,
-                      deadline: Utils.formatDateToBangla(jobCircular.deadline),
+                    return Padding(
+                      padding: index == 0
+                          ? EdgeInsets.only(left: 16.w, right: 8.w)
+                          : index == controller.jobCirculars.length - 1
+                              ? EdgeInsets.only(left: 8.w, right: 16.w)
+                              : EdgeInsets.symmetric(horizontal: 8.w),
+                      child: JobCircularHomeCard(
+                        title: jobCircular.title,
+                        type: "Government",
+                        image: jobCircular.image,
+                        loation: jobCircular.address,
+                        eduationalQualification:
+                            jobCircular.educationalQualification,
+                        experience: jobCircular.experience,
+                        deadline:
+                            Utils.formatDateToBangla(jobCircular.deadline),
+                      ),
                     );
                   },
                 ),
-          ))
+              ))
         ],
       ),
     );
