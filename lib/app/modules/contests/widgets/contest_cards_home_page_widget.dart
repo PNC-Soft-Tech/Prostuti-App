@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +6,6 @@ import '../../../common/utils/prostuti_utils.dart';
 import '../../../constant/app_color.dart';
 import '../controller/contest_controller.dart';
 import '../models/contest_model.dart';
-import '../models/contest_status.dart';
 import 'contest_card_home_page_widget.dart';
 
 class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
@@ -20,33 +18,37 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
       child: Obx(() {
         if (controller.isLoadingUpcomingContest.value == true) {
           return const Center(
-            child: CupertinoActivityIndicator(color: AppColors.primary ,),
+            child: CupertinoActivityIndicator(
+              color: AppColors.primary,
+            ),
           );
         }
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.w),
           // margin:  EdgeInsets.symmetric(horizontal: 19.w),
           decoration: BoxDecoration(
-              color: const Color(0xFFE9F5FF),
-              border: Border.all(width: 1, color: const Color(0xFFE9F5FF)),
-              borderRadius: BorderRadius.circular(20.r)),
+              color: AppColors.primaryOpacity,
+              border: Border.all(width: 1, color: AppColors.primaryOpacity),
+              borderRadius: BorderRadius.circular(16.r)),
           child: Column(
             children: [
               Row(
-                children: [                  Text(
+                children: [
+                  Text(
                     "Running & Upcoming Contests",
                     style: GoogleFonts.inter(
-                        textStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w400,
-                    )),
+                        textStyle: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.blueGray)),
                   ),
                 ],
               ),
               SizedBox(
-                height: 10.h,
-              ),              SizedBox(
-                height: 150.h, // Height for horizontal scrolling
+                height: 0.h,
+              ),
+              SizedBox(
+                height: 136.h, // Height for horizontal scrolling
                 child: controller.upcomingContests.isEmpty
                     ? Center(
                         child: Text(
@@ -68,21 +70,20 @@ class ContestHomeCardsWrapperWidget extends GetWidget<ContestController> {
                           final contestStatus = Utils.getContestStatus(
                               contest.startContest, contest.endContest);
                           if (contestStatus.isDone) {
-                            return const SizedBox.shrink(); // Don't display completed contests
+                            return const SizedBox
+                                .shrink(); // Don't display completed contests
                           }
-                          
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.w), // Spacing between cards
-                            child: SizedBox(
-                              width: 340.w, // Set a fixed width for each card
-                              child: ContestCardHome(
-                                contest: contest,
-                        ),
+
+                          double cardWidth =
+                              MediaQuery.of(context).size.width - 80.w;
+                          return SizedBox(
+                            width: cardWidth, // Set a fixed width for each card
+                            child: ContestCardHome(
+                              contest: contest,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               )
             ],
           ),

@@ -155,10 +155,12 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prostuti/app/common/utils/prostuti_utils.dart';
+import 'package:prostuti/app/constant/app_color.dart';
 import '../../../common/custom_buttons.dart';
 import '../../../common/widgets/countdown_timer.dart';
 import '../../../routes/app_pages.dart';
@@ -180,7 +182,7 @@ class ContestCardHome extends StatelessWidget {
     return GestureDetector(
       onTap: () => _navigateToDetails(),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 12.w),
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 0.w),
         // decoration: BoxDecoration(
         //   // color: Colors.white,
         //   borderRadius: BorderRadius.circular(12.r),
@@ -196,15 +198,18 @@ class ContestCardHome extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            SizedBox(height: 11.h),
-            Text(
-              contest.stringTopics ?? "গনিত - জ্যামিতি",
-              style: GoogleFonts.notoSansBengali(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
+            SizedBox(
+              height: 10.h,
             ),
-            SizedBox(height: 8.h),
+            Text(
+              contest.stringTopics!.isNotEmpty
+                  ? (contest.stringTopics ?? "ডেমো কন্টেস্ট")
+                  : "ডেমো কন্টেস্ট",
+              style: GoogleFonts.notoSansBengali(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.blueGray),
+            ),
             _buildActionRow(contestStatus),
           ],
         ),
@@ -214,11 +219,18 @@ class ContestCardHome extends StatelessWidget {
 
   Widget _buildHeader() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildContestImage(),
         SizedBox(width: 9.w),
         Expanded(
-          child: HtmlWidget(contest.name ?? "No Name"),
+          child: HtmlWidget(
+            contest.name ?? "No Name",
+            textStyle: GoogleFonts.notoSansBengali(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
       ],
     );
@@ -266,24 +278,33 @@ class ContestCardHome extends StatelessWidget {
   Widget _buildCountdownRow(String buttonText, VoidCallback onPressed) {
     return Row(
       children: [
-        Image.asset('assets/countdown.png', height: 18.h, width: 18.h),
+        // Image.asset('assets/countdown.png', height: 24.h, width: 24.h),
+        SvgPicture.asset(
+          'assets/icons/clock.svg',
+          width: 24.w,
+          height: 24.h,
+        ),
         SizedBox(width: 6.w),
         Expanded(
           child: CountdownTimer(
             startContest: contest.startContest,
             endContest: contest.endContest,
-            fontSize: 12.sp,
+            fontSize: 18.sp,
           ),
         ),
-        const Spacer(),
+        // const Spacer(),
         CustomButton.button(
-          text: buttonText,
-          fontSize: 13.sp,
-          fontWeight: FontWeight.w600,
-          onPressed: onPressed,
-          borderRadius: 50.r,
-          isPrimary: true,
-        ),
+            text: buttonText,
+            fontSize: 14.sp,
+            paddingY: 0,
+            paddingX: 16,
+            fontWeight: FontWeight.w600,
+            onPressed: onPressed,
+            borderRadius: 50.r,
+            isPrimary: true,
+            icon: null,
+            image: null,
+            imageSpaing: null),
       ],
     );
   }

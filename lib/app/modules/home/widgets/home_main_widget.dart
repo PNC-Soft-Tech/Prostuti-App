@@ -20,90 +20,41 @@ class HomeMainWidget extends GetWidget<HomeController> {
   Widget build(BuildContext context) {
     return Container(
       // padding: EdgeInsets.symmetric(horizontal: 19.w),
-      margin: EdgeInsets.symmetric(vertical: 10.h),
+      margin: EdgeInsets.symmetric(vertical: 5.h),
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // Obx(() => Text(
-            //       'Hi  ${jsonDecode(jsonEncode(controller.userId.value))}',
-            //       style: TextStyle(fontSize: 16.sp),
-            //     )),
-            // SizedBox(height: 10.h),
-            // GestureDetector(
-            //     onTap: () async {
-            //       log("clickeddddd");
-            //       //  final result = await Get.bottomSheet(
-            //       //     ModelTestAccessBottomSheet(),
-            //       //     backgroundColor: Colors.transparent,
-            //       //     isDismissible: true,
-            //       //   );
-            //       // Get.toNamed(Routes.modelTestDetails);
-            //     },
-            //     child: const Text("Model Test Page")),
-            // CustomButton.button(
-            //     text: "Logout",
-            //     onPressed: () {
-            //       Utils.logoutUser();
-            //     }),
-            // SizedBox(
-            //   height: 10.h,
+            // FutureBuilder<String?>(
+            //   future: StorageHelper.getUserData(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.hasData && snapshot.data != null) {
+            //       try {
+            //         final userData = jsonDecode(snapshot.data!);
+            //         final fullName = userData['fullName'] as String? ?? 'User';
+            //         return Text(
+            //           'Hi $fullName',
+            //           style: TextStyle(
+            //               fontSize: 16.sp, fontWeight: FontWeight.w600),
+            //         );
+            //       } catch (e) {
+            //         print('Error parsing user data: $e');
+            //         return Text(
+            //           'Hi User',
+            //           style: TextStyle(
+            //               fontSize: 16.sp, fontWeight: FontWeight.w600),
+            //         );
+            //       }
+            //     }
+            //     if (snapshot.hasError) {
+            //       return Text(
+            //         'Hi User',
+            //         style:
+            //             TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            //       );
+            //     }
+            //     return const CircularProgressIndicator();
+            //   },
             // ),
-            // CustomButton.button(
-            //     text: "Dialog",
-            //     onPressed: () {
-            // Show a success modal with two buttons
-// PostutiDialog.success(
-//   "Operation completed successfully!",
-//   isBottomButton: true,
-//   noOfButtons: 2,
-//   buttonLabels: ["OK", "Cancel"],
-//   buttonActions: [
-//     () => print("OK pressed"),
-//     () => Get.back(),
-//   ],
-// );
-
-// Show a warning modal with centered text and three buttons
-            //   PostutiDialog.warning(
-            //     "Are you sure you want to proceed?",
-            //     isBottomButton: true,
-            //     noOfButtons: 3,
-            //     buttonLabels: ["Yes", "No", "Cancel"],
-            //     buttonActions: [
-            //       () => print("Yes pressed"),
-            //       () => print("No pressed"),
-            //       () => Get.back(),
-            //     ],
-            //   );
-            // }),          
-             FutureBuilder<String?>(
-              future: StorageHelper.getUserData(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  try {
-                    final userData = jsonDecode(snapshot.data!);
-                    final fullName = userData['fullName'] as String? ?? 'User';
-                    return Text(
-                      'Hi $fullName',
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-                    );
-                  } catch (e) {
-                    print('Error parsing user data: $e');
-                    return Text(
-                      'Hi User',
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-                    );
-                  }
-                }
-                if (snapshot.hasError) {
-                  return Text(
-                    'Hi User',
-                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-                  );
-                }
-                return const CircularProgressIndicator();
-              },
-            ),
             const ContestHomeCardsWrapperWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),

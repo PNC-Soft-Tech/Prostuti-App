@@ -50,7 +50,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
     } else if (now.isAfter(start) && now.isBefore(end)) {
       // Contest is running
       Duration timeLeft = end.difference(now);
-      return "Time Left: ${_formatDuration(timeLeft)}";
+      return _formatDuration(timeLeft);
     } else {
       // Contest has ended
       _timer.cancel();
@@ -61,23 +61,11 @@ class _CountdownTimerState extends State<CountdownTimer> {
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
 
-    final months = (duration.inDays ~/ 30); // Approximate months
-    final days = (duration.inDays % 30); // Remaining days
-    final hours = duration.inHours % 24;
+    final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
 
-    List<String> parts = [];
-
-    if (months > 0) parts.add("$months month${months > 1 ? 's' : ''}");
-    if (days > 0) parts.add("$days day${days > 1 ? 's' : ''}");
-    if (hours > 0) {
-      parts.add(
-          "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}");
-    } else if (minutes > 0 || seconds > 0)
-      parts.add("${twoDigits(minutes)}:${twoDigits(seconds)}");
-
-    return parts.join(", ");
+    return "${twoDigits(hours)} : ${twoDigits(minutes)} : ${twoDigits(seconds)}";
   }
 
   @override

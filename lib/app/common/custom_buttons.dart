@@ -11,7 +11,9 @@ class CustomButton {
     required VoidCallback onPressed,
     bool isPrimary = true,
     double borderRadius = 50.0,
-    double padding = 16.0,
+    double padding = 0,
+    double paddingX = 16.0,
+    double paddingY = 16.0,
     Color? backgroundColor,
     Color? textColor,
     double fontSize = 16.0,
@@ -34,9 +36,10 @@ class CustomButton {
               size: iconSize,
               color: iconColor ?? (isPrimary ? Colors.white : Colors.black),
             )
-          : const SizedBox.shrink(),
+          : null,
+      // : const SizedBox.shrink(),
       label: Row(
-        mainAxisSize: mainAxisSize?? MainAxisSize.min,
+        mainAxisSize: mainAxisSize ?? MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           isImageLeft! && image != null
@@ -74,7 +77,9 @@ class CustomButton {
         ],
       ),
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(padding),
+        padding: padding > 0
+            ? EdgeInsets.all(padding)
+            : EdgeInsets.symmetric(vertical: paddingY, horizontal: paddingX),
         backgroundColor: backgroundColor ??
             (isPrimary ? AppColors.primary : Colors.grey[200]),
         shape: RoundedRectangleBorder(
