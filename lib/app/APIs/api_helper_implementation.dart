@@ -77,12 +77,12 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, Response<dynamic>>> register(
       RegisterRequestModel register) async {
     final response = await post('users', register.toJson());
-    // You can handle the response directly or transform it as needed.
+
     if (response.statusCode == 200) {
-      return Right(response); // Return the raw response.
+      return Right(response);
     } else {
-      return Left(
-          CustomError(response.statusCode, message: '${response.statusText}'));
+      return Left(CustomError(response.statusCode,
+          message: '${response.body['message']}'));
     }
   }
 
@@ -113,7 +113,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     try {
       final payload = {"email": email};
       final response = await post('users/forgot-password/', payload);
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         return Right(response);
       } else {
@@ -141,7 +141,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         "newPassword": newPassword,
       };
       final response = await post('users/reset-password/', payload);
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         return Right(response);
       } else {
@@ -259,58 +259,69 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
   @override
   Future<Either<CustomError, UserProfile>> getUserProfile(String userId) async {
-    print("DEBUG: ApiHelper.getUserProfile - Fetching profile for userId: $userId");
+    print(
+        "DEBUG: ApiHelper.getUserProfile - Fetching profile for userId: $userId");
     try {
       final response = await get('users/$userId');
-      
-      print("DEBUG: ApiHelper.getUserProfile - Response received, status: ${response.statusCode}");
+
+      print(
+          "DEBUG: ApiHelper.getUserProfile - Response received, status: ${response.statusCode}");
       print("DEBUG: ApiHelper.getUserProfile - Raw response: ${response.body}");
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         final rawData = response.body['data'];
-        
+
         // Log the raw profile data
-        print("DEBUG: ApiHelper.getUserProfile - Response contains success=true and data");
-        print("DEBUG: ApiHelper.getUserProfile - Raw data type: ${rawData.runtimeType}");
-        
+        print(
+            "DEBUG: ApiHelper.getUserProfile - Response contains success=true and data");
+        print(
+            "DEBUG: ApiHelper.getUserProfile - Raw data type: ${rawData.runtimeType}");
+
         // Log specific fields we care about
         if (rawData is Map) {
-          print("DEBUG: ApiHelper.getUserProfile - Raw profilePic: '${rawData['profilePic']}'");
-          
+          print(
+              "DEBUG: ApiHelper.getUserProfile - Raw profilePic: '${rawData['profilePic']}'");
+
           // Check if profilePic is a valid URL format
           final picValue = rawData['profilePic'];
           if (picValue != null) {
             _validateAndLogProfileImageUrl(picValue.toString(), "API response");
           } else {
-            print("WARNING: ApiHelper.getUserProfile - No profilePic value in the API response");
+            print(
+                "WARNING: ApiHelper.getUserProfile - No profilePic value in the API response");
           }
         }
-        
+
         // The data should already be a Map from the API response
         if (rawData is Map<String, dynamic>) {
           try {
-            print("DEBUG: ApiHelper.getUserProfile - Creating UserProfile from raw data");
+            print(
+                "DEBUG: ApiHelper.getUserProfile - Creating UserProfile from raw data");
             final userProfile = UserProfile.fromJson(rawData);
-            print("DEBUG: ApiHelper.getUserProfile - Parsed profilePic: '${userProfile.profilePic}'");
-            
+            print(
+                "DEBUG: ApiHelper.getUserProfile - Parsed profilePic: '${userProfile.profilePic}'");
+
             // Validate the parsed profilePic URL
-            _validateAndLogProfileImageUrl(userProfile.profilePic, "parsed UserProfile");
-            
+            _validateAndLogProfileImageUrl(
+                userProfile.profilePic, "parsed UserProfile");
+
             return Right(userProfile);
           } catch (parseError) {
             print("ERROR: ApiHelper.getUserProfile - Parse error: $parseError");
-            return Left(CustomError(500, message: 'Failed to parse user profile: $parseError'));
+            return Left(CustomError(500,
+                message: 'Failed to parse user profile: $parseError'));
           }
         } else {
-          print("ERROR: ApiHelper.getUserProfile - Unexpected data type: ${rawData.runtimeType}");
+          print(
+              "ERROR: ApiHelper.getUserProfile - Unexpected data type: ${rawData.runtimeType}");
           return Left(CustomError(500, message: 'Invalid user data format'));
         }
       } else {
-        print("ERROR: ApiHelper.getUserProfile - Error response: ${response.body}");
-        return Left(CustomError(
-          response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch user profile'
-        ));
+        print(
+            "ERROR: ApiHelper.getUserProfile - Error response: ${response.body}");
+        return Left(CustomError(response.statusCode,
+            message:
+                response.body['message'] ?? 'Failed to fetch user profile'));
       }
     } catch (error) {
       print("ERROR: ApiHelper.getUserProfile - Exception caught: $error");
@@ -319,14 +330,16 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, UserProfile>> updateUserProfile(UserProfile profile) async {
+  Future<Either<CustomError, UserProfile>> updateUserProfile(
+      UserProfile profile) async {
     try {
       // Prepare the data for the API - ensure we're sending proper IDs for institution objects
       final data = profile.toJson();
-      
+
       // Validate profile image URL before sending to API
-      _validateAndLogProfileImageUrl(profile.profilePic, "updateUserProfile request");
-      
+      _validateAndLogProfileImageUrl(
+          profile.profilePic, "updateUserProfile request");
+
       // For API compatibility, ensure we're sending string IDs, not full objects
       if (profile.institutionObj != null) {
         data['institution'] = profile.institutionObj!.id;
@@ -334,28 +347,29 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       if (profile.institutionTypeObj != null) {
         data['institutionType'] = profile.institutionTypeObj!.id;
       }
-      
+
       final response = await put('users/', data);
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         final updatedData = response.body['data'] as Map<String, dynamic>;
         try {
           final userProfile = UserProfile.fromJson(updatedData);
-          
+
           // Validate the profile image URL in the response
           print("DEBUG: updateUserProfile - Profile updated successfully");
-          _validateAndLogProfileImageUrl(userProfile.profilePic, "updateUserProfile response");
-          
+          _validateAndLogProfileImageUrl(
+              userProfile.profilePic, "updateUserProfile response");
+
           return Right(userProfile);
         } catch (parseError) {
           log('Error parsing updated user profile: $parseError');
-          return Left(CustomError(500, message: 'Failed to parse updated user profile: $parseError'));
+          return Left(CustomError(500,
+              message: 'Failed to parse updated user profile: $parseError'));
         }
       } else {
-        return Left(CustomError(
-          response.statusCode,
-          message: response.body['message'] ?? 'Failed to update user profile'
-        ));
+        return Left(CustomError(response.statusCode,
+            message:
+                response.body['message'] ?? 'Failed to update user profile'));
       }
     } catch (error) {
       log('updateUserProfile error: $error');
@@ -491,13 +505,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       log('Request: get custom-exams/$customExamId');
       // log('token: ${_storageService.getToken()}');
       final response = await get('custom-exams/$customExamId');
-      
+
       log('Response: ${response.statusCode}, Body: ${response.body}');
 
       if (response.statusCode == 200 && response.body['success'] == true) {
         try {
           // Parse the response into CustomExamDetailsResponse
-          final data = CustomExamDetailsResponse.fromJson(response.body['data']);
+          final data =
+              CustomExamDetailsResponse.fromJson(response.body['data']);
           return Right(data);
         } catch (parseError) {
           log('Error parsing custom exam response: $parseError');
@@ -651,21 +666,23 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, List<InstitutionType>>> getInstitutionTypes() async {
+  Future<Either<CustomError, List<InstitutionType>>>
+      getInstitutionTypes() async {
     try {
       final response = await get('institution-types/');
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'] as List<dynamic>;
-        final List<InstitutionType> institutionTypes = 
-            data.map((item) => InstitutionType.fromJson(item as Map<String, dynamic>)).toList();
-        
+        final List<InstitutionType> institutionTypes = data
+            .map((item) =>
+                InstitutionType.fromJson(item as Map<String, dynamic>))
+            .toList();
+
         return Right(institutionTypes);
       } else {
-        return Left(CustomError(
-          response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch institution types'
-        ));
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ??
+                'Failed to fetch institution types'));
       }
     } catch (error) {
       log('getInstitutionTypes error: $error');
@@ -674,13 +691,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, List<Institution>>> getInstitutions({String? institutionTypeId}) async {
+  Future<Either<CustomError, List<Institution>>> getInstitutions(
+      {String? institutionTypeId}) async {
     try {
       // Construct URL with query parameter if provided
-      final String url = institutionTypeId != null 
-          ? 'institutions?institutionType=$institutionTypeId' 
+      final String url = institutionTypeId != null
+          ? 'institutions?institutionType=$institutionTypeId'
           : 'institutions';
-      
+
       final response = await get(url);
 
       if (response.statusCode == 200 && !response.hasError) {
@@ -784,12 +802,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, Response>> generateCustomExam(
       CustomExamRequestModel payload) async {
     try {
-      final response = await post('custom-exams/generate-contest', payload.toJson());
+      final response =
+          await post('custom-exams/generate-contest', payload.toJson());
       if (response.statusCode == 200 && response.body['success'] == true) {
         return Right(response);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ?? 'Failed to generate custom exam'));
+            message:
+                response.body['message'] ?? 'Failed to generate custom exam'));
       }
     } catch (e) {
       log('Error generating custom exam: $e');
@@ -798,18 +818,20 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, int>> fetchQuestionCountByTopicId(String topicId) async {
+  Future<Either<CustomError, int>> fetchQuestionCountByTopicId(
+      String topicId) async {
     try {
       final response = await get('questions/topics/num-of-question/$topicId');
       log('Response for topic count: ${response.body}');
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         // The API returns count in the 'count' field, not 'data'
         final count = response.body['count'] as int? ?? 0;
         return Right(count);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ?? 'Failed to fetch question count'));
+            message:
+                response.body['message'] ?? 'Failed to fetch question count'));
       }
     } catch (e) {
       log('Error fetching question count: $e');
@@ -818,24 +840,21 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams({
-    int page = 1,
-    int limit = 10
-  }) async {
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams(
+      {int page = 1, int limit = 10}) async {
     try {
       final response = await get('custom-exams/?page=$page&limit=$limit');
-      
+
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'] as List<dynamic>;
-        final List<Map<String, dynamic>> customExams = 
+        final List<Map<String, dynamic>> customExams =
             data.map((item) => item as Map<String, dynamic>).toList();
-        
+
         return Right(customExams);
       } else {
-        return Left(CustomError(
-          response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch custom exams'
-        ));
+        return Left(CustomError(response.statusCode,
+            message:
+                response.body['message'] ?? 'Failed to fetch custom exams'));
       }
     } catch (error) {
       log('fetchCustomExams error: $error');
@@ -845,26 +864,32 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
   // Helper method to validate profile image URLs coming from the API
   void _validateAndLogProfileImageUrl(String url, String source) {
-    print("DEBUG: ApiHelper._validateAndLogProfileImageUrl - Checking URL from $source: '$url'");
-    
+    print(
+        "DEBUG: ApiHelper._validateAndLogProfileImageUrl - Checking URL from $source: '$url'");
+
     if (url.isEmpty || url == 'null') {
-      print("WARNING: ApiHelper - Empty or 'null' string profile image URL from $source");
+      print(
+          "WARNING: ApiHelper - Empty or 'null' string profile image URL from $source");
       return;
     }
-    
+
     try {
       final uri = Uri.parse(url.trim());
       if (!uri.isAbsolute) {
-        print("WARNING: ApiHelper - Non-absolute profile image URL from $source: '$url'");
+        print(
+            "WARNING: ApiHelper - Non-absolute profile image URL from $source: '$url'");
       }
-      
+
       if (!uri.scheme.startsWith('http') && !uri.scheme.startsWith('https')) {
-        print("WARNING: ApiHelper - Invalid scheme in profile image URL from $source: '${uri.scheme}'");
+        print(
+            "WARNING: ApiHelper - Invalid scheme in profile image URL from $source: '${uri.scheme}'");
       }
-      
-      print("DEBUG: ApiHelper - Profile image URL from $source looks valid: '$url'");
+
+      print(
+          "DEBUG: ApiHelper - Profile image URL from $source looks valid: '$url'");
     } catch (e) {
-      print("WARNING: ApiHelper - Invalid profile image URL format from $source: '$url', Error: $e");
+      print(
+          "WARNING: ApiHelper - Invalid profile image URL format from $source: '$url', Error: $e");
     }
   }
 }
