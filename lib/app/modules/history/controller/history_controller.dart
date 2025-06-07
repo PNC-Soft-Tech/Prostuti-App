@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:prostuti/app/common/utils/prostuti_utils.dart';
 import 'dart:developer';
 import '../../../APIs/api_helper.dart';
 import '../../../common/services/auth_service.dart';
@@ -8,20 +9,20 @@ import '../../model-tests/models/model_test_model.dart';
 class HistoryController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   final AuthService _authService = Get.find<AuthService>();
-  
+
   // Observable variables
   var isLoading = false.obs;
   var selectedTabIndex = 0.obs;
-  
+
   // Data for each tab
   var contests = <Contest>[].obs;
   var modelTests = <ModelTest>[].obs;
   var customExams = <Map<String, dynamic>>[].obs;
-  
+
   // Pagination variables
   var customExamsPage = 1.obs;
   var customExamsHasMore = true.obs;
-  
+
   @override
   void onInit() {
     super.onInit();
@@ -34,17 +35,17 @@ class HistoryController extends GetxController {
       featureName: 'exam history',
       customMessage: 'Please login to view your exam history and past results.',
     );
-    
+
     if (hasAccess) {
       fetchDataForSelectedTab();
     }
   }
-  
+
   void changeTab(int index) {
     selectedTabIndex.value = index;
     fetchDataForSelectedTab();
   }
-  
+
   void fetchDataForSelectedTab() {
     switch (selectedTabIndex.value) {
       case 0:
@@ -58,28 +59,33 @@ class HistoryController extends GetxController {
         break;
     }
   }
-  
+
   Future<void> fetchContests() async {
     isLoading.value = true;
     final result = await _apiHelper.fetchAllContests();
-    
+
     result.fold(
       (error) {
         log('Error fetching contests: ${error.message}');
         isLoading.value = false;
       },
       (contestsData) {
-        contests.value = contestsData;
+        final filteredContests = contestsData.where((contest) {
+          final contestStatus =
+              Utils.getContestStatus(contest.startContest, contest.endContest);
+          return contestStatus.isSubmitted && contestStatus.isRegistered;
+        }).toList();
+        contests.value = filteredContests;
         isLoading.value = false;
         log('Fetched ${contests.length} contests');
       },
     );
   }
-  
+
   Future<void> fetchModelTests() async {
     isLoading.value = true;
     final result = await _apiHelper.fetchAllModelTests();
-    
+
     result.fold(
       (error) {
         log('Error fetching model tests: ${error.message}');
@@ -92,15 +98,13 @@ class HistoryController extends GetxController {
       },
     );
   }
-  
+
   Future<void> fetchCustomExams() async {
     isLoading.value = true;
-    
+
     final result = await _apiHelper.fetchCustomExams(
-      page: customExamsPage.value,
-      limit: 10
-    );
-    
+        page: customExamsPage.value, limit: 10);
+
     result.fold(
       (error) {
         log('Error fetching custom exams: ${error.message}');
@@ -110,18 +114,18 @@ class HistoryController extends GetxController {
         if (customExamsPage.value == 1) {
           customExams.clear();
         }
-        
+
         customExams.addAll(data);
-        
+
         // Check if we've loaded all items
         customExamsHasMore.value = data.length == 10;
-        
+
         isLoading.value = false;
         log('Fetched ${data.length} custom exams. Total: ${customExams.length}');
       },
     );
   }
-  
+
   void loadMoreCustomExams() {
     if (!isLoading.value && customExamsHasMore.value) {
       customExamsPage.value++;

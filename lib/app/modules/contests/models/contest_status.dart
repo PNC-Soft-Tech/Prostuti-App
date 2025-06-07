@@ -2,11 +2,15 @@ class ContestStatus {
   final bool isRunning;
   final bool isDone;
   final bool isScheduled;
+  bool isRegistered;
+  bool isSubmitted;
 
   ContestStatus({
     required this.isRunning,
     required this.isDone,
     required this.isScheduled,
+    this.isRegistered = false,
+    this.isSubmitted = false,
   });
 
   // Factory method to determine the contest status
