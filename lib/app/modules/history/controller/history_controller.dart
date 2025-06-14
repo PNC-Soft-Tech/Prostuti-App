@@ -62,7 +62,7 @@ class HistoryController extends GetxController {
 
   Future<void> fetchContests() async {
     isLoading.value = true;
-    final result = await _apiHelper.fetchAllContests();
+    final result = await _apiHelper.fetchContestHistory();
 
     result.fold(
       (error) {
@@ -70,12 +70,7 @@ class HistoryController extends GetxController {
         isLoading.value = false;
       },
       (contestsData) {
-        final filteredContests = contestsData.where((contest) {
-          final contestStatus =
-              Utils.getContestStatus(contest.startContest, contest.endContest);
-          return contestStatus.isSubmitted && contestStatus.isRegistered;
-        }).toList();
-        contests.value = filteredContests;
+        contests.value = contestsData;
         isLoading.value = false;
         log('Fetched ${contests.length} contests');
       },

@@ -27,7 +27,7 @@ abstract class ApiHelper {
       LoginRequestModel payload);
 
   Future<Either<CustomError, Response>> register(RegisterRequestModel register);
-  
+
   // Forgot Password & Reset Password APIs
   Future<Either<CustomError, Response>> forgotPassword(String email);
   Future<Either<CustomError, Response>> resetPassword({
@@ -35,17 +35,19 @@ abstract class ApiHelper {
     required String code,
     required String newPassword,
   });
-  
+
   // Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   // Future<Either<CustomError, List<JobCategory>>> getJobCategories();
   Future<Either<CustomError, List<ExamType>>> getExamTypes();
   Future<Either<CustomError, List<Contest>>> fetchAllContests();
+  Future<Either<CustomError, List<Contest>>> fetchContestHistory();
   Future<Either<CustomError, List<Question>>> fetchAllQuestions();
   Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests();
 // Future<Either<CustomError, SingleContest>> fetchSingleContest(String contestId);
   Future<Either<CustomError, Response>> verifyOtp(Map<String, dynamic> data);
   Future<Either<CustomError, UserProfile>> getUserProfile(String userId);
-  Future<Either<CustomError, UserProfile>> updateUserProfile(UserProfile profile);
+  Future<Either<CustomError, UserProfile>> updateUserProfile(
+      UserProfile profile);
   Future<Either<CustomError, Response>> registerContest(String contestId);
   Future<Either<CustomError, List<Contest>>> fetchRecentContests();
   Future<Either<CustomError, ContestDetailsResponse>> fetchSingleContest(
@@ -68,7 +70,8 @@ abstract class ApiHelper {
   });
 
   Future<Either<CustomError, List<InstitutionType>>> getInstitutionTypes();
-  Future<Either<CustomError, List<Institution>>> getInstitutions({String? institutionTypeId});
+  Future<Either<CustomError, List<Institution>>> getInstitutions(
+      {String? institutionTypeId});
 
   Future<Either<CustomError, Response>> submitContestAnswer({
     required String questionId,
@@ -78,13 +81,11 @@ abstract class ApiHelper {
   Future<Either<CustomError, Response>> submitContest(String contestId);
   Future<Either<CustomError, Response>> generateCustomExam(
       CustomExamRequestModel payload);
-      
+
   // New method to fetch question count by topic ID
   Future<Either<CustomError, int>> fetchQuestionCountByTopicId(String topicId);
 
   // New method to fetch custom exams with pagination
-  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams({
-    int page = 1,
-    int limit = 10
-  });
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams(
+      {int page = 1, int limit = 10});
 }

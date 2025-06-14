@@ -91,7 +91,7 @@ class LoginView extends StatelessWidget {
                       ),
                       Center(
                         child: Text(
-                          'Welcome Back',
+                          'Welcome',
                           style: CustomStyles.textStyle.copyWith(
                             fontSize: 24.sp,
                           ),

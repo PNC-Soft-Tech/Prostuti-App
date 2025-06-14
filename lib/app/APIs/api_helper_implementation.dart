@@ -194,12 +194,32 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
+  Future<Either<CustomError, List<Contest>>> fetchContestHistory() async {
+    try {
+      final response = await get('contest-points/history');
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final contests =
+            data.map((json) => Contest.fromJson(json['contest'])).toList();
+        return Right(contests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ??
+                'Failed to fetch contests history'));
+      }
+    } catch (e) {
+      log('Error fetching contests history: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
   Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests() async {
     try {
       final response = await get('models');
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'];
-        log("model dataaa: $data");
+        // log("model dataaa: ${data?.length}");
         final contests = data.map((json) => ModelTest.fromJson(json)).toList();
         return Right(contests);
       } else {
