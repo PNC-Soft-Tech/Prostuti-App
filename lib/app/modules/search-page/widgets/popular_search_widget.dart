@@ -9,21 +9,30 @@ class PopularSearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
+      padding: EdgeInsets.zero,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-            'Popular Search',
-            style: GoogleFonts.inter(
-                textStyle: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black)),
+          // Title text with no left padding/margin
+          Row(
+            children: [
+              Text(
+                'Popular Search',
+                textAlign: TextAlign.left,
+                style: GoogleFonts.inter(
+                    textStyle: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black)),
+              )
+            ],
           ),
           SizedBox(height: 11.h),
+          // Wrap to allow for flexible use of available space
           Wrap(
             spacing: 8.0,
-            runSpacing: 8.0,
             children: [
               popularSearchItem(text: "BCS Preliminary"),
               popularSearchItem(text: "PSEMHG Bangla"),
@@ -31,7 +40,7 @@ class PopularSearchWidget extends StatelessWidget {
               popularSearchItem(text: "Global Science"),
               popularSearchItem(text: "DPDC English"),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -45,13 +54,13 @@ class PopularSearchWidget extends StatelessWidget {
           side: const BorderSide(color: AppColors.primaryOpacity),
         ),
         label: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
+          padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 8.w),
           child: Text(
             text,
             style: GoogleFonts.inter(
                 textStyle: TextStyle(
                     fontSize: 13.sp,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w500,
                     color: Colors.black)),
           ),
         ),

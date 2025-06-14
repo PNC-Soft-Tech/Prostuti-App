@@ -11,11 +11,12 @@ class SearchView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Container(
+    return SingleChildScrollView(
       child: Column(
         children: [
+          SizedBox(height: 10.w),
           const SearchInputWidget(),
-          SizedBox(height: 23.h),
+          SizedBox(height: 20.w),
           const PopularSearchWidget(),
           SizedBox(height: 23.h),
           const ExamCategoriesWidget(),

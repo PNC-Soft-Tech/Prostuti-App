@@ -12,7 +12,7 @@ class SearchInputWidget extends GetWidget<SearchPageController> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50.r),
           border: Border.all(color: const Color(0xFFE9E9E9), width: 1)),
