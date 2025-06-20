@@ -9,7 +9,6 @@ import '../../../storage/storage_helper.dart';
 
 class ExamCornersWidget extends StatelessWidget {
   const ExamCornersWidget({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -17,117 +16,255 @@ class ExamCornersWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Exam Corners',
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimaryColor,
-            ),
+          // Header Section
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Exam Corners',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimaryColor,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    'Choose your preparation path',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.trending_up,
+                      size: 16.sp,
+                      color: AppColors.primary,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      'Popular',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 16.h),
-          _buildCornerCard(
-            title: 'SSC Corner',
-            subtitle: 'Secondary School Certificate',
-            icon: Icons.school,
-            color: Colors.blue,
-            onTap: () => _navigateToCorner('SSC'),
-          ),
-          SizedBox(height: 12.h),
-          _buildCornerCard(
-            title: 'HSC Corner',
-            subtitle: 'Higher Secondary Certificate',
-            icon: Icons.school_outlined,
-            color: Colors.green,
-            onTap: () => _navigateToCorner('HSC'),
-          ),          SizedBox(height: 12.h),
-          _buildCornerCard(
-            title: 'Admission Test Corner',
-            subtitle: 'University Admission Tests',
-            icon: Icons.library_books,
-            color: Colors.orange,
-            onTap: () => _navigateToAdmissionCorner(),
-          ),
-          SizedBox(height: 12.h),          _buildCornerCard(
-            title: 'Jobs Corner',
-            subtitle: 'Government & Private Job Preparations',
-            icon: Icons.work,
-            color: Colors.purple,
-            onTap: () => _navigateToJobsCorner(),
+          SizedBox(height: 24.h),
+            // Grid Layout for Exam Corners
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.w,
+            mainAxisSpacing: 16.h,
+            childAspectRatio: 0.95, // Increased height to prevent overflow
+            children: [
+              _buildModernCornerCard(
+                title: 'SSC Corner',
+                subtitle: 'Secondary School Certificate',
+                icon: Icons.school,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF4285F4), Color(0xFF34A853)],
+                ),
+                iconBg: const Color(0xFFE3F2FD),
+                onTap: () => _navigateToCorner('SSC'),
+              ),
+              _buildModernCornerCard(
+                title: 'HSC Corner',
+                subtitle: 'Higher Secondary Certificate',
+                icon: Icons.school_outlined,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF34A853), Color(0xFF0F9D58)],
+                ),
+                iconBg: const Color(0xFFE8F5E8),
+                onTap: () => _navigateToCorner('HSC'),
+              ),
+              _buildModernCornerCard(
+                title: 'Admission Test',
+                subtitle: 'University Admissions',
+                icon: Icons.library_books,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFFFF9800), Color(0xFFFF5722)],
+                ),
+                iconBg: const Color(0xFFFFF3E0),
+                onTap: () => _navigateToAdmissionCorner(),
+              ),
+              _buildModernCornerCard(
+                title: 'Jobs Corner',
+                subtitle: 'Government & Private Jobs',
+                icon: Icons.work,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF9C27B0), Color(0xFF673AB7)],
+                ),
+                iconBg: const Color(0xFFF3E5F5),
+                onTap: () => _navigateToJobsCorner(),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCornerCard({
+  Widget _buildModernCornerCard({
     required String title,
     required String subtitle,
     required IconData icon,
-    required Color color,
+    required Gradient gradient,
+    required Color iconBg,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
+      borderRadius: BorderRadius.circular(20.r),
       child: Container(
-        padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.grey.shade200),
+          borderRadius: BorderRadius.circular(20.r),
+          gradient: gradient,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: gradient.colors.first.withOpacity(0.3),
               spreadRadius: 0,
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
           ],
-        ),
-        child: Row(
+        ),        child: Stack(
           children: [
-            Container(
-              height: 50.h,
-              width: 50.w,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 28.sp,
+            // Background Pattern
+            Positioned(
+              top: -15,
+              right: -15,
+              child: Container(
+                width: 70.w, // Slightly smaller
+                height: 70.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.1),
+                ),
               ),
             ),
-            SizedBox(width: 16.w),
-            Expanded(
+            Positioned(
+              bottom: -8,
+              left: -8,
+              child: Container(
+                width: 50.w, // Slightly smaller
+                height: 50.h,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.05),
+                ),
+              ),
+            ),
+              // Content
+            Padding(
+              padding: EdgeInsets.all(16.w), // Reduced padding
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Icon
+                  Container(
+                    width: 45.w, // Slightly smaller icon container
+                    height: 45.h,
+                    decoration: BoxDecoration(
+                      color: iconBg,
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 0,
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      icon,
+                      color: gradient.colors.first,
+                      size: 24.sp, // Reduced icon size
+                    ),
+                  ),
+                  
+                  SizedBox(height: 12.h), // Fixed spacing instead of Spacer
+                  
+                  // Title
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimaryColor,
+                      fontSize: 15.sp, // Slightly smaller font
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      height: 1.2,
                     ),
                   ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey[600],
+                  SizedBox(height: 3.h), // Reduced spacing
+                  
+                  // Subtitle
+                  Expanded( // Use Expanded to prevent overflow
+                    child: Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11.sp, // Smaller subtitle font
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w400,
+                        height: 1.2, // Reduced line height
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                  ),
+                  
+                  SizedBox(height: 6.h), // Reduced spacing
+                  
+                  // Arrow indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(5.w), // Reduced padding
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(6.r),
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 14.sp, // Smaller arrow icon
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16.sp,
-              color: Colors.grey[400],
             ),
           ],
         ),
