@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
+import '../../../common/custom_simple_appbar.dart';
 import '../controller/corner_controller.dart';
 import '../../history/view/history_view.dart'; // Import for reusing card components
 
@@ -14,14 +15,8 @@ class CornerView extends GetWidget<CornerController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
-          onPressed: () => Get.back(),
-        ),
-        title: Obx(() => Text(
+      appBar: CustomSimpleAppBar.appBar(
+        titleWidget: Obx(() => Text(
           controller.cornerTitle,
           style: const TextStyle(
             fontSize: 18,
