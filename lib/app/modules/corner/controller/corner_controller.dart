@@ -25,6 +25,7 @@ class CornerController extends GetxController {
   var originalCornerType = ''.obs; // Store original for display purposes
   var admissionType = ''.obs; // For admission test subtypes
   var examTypeId = ''.obs; // For jobs corner exam type filtering
+  var examTypeTitle = ''.obs; // For jobs corner exam type title display
   var contestTypeFilter = ''.obs;
   var modelTypeFilter = ''.obs;
   var customExamTypeFilter = ''.obs;
@@ -37,6 +38,7 @@ class CornerController extends GetxController {
       originalCornerType.value = args['cornerType'] ?? ''; // Store original for display
       admissionType.value = args['admissionType'] ?? '';
       examTypeId.value = args['examTypeId'] ?? '';
+      examTypeTitle.value = args['examTypeTitle'] ?? ''; // Get exam type title
       contestTypeFilter.value = args['contestType'] ?? '';
       modelTypeFilter.value = args['modelType'] ?? '';
       customExamTypeFilter.value = args['customExamType'] ?? '';
@@ -195,6 +197,10 @@ class CornerController extends GetxController {
         }
         return 'Admission Test Corner';
       case 'Jobs':
+        // If a specific exam type is selected, show its title
+        if (examTypeTitle.value.isNotEmpty) {
+          return examTypeTitle.value;
+        }
         return 'Jobs Corner';
       case 'Job Preparation':
         return 'Job Preparation Corner';

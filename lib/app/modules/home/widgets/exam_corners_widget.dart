@@ -363,13 +363,12 @@ class ExamCornersWidget extends StatelessWidget {
                       if (examTypes.isNotEmpty) ...[
                         SizedBox(height: 12.h),
                         ...examTypes.map((examType) => Column(
-                          children: [
-                            _buildJobsOption(
+                          children: [                            _buildJobsOption(
                               title: examType['title'] ?? 'Unknown',
                               subtitle: 'Preparation for ${examType['title'] ?? 'Unknown'}',
                               icon: Icons.assignment,
                               color: Colors.purple.shade400,
-                              onTap: () => _navigateToJobsCornerType(examType['_id']),
+                              onTap: () => _navigateToJobsCornerType(examType['_id'], examType['title']),
                             ),
                             SizedBox(height: 12.h),
                           ],
@@ -749,8 +748,7 @@ class ExamCornersWidget extends StatelessWidget {
       ),
     );
   }
-
-  void _navigateToJobsCornerType(String? examTypeId) {
+  void _navigateToJobsCornerType(String? examTypeId, [String? examTypeTitle]) {
     Get.back(); // Close bottom sheet
     
     Map<String, String> filterParams;
@@ -766,8 +764,8 @@ class ExamCornersWidget extends StatelessWidget {
       filterParams = {
         'cornerType': 'Jobs',
         'cornerName': 'Jobs Corner',
-        // 'examTypeId': examTypeId,
         'examType': examTypeId,
+        'examTypeTitle': examTypeTitle ?? 'Job Preparation', // Pass the title
         'contestType': examTypeId,
         'modelType': examTypeId,
         'customExamType': examTypeId,

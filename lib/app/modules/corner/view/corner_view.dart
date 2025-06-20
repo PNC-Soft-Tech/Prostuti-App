@@ -91,7 +91,7 @@ class CornerView extends GetWidget<CornerController> {
       return Center(
         key: key,
         child: Text(
-          'No contests found for ${controller.cornerType.value}',
+          'No contests found for ${controller.cornerTitle}',
           style: TextStyle(
             fontSize: 16.sp,
             color: AppColors.textPrimaryColor,
@@ -110,7 +110,7 @@ class CornerView extends GetWidget<CornerController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${controller.cornerType.value} Contests',
+                '${controller.cornerTitle} Contests',
                 style: TextStyle(
                   fontSize: 18.sp,
                   color: AppColors.textPrimaryColor,
@@ -170,7 +170,7 @@ class CornerView extends GetWidget<CornerController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${controller.cornerType.value} Model Tests',
+                '${controller.cornerTitle} Model Tests',
                 style: TextStyle(
                   fontSize: 18.sp,
                   color: AppColors.textPrimaryColor,
@@ -230,7 +230,7 @@ class CornerView extends GetWidget<CornerController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${controller.cornerType.value} Custom Exams',
+                '${controller.cornerTitle} Custom Exams',
                 style: TextStyle(
                   fontSize: 18.sp,
                   color: AppColors.textPrimaryColor,
