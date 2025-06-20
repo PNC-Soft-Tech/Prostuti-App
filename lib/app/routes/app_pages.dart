@@ -45,6 +45,8 @@ import '../modules/search-page/view/search_view.dart';
 import '../modules/testing/text_page.dart';
 import '../modules/history/binding/history_binding.dart';
 import '../modules/history/view/history_view.dart';
+import '../modules/corner/binding/corner_binding.dart';
+import '../modules/corner/view/corner_view.dart';
 
 class Routes {
   static const splash = '/splash';
@@ -66,17 +68,17 @@ class Routes {
   static const contestDetails = '/contest-details/';  static const customExamDetails = '/custom-exam-details/';
   static const modelTestDetails = '/model-test-details/';
   static const modelTestsList = '/model-tests-list';
-  static const packageDetails = '/package-details/';
-  static const ranking = '/ranking/';
+  static const packageDetails = '/package-details/';  static const ranking = '/ranking/';
   static const tex = '/tex/';
   static const history = '/history';
+  static const corner = '/corner';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
   static String singleModelTest(String id) => '/model-test/$id';
 }
 
 class AppPages {
-  static const initial = Routes.home;
+  static const initial = Routes.splash;
 
   static final routes = [
     GetPage(
@@ -196,11 +198,15 @@ class AppPages {
       name: Routes.tex,
       page: () => const TeXPage(),
       // binding: ModelTestDetailsBinding(),
-    ),
-    GetPage(
+    ),    GetPage(
       name: Routes.history,
       page: () => const HistoryView(),
       binding: HistoryBinding(),
+    ),
+    GetPage(
+      name: Routes.corner,
+      page: () => const CornerView(),
+      binding: CornerBinding(),
     ),
   ];
 }

@@ -88,4 +88,13 @@ abstract class ApiHelper {
   // New method to fetch custom exams with pagination
   Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams(
       {int page = 1, int limit = 10});
+
+  // Corner-specific filtered API methods
+  Future<Either<CustomError, List<Contest>>> fetchFilteredContests(String contestType);
+  Future<Either<CustomError, List<ModelTest>>> fetchFilteredModelTests(String modelType);
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchFilteredCustomExams({
+    required String customExamTypeFilter,
+    int page = 1,
+    int limit = 10,
+  });
 }

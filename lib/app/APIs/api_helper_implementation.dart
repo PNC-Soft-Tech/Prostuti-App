@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
@@ -57,22 +57,6 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return response;
     });
   }
-
-  Future<Either<CustomError, T>> _convert<T>(
-      Response response, T Function(Map<String, dynamic>) fromJson) async {
-    if (response.statusCode == 200) {
-      try {
-        return Right(fromJson(response.body));
-      } catch (e) {
-        return Left(
-            CustomError(response.statusCode, message: 'Parsing error: $e'));
-      }
-    } else {
-      return Left(
-          CustomError(response.statusCode, message: '${response.statusText}'));
-    }
-  }
-
   @override
   Future<Either<CustomError, Response<dynamic>>> register(
       RegisterRequestModel register) async {
@@ -155,17 +139,33 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error: $e'));
     }
   }
-
   @override
   Future<Either<CustomError, List<ExamType>>> getExamTypes() async {
     final response = await get('exam-types');
     if (response.statusCode == 200) {
       try {
-        List<ExamType> examTypes = (response.body['data'] as List)
-            .map((item) => ExamType.fromJson(item))
-            .toList();
+        // Handle nested data structure: response.body['data']['data']
+        final responseData = response.body['data'];
+        List<ExamType> examTypes;
+        
+        if (responseData is Map && responseData['data'] is List) {
+          // Nested structure: {success: true, data: {data: [...], total: 5, ...}}
+          examTypes = (responseData['data'] as List)
+              .map((item) => ExamType.fromJson(item))
+              .toList();
+        } else if (responseData is List) {
+          // Direct array structure: {success: true, data: [...]}
+          examTypes = (responseData as List)
+              .map((item) => ExamType.fromJson(item))
+              .toList();
+        } else {
+          throw Exception('Unexpected data structure in exam-types response');
+        }
+        
+        log('✅ Parsed ${examTypes.length} exam types successfully');
         return Right(examTypes);
       } catch (e) {
+        log('❌ Error parsing exam types: $e');
         return Left(
             CustomError(response.statusCode, message: 'Parsing error: $e'));
       }
@@ -903,13 +903,75 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       if (!uri.scheme.startsWith('http') && !uri.scheme.startsWith('https')) {
         print(
             "WARNING: ApiHelper - Invalid scheme in profile image URL from $source: '${uri.scheme}'");
-      }
-
-      print(
+      }      print(
           "DEBUG: ApiHelper - Profile image URL from $source looks valid: '$url'");
     } catch (e) {
       print(
           "WARNING: ApiHelper - Invalid profile image URL format from $source: '$url', Error: $e");
+    }
+  }
+
+  // Corner-specific filtered API methods
+  @override
+  Future<Either<CustomError, List<Contest>>> fetchFilteredContests(String contestType) async {
+    try {
+      final response = await get('contests/?contestType=$contestType');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final contests = data.map((json) => Contest.fromJson(json)).toList();
+        return Right(contests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch filtered contests'));
+      }
+    } catch (e) {
+      log('Error fetching filtered contests: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<ModelTest>>> fetchFilteredModelTests(String modelType) async {
+    try {
+      final response = await get('models/?modelType=$modelType');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final modelTests = data.map((json) => ModelTest.fromJson(json)).toList();
+        return Right(modelTests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch filtered model tests'));
+      }
+    } catch (e) {
+      log('Error fetching filtered model tests: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchFilteredCustomExams({
+    required String customExamTypeFilter,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await get('custom-exams/?customExamType=$customExamTypeFilter&page=$page&limit=$limit');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<Map<String, dynamic>> customExams =
+            data.map((item) => item as Map<String, dynamic>).toList();
+
+        return Right(customExams);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch filtered custom exams'));
+      }
+    } catch (error) {
+      log('fetchFilteredCustomExams error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
     }
   }
 }

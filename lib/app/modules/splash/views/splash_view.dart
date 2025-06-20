@@ -7,6 +7,9 @@ import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
+import '../../../common/services/auth_service.dart';
+import '../../../common/controller/app_controller.dart';
+import '../../../common/utils/prostuti_utils.dart';
 
 class SplashView extends GetView {
   const SplashView({super.key});
@@ -14,14 +17,7 @@ class SplashView extends GetView {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () async {
-      // await StorageHelper.removeToken();
-      var isLogged = await StorageHelper.hasToken();
-      if (isLogged) {
-        Get.offAllNamed(Routes.home);
-      } else {
-        Get.offAllNamed(Routes.login);
-      }
-      // Get.offAllNamed(Routes.customExam);
+      await _handleAuthenticationCheck();
     });
     double screenWidth = ScreenUtil().screenWidth;
     double screenHeight = ScreenUtil().screenHeight;
@@ -60,8 +56,44 @@ class SplashView extends GetView {
               ),
             ),
           ),
-        ),
-      ),
+        ),      ),
     );
+  }
+
+  /// Handle authentication check and app state restoration
+  Future<void> _handleAuthenticationCheck() async {
+    try {
+      // Get required services
+      final AuthService authService = Get.find<AuthService>();
+      final AppController appController = Utils.getAppController();
+      
+      print("SplashView: Starting authentication check...");
+      
+      // Check if user has valid authentication
+      final isAuthenticated = await authService.isAuthenticated();
+      
+      if (isAuthenticated) {
+        print("SplashView: User is authenticated, restoring state");
+        
+        // Restore authentication state in AppController
+        await authService.updateAuthenticationState();
+        
+        // Navigate to home
+        Get.offAllNamed(Routes.home);
+      } else {
+        print("SplashView: User not authenticated, redirecting to login");
+        
+        // Clear any invalid state
+        await authService.clearAuthenticationState();
+        
+        // Navigate to login
+        Get.offAllNamed(Routes.login);
+      }
+    } catch (e) {
+      print("SplashView: Error during authentication check: $e");
+      
+      // On error, redirect to login for safety
+      Get.offAllNamed(Routes.login);
+    }
   }
 }

@@ -1,16 +1,12 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../../storage/storage_helper.dart';
-import '../../contests/widgets/contest_cards_home_page_widget.dart';
 import '../../custom-exam/widgets/custom_exam_home_card_widget.dart';
 import '../../exam-topics/widgets/exam_topics_widget.dart';
 import '../../exam-types/widgets/exam-categories-widget.dart';
 import '../../job-circulars/widgets/job_circular_home_widget.dart';
 import '../../model-tests/widgets/model_test_home_widget.dart';
+import 'exam_corners_widget.dart';
 import '../controller/home_controller.dart';
 
 class HomeMainWidget extends GetWidget<HomeController> {
@@ -54,8 +50,9 @@ class HomeMainWidget extends GetWidget<HomeController> {
             //     }
             //     return const CircularProgressIndicator();
             //   },
-            // ),
-            const ContestHomeCardsWrapperWidget(),
+            // ),            const ContestHomeCardsWrapperWidget(),
+            SizedBox(height: 23.h),
+            const ExamCornersWidget(),
             SizedBox(height: 23.h),
             const ExamCategoriesWidget(),
             SizedBox(height: 23.h),

@@ -11,8 +11,7 @@ class AuthService extends GetxService {
   static AuthService get instance => Get.find<AuthService>();
   
   final AppController _appController = Get.find<AppController>();
-  
-  /// Check if user is currently authenticated
+    /// Check if user is currently authenticated
   /// Returns true if user has valid token and user data
   Future<bool> isAuthenticated() async {
     try {
@@ -53,12 +52,6 @@ class AuthService extends GetxService {
       final userId = await StorageHelper.getUserId();
       if (userId == null || userId.isEmpty) {
         print("AuthService: No userId found");
-        return false;
-      }
-      
-      // Additional check: verify AppController has valid data
-      if (_appController.userId.value.isEmpty) {
-        print("AuthService: AppController userId is empty");
         return false;
       }
       
@@ -130,8 +123,7 @@ class AuthService extends GetxService {
       return null;
     }
   }
-  
-  /// Update authentication state in AppController
+    /// Update authentication state in AppController
   /// Call this after login to sync authentication state
   Future<void> updateAuthenticationState() async {
     final isAuth = await isAuthenticated();
@@ -140,6 +132,7 @@ class AuthService extends GetxService {
     if (isAuth) {
       final userId = await getCurrentUserId();
       final userData = await getCurrentUserData();
+      final token = await getCurrentToken();
       
       if (userId != null) {
         _appController.userId.value = userId;
@@ -154,6 +147,21 @@ class AuthService extends GetxService {
           _appController.updateUsername(fullName);
         }
       }
+      
+      // Decode JWT token if available to restore user role and other info
+      if (token != null) {
+        try {
+          final decodedPayload = _appController.decodeJWT(token);
+          print("AuthService: JWT payload restored: $decodedPayload");
+        } catch (e) {
+          print("AuthService: Error decoding JWT token: $e");
+        }
+      }
+      
+      print("AuthService: Authentication state restored successfully");
+    } else {
+      print("AuthService: No valid authentication found, clearing state");
+      await clearAuthenticationState();
     }
   }
   
