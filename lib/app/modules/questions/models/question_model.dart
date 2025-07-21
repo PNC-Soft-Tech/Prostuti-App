@@ -44,7 +44,11 @@ class Question {
               .toList() ??
           [],
       topic: json['topic'] != null
-          ? Topic.fromJson(json['topic'] as Map<String, dynamic>)
+          ? (json['topic'] is Map<String, dynamic>
+              ? Topic.fromJson(json['topic'] as Map<String, dynamic>)
+              : json['topics'] != null && (json['topics'] as List).isNotEmpty
+                  ? Topic.fromJson((json['topics'] as List).first as Map<String, dynamic>)
+                  : Topic(id: json['topic'].toString(), name: ''))
           : null,
       explanation: json['explanation'],
       subCategory: json['subCategory'],
