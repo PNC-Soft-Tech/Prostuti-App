@@ -5,7 +5,6 @@ import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
 import '../../../APIs/api_helper.dart';
 import '../../../common/services/auth_service.dart';
-import '../../../storage/storage_helper.dart';
 
 class ExamCornersWidget extends StatelessWidget {
   const ExamCornersWidget({super.key});
@@ -297,160 +296,9 @@ class ExamCornersWidget extends StatelessWidget {
     }    Get.toNamed(Routes.corner, arguments: filterParams);
   }
   void _navigateToJobsCorner() {
-    // Show selection dialog for exam type
+    // Show selection dialog for exam type with search
     Get.bottomSheet(
-      Container(
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.r),
-            topRight: Radius.circular(20.r),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Select Exam Type',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimaryColor,
-              ),
-            ),
-            SizedBox(height: 20.h),            // Loading state and exam types will be loaded dynamically
-            FutureBuilder(
-              future: _loadExamTypes(),
-              builder: (context, snapshot) {
-                print('🔍 FutureBuilder state: ${snapshot.connectionState}');
-                print('🔍 Has data: ${snapshot.hasData}');
-                print('🔍 Has error: ${snapshot.hasError}');
-                print('🔍 Data: ${snapshot.data}');
-                
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  print('⏳ Showing loading indicator');
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.purple,
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  print('❌ Showing error: ${snapshot.error}');
-                  return Center(
-                    child: Text(
-                      'Error loading exam types: ${snapshot.error}',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.red,
-                      ),
-                    ),
-                  );                } else if (snapshot.hasData) {
-                  final examTypes = snapshot.data as List<dynamic>;
-                  print('📊 Rendering ${examTypes.length} exam types');
-                  return Column(
-                    children: [
-                      // Add "All Jobs" option
-                      _buildJobsOption(
-                        title: 'All Jobs',
-                        subtitle: 'All government & private job preparations',
-                        icon: Icons.work_outline,
-                        color: Colors.purple,
-                        onTap: () => _navigateToJobsCornerType(null),
-                      ),
-                      // Dynamic exam types (only show if we have data)
-                      if (examTypes.isNotEmpty) ...[
-                        SizedBox(height: 12.h),
-                        ...examTypes.map((examType) => Column(
-                          children: [                            _buildJobsOption(
-                              title: examType['title'] ?? 'Unknown',
-                              subtitle: 'Preparation for ${examType['title'] ?? 'Unknown'}',
-                              icon: Icons.assignment,
-                              color: Colors.purple.shade400,
-                              onTap: () => _navigateToJobsCornerType(examType['_id'], examType['title']),
-                            ),
-                            SizedBox(height: 12.h),
-                          ],
-                        )).toList(),
-                      ] else ...[
-                        SizedBox(height: 12.h),
-                        Container(
-                          padding: EdgeInsets.all(16.w),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: Colors.grey.shade200),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: Colors.orange,
-                                size: 20.sp,
-                              ),
-                              SizedBox(width: 12.w),
-                              Expanded(
-                                child: Text(
-                                  'Login to see more job categories',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  );
-                } else {
-                  return Column(
-                    children: [
-                      _buildJobsOption(
-                        title: 'All Jobs',
-                        subtitle: 'All government & private job preparations',
-                        icon: Icons.work_outline,
-                        color: Colors.purple,
-                        onTap: () => _navigateToJobsCornerType(null),
-                      ),
-                      SizedBox(height: 12.h),
-                      Container(
-                        padding: EdgeInsets.all(16.w),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              color: Colors.grey,
-                              size: 20.sp,
-                            ),
-                            SizedBox(width: 12.w),
-                            Expanded(
-                              child: Text(
-                                'No additional job categories available',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              },
-            ),
-          ],
-        ),
-      ),
+      JobsCornerBottomSheet(),
       isScrollControlled: true,
     );
   }
@@ -613,67 +461,323 @@ class ExamCornersWidget extends StatelessWidget {
       default:
         return;
     }    Get.toNamed(Routes.corner, arguments: filterParams);
-  }  // Load exam types from API
-  Future<List<Map<String, dynamic>>> _loadExamTypes() async {
+  }
+}
+
+// New JobsCornerBottomSheet widget with search functionality
+class JobsCornerBottomSheet extends StatefulWidget {
+  const JobsCornerBottomSheet({super.key});
+
+  @override
+  State<JobsCornerBottomSheet> createState() => _JobsCornerBottomSheetState();
+}
+
+class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _allExamTypes = [];
+  List<Map<String, dynamic>> _filteredExamTypes = [];
+  bool _isLoading = true;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExamTypes();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      _filterExamTypes();
+    });
+  }
+
+  void _filterExamTypes() {
+    if (_searchQuery.isEmpty) {
+      _filteredExamTypes = List.from(_allExamTypes);
+    } else {
+      _filteredExamTypes = _allExamTypes.where((examType) {
+        final title = (examType['title'] ?? '').toString().toLowerCase();
+        return title.contains(_searchQuery);
+      }).toList();
+    }
+  }
+
+  Future<void> _loadExamTypes() async {
+    setState(() => _isLoading = true);
+    
     try {
       print('🔄 Loading exam types from API...');
       
       // Check authentication first
       final AuthService authService = Get.find<AuthService>();
-      print('🔍 Checking authentication...');
-      
-      // Debug: Check individual authentication components
-      final hasToken = await StorageHelper.hasToken();
-      final token = await StorageHelper.getToken();
-      final userData = await StorageHelper.getUserData();
-      final userId = await StorageHelper.getUserId();
-      
-      print('🔍 Has token: $hasToken');
-      print('🔍 Token exists: ${token != null && token.isNotEmpty}');
-      print('🔍 User data exists: ${userData != null && userData.isNotEmpty}');
-      print('🔍 User ID exists: ${userId != null && userId.isNotEmpty}');
-      
       final isAuthenticated = await authService.isAuthenticated();
-      print('🔍 Is authenticated: $isAuthenticated');
-        // If not authenticated, return empty list (will show login prompt in UI)
+      
       if (!isAuthenticated) {
         print('❌ User not authenticated, returning empty list');
-        return [];
+        setState(() {
+          _allExamTypes = [];
+          _filteredExamTypes = [];
+          _isLoading = false;
+        });
+        return;
       }
       
-      print('✅ Authentication successful, proceeding with API call');
       final ApiHelper apiHelper = Get.find<ApiHelper>();
-      
-      print('📡 Making API call to /exam-types...');
       final result = await apiHelper.getExamTypes();
       
-      return result.fold(        (error) {
+      result.fold(
+        (error) {
           print('❌ API Error loading exam types: ${error.message}');
-          print('❌ Error details: $error');
-          return [];
+          setState(() {
+            _allExamTypes = [];
+            _filteredExamTypes = [];
+            _isLoading = false;
+          });
         },
         (examTypes) {
           print('✅ Exam types loaded successfully: ${examTypes.length} items');
-          for (var examType in examTypes) {
-            print('   - ${examType.title} (${examType.id})');
-          }
           final mappedData = examTypes.map((examType) => {
             '_id': examType.id,
             'title': examType.title,
             'slug': examType.slug,
           }).toList();
-          print('📋 Mapped data: $mappedData');
-          return mappedData;
+          
+          setState(() {
+            _allExamTypes = mappedData;
+            _filteredExamTypes = List.from(mappedData);
+            _isLoading = false;
+          });
         },
       );
     } catch (e) {
       print('🚨 Exception loading exam types: $e');
-      print('🚨 Stack trace: ${StackTrace.current}');
-      return [];
+      setState(() {
+        _allExamTypes = [];
+        _filteredExamTypes = [];
+        _isLoading = false;
+      });
     }
   }
 
-  // Build jobs option card (similar to admission option)
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Select Job Category',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimaryColor,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => Get.back(),
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.grey[600],
+                  size: 24.sp,
+                ),
+              ),
+            ],
+          ),
+          
+          SizedBox(height: 16.h),
+          
+          // Search Bar
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search job categories...',
+                hintStyle: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 14.sp,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.grey[500],
+                  size: 20.sp,
+                ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                        icon: Icon(
+                          Icons.clear,
+                          color: Colors.grey[500],
+                          size: 20.sp,
+                        ),
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 12.h,
+                ),
+              ),
+            ),
+          ),
+          
+          SizedBox(height: 20.h),
+          
+          // Content
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.purple,
+                    ),
+                  )
+                : _buildJobsList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildJobsList() {
+    // Always show "All Jobs" option
+    final allJobsOption = _buildJobsOption(
+      title: 'All Jobs',
+      subtitle: 'All government & private job preparations',
+      icon: Icons.work_outline,
+      color: Colors.purple,
+      onTap: () => _navigateToJobsCornerType(null),
+    );
+
+    if (_filteredExamTypes.isEmpty && _searchQuery.isNotEmpty) {
+      // No search results
+      return Column(
+        children: [
+          allJobsOption,
+          SizedBox(height: 20.h),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64.sp,
+                    color: Colors.grey[400],
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'No results found',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Try searching with different keywords',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_filteredExamTypes.isEmpty && !_isLoading) {
+      // No exam types available
+      return Column(
+        children: [
+          allJobsOption,
+          SizedBox(height: 20.h),
+          Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Colors.orange,
+                  size: 20.sp,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    'Login to see more job categories',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Show all available options
+    return ListView(
+      children: [
+        allJobsOption,
+        if (_filteredExamTypes.isNotEmpty) ...[
+          SizedBox(height: 12.h),
+          ...(_filteredExamTypes.map((examType) => Column(
+            children: [
+              _buildJobsOption(
+                title: examType['title'] ?? 'Unknown',
+                subtitle: 'Preparation for ${examType['title'] ?? 'Unknown'}',
+                icon: Icons.assignment,
+                color: Colors.purple.shade400,
+                onTap: () => _navigateToJobsCornerType(examType['_id'], examType['title']),
+              ),
+              SizedBox(height: 12.h),
+            ],
+          )).toList()),
+        ],
+      ],
+    );
+  }
+
   Widget _buildJobsOption({
     required String title,
     required String subtitle,
@@ -719,12 +823,20 @@ class ExamCornersWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  // Highlight search term in title
+                  _buildHighlightedText(
                     title,
-                    style: TextStyle(
+                    _searchQuery,
+                    TextStyle(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.textPrimaryColor,
+                    ),
+                    TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.purple,
+                      backgroundColor: Colors.purple.withOpacity(0.1),
                     ),
                   ),
                   SizedBox(height: 2.h),
@@ -748,6 +860,49 @@ class ExamCornersWidget extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildHighlightedText(
+    String text,
+    String query,
+    TextStyle normalStyle,
+    TextStyle highlightStyle,
+  ) {
+    if (query.isEmpty) {
+      return Text(text, style: normalStyle);
+    }
+
+    final lowercaseText = text.toLowerCase();
+    final lowercaseQuery = query.toLowerCase();
+    
+    if (!lowercaseText.contains(lowercaseQuery)) {
+      return Text(text, style: normalStyle);
+    }
+
+    final startIndex = lowercaseText.indexOf(lowercaseQuery);
+    final endIndex = startIndex + query.length;
+
+    return RichText(
+      text: TextSpan(
+        children: [
+          if (startIndex > 0)
+            TextSpan(
+              text: text.substring(0, startIndex),
+              style: normalStyle,
+            ),
+          TextSpan(
+            text: text.substring(startIndex, endIndex),
+            style: highlightStyle,
+          ),
+          if (endIndex < text.length)
+            TextSpan(
+              text: text.substring(endIndex),
+              style: normalStyle,
+            ),
+        ],
+      ),
+    );
+  }
+
   void _navigateToJobsCornerType(String? examTypeId, [String? examTypeTitle]) {
     Get.back(); // Close bottom sheet
     
@@ -765,7 +920,7 @@ class ExamCornersWidget extends StatelessWidget {
         'cornerType': 'Jobs',
         'cornerName': 'Jobs Corner',
         'examType': examTypeId,
-        'examTypeTitle': examTypeTitle ?? 'Job Preparation', // Pass the title
+        'examTypeTitle': examTypeTitle ?? 'Job Preparation',
         'contestType': examTypeId,
         'modelType': examTypeId,
         'customExamType': examTypeId,
