@@ -32,8 +32,10 @@ class Topic {
       slug: json['slug'],
       category: json['category'],
       subject: json['subject'] != null 
-      ? Subjects.fromJson(json['subject']) 
-      : null,
+          ? (json['subject'] is Map<String, dynamic>
+              ? Subjects.fromJson(json['subject'] as Map<String, dynamic>)
+              : null) // Skip parsing if subject is just a String ID
+          : null,
     );
   }
   // tojson method to convert the object to JSON

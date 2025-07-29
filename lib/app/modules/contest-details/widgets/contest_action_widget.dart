@@ -52,19 +52,24 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
           isButtonEnabled = false;
         } else if (contestDetails.contest.isSubmitted == true) {
           // Contest already completed
-          buttonText = "Completed ${contestDetails.contest.isSubmitted}";
+          buttonText = "Completed";
           isButtonEnabled = false;
-        } else if (contestDetails.contest.isRegistered == true && status?.isRunning == true) {
-          // Registered and contest is running - can enter
+        } else if (contestDetails.contest.isRegistered == true && 
+                  (status?.isRunning == true || status?.isScheduled == true)) {
+          // Registered and contest is running or scheduled - can enter
           buttonText = "Enter Now";
         } else if (contestDetails.contest.isRegistered == false && 
                   (status?.isRunning == true || status?.isScheduled == true)) {
           // Not registered but contest is running or scheduled - can register
           buttonText = "Register Now";
-        } else {
-          // Default case (e.g., contest is done but not submitted)
-          buttonText = "Loading...";
+        } else if (status?.isDone == true) {
+          // Contest is finished
+          buttonText = "Contest Ended";
           isButtonEnabled = false;
+        } else {
+          // Default case - use registration status as fallback
+          buttonText = contestDetails.contest.isRegistered == true ? "Enter Now" : "Register Now";
+          isButtonEnabled = true;
         }
         
         return Align(
@@ -86,15 +91,25 @@ class ContestActionWidget extends GetWidget<ContestDetailsController> {
                 return;
               }
               
-              if (contestDetails?.contest.isRegistered == false &&
-                  (status?.isRunning == true || status?.isScheduled == true)) {
+              // Check if contest is finished
+              if (status?.isDone == true) {
+                Get.snackbar(
+                  'Contest Ended',
+                  'This contest has already ended.',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.red.withOpacity(0.8),
+                  colorText: Colors.white,
+                );
+                return;
+              }
+              
+              if (contestDetails?.contest.isRegistered == false) {
                 // Register for contest
                 Get.find<ContestController>()
                     .registerForContest(contestDetails!.contest.id);
                 controller.isQuestionOpened.value = true;
-              } else if (contestDetails?.contest.isRegistered == true && 
-                        (status?.isRunning == true || status?.isDone == false)) {
-                // Enter contest
+              } else {
+                // Enter contest (either registered or fallback case)
                 controller.isQuestionOpened.value = true;
               }
             },
