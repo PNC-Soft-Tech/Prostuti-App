@@ -67,30 +67,39 @@ class SplashView extends GetView {
       final AuthService authService = Get.find<AuthService>();
       final AppController appController = Utils.getAppController();
       
-      print("SplashView: Starting authentication check...");
+      print("SplashView: Starting authentication check with token validation...");
       
-      // Check if user has valid authentication
-      final isAuthenticated = await authService.isAuthenticated();
+      // Check if user has valid authentication with backend validation
+      final isAuthenticated = await authService.isAuthenticatedWithValidation();
       
       if (isAuthenticated) {
-        print("SplashView: User is authenticated, restoring state");
+        print("SplashView: User is authenticated with valid token, restoring state");
         
         // Restore authentication state in AppController
         await authService.updateAuthenticationState();
         
+        // Small delay for smooth UX
+        await Future.delayed(const Duration(seconds: 1));
+        
         // Navigate to home
         Get.offAllNamed(Routes.home);
       } else {
-        print("SplashView: User not authenticated, redirecting to login");
+        print("SplashView: User not authenticated or token invalid, redirecting to login");
         
         // Clear any invalid state
         await authService.clearAuthenticationState();
+        
+        // Small delay for smooth UX
+        await Future.delayed(const Duration(seconds: 1));
         
         // Navigate to login
         Get.offAllNamed(Routes.login);
       }
     } catch (e) {
       print("SplashView: Error during authentication check: $e");
+      
+      // Small delay for smooth UX
+      await Future.delayed(const Duration(seconds: 1));
       
       // On error, redirect to login for safety
       Get.offAllNamed(Routes.login);

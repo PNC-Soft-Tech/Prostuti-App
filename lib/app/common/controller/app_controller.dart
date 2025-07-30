@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 
 import '../../APIs/api_helper.dart';
 import '../utils/prostuti_utils.dart';
+import '../../storage/storage_helper.dart';
+import '../../routes/app_pages.dart';
 
 class AppController extends GetxController {
     final ApiHelper _apiHelper = Utils.getApiHelperController();
@@ -94,6 +96,91 @@ class AppController extends GetxController {
     } catch (e) {
       print('Error decoding JWT: $e');
       return {};
+    }
+  }
+
+  // Token validation method
+  Future<bool> validateToken() async {
+    try {
+      log('AppController: Validating token...');
+      
+      // Check if token exists in storage
+      final hasToken = await StorageHelper.hasToken();
+      if (!hasToken) {
+        log('AppController: No token found in storage');
+        await _handleInvalidToken();
+        return false;
+      }
+
+      // Validate token with API
+      final result = await _apiHelper.validateToken();
+      
+      return result.fold(
+        (error) async {
+          log('AppController: Token validation failed - ${error.message}');
+          await _handleInvalidToken();
+          return false;
+        },
+        (tokenData) {
+          log('AppController: Token validation successful');
+          log('AppController: Token data - ${tokenData}');
+          
+          // Update user data with validated token information
+          if (tokenData.containsKey('_id')) {
+            userId.value = tokenData['_id'] ?? '';
+          }
+          if (tokenData.containsKey('userRole')) {
+            userRole.value = tokenData['userRole'] ?? '';
+          }
+          
+          // Update login status
+          setLoginStatus(true);
+          
+          return true;
+        },
+      );
+    } catch (e) {
+      log('AppController: Error during token validation - $e');
+      await _handleInvalidToken();
+      return false;
+    }
+  }
+
+  // Helper method to handle invalid token
+  Future<void> _handleInvalidToken() async {
+    try {
+      // Clear all stored data
+      await StorageHelper.removeToken();
+      await StorageHelper.removeUserData();
+      await StorageHelper.removeUserId();
+      
+      // Reset controller state
+      setLoginStatus(false);
+      userId.value = '';
+      userRole.value = '';
+      decodedToken.value = {};
+      userData.value = {};
+      
+      log('AppController: Cleared all user data and redirecting to login');
+      
+      // Navigate to login screen
+      Get.offAllNamed(Routes.login);
+    } catch (e) {
+      log('AppController: Error clearing user data - $e');
+    }
+  }
+
+  // Method to check token on app startup
+  Future<void> checkAuthenticationStatus() async {
+    log('AppController: Checking authentication status on app startup');
+    
+    final isValid = await validateToken();
+    if (isValid) {
+      log('AppController: User is authenticated, staying logged in');
+      // User is authenticated, they can stay on current screen
+    } else {
+      log('AppController: User is not authenticated, redirecting to login');
+      // User will be redirected to login by _handleInvalidToken
     }
   }
 }

@@ -106,4 +106,7 @@ abstract class ApiHelper {
     int page = 1,
     int limit = 10,
   });
+
+  // Token validation API
+  Future<Either<CustomError, Map<String, dynamic>>> validateToken();
 }

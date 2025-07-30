@@ -1037,4 +1037,48 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Internal server error'));
     }
   }
+
+  // Token validation API
+  @override
+  Future<Either<CustomError, Map<String, dynamic>>> validateToken() async {
+    try {
+      // Get token from storage
+      final token = await StorageHelper.getToken();
+      
+      if (token == null) {
+        log('No token found in storage');
+        return Left(CustomError(401, message: 'No token found'));
+      }
+
+      // Make POST request to validate token
+      final response = await post('users/validate-token', {});
+
+      log('Token validation response: ${response.statusCode}, Body: ${response.body}');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        // Token is valid, return the token data
+        final Map<String, dynamic> tokenData = response.body['data'] as Map<String, dynamic>;
+        log('Token validation successful: ${tokenData}');
+        return Right(tokenData);
+      } else {
+        // Token is invalid or expired
+        log('Token validation failed: ${response.body['message'] ?? 'Token is invalid'}');
+        
+        // Clear invalid token from storage
+        await StorageHelper.removeToken();
+        
+        return Left(CustomError(
+          response.statusCode ?? 401,
+          message: response.body['message'] ?? 'Token is invalid or expired',
+        ));
+      }
+    } catch (e) {
+      log('Error validating token: $e');
+      
+      // Clear token on network error as well (could be expired/malformed)
+      await StorageHelper.removeToken();
+      
+      return Left(CustomError(500, message: 'Network error during token validation: $e'));
+    }
+  }
 }

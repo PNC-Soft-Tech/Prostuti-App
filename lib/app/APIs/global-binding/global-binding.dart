@@ -16,5 +16,20 @@ class GlobalBinding extends Bindings {
     Get.lazyPut<AuthService>(() => AuthService());
     // Global Loading Manager for consistent loading states
     Get.put<GlobalLoadingManager>(GlobalLoadingManager.instance);
+    
+    // Check authentication status on app startup
+    _initializeAuthentication();
+  }
+
+  void _initializeAuthentication() async {
+    // Wait a bit to ensure all dependencies are ready
+    await Future.delayed(const Duration(milliseconds: 100));
+    
+    try {
+      final authService = Get.find<AuthService>();
+      await authService.checkAuthenticationOnStartup();
+    } catch (e) {
+      print('GlobalBinding: Error initializing authentication - $e');
+    }
   }
 }
