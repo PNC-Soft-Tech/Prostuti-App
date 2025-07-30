@@ -19,10 +19,11 @@ class TestActionWidget extends StatelessWidget {
     return Obx(() {
       final isExamMode = controller.currentSelectedModelTestMode.value == 'exam';
       
-      return controller.isModelTestSubmittedLocal.value == false ? Container(
+      // Since visibility is handled by parent, always show the widget content
+      return Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.transparent,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -62,7 +63,7 @@ class TestActionWidget extends StatelessWidget {
             ),
           ],
         ),
-      ):SizedBox.shrink();
+      );
     });
   }
 

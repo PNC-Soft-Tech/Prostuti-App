@@ -93,33 +93,45 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
             );
           }),
           
-          // Bottom action widget
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: TestActionWidget(controller: controller),
-          ),
+          // Bottom action widget - only show when test is not submitted
+          Obx(() {
+            return controller.isModelTestSubmittedLocal.value == false
+                ? Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: TestActionWidget(controller: controller),
+                  )
+                : const SizedBox.shrink(); // Completely remove when submitted
+          }),
             // Question navigator - ALWAYS show it when we have questions
-          Positioned(
-            bottom: 100.h,
-            right: 16.w,            child: Obx(() {
-              // The navigator should be visible when:
-              // 1. Controller is initialized and not loading
-              // 2. Model details are loaded
-              // 3. Questions are available
-              if (controller.isLoading.value || 
-                  controller.modelDetails.value == null) {
-                return const SizedBox.shrink();
-              }
-              
-              final hasQuestions = controller.filteredQuestions.isNotEmpty;
-              
-              return hasQuestions 
-                ? const QuestionNavigatorWidget()
-                : const SizedBox.shrink();
-            }),
-          ),
+          Obx(() {
+            // Dynamic bottom position based on whether action widget is shown
+            final bottomPosition = controller.isModelTestSubmittedLocal.value == false 
+                ? 100.h  // Above the action widget
+                : 16.h;  // Near bottom when no action widget
+                
+            return Positioned(
+              bottom: bottomPosition,
+              right: 16.w,
+              child: Obx(() {
+                // The navigator should be visible when:
+                // 1. Controller is initialized and not loading
+                // 2. Model details are loaded
+                // 3. Questions are available
+                if (controller.isLoading.value || 
+                    controller.modelDetails.value == null) {
+                  return const SizedBox.shrink();
+                }
+                
+                final hasQuestions = controller.filteredQuestions.isNotEmpty;
+                
+                return hasQuestions 
+                  ? const QuestionNavigatorWidget()
+                  : const SizedBox.shrink();
+              }),
+            );
+          }),
         ],
       ),
     );
