@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -8,7 +7,7 @@ import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/modules/history/controller/history_controller.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
-import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HistoryView extends GetWidget<HistoryController> {
   const HistoryView({super.key});
@@ -56,9 +55,25 @@ class HistoryView extends GetWidget<HistoryController> {
 
   Widget _buildTabContent({Key? key}) {
     if (controller.isLoading.value) {
-      return Center(
-        key: key,
-        child: const CupertinoActivityIndicator(color: AppColors.primary),
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: ListView.builder(
+          key: key,
+          itemCount: 6,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: 15.h, left: 16.w, right: 16.w),
+              child: Container(
+                height: 120.h,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+            );
+          },
+        ),
       );
     }
 
@@ -239,9 +254,16 @@ class HistoryView extends GetWidget<HistoryController> {
                 if (index == controller.customExams.length) {
                   return Padding(
                     padding: EdgeInsets.all(16.h),
-                    child: const Center(
-                      child:
-                          CupertinoActivityIndicator(color: AppColors.primary),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        height: 120.h,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                      ),
                     ),
                   );
                 }
