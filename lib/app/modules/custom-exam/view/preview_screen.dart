@@ -246,12 +246,13 @@ class PreviewScreen extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
               Text(
-                'Test Exam 001',
+                Get.find<CustomExamController>().getUserFriendlyExamName(),
                 style: GoogleFonts.inter(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF212121),
                 ),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 8.h),
               Text(

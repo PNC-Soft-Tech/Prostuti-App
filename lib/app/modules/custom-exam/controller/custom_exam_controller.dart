@@ -337,7 +337,26 @@ String getFormattedExamName() {
   final year = now.year;
   final time = DateFormat('hh_mm_a').format(now); // 12_00_PM
 
-  return '${day}_${month}_$year\_$time';
+  // Include exam type title if selected
+  String examTypePrefix = '';
+  if (selectedExamTypeName.value.isNotEmpty) {
+    examTypePrefix = '${selectedExamTypeName.value}_';
+  }
+
+  return '${examTypePrefix}${day}_${month}_$year\_$time';
+}
+
+String getUserFriendlyExamName() {
+  final now = DateTime.now();
+  final formattedDate = DateFormat('MMMM d, yyyy').format(now); // January 1, 2025
+  final formattedTime = DateFormat('h:mm a').format(now); // 12:00 PM
+  
+  // Include exam type title if selected
+  if (selectedExamTypeName.value.isNotEmpty) {
+    return '${selectedExamTypeName.value} Custom Exam - $formattedDate at $formattedTime';
+  } else {
+    return 'Custom Exam - $formattedDate at $formattedTime';
+  }
 }
   void generateCustomExam() {
     if (customExamQuestions.value == null ||
@@ -423,9 +442,15 @@ String getFormattedExamName() {
     log("End time: ${endTime.toIso8601String()}");
     log("Total duration: $examDurationMinutes minutes (${(examDurationMinutes/60).toStringAsFixed(1)} hours)");
 
+    // Create dynamic description including exam type
+    String description = "This is a custom exam with $totalQuestions questions";
+    if (selectedExamTypeName.value.isNotEmpty) {
+      description += " for ${selectedExamTypeName.value}";
+    }
+
     final payload = {
-      "name": "Custom Exam ${getFormattedExamName()}", 
-      "description": "This is a custom exam with $totalQuestions questions",
+      "name": getUserFriendlyExamName(), 
+      "description": description,
       "startCustomExam": startTime.toIso8601String(),
       "endCustomExam": endTime.toIso8601String(), // Current time + reasonable exam duration
       "totalMarks": totalQuestions, // Total marks equal to number of questions
