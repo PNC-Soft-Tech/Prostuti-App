@@ -437,18 +437,31 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
 
   void _autoSubmitTest() {
     print('🏁 Auto-submitting test due to time limit');
-    // Auto-submit logic can be added here if needed
-    // For now, just set remaining time to zero
-    remainingTime.value = Duration.zero;
+    
+    // Set the same flag that manual submit sets to show results
+    isModelTestSubmittedLocal.value = true;
+    
+    // Stop the timer
+    _timer?.cancel();
+    
+    // Show completion message
+    Get.snackbar(
+      'Time Up!', 
+      'Test completed automatically. Check your results below.',
+      duration: Duration(seconds: 3),
+      backgroundColor: Colors.orange.withOpacity(0.1),
+      colorText: Colors.orange.shade700,
+      icon: Icon(Icons.timer_off, color: Colors.orange),
+    );
+    
+    // Optional: Also call the API submit if needed
+    // final contestId = modelDetails.value?.contest.id;
+    // if (contestId != null) {
+    //   submitContest(contestId);
+    // }
   }
 
   // Remove the per-question navigation methods since we're using total time
-  void _autoMoveToNextQuestion() {
-    // This method is no longer needed for total time counting
-    // Keep it for compatibility but don't use auto-advance
-    print('⚠️ Auto-advance disabled - using total timer instead');
-  }
-
   // No longer need per-question timer reset since we're using total time
   void onQuestionChanged(int newQuestionIndex) {
     // Timer continues running for total time, no reset needed
