@@ -136,7 +136,13 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     }
 
     // Update current question index
+    final previousIndex = currentQuestionIndex.value;
     currentQuestionIndex.value = originalIndex;
+
+    // No need to restart timer since we're using total time counting
+    if (previousIndex != originalIndex) {
+      onQuestionChanged(originalIndex);
+    }
 
     scrollController.animateTo(
       originalIndex * 300.h,
@@ -196,7 +202,10 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
 
         setUpQuestionKeysAndIndexes(
             modelDetails.value?.contest.questions ?? []);
-        startTimer(data.contest.startContest, data.contest.endContest);
+        
+        // For model tests, start timer based on current time + test duration
+        startModelTestTimer(data.contest.totalTime ?? 0);
+        
         isLoading.value = false;
       },
     );
@@ -381,6 +390,69 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       _updateRemainingTime(startTime, endTime);
     });
+  }
+
+  void startModelTestTimer(int totalTimeInMinutes) {
+    // Only start timer in exam mode, not in read mode
+    if (currentSelectedModelTestMode.value == 'read') {
+      // In read mode, show a long duration to avoid showing "Time Up"
+      remainingTime.value = const Duration(hours: 24);
+      return;
+    }
+    
+    // Calculate total time based on number of questions × 30 seconds each
+    const int secondsPerQuestion = 30;
+    final totalQuestions = filteredQuestions.length;
+    final totalSeconds = totalQuestions * secondsPerQuestion;
+    
+    print('🕐 Starting model test timer: $totalQuestions questions × $secondsPerQuestion seconds = ${totalSeconds}s total');
+    
+    // Start the total timer countdown
+    _startTotalTimer(totalSeconds);
+  }
+
+  void _startTotalTimer(int totalSeconds) {
+    // Set initial remaining time for all questions combined
+    remainingTime.value = Duration(seconds: totalSeconds);
+    
+    print('⏱️ Starting total timer: ${totalSeconds}s for entire test');
+    
+    // Cancel any existing timer
+    _timer?.cancel();
+    
+    // Start countdown timer for entire test
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (remainingTime.value.inSeconds > 0) {
+        remainingTime.value = Duration(seconds: remainingTime.value.inSeconds - 1);
+      } else {
+        // Time up for entire test
+        timer.cancel();
+        print('⏰ Total test time is up!');
+        
+        // Auto-submit the test when time is up
+        _autoSubmitTest();
+      }
+    });
+  }
+
+  void _autoSubmitTest() {
+    print('🏁 Auto-submitting test due to time limit');
+    // Auto-submit logic can be added here if needed
+    // For now, just set remaining time to zero
+    remainingTime.value = Duration.zero;
+  }
+
+  // Remove the per-question navigation methods since we're using total time
+  void _autoMoveToNextQuestion() {
+    // This method is no longer needed for total time counting
+    // Keep it for compatibility but don't use auto-advance
+    print('⚠️ Auto-advance disabled - using total timer instead');
+  }
+
+  // No longer need per-question timer reset since we're using total time
+  void onQuestionChanged(int newQuestionIndex) {
+    // Timer continues running for total time, no reset needed
+    print('📋 Question changed to ${newQuestionIndex + 1}, timer continues counting total time');
   }
 
   void _updateRemainingTime(DateTime startTime, DateTime endTime) {
