@@ -37,7 +37,7 @@ class CornerController extends GetxController {
       cornerType.value = args['cornerType'] ?? '';
       originalCornerType.value = args['cornerType'] ?? ''; // Store original for display
       admissionType.value = args['admissionType'] ?? '';
-      examTypeId.value = args['examTypeId'] ?? '';
+      examTypeId.value = args['examType'] ?? ''; // Use 'examType' parameter directly
       examTypeTitle.value = args['examTypeTitle'] ?? ''; // Get exam type title
       contestTypeFilter.value = args['contestType'] ?? '';
       modelTypeFilter.value = args['modelType'] ?? '';
@@ -101,11 +101,14 @@ class CornerController extends GetxController {
   Future<void> fetchContests() async {
     isLoading.value = true;
     
-    // If contestTypeFilter is empty, fetch all contests (Job Preparation Corner)
-    // Otherwise use filtered API call
-    final result = contestTypeFilter.value.isEmpty
-        ? await _apiHelper.fetchAllContests()
-        : await _apiHelper.fetchFilteredContests(contestTypeFilter.value);
+    // Use examType parameter directly if available, otherwise fall back to contestTypeFilter
+    final examType = examTypeId.value;
+    
+    final result = examType.isNotEmpty
+        ? await _apiHelper.fetchContestsByExamType(examType)
+        : contestTypeFilter.value.isEmpty
+            ? await _apiHelper.fetchAllContests()
+            : await _apiHelper.fetchFilteredContests(contestTypeFilter.value);
 
     result.fold(
       (error) {
@@ -115,18 +118,21 @@ class CornerController extends GetxController {
       (contestsData) {
         contests.value = contestsData;
         isLoading.value = false;
-        log('Fetched ${contests.length} ${cornerType.value} contests');
+        log('Fetched ${contests.length} ${cornerType.value} contests for examType: $examType');
       },
     );
   }
   Future<void> fetchModelTests() async {
     isLoading.value = true;
     
-    // If modelTypeFilter is empty, fetch all model tests (Job Preparation Corner)
-    // Otherwise use filtered API call
-    final result = modelTypeFilter.value.isEmpty
-        ? await _apiHelper.fetchAllModelTests()
-        : await _apiHelper.fetchFilteredModelTests(modelTypeFilter.value);
+    // Use examType parameter directly if available, otherwise fall back to modelTypeFilter
+    final examType = examTypeId.value;
+    
+    final result = examType.isNotEmpty
+        ? await _apiHelper.fetchModelTestsByExamType(examType)
+        : modelTypeFilter.value.isEmpty
+            ? await _apiHelper.fetchAllModelTests()
+            : await _apiHelper.fetchFilteredModelTests(modelTypeFilter.value);
 
     result.fold(
       (error) {
@@ -136,25 +142,32 @@ class CornerController extends GetxController {
       (modelTestsData) {
         modelTests.value = modelTestsData;
         isLoading.value = false;
-        log('Fetched ${modelTests.length} ${cornerType.value} model tests');
+        log('Fetched ${modelTests.length} ${cornerType.value} model tests for examType: $examType');
       },
     );
   }
   Future<void> fetchCustomExams() async {
     isLoading.value = true;
 
-    // If customExamTypeFilter is empty, fetch all custom exams (Job Preparation Corner)
-    // Otherwise use filtered API call
-    final result = customExamTypeFilter.value.isEmpty
-        ? await _apiHelper.fetchCustomExams(
+    // Use examType parameter directly if available, otherwise fall back to customExamTypeFilter
+    final examType = examTypeId.value;
+    
+    final result = examType.isNotEmpty
+        ? await _apiHelper.fetchCustomExamsByExamType(
+            examType: examType,
             page: customExamsPage.value,
             limit: 10,
           )
-        : await _apiHelper.fetchFilteredCustomExams(
-            customExamTypeFilter: customExamTypeFilter.value,
-            page: customExamsPage.value,
-            limit: 10,
-          );
+        : customExamTypeFilter.value.isEmpty
+            ? await _apiHelper.fetchCustomExams(
+                page: customExamsPage.value,
+                limit: 10,
+              )
+            : await _apiHelper.fetchFilteredCustomExams(
+                customExamTypeFilter: customExamTypeFilter.value,
+                page: customExamsPage.value,
+                limit: 10,
+              );
 
     result.fold(
       (error) {
@@ -172,7 +185,7 @@ class CornerController extends GetxController {
         customExamsHasMore.value = data.length == 10;
 
         isLoading.value = false;
-        log('Fetched ${data.length} ${cornerType.value} custom exams. Total: ${customExams.length}');
+        log('Fetched ${data.length} ${cornerType.value} custom exams for examType: $examType. Total: ${customExams.length}');
       },
     );
   }

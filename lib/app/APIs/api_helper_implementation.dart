@@ -438,11 +438,10 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
-  Future<Either<CustomError, List<Contest>>> fetchRecentContests(
-      {String contestType = "recent"}) async {
+  Future<Either<CustomError, List<Contest>>> fetchRecentContests() async {
     try {
       // Make the GET request to fetch recent contests
-      final response = await get('contests/?contestType=$contestType');
+      final response = await get('contests/?contestType=recent');
 
       if (response.statusCode == 200 && response.body['success'] == true) {
         // Parse the response data into a list of Contest models
@@ -971,6 +970,70 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       }
     } catch (error) {
       log('fetchFilteredCustomExams error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
+    }
+  }
+
+  // ExamType-based filtered API methods
+  @override
+  Future<Either<CustomError, List<Contest>>> fetchContestsByExamType(String examType) async {
+    try {
+      final response = await get('contests/?examType=$examType');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final contests = data.map((json) => Contest.fromJson(json)).toList();
+        return Right(contests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch contests by examType'));
+      }
+    } catch (e) {
+      log('Error fetching contests by examType: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<ModelTest>>> fetchModelTestsByExamType(String examType) async {
+    try {
+      final response = await get('models/?examType=$examType');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final modelTests = data.map((json) => ModelTest.fromJson(json)).toList();
+        return Right(modelTests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch model tests by examType'));
+      }
+    } catch (e) {
+      log('Error fetching model tests by examType: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExamsByExamType({
+    required String examType,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await get('custom-exams/?examType=$examType&page=$page&limit=$limit');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<Map<String, dynamic>> customExams =
+            data.map((item) => item as Map<String, dynamic>).toList();
+
+        return Right(customExams);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch custom exams by examType'));
+      }
+    } catch (error) {
+      log('fetchCustomExamsByExamType error: $error');
       return Left(CustomError(500, message: 'Internal server error'));
     }
   }

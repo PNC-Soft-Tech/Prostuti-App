@@ -97,4 +97,13 @@ abstract class ApiHelper {
     int page = 1,
     int limit = 10,
   });
+
+  // ExamType-based filtered API methods
+  Future<Either<CustomError, List<Contest>>> fetchContestsByExamType(String examType);
+  Future<Either<CustomError, List<ModelTest>>> fetchModelTestsByExamType(String examType);
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExamsByExamType({
+    required String examType,
+    int page = 1,
+    int limit = 10,
+  });
 }
