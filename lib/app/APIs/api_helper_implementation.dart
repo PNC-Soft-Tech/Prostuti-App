@@ -199,8 +199,10 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       final response = await get('contest-points/history');
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'];
-        final contests =
-            data.map((json) => Contest.fromJson(json['contest'])).toList();
+        final contests = data
+            .where((json) => json['contest'] != null) // Filter out null contests
+            .map((json) => Contest.fromJson(json['contest']))
+            .toList();
         return Right(contests);
       } else {
         return Left(CustomError(response.statusCode,

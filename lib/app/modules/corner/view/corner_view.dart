@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 import 'package:prostuti/app/routes/app_pages.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../common/custom_simple_appbar.dart';
 import '../controller/corner_controller.dart';
 import '../../history/view/history_view.dart'; // Import for reusing card components
@@ -65,10 +66,7 @@ class CornerView extends GetWidget<CornerController> {
 
   Widget _buildTabContent({Key? key}) {
     if (controller.isLoading.value) {
-      return Center(
-        key: key,
-        child: const CupertinoActivityIndicator(color: AppColors.primary),
-      );
+      return _buildShimmerLoading(key: key);
     }
 
     switch (controller.selectedTabIndex.value) {
@@ -84,6 +82,131 @@ class CornerView extends GetWidget<CornerController> {
           child: const Text('Invalid tab index'),
         );
     }
+  }
+
+  // Shimmer loading widget
+  Widget _buildShimmerLoading({Key? key}) {
+    return Column(
+      key: key,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header shimmer
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: 150.w,
+                  height: 20.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+              ),
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: 80.w,
+                  height: 20.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 16.h),
+        // List shimmer
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemCount: 6, // Show 6 shimmer cards
+            itemBuilder: (context, index) => Padding(
+              padding: EdgeInsets.only(bottom: 15.h),
+              child: _buildShimmerCard(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Individual shimmer card
+  Widget _buildShimmerCard() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title shimmer
+            Container(
+              width: double.infinity,
+              height: 20.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+            SizedBox(height: 8.h),
+            // Subtitle shimmer
+            Container(
+              width: 200.w,
+              height: 16.h,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
+            SizedBox(height: 12.h),
+            // Bottom row shimmer
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 80.w,
+                  height: 14.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                ),
+                Container(
+                  width: 60.w,
+                  height: 24.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildContestList({Key? key}) {
@@ -260,9 +383,12 @@ class CornerView extends GetWidget<CornerController> {
                 if (index == controller.customExams.length) {
                   return Padding(
                     padding: EdgeInsets.all(16.h),
-                    child: const Center(
-                      child:
-                          CupertinoActivityIndicator(color: AppColors.primary),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: const Center(
+                        child: CupertinoActivityIndicator(color: AppColors.primary),
+                      ),
                     ),
                   );
                 }
