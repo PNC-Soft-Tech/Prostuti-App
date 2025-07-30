@@ -71,6 +71,9 @@ class CustomExamView extends GetView<CustomExamController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Exam Type Selection
+                      _buildExamTypeSelector(),
+                      SizedBox(height: 16.h),
                       // Build subject cards
                       for (int i = 0; i < controller.customExamQuestions.value!.subjects!.length; i++)
                         buildSubjectCard(i),
@@ -85,6 +88,15 @@ class CustomExamView extends GetView<CustomExamController> {
                     child: CustomButton.button(
                       text: "Continue",
                       onPressed: () {
+                        // Validate exam type selection
+                        if (controller.selectedExamTypeId.value.isEmpty) {
+                          Utils.showSnackbar(
+                            message: "Please select a job category first",
+                            isSuccess: false
+                          );
+                          return;
+                        }
+
                         final Map<String, List<Map<String, dynamic>>> previewData = {};
                         
                         for (var subject in controller.customExamQuestions.value!.subjects!) {
@@ -448,5 +460,185 @@ class CustomExamView extends GetView<CustomExamController> {
     final exists = topics.any((t) => t.name == topicName);
     
     return exists ? topicName : null;
+  }
+
+  Widget _buildExamTypeSelector() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.grey[300]!, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12.r),
+                topRight: Radius.circular(12.r),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.work_outline,
+                  color: AppColors.primary,
+                  size: 20.sp,
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  'Select Job Category',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Content
+          Padding(
+            padding: EdgeInsets.all(16.w),
+            child: Obx(() {
+              if (controller.isLoadingExamTypes.value) {
+                return const Center(
+                  child: CupertinoActivityIndicator(color: AppColors.primary),
+                );
+              }
+
+              if (controller.examTypes.isEmpty) {
+                return Text(
+                  'No job categories available',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey[600],
+                  ),
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Choose the job category for your custom exam:',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[700],
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  // Exam Type Dropdown
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: controller.selectedExamTypeId.value.isNotEmpty 
+                            ? controller.selectedExamTypeId.value 
+                            : null,
+                        hint: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Text(
+                            'Select a job category',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                        items: controller.examTypes.map((examType) {
+                          return DropdownMenuItem<String>(
+                            value: examType.id,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                              child: Text(
+                                examType.title,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: AppColors.textPrimaryColor,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            final selectedExamType = controller.examTypes
+                                .firstWhere((examType) => examType.id == newValue);
+                            controller.selectExamType(
+                              newValue, 
+                              selectedExamType.title
+                            );
+                          }
+                        },
+                        isExpanded: true,
+                        icon: Padding(
+                          padding: EdgeInsets.only(right: 12.w),
+                          child: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Selected exam type display
+                  if (controller.selectedExamTypeName.value.isNotEmpty) ...[
+                    SizedBox(height: 12.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6.r),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: AppColors.primary,
+                            size: 16.sp,
+                          ),
+                          SizedBox(width: 8.w),
+                          Expanded(
+                            child: Text(
+                              'Selected: ${controller.selectedExamTypeName.value}',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            }),
+          ),
+        ],
+      ),
+    );
   }
 }

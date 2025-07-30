@@ -7,6 +7,7 @@ import '../../../common/utils/prostuti_utils.dart';
 import '../../../routes/app_pages.dart';
 import '../../exam-topics/models/exam_topics_model.dart';
 import '../../contests/models/topics_model.dart';
+import '../../exam-types/models/exam_type_model.dart';
 import '../models/custom_exam_model.dart';
 import '../models/custom_exam_request_model.dart';
 import '../models/custom_exam_subject_model.dart';
@@ -17,12 +18,18 @@ class CustomExamController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
 
   var isLoading = false.obs;
+  var isLoadingExamTypes = false.obs;
   RxList<Subjects> subjects = <Subjects>[].obs;
   RxList<SubjectTopics> topics = <SubjectTopics>[].obs;
   RxList<String> selectedSubjects = <String>[].obs;
   RxString selectedSubjectId = ''.obs;
   RxMap<int, List<String>> selectedTopics = <int, List<String>>{}
       .obs; // Map to track selected topics for each subject
+  
+  // Exam Types
+  RxList<ExamType> examTypes = <ExamType>[].obs;
+  RxString selectedExamTypeId = ''.obs;
+  RxString selectedExamTypeName = ''.obs;
   
   // Map to store available question count for each topic
   RxMap<String, int> topicQuestionCounts = <String, int>{}.obs;
@@ -43,6 +50,7 @@ class CustomExamController extends GetxController {
 
     // Check authentication before fetching subjects
     _checkAuthAndLoadSubjects();
+    _loadExamTypes();
   }
   void _checkAuthAndLoadSubjects() async {
     final hasAccess = await _authService.checkFeatureAccess(
@@ -79,6 +87,34 @@ class CustomExamController extends GetxController {
         });
       }
     });
+  }
+
+  Future<void> _loadExamTypes() async {
+    isLoadingExamTypes.value = true;
+    try {
+      final result = await _apiHelper.getExamTypes();
+      result.fold(
+        (error) {
+          log('❌ Error loading exam types: ${error.message}');
+          Utils.showSnackbar(message: 'Failed to load exam types: ${error.message}', isSuccess: false);
+        },
+        (examTypesList) {
+          examTypes.assignAll(examTypesList);
+          log('✅ Loaded ${examTypesList.length} exam types');
+        },
+      );
+    } catch (e) {
+      log('❌ Exception loading exam types: $e');
+      Utils.showSnackbar(message: 'Error loading exam types', isSuccess: false);
+    } finally {
+      isLoadingExamTypes.value = false;
+    }
+  }
+
+  void selectExamType(String examTypeId, String examTypeName) {
+    selectedExamTypeId.value = examTypeId;
+    selectedExamTypeName.value = examTypeName;
+    log('Selected exam type: $examTypeName (ID: $examTypeId)');
   }
 
 // @override
@@ -397,6 +433,7 @@ String getFormattedExamName() {
       "totalTime": examDurationMinutes, // Total time in minutes for the exam
       "marksPerQuestion": 1, // 1 mark per question
       "selectedTopics": selectedTopics,
+      "examType": selectedExamTypeId.value.isNotEmpty ? selectedExamTypeId.value : null, // Add exam type
     };
     log("Generated custom exam payload: $payload");
     final request = CustomExamRequestModel.fromJson(payload);

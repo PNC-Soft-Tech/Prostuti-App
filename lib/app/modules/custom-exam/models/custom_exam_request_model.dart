@@ -10,6 +10,7 @@ class CustomExamRequestModel {
   final int? totalQuestions;
   final int? totalTime;
   final List<Topic>? selectedTopics;
+  final String? examType; // New field for exam type (job category) ID
 
   final String? id;
   List<Subjects>? subjects;
@@ -23,6 +24,7 @@ class CustomExamRequestModel {
     this.totalQuestions,
     this.totalTime,
     this.selectedTopics,
+    this.examType, // Add examType parameter
     this.id,
     this.subjects,
   });
@@ -41,6 +43,7 @@ class CustomExamRequestModel {
             ? List<Topic>.from((json['selectedTopics'] as List)
                 .map((topicJson) => Topic.fromJson(topicJson as Map<String, dynamic>)))
             : null,
+        examType: json['examType'] as String?, // Add examType parsing
         id: json['id'] as String?,
         subjects: json['subjects'] != null
             ? List<Subjects>.from((json['subjects'] as List)
@@ -66,6 +69,7 @@ Map<String, dynamic> toJson() {
   if (selectedTopics != null) {
     data['selectedTopics'] = selectedTopics!.map((topic) => topic.toJson()).toList();
   }
+  if (examType != null) data['examType'] = examType; // Add examType to JSON
   if (id != null) data['id'] = id;
   if (subjects != null) {
     data['subjects'] = subjects!.map((subject) => subject.toJson()).toList();
