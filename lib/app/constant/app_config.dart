@@ -1,6 +1,6 @@
 class AppConfig {
   // Define your server URLs
-  static const String baseUrl = 'https://pnc-jobs-server.vercel.app/api/';
+  static const String baseUrl = 'https://prostuti-api.vercel.app/api/';
   
   // Define app version
   static const String appVersion = '1.0.0';
