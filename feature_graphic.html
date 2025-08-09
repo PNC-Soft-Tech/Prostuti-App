@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prostuti App - Feature Graphic</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .feature-graphic {
+            width: 1024px;
+            height: 500px;
+            background: linear-gradient(135deg, #50BDB4 0%, #2E8B80 100%);
+            display: flex;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Background decorative elements */
+        .bg-decoration {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .bg-circle-1 {
+            width: 200px;
+            height: 200px;
+            top: -100px;
+            right: 100px;
+        }
+
+        .bg-circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: -75px;
+            right: 200px;
+        }
+
+        .bg-circle-3 {
+            width: 100px;
+            height: 100px;
+            top: 150px;
+            right: 50px;
+        }
+
+        /* Left section - Text content */
+        .left-section {
+            flex: 0 0 400px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .logo-section {
+            margin-bottom: 30px;
+        }
+
+        .app-name {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 60px;
+            font-weight: 700;
+            color: #FFFFFF;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .app-name-english {
+            font-family: 'Inter', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #FFFFFF;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            font-weight: 500;
+            color: #FFFFFF;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .features-list li {
+            font-size: 16px;
+            color: #FFFFFF;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            background: #4CAF50;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .cta-button {
+            background: #FFFFFF;
+            color: #50BDB4;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            align-self: flex-start;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Right section - Visual elements */
+        .right-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 40px;
+        }
+
+        .phone-mockup {
+            width: 200px;
+            height: 400px;
+            background: #000000;
+            border-radius: 25px;
+            padding: 15px;
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FA 100%);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .screen-header {
+            background: #50BDB4;
+            color: white;
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .screen-content {
+            flex: 1;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .exam-card {
+            background: #FFFFFF;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #50BDB4;
+        }
+
+        .exam-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 4px;
+        }
+
+        .exam-details {
+            font-size: 10px;
+            color: #666;
+        }
+
+        /* Floating icons */
+        .floating-icon {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .icon-1 {
+            top: 80px;
+            right: 80px;
+            animation-delay: 0s;
+        }
+
+        .icon-2 {
+            bottom: 120px;
+            right: 120px;
+            animation-delay: 1s;
+        }
+
+        .icon-3 {
+            top: 200px;
+            right: 250px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .feature-graphic {
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .feature-graphic {
+                transform: scale(0.6);
+            }
+        }
+
+        /* Print styles for screenshot */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .feature-graphic {
+                margin: 0;
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+
+        .instructions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            max-width: 300px;
+            z-index: 1000;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #50BDB4;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h3>📸 Screenshot Instructions</h3>
+        <p><strong>1.</strong> Press F11 for fullscreen</p>
+        <p><strong>2.</strong> Use browser dev tools</p>
+        <p><strong>3.</strong> Set device size: 1024×500</p>
+        <p><strong>4.</strong> Take screenshot</p>
+        <p><strong>5.</strong> Save as PNG</p>
+    </div>
+
+    <div class="feature-graphic">
+        <!-- Background decorative elements -->
+        <div class="bg-decoration bg-circle-1"></div>
+        <div class="bg-decoration bg-circle-2"></div>
+        <div class="bg-decoration bg-circle-3"></div>
+
+        <!-- Left Section - Text Content -->
+        <div class="left-section">
+            <div class="logo-section">
+                <div class="app-name">প্রস্তুতি</div>
+                <div class="app-name-english">Prostuti</div>
+            </div>
+            
+            <div class="tagline">
+                Your Ultimate Career Preparation Companion
+            </div>
+            
+            <ul class="features-list">
+                <li>Create Custom Exams</li>
+                <li>Join Live Contests</li>
+                <li>BCS Exam Preparation</li>
+                <li>Job Corner & Alerts</li>
+                <li>10,000+ Practice Questions</li>
+            </ul>
+            
+            <button class="cta-button">Download Free Today!</button>
+        </div>
+
+        <!-- Right Section - Visual Elements -->
+        <div class="right-section">
+            <!-- Phone Mockup -->
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="screen-header">
+                        Custom Exam Builder
+                    </div>
+                    <div class="screen-content">
+                        <div class="exam-card">
+                            <div class="exam-title">BCS Preliminary</div>
+                            <div class="exam-details">Mathematics • 50 Questions</div>
+                        </div>
+                        <div class="exam-card">
+                            <div class="exam-title">General Knowledge</div>
+                            <div class="exam-details">History • 30 Questions</div>
+                        </div>
+                        <div class="exam-card">
+                            <div class="exam-title">English Literature</div>
+                            <div class="exam-details">Grammar • 25 Questions</div>
+                        </div>
+                        <div class="exam-card">
+                            <div class="exam-title">Current Affairs</div>
+                            <div class="exam-details">National • 20 Questions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Icons -->
+            <div class="floating-icon icon-1">📚</div>
+            <div class="floating-icon icon-2">🏆</div>
+            <div class="floating-icon icon-3">⭐</div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.querySelector('.cta-button').addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+
+        // Auto-hide instructions after 10 seconds
+        setTimeout(() => {
+            document.querySelector('.instructions').style.opacity = '0';
+            setTimeout(() => {
+                document.querySelector('.instructions').style.display = 'none';
+            }, 500);
+        }, 10000);
+    </script>
+</body>
+</html>

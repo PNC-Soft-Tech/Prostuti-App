@@ -790,6 +790,55 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
+  Future<Either<CustomError, Response>> submitCustomExamAnswers({
+    required String questionId,
+    required String customExamId,
+    required String selectedAnswers,
+  }) async {
+    try {
+      // Prepare the payload - selectedAnswers as string
+      final payload = {
+        "question": questionId,
+        "customExam": customExamId,
+        "selectedAnswers": selectedAnswers,
+      };
+      log("Custom Exam Answer payload: $payload");
+      
+      // Fetch the Bearer token from storage
+      final token = await StorageHelper.getToken();
+
+      // Ensure token exists before making request
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      // Set headers
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      // Make the POST request to custom-exam-answers endpoint
+      final response = await post('custom-exam-answers', payload, headers: headers);
+
+      // Log for debugging
+      log('Submit Custom Exam Answer Response: ${response.statusCode}, Body: ${response.body}');
+
+      // Handle response
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response); // Successful response
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to submit custom exam answer',
+        ));
+      }
+    } catch (e) {
+      log('Error submitting custom exam answer: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
   Future<Either<CustomError, Response>> submitContest(String contestId) async {
     try {
       final token = await StorageHelper.getToken();

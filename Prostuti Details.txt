@@ -1,0 +1,47 @@
+SHORT DESCRIPTION (80 chars):
+Comprehensive exam prep app with custom tests, live contests & job preparation
+
+FULL DESCRIPTION (4000 chars):
+
+Prostuti (প্রস্তুতি) is a comprehensive educational platform designed to revolutionize exam preparation for Bangladeshi students, particularly those preparing for BCS (Bangladesh Civil Service) and other competitive government exams. This Flutter-based mobile application serves as your ultimate career preparation companion, offering an extensive suite of learning tools and assessment features.
+
+## Key Features:
+
+**Custom Exam Creation System**
+Create personalized practice tests by selecting specific subjects, topics, and question counts. The advanced custom exam builder allows students to focus on weak areas, choose from multiple exam types (BCS, Job Preparation, etc.), and set custom time limits. With real-time question availability checking and dynamic exam naming, users can craft targeted study sessions that match their preparation needs.
+
+**Live Contest Platform**
+Participate in real-time competitive exams with live leaderboards, automatic scoring, and instant result publishing. The contest system includes registration management, time-bound assessments, and comprehensive result analysis. Students can compete with peers nationwide while tracking their performance rankings.
+
+**Model Test Library**
+Access an extensive collection of previous year questions and practice tests across various subjects. The model test system features both examination and review modes, allowing students to practice under timed conditions or study at their own pace with detailed explanations.
+
+**Job Preparation Corner**
+Dedicated section for job-related exam preparation with categorized content based on exam types. Features specialized question banks for different government job categories, current affairs updates, and job circular notifications.
+
+**Advanced Question Management**
+Interactive question interface with multiple-choice support, mathematical formula rendering, image integration, and detailed explanations. The system tracks user progress, marks questions for review, and provides comprehensive answer analytics.
+
+**Smart Study Features**
+- Shimmer loading effects for enhanced user experience
+- Subject-wise filtering and organization
+- Real-time progress tracking and analytics
+- Bookmark and review functionality
+- Offline reading capabilities
+- Bengali and English language support
+
+**Technical Excellence**
+Built with Flutter framework using GetX state management for optimal performance. Features secure authentication with token validation, real-time data synchronization, responsive design for all device sizes, and robust error handling. The app includes haptic feedback, smooth animations, and intuitive navigation.
+
+**Assessment Tools**
+Comprehensive timer management for both individual questions and overall exams, automatic submission on time expiry, detailed result analysis with subject-wise breakdown, and performance comparison tools. The platform maintains answer history and provides insights into improvement areas.
+
+**User Experience**
+Clean, intuitive interface designed for Bengali users with proper typography support. Features include dark/light theme options, accessibility features, easy navigation between sections, and seamless exam flow management. The app prioritizes user engagement through gamification elements and achievement tracking.
+
+**Career Focus**
+Specifically tailored for Bangladesh's competitive exam landscape, covering BCS syllabus comprehensively, government job preparation materials, current affairs integration, and updated question patterns. The platform connects students with the latest exam trends and requirements.
+
+Prostuti transforms exam preparation from traditional rote learning to an interactive, engaging, and effective study experience. Whether you're preparing for BCS, bank jobs, or other government positions, this app provides the tools, content, and community support needed to achieve your career goals.
+
+The platform continuously evolves with user feedback, regular content updates, and feature enhancements to ensure students have access to the most current and effective preparation resources available.
