@@ -115,4 +115,11 @@ abstract class ApiHelper {
 
   // Token validation API
   Future<Either<CustomError, Map<String, dynamic>>> validateToken();
+
+  // Payment and Subscription APIs
+  Future<Either<CustomError, Map<String, dynamic>>> initiateBkashPayment(Map<String, dynamic> paymentData);
+  Future<Either<CustomError, Map<String, dynamic>>> verifyBkashPayment(String paymentId, String transactionId);
+  Future<Either<CustomError, Map<String, dynamic>>> getSubscriptionStatus(String userId);
+  Future<Either<CustomError, List<Map<String, dynamic>>>> getAvailablePackages();
+  Future<Either<CustomError, Map<String, dynamic>>> activateSubscription(Map<String, dynamic> subscriptionData);
 }

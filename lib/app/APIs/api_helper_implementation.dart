@@ -1132,4 +1132,148 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Left(CustomError(500, message: 'Network error during token validation: $e'));
     }
   }
+
+  // Payment and Subscription API implementations
+  @override
+  Future<Either<CustomError, Map<String, dynamic>>> initiateBkashPayment(Map<String, dynamic> paymentData) async {
+    try {
+      final token = await StorageHelper.getToken();
+      
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      final response = await post('payments/bkash/initiate', paymentData, headers: headers);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response.body['data'] as Map<String, dynamic>);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to initiate bKash payment',
+        ));
+      }
+    } catch (e) {
+      log('Error initiating bKash payment: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, Map<String, dynamic>>> verifyBkashPayment(String paymentId, String transactionId) async {
+    try {
+      final token = await StorageHelper.getToken();
+      
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      final payload = {
+        'paymentId': paymentId,
+        'transactionId': transactionId,
+      };
+
+      final response = await post('payments/bkash/verify', payload, headers: headers);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response.body['data'] as Map<String, dynamic>);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to verify bKash payment',
+        ));
+      }
+    } catch (e) {
+      log('Error verifying bKash payment: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, Map<String, dynamic>>> getSubscriptionStatus(String userId) async {
+    try {
+      final token = await StorageHelper.getToken();
+      
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      final response = await get('subscriptions/status/$userId', headers: headers);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response.body['data'] as Map<String, dynamic>);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to get subscription status',
+        ));
+      }
+    } catch (e) {
+      log('Error getting subscription status: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<Map<String, dynamic>>>> getAvailablePackages() async {
+    try {
+      final response = await get('packages/available');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<Map<String, dynamic>> packages =
+            data.map((item) => item as Map<String, dynamic>).toList();
+        return Right(packages);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to get available packages',
+        ));
+      }
+    } catch (e) {
+      log('Error getting available packages: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, Map<String, dynamic>>> activateSubscription(Map<String, dynamic> subscriptionData) async {
+    try {
+      final token = await StorageHelper.getToken();
+      
+      if (token == null) {
+        return Left(CustomError(401, message: 'Unauthorized: No token found'));
+      }
+
+      final headers = {
+        'Authorization': 'Bearer $token',
+      };
+
+      final response = await post('subscriptions/activate', subscriptionData, headers: headers);
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        return Right(response.body['data'] as Map<String, dynamic>);
+      } else {
+        return Left(CustomError(
+          response.statusCode ?? 500,
+          message: response.body['message'] ?? 'Failed to activate subscription',
+        ));
+      }
+    } catch (e) {
+      log('Error activating subscription: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
 }

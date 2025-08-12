@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../constant/app_color.dart';
 import '../controllers/package_details_controller.dart';
+import '../models/package_model.dart';
+import 'bkash_payment_dialog.dart';
 import 'package_rotated_triangle_widget.dart';
 
 class PackageCardWidget extends GetWidget<PackageDetailsController> {
@@ -14,6 +16,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
   final String price;
   final String period;
   final List<String> services;
+  final String? packageId;
 
   const PackageCardWidget({
     super.key,
@@ -22,6 +25,7 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
     required this.period,
     required this.price,
     required this.services,
+    this.packageId,
   });
 
   @override
@@ -170,87 +174,22 @@ class PackageCardWidget extends GetWidget<PackageDetailsController> {
   }
 
   void _showPaymentDialog() {
+    // Create a package model for the payment dialog
+    final package = PackageModel(
+      id: packageId ?? name.toLowerCase().replaceAll(' ', '_'),
+      name: name,
+      period: period,
+      price: double.tryParse(price.replaceAll('৳', '')) ?? 0.0,
+      currency: 'BDT',
+      services: services,
+    );
+
     Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        backgroundColor: Colors.white,
-        child: Container(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 8.h),
-              Image.asset(
-                'assets/logo/bkash_payment_logo.png',
-                width: 200.w,
-              ),
-              SizedBox(height: 24.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: price,
-                          style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                              fontSize: 25.sp,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        TextSpan(
-                          text: " / $period",
-                          style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF292D34),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                      // controller.submitContest(
-                      //     controller.modelDetails.value?.contest.id ?? '');
-                      // controller.isModelTestSubmittedLocal.value = true;
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      BkashPaymentDialog(
+        package: package,
+        controller: controller,
       ),
+      barrierDismissible: false,
     );
   }
 
