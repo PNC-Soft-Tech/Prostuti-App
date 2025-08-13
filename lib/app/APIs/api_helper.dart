@@ -39,6 +39,7 @@ abstract class ApiHelper {
   // Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars();
   // Future<Either<CustomError, List<JobCategory>>> getJobCategories();
   Future<Either<CustomError, List<ExamType>>> getExamTypes();
+  Future<Either<CustomError, List<ExamType>>> getExamTypesByCategory(String category);
   Future<Either<CustomError, List<Contest>>> fetchAllContests();
   Future<Either<CustomError, List<Contest>>> fetchContestHistory();
   Future<Either<CustomError, List<Question>>> fetchAllQuestions();
@@ -95,7 +96,23 @@ abstract class ApiHelper {
   Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExams(
       {int page = 1, int limit = 10});
 
-  // Corner-specific filtered API methods
+  // Corner-specific filtered API methods with category and examType
+  Future<Either<CustomError, List<Contest>>> fetchContestsByCategory({
+    required String category,
+    String examType = '',
+  });
+  Future<Either<CustomError, List<ModelTest>>> fetchModelTestsByCategory({
+    required String category,
+    String examType = '',
+  });
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExamsByCategory({
+    required String category,
+    String examType = '',
+    int page = 1,
+    int limit = 10,
+  });
+
+  // Legacy corner-specific filtered API methods (deprecated)
   Future<Either<CustomError, List<Contest>>> fetchFilteredContests(String contestType);
   Future<Either<CustomError, List<ModelTest>>> fetchFilteredModelTests(String modelType);
   Future<Either<CustomError, List<Map<String, dynamic>>>> fetchFilteredCustomExams({

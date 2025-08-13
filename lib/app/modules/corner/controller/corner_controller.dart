@@ -101,77 +101,68 @@ class CornerController extends GetxController {
   Future<void> fetchContests() async {
     isLoading.value = true;
     
-    // Use examType parameter directly if available, otherwise fall back to contestTypeFilter
-    final examType = examTypeId.value;
+    // Determine category and examType based on corner configuration
+    String category = _getCategoryFromCornerType();
+    String examType = _getExamTypeFromCornerType();
     
-    final result = examType.isNotEmpty
-        ? await _apiHelper.fetchContestsByExamType(examType)
-        : contestTypeFilter.value.isEmpty
-            ? await _apiHelper.fetchAllContests()
-            : await _apiHelper.fetchFilteredContests(contestTypeFilter.value);
+    final result = await _apiHelper.fetchContestsByCategory(
+      category: category,
+      examType: examType,
+    );
 
     result.fold(
       (error) {
-        log('Error fetching ${cornerType.value} contests: ${error.message}');
+        log('Error fetching $category contests with examType $examType: ${error.message}');
         isLoading.value = false;
       },
       (contestsData) {
         contests.value = contestsData;
         isLoading.value = false;
-        log('Fetched ${contests.length} ${cornerType.value} contests for examType: $examType');
+        log('Fetched ${contests.length} contests for category: $category, examType: $examType');
       },
     );
   }
   Future<void> fetchModelTests() async {
     isLoading.value = true;
     
-    // Use examType parameter directly if available, otherwise fall back to modelTypeFilter
-    final examType = examTypeId.value;
+    // Determine category and examType based on corner configuration
+    String category = _getCategoryFromCornerType();
+    String examType = _getExamTypeFromCornerType();
     
-    final result = examType.isNotEmpty
-        ? await _apiHelper.fetchModelTestsByExamType(examType)
-        : modelTypeFilter.value.isEmpty
-            ? await _apiHelper.fetchAllModelTests()
-            : await _apiHelper.fetchFilteredModelTests(modelTypeFilter.value);
+    final result = await _apiHelper.fetchModelTestsByCategory(
+      category: category,
+      examType: examType,
+    );
 
     result.fold(
       (error) {
-        log('Error fetching ${cornerType.value} model tests: ${error.message}');
+        log('Error fetching $category model tests with examType $examType: ${error.message}');
         isLoading.value = false;
       },
       (modelTestsData) {
         modelTests.value = modelTestsData;
         isLoading.value = false;
-        log('Fetched ${modelTests.length} ${cornerType.value} model tests for examType: $examType');
+        log('Fetched ${modelTests.length} model tests for category: $category, examType: $examType');
       },
     );
   }
   Future<void> fetchCustomExams() async {
     isLoading.value = true;
 
-    // Use examType parameter directly if available, otherwise fall back to customExamTypeFilter
-    final examType = examTypeId.value;
+    // Determine category and examType based on corner configuration
+    String category = _getCategoryFromCornerType();
+    String examType = _getExamTypeFromCornerType();
     
-    final result = examType.isNotEmpty
-        ? await _apiHelper.fetchCustomExamsByExamType(
-            examType: examType,
-            page: customExamsPage.value,
-            limit: 10,
-          )
-        : customExamTypeFilter.value.isEmpty
-            ? await _apiHelper.fetchCustomExams(
-                page: customExamsPage.value,
-                limit: 10,
-              )
-            : await _apiHelper.fetchFilteredCustomExams(
-                customExamTypeFilter: customExamTypeFilter.value,
-                page: customExamsPage.value,
-                limit: 10,
-              );
+    final result = await _apiHelper.fetchCustomExamsByCategory(
+      category: category,
+      examType: examType,
+      page: customExamsPage.value,
+      limit: 10,
+    );
 
     result.fold(
       (error) {
-        log('Error fetching ${cornerType.value} custom exams: ${error.message}');
+        log('Error fetching $category custom exams with examType $examType: ${error.message}');
         isLoading.value = false;
       },
       (data) {
@@ -185,7 +176,7 @@ class CornerController extends GetxController {
         customExamsHasMore.value = data.length == 10;
 
         isLoading.value = false;
-        log('Fetched ${data.length} ${cornerType.value} custom exams for examType: $examType. Total: ${customExams.length}');
+        log('Fetched ${data.length} custom exams for category: $category, examType: $examType. Total: ${customExams.length}');
       },
     );
   }
@@ -194,6 +185,41 @@ class CornerController extends GetxController {
     if (!isLoading.value && customExamsHasMore.value) {
       customExamsPage.value++;
       fetchCustomExams();
+    }
+  }
+
+  /// Helper method to determine API category from corner type
+  String _getCategoryFromCornerType() {
+    switch (cornerType.value.toLowerCase()) {
+      case 'ssc':
+        return 'ssc';
+      case 'hsc':
+        return 'hsc';
+      case 'admission':
+        return 'admission';
+      case 'jobs':
+      case 'job preparation':
+        return 'job';
+      default:
+        return 'job'; // Default to job category
+    }
+  }
+
+  /// Helper method to determine API examType from corner configuration
+  String _getExamTypeFromCornerType() {
+    switch (cornerType.value.toLowerCase()) {
+      case 'ssc':
+      case 'hsc':
+        return ''; // Empty examType for SSC and HSC
+      case 'admission':
+        // For admission, use the specific admission type or default to 'mbbs'
+        return admissionType.value.isNotEmpty ? admissionType.value.toLowerCase() : 'mbbs';
+      case 'jobs':
+      case 'job preparation':
+        // For jobs, use the specific exam type ID or default to 'bcs'
+        return examTypeId.value.isNotEmpty ? examTypeId.value : 'bcs';
+      default:
+        return 'bcs'; // Default to bcs for job category
     }
   }  String get cornerTitle {
     // Use original corner type for display if available

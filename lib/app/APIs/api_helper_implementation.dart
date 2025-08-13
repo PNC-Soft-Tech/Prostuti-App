@@ -176,6 +176,42 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   }
 
   @override
+  Future<Either<CustomError, List<ExamType>>> getExamTypesByCategory(String category) async {
+    final response = await get('exam-types?category=$category');
+    if (response.statusCode == 200) {
+      try {
+        // Handle nested data structure: response.body['data']['data']
+        final responseData = response.body['data'];
+        List<ExamType> examTypes;
+        
+        if (responseData is Map && responseData['data'] is List) {
+          // Nested structure: {success: true, data: {data: [...], total: 5, ...}}
+          examTypes = (responseData['data'] as List)
+              .map((item) => ExamType.fromJson(item))
+              .toList();
+        } else if (responseData is List) {
+          // Direct array structure: {success: true, data: [...]}
+          examTypes = (responseData as List)
+              .map((item) => ExamType.fromJson(item))
+              .toList();
+        } else {
+          throw Exception('Unexpected data structure in exam-types response');
+        }
+        
+        log('✅ Parsed ${examTypes.length} exam types for category $category successfully');
+        return Right(examTypes);
+      } catch (e) {
+        log('❌ Error parsing exam types for category $category: $e');
+        return Left(
+            CustomError(response.statusCode, message: 'Parsing error: $e'));
+      }
+    } else {
+      return Left(CustomError(response.statusCode,
+          message: response.statusText ?? 'Error'));
+    }
+  }
+
+  @override
   Future<Either<CustomError, List<Contest>>> fetchAllContests() async {
     try {
       final response = await get('contests');
@@ -961,7 +997,81 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     }
   }
 
-  // Corner-specific filtered API methods
+  // Corner-specific filtered API methods with category and examType
+  @override
+  Future<Either<CustomError, List<Contest>>> fetchContestsByCategory({
+    required String category,
+    String examType = '',
+  }) async {
+    try {
+      final response = await get('contests/?category=$category&examType=$examType');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final contests = data.map((json) => Contest.fromJson(json)).toList();
+        log('✅ Fetched ${contests.length} contests for category: $category, examType: $examType');
+        return Right(contests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch contests by category'));
+      }
+    } catch (e) {
+      log('Error fetching contests by category: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<ModelTest>>> fetchModelTestsByCategory({
+    required String category,
+    String examType = '',
+  }) async {
+    try {
+      final response = await get('models/?category=$category&examType=$examType');
+      
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'];
+        final modelTests = data.map((json) => ModelTest.fromJson(json)).toList();
+        log('✅ Fetched ${modelTests.length} model tests for category: $category, examType: $examType');
+        return Right(modelTests);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch model tests by category'));
+      }
+    } catch (e) {
+      log('Error fetching model tests by category: $e');
+      return Left(CustomError(500, message: 'Network error: $e'));
+    }
+  }
+
+  @override
+  Future<Either<CustomError, List<Map<String, dynamic>>>> fetchCustomExamsByCategory({
+    required String category,
+    String examType = '',
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await get('custom-exams/?category=$category&examType=$examType&page=$page&limit=$limit');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final List<dynamic> data = response.body['data'] as List<dynamic>;
+        final List<Map<String, dynamic>> customExams =
+            data.map((item) => item as Map<String, dynamic>).toList();
+        
+        log('✅ Fetched ${customExams.length} custom exams for category: $category, examType: $examType');
+        return Right(customExams);
+      } else {
+        return Left(CustomError(response.statusCode,
+            message: response.body['message'] ?? 'Failed to fetch custom exams by category'));
+      }
+    } catch (error) {
+      log('fetchCustomExamsByCategory error: $error');
+      return Left(CustomError(500, message: 'Internal server error'));
+    }
+  }
+
+  // Legacy corner-specific filtered API methods (deprecated)
   @override
   Future<Either<CustomError, List<Contest>>> fetchFilteredContests(String contestType) async {
     try {
@@ -1029,7 +1139,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   @override
   Future<Either<CustomError, List<Contest>>> fetchContestsByExamType(String examType) async {
     try {
-      final response = await get('contests/?examType=$examType');
+      final response = await get('contests/?category=$examType');
       
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'];
@@ -1048,7 +1158,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   @override
   Future<Either<CustomError, List<ModelTest>>> fetchModelTestsByExamType(String examType) async {
     try {
-      final response = await get('models/?examType=$examType');
+      final response = await get('models/?category=$examType');
       
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'];
@@ -1071,7 +1181,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     int limit = 10,
   }) async {
     try {
-      final response = await get('custom-exams/?examType=$examType&page=$page&limit=$limit');
+      final response = await get('custom-exams/?category=$examType&page=$page&limit=$limit');
 
       if (response.statusCode == 200 && response.body['success'] == true) {
         final List<dynamic> data = response.body['data'] as List<dynamic>;

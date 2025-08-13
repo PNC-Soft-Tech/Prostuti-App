@@ -275,9 +275,9 @@ class ExamCornersWidget extends StatelessWidget {
     Map<String, String> filterParams;
     
     switch (cornerType) {
-      case 'SSC':
+      case 'ssc':
         filterParams = {
-          'cornerType': 'SSC',
+          'cornerType': 'ssc',
           'contestType': '68539e723b5190a2557d73d1',
           'modelType': '6842298a2464c0fa0b572e85',
           'customExamType': '3rf432ggjdk90a2557d73d1',
@@ -304,167 +304,16 @@ class ExamCornersWidget extends StatelessWidget {
   }
 
   void _navigateToAdmissionCorner() {
-    // Show selection dialog for admission test type
+    // Show dynamic admission test type selection
     Get.bottomSheet(
-      Container(
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.r),
-            topRight: Radius.circular(20.r),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Select Admission Test Type',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimaryColor,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            _buildAdmissionOption(
-              title: 'Medical Admission',
-              subtitle: 'MBBS, BDS & other medical courses',
-              icon: Icons.medical_services,
-              color: Colors.red,
-              onTap: () => _navigateToAdmissionCornerType('Medical'),
-            ),
-            SizedBox(height: 12.h),
-            _buildAdmissionOption(
-              title: 'Engineering Admission',
-              subtitle: 'BUET, RUET & other engineering universities',
-              icon: Icons.engineering,
-              color: Colors.indigo,
-              onTap: () => _navigateToAdmissionCornerType('Engineering'),
-            ),
-            SizedBox(height: 12.h),
-            _buildAdmissionOption(
-              title: 'GST Admission',
-              subtitle: 'General Science & Technology',
-              icon: Icons.science,
-              color: Colors.purple,
-              onTap: () => _navigateToAdmissionCornerType('GST'),
-            ),
-          ],
-        ),
-      ),
-      backgroundColor: Colors.transparent,
+      AdmissionCornerBottomSheet(),
+      isScrollControlled: true,
     );
   }
 
-  Widget _buildAdmissionOption({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12.r),
-      child: Container(
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Row(
-          children: [
-            Container(
-              height: 40.h,
-              width: 40.w,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24.sp,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimaryColor,
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14.sp,
-              color: Colors.grey[400],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
-  void _navigateToAdmissionCornerType(String admissionType) {
-    Get.back(); // Close bottom sheet
-    
-    Map<String, String> filterParams;
-    
-    switch (admissionType) {
-      case 'Medical':
-        filterParams = {
-          'cornerType': 'Admission',
-          'admissionType': 'Medical',
-          'contestType': '6850390198547b005cc285fb',
-          'modelType': '685456f1b62630909f4b133b',
-          'customExamType': '685032222b005cc23222',
-        };
-        break;
-      case 'Engineering':
-        filterParams = {
-          'cornerType': 'Admission',
-          'admissionType': 'Engineering',
-          'contestType': '685457c9b62630909f4b1348',
-          'modelType': '685457f5b62630909f4b134f',
-          'customExamType': '6322222fe005cc23e34',
-        };
-        break;
-      case 'GST':
-        filterParams = {
-          'cornerType': 'Admission',
-          'admissionType': 'GST',
-          'contestType': '68545874b62630909f4b135c',
-          'modelType': '68545852b62630909f4b1355',
-          'customExamType': '543ef2222fe3wdf5gfvfd',
-        };
-        break;
-      default:
-        return;
-    }    Get.toNamed(Routes.corner, arguments: filterParams);
-  }
-}
-
-// New JobsCornerBottomSheet widget with search functionality
+  // Dynamic AdmissionCornerBottomSheet widget
 class JobsCornerBottomSheet extends StatefulWidget {
   const JobsCornerBottomSheet({super.key});
 
@@ -515,7 +364,7 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
     setState(() => _isLoading = true);
     
     try {
-      print('🔄 Loading exam types from API...');
+      print('🔄 Loading job category exam types from API...');
       
       // Check authentication first
       final AuthService authService = Get.find<AuthService>();
@@ -532,11 +381,12 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
       }
       
       final ApiHelper apiHelper = Get.find<ApiHelper>();
-      final result = await apiHelper.getExamTypes();
+      // Use category-filtered API for job exam types
+      final result = await apiHelper.getExamTypesByCategory('job');
       
       result.fold(
         (error) {
-          print('❌ API Error loading exam types: ${error.message}');
+          print('❌ API Error loading job exam types: ${error.message}');
           setState(() {
             _allExamTypes = [];
             _filteredExamTypes = [];
@@ -544,11 +394,12 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
           });
         },
         (examTypes) {
-          print('✅ Exam types loaded successfully: ${examTypes.length} items');
+          print('✅ Job exam types loaded successfully: ${examTypes.length} items');
           final mappedData = examTypes.map((examType) => {
             '_id': examType.id,
             'title': examType.title,
             'slug': examType.slug,
+            'category': examType.category, // Keep category info
           }).toList();
           
           setState(() {
@@ -559,7 +410,7 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
         },
       );
     } catch (e) {
-      print('🚨 Exception loading exam types: $e');
+      print('🚨 Exception loading job exam types: $e');
       setState(() {
         _allExamTypes = [];
         _filteredExamTypes = [];
@@ -909,24 +760,532 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
     Map<String, String> filterParams;
     
     if (examTypeId == null) {
-      // Show all jobs (no filtering)
+      // Show all jobs (no filtering) - use empty examType for job category
       filterParams = {
         'cornerType': 'Jobs',
         'cornerName': 'Jobs Corner',
       };
     } else {
-      // Filter by specific exam type
+      // Filter by specific exam type using slug for examType parameter
+      final examTypeSlug = _allExamTypes.firstWhere(
+        (type) => type['_id'] == examTypeId,
+        orElse: () => {'slug': examTypeId},
+      )['slug'] ?? examTypeId;
+      
       filterParams = {
         'cornerType': 'Jobs',
         'cornerName': 'Jobs Corner',
-        'examType': examTypeId,
+        'examType': examTypeSlug, // Use slug instead of ID for API compatibility
         'examTypeTitle': examTypeTitle ?? 'Job Preparation',
-        'contestType': examTypeId,
-        'modelType': examTypeId,
-        'customExamType': examTypeId,
+        'contestType': examTypeSlug,
+        'modelType': examTypeSlug,
+        'customExamType': examTypeSlug,
       };
     }
 
+    print('🚀 Navigating to Jobs Corner with params: $filterParams');
+    Get.toNamed(Routes.corner, arguments: filterParams);
+  }
+}
+
+// Dynamic AdmissionCornerBottomSheet widget
+class AdmissionCornerBottomSheet extends StatefulWidget {
+  const AdmissionCornerBottomSheet({super.key});
+
+  @override
+  State<AdmissionCornerBottomSheet> createState() => _AdmissionCornerBottomSheetState();
+}
+
+class _AdmissionCornerBottomSheetState extends State<AdmissionCornerBottomSheet> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _allExamTypes = [];
+  List<Map<String, dynamic>> _filteredExamTypes = [];
+  bool _isLoading = true;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdmissionExamTypes();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      _filterExamTypes();
+    });
+  }
+
+  void _filterExamTypes() {
+    if (_searchQuery.isEmpty) {
+      _filteredExamTypes = List.from(_allExamTypes);
+    } else {
+      _filteredExamTypes = _allExamTypes.where((examType) {
+        final title = (examType['title'] ?? '').toString().toLowerCase();
+        return title.contains(_searchQuery);
+      }).toList();
+    }
+  }
+
+  Future<void> _loadAdmissionExamTypes() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      print('🔄 Loading admission category exam types from API...');
+      
+      // Check authentication first
+      final AuthService authService = Get.find<AuthService>();
+      final isAuthenticated = await authService.isAuthenticated();
+      
+      if (!isAuthenticated) {
+        print('❌ User not authenticated, returning empty list');
+        setState(() {
+          _allExamTypes = [];
+          _filteredExamTypes = [];
+          _isLoading = false;
+        });
+        return;
+      }
+      
+      final ApiHelper apiHelper = Get.find<ApiHelper>();
+      // Use category-filtered API for admission exam types
+      final result = await apiHelper.getExamTypesByCategory('admission');
+      
+      result.fold(
+        (error) {
+          print('❌ API Error loading admission exam types: ${error.message}');
+          setState(() {
+            _allExamTypes = [];
+            _filteredExamTypes = [];
+            _isLoading = false;
+          });
+        },
+        (examTypes) {
+          print('✅ Admission exam types loaded successfully: ${examTypes.length} items');
+          final mappedData = examTypes.map((examType) => {
+            '_id': examType.id,
+            'title': examType.title,
+            'slug': examType.slug,
+            'category': examType.category, // Keep category info
+          }).toList();
+          
+          setState(() {
+            _allExamTypes = mappedData;
+            _filteredExamTypes = List.from(mappedData);
+            _isLoading = false;
+          });
+        },
+      );
+    } catch (e) {
+      print('🚨 Exception loading admission exam types: $e');
+      setState(() {
+        _allExamTypes = [];
+        _filteredExamTypes = [];
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Select Admission Test Type',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimaryColor,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => Get.back(),
+                icon: Icon(
+                  Icons.close,
+                  color: Colors.grey[600],
+                  size: 24.sp,
+                ),
+              ),
+            ],
+          ),
+          
+          SizedBox(height: 16.h),
+          
+          // Search Bar
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search admission tests...',
+                hintStyle: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 14.sp,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Colors.grey[500],
+                  size: 20.sp,
+                ),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                        icon: Icon(
+                          Icons.clear,
+                          color: Colors.grey[500],
+                          size: 20.sp,
+                        ),
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 12.h,
+                ),
+              ),
+            ),
+          ),
+          
+          SizedBox(height: 20.h),
+          
+          // Content
+          Expanded(
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.orange,
+                    ),
+                  )
+                : _buildAdmissionsList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdmissionsList() {
+    // Always show "All Admissions" option
+    final allAdmissionsOption = _buildAdmissionOption(
+      title: 'All Admission Tests',
+      subtitle: 'All university admission preparations',
+      icon: Icons.school,
+      color: Colors.orange,
+      onTap: () => _navigateToAdmissionCornerType(null),
+    );
+
+    if (_filteredExamTypes.isEmpty && _searchQuery.isNotEmpty) {
+      // No search results
+      return Column(
+        children: [
+          allAdmissionsOption,
+          SizedBox(height: 20.h),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    size: 64.sp,
+                    color: Colors.grey[400],
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'No results found',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Try searching with different keywords',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_filteredExamTypes.isEmpty && !_isLoading) {
+      // No exam types available
+      return Column(
+        children: [
+          allAdmissionsOption,
+          SizedBox(height: 20.h),
+          Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Colors.orange,
+                  size: 20.sp,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    'Login to see more admission test types',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Show all available options
+    return ListView(
+      children: [
+        allAdmissionsOption,
+        if (_filteredExamTypes.isNotEmpty) ...[
+          SizedBox(height: 12.h),
+          ...(_filteredExamTypes.map((examType) => Column(
+            children: [
+              _buildAdmissionOption(
+                title: examType['title'] ?? 'Unknown',
+                subtitle: 'Preparation for ${examType['title'] ?? 'Unknown'} admission',
+                icon: _getAdmissionIcon(examType['title'] ?? ''),
+                color: _getAdmissionColor(examType['title'] ?? ''),
+                onTap: () => _navigateToAdmissionCornerType(examType['_id'], examType['title']),
+              ),
+              SizedBox(height: 12.h),
+            ],
+          )).toList()),
+        ],
+      ],
+    );
+  }
+
+  IconData _getAdmissionIcon(String title) {
+    final lowerTitle = title.toLowerCase();
+    if (lowerTitle.contains('medical') || lowerTitle.contains('mbbs') || lowerTitle.contains('bds')) {
+      return Icons.medical_services;
+    } else if (lowerTitle.contains('engineering') || lowerTitle.contains('buet')) {
+      return Icons.engineering;
+    } else if (lowerTitle.contains('gst') || lowerTitle.contains('science')) {
+      return Icons.science;
+    } else {
+      return Icons.library_books;
+    }
+  }
+
+  Color _getAdmissionColor(String title) {
+    final lowerTitle = title.toLowerCase();
+    if (lowerTitle.contains('medical') || lowerTitle.contains('mbbs') || lowerTitle.contains('bds')) {
+      return Colors.red;
+    } else if (lowerTitle.contains('engineering') || lowerTitle.contains('buet')) {
+      return Colors.indigo;
+    } else if (lowerTitle.contains('gst') || lowerTitle.contains('science')) {
+      return Colors.purple;
+    } else {
+      return Colors.orange;
+    }
+  }
+
+  Widget _buildAdmissionOption({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12.r),
+      child: Container(
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 40.h,
+              width: 40.w,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 20.sp,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Highlight search term in title
+                  _buildHighlightedText(
+                    title,
+                    _searchQuery,
+                    TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimaryColor,
+                    ),
+                    TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.orange,
+                      backgroundColor: Colors.orange.withOpacity(0.1),
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 14.sp,
+              color: Colors.grey[400],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHighlightedText(
+    String text,
+    String query,
+    TextStyle normalStyle,
+    TextStyle highlightStyle,
+  ) {
+    if (query.isEmpty) {
+      return Text(text, style: normalStyle);
+    }
+
+    final lowercaseText = text.toLowerCase();
+    final lowercaseQuery = query.toLowerCase();
+    
+    if (!lowercaseText.contains(lowercaseQuery)) {
+      return Text(text, style: normalStyle);
+    }
+
+    final startIndex = lowercaseText.indexOf(lowercaseQuery);
+    final endIndex = startIndex + query.length;
+
+    return RichText(
+      text: TextSpan(
+        children: [
+          if (startIndex > 0)
+            TextSpan(
+              text: text.substring(0, startIndex),
+              style: normalStyle,
+            ),
+          TextSpan(
+            text: text.substring(startIndex, endIndex),
+            style: highlightStyle,
+          ),
+          if (endIndex < text.length)
+            TextSpan(
+              text: text.substring(endIndex),
+              style: normalStyle,
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToAdmissionCornerType(String? examTypeId, [String? examTypeTitle]) {
+    Get.back(); // Close bottom sheet
+    
+    Map<String, String> filterParams;
+    
+    if (examTypeId == null) {
+      // Show all admissions (no filtering) - use empty examType for admission category
+      filterParams = {
+        'cornerType': 'Admission',
+        'cornerName': 'Admission Test Corner',
+      };
+    } else {
+      // Filter by specific exam type using slug for examType parameter
+      final examTypeSlug = _allExamTypes.firstWhere(
+        (type) => type['_id'] == examTypeId,
+        orElse: () => {'slug': examTypeId},
+      )['slug'] ?? examTypeId;
+      
+      filterParams = {
+        'cornerType': 'Admission',
+        'cornerName': 'Admission Test Corner',
+        'examType': examTypeSlug, // Use slug instead of ID for API compatibility
+        'examTypeTitle': examTypeTitle ?? 'Admission Test',
+        'admissionType': examTypeTitle ?? 'Admission Test',
+        'contestType': examTypeSlug,
+        'modelType': examTypeSlug,
+        'customExamType': examTypeSlug,
+      };
+    }
+
+    print('🚀 Navigating to Admission Corner with params: $filterParams');
     Get.toNamed(Routes.corner, arguments: filterParams);
   }
 }
