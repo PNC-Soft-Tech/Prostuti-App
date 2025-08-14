@@ -274,16 +274,16 @@ class ExamCornersWidget extends StatelessWidget {
   void _navigateToCorner(String cornerType) {
     Map<String, String> filterParams;
     
-    switch (cornerType) {
+    switch (cornerType.toLowerCase()) { // Convert to lowercase for case-insensitive matching
       case 'ssc':
         filterParams = {
-          'cornerType': 'ssc',
+          'cornerType': 'SSC',
           'contestType': '68539e723b5190a2557d73d1',
           'modelType': '6842298a2464c0fa0b572e85',
           'customExamType': '3rf432ggjdk90a2557d73d1',
         };
         break;
-      case 'HSC':
+      case 'hsc':
         filterParams = {
           'cornerType': 'HSC',
           'contestType': '6850464498547b005cc28615',
@@ -292,8 +292,12 @@ class ExamCornersWidget extends StatelessWidget {
         };
         break;
       default:
+        print('❌ Unknown corner type: $cornerType');
         return;
-    }    Get.toNamed(Routes.corner, arguments: filterParams);
+    }
+    
+    print('🚀 Navigating to $cornerType corner with params: $filterParams');
+    Get.toNamed(Routes.corner, arguments: filterParams);
   }
   void _navigateToJobsCorner() {
     // Show selection dialog for exam type with search
@@ -619,7 +623,10 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
                 subtitle: 'Preparation for ${examType['title'] ?? 'Unknown'}',
                 icon: Icons.assignment,
                 color: Colors.purple.shade400,
-                onTap: () => _navigateToJobsCornerType(examType['_id'], examType['title']),
+                onTap: () {
+                  print('🔥 Job Corner item clicked: ${examType['title']} (ID: ${examType['_id']})');
+                  _navigateToJobsCornerType(examType['_id'], examType['title']);
+                },
               ),
               SizedBox(height: 12.h),
             ],
@@ -755,7 +762,9 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
   }
 
   void _navigateToJobsCornerType(String? examTypeId, [String? examTypeTitle]) {
+    print('🚀 _navigateToJobsCornerType called with examTypeId: $examTypeId, examTypeTitle: $examTypeTitle');
     Get.back(); // Close bottom sheet
+    print('🚀 Bottom sheet closed');
     
     Map<String, String> filterParams;
     
@@ -767,10 +776,15 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
       };
     } else {
       // Filter by specific exam type using slug for examType parameter
-      final examTypeSlug = _allExamTypes.firstWhere(
-        (type) => type['_id'] == examTypeId,
-        orElse: () => {'slug': examTypeId},
-      )['slug'] ?? examTypeId;
+      Map<String, dynamic> examType;
+      try {
+        examType = _allExamTypes.firstWhere(
+          (type) => type['_id'] == examTypeId,
+        );
+      } catch (e) {
+        examType = {'slug': examTypeId, '_id': examTypeId};
+      }
+      final examTypeSlug = examType['slug']?.toString() ?? examTypeId;
       
       filterParams = {
         'cornerType': 'Jobs',
@@ -784,7 +798,14 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
     }
 
     print('🚀 Navigating to Jobs Corner with params: $filterParams');
-    Get.toNamed(Routes.corner, arguments: filterParams);
+    print('🚀 About to call Get.toNamed(${Routes.corner})');
+    print('🚀 Routes.corner value: ${Routes.corner}');
+    try {
+      Get.toNamed(Routes.corner, arguments: filterParams);
+      print('🚀 Get.toNamed called successfully');
+    } catch (e) {
+      print('❌ Error during navigation: $e');
+    }
   }
 }
 
@@ -1094,7 +1115,10 @@ class _AdmissionCornerBottomSheetState extends State<AdmissionCornerBottomSheet>
                 subtitle: 'Preparation for ${examType['title'] ?? 'Unknown'} admission',
                 icon: _getAdmissionIcon(examType['title'] ?? ''),
                 color: _getAdmissionColor(examType['title'] ?? ''),
-                onTap: () => _navigateToAdmissionCornerType(examType['_id'], examType['title']),
+                onTap: () {
+                  print('🔥 Admission Corner item clicked: ${examType['title']} (ID: ${examType['_id']})');
+                  _navigateToAdmissionCornerType(examType['_id'], examType['title']);
+                },
               ),
               SizedBox(height: 12.h),
             ],
@@ -1256,7 +1280,9 @@ class _AdmissionCornerBottomSheetState extends State<AdmissionCornerBottomSheet>
   }
 
   void _navigateToAdmissionCornerType(String? examTypeId, [String? examTypeTitle]) {
+    print('🚀 _navigateToAdmissionCornerType called with examTypeId: $examTypeId, examTypeTitle: $examTypeTitle');
     Get.back(); // Close bottom sheet
+    print('🚀 Bottom sheet closed');
     
     Map<String, String> filterParams;
     
@@ -1268,10 +1294,15 @@ class _AdmissionCornerBottomSheetState extends State<AdmissionCornerBottomSheet>
       };
     } else {
       // Filter by specific exam type using slug for examType parameter
-      final examTypeSlug = _allExamTypes.firstWhere(
-        (type) => type['_id'] == examTypeId,
-        orElse: () => {'slug': examTypeId},
-      )['slug'] ?? examTypeId;
+      Map<String, dynamic> examType;
+      try {
+        examType = _allExamTypes.firstWhere(
+          (type) => type['_id'] == examTypeId,
+        );
+      } catch (e) {
+        examType = {'slug': examTypeId, '_id': examTypeId};
+      }
+      final examTypeSlug = examType['slug']?.toString() ?? examTypeId;
       
       filterParams = {
         'cornerType': 'Admission',
@@ -1286,6 +1317,13 @@ class _AdmissionCornerBottomSheetState extends State<AdmissionCornerBottomSheet>
     }
 
     print('🚀 Navigating to Admission Corner with params: $filterParams');
-    Get.toNamed(Routes.corner, arguments: filterParams);
+    print('🚀 About to call Get.toNamed(${Routes.corner})');
+    print('🚀 Routes.corner value: ${Routes.corner}');
+    try {
+      Get.toNamed(Routes.corner, arguments: filterParams);
+      print('🚀 Get.toNamed called successfully');
+    } catch (e) {
+      print('❌ Error during navigation: $e');
+    }
   }
 }

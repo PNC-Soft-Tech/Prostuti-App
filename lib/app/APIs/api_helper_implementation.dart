@@ -150,12 +150,12 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         
         if (responseData is Map && responseData['data'] is List) {
           // Nested structure: {success: true, data: {data: [...], total: 5, ...}}
-          examTypes = (responseData['data'] as List)
+          examTypes = responseData['data']
               .map((item) => ExamType.fromJson(item))
               .toList();
         } else if (responseData is List) {
           // Direct array structure: {success: true, data: [...]}
-          examTypes = (responseData as List)
+          examTypes = responseData
               .map((item) => ExamType.fromJson(item))
               .toList();
         } else {
@@ -180,19 +180,24 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     final response = await get('exam-types?category=$category');
     if (response.statusCode == 200) {
       try {
+        // Debug: Log the actual response structure
+        log('🔍 API Response for exam-types?category=$category: ${response.body}');
+        
         // Handle nested data structure: response.body['data']['data']
         final responseData = response.body['data'];
+        log('🔍 ResponseData type: ${responseData.runtimeType}, content: $responseData');
         List<ExamType> examTypes;
         
         if (responseData is Map && responseData['data'] is List) {
           // Nested structure: {success: true, data: {data: [...], total: 5, ...}}
-          examTypes = (responseData['data'] as List)
-              .map((item) => ExamType.fromJson(item))
+          final dataList = responseData['data'] as List;
+          examTypes = dataList
+              .map((item) => ExamType.fromJson(item as Map<String, dynamic>))
               .toList();
         } else if (responseData is List) {
           // Direct array structure: {success: true, data: [...]}
-          examTypes = (responseData as List)
-              .map((item) => ExamType.fromJson(item))
+          examTypes = responseData
+              .map((item) => ExamType.fromJson(item as Map<String, dynamic>))
               .toList();
         } else {
           throw Exception('Unexpected data structure in exam-types response');
