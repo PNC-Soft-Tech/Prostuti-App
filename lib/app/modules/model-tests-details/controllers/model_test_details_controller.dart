@@ -232,8 +232,23 @@ class ModelTestDetailsController extends GetxController
   @override
   void selectOption(String questionId, String selectedOptionId) {
     final currentAnswers = selectedAnswers[questionId] ?? [];
-    if (!currentAnswers.contains(selectedOptionId)) {
-      selectedAnswers[questionId] = [...currentAnswers, selectedOptionId];
+    final questionIndex = questionIdToIndexMap[questionId] ?? -1;
+    final question = questionAtIndex(questionIndex);
+    if (question == null) return;
+    if (question.isAcceptMultipleAnswers) {
+      // Allow multiple answers, but only add if not already selected
+      if (!currentAnswers.contains(selectedOptionId)) {
+        selectedAnswers[questionId] = [...currentAnswers, selectedOptionId];
+      } else {
+        // Allow unselecting only if multiple answers are allowed
+        selectedAnswers[questionId] = currentAnswers.where((id) => id != selectedOptionId).toList();
+      }
+    } else {
+      // Only allow one answer, and never allow unselecting once selected
+      if (currentAnswers.isEmpty) {
+        selectedAnswers[questionId] = [selectedOptionId];
+      }
+      // If already answered, do nothing (cannot unselect or change)
     }
   }
 

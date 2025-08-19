@@ -205,10 +205,10 @@ class SharedQuestionWidget extends StatelessWidget {
       // Allow selection in custom exams
       final bool isCustomExam = contestId.contains('custom') ||
           Get.currentRoute.contains('custom-exam');
-      final bool canSelectAnswers = showExplanation ||
-          isCustomExam || // Always allow selection in custom exams
-          (isExamMode && !isSubmitted) ||
-          (!isExamMode); // Can select in read mode and in exam mode before submission
+    final bool canSelectAnswers = showExplanation ||
+      isCustomExam || // Always allow selection in custom exams
+      (isExamMode && !isSubmitted) ||
+      (!isExamMode); // Can select in read mode and in exam mode before submission
 
       // Determine if correct answers should be shown
       final bool shouldShowCorrectAnswers = (isSubmitted &&
@@ -237,8 +237,7 @@ class SharedQuestionWidget extends StatelessWidget {
                 }
 
                 final option = question.options[optionIndex];
-                final isSelected =
-                    controller.isOptionSelected(question.id, option.id);
+                final isSelected = controller.isOptionSelected(question.id, option.id);
                 final isLoading = loadingOptionIndex.value == optionIndex;
                 final optionNumber = int.tryParse(option.id) ?? 0;
                 final optionLetter = controller.getOptionAns(optionNumber);
@@ -250,72 +249,77 @@ class SharedQuestionWidget extends StatelessWidget {
                 });
                 final isCorrectAns = correctAnsList
                     .toSet()
-                    .intersection(
-                        (controller.selectedAnswers[question.id] ?? []).toSet())
+                    .intersection((controller.selectedAnswers[question.id] ?? []).toSet())
                     .isNotEmpty;
-                final isAnswered = controller.isAnswered(
-                    question.id, option.id);
+                final isAnswered = controller.isAnswered(question.id, option.id);
 
+                final singleAnswered = !question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+                final optionDisabled = singleAnswered && !isSelected;
                 return Expanded(
                   child: GestureDetector(
-                    onTap: () async {
-                      // Prevent selection if already answered or if we shouldn't allow selection
-                      if (!canSelectAnswers || (!question.isAcceptMultipleAnswers && isExamMode))
-                        return;
+                    onTap: optionDisabled
+                        ? null
+                        : () async {
+                            // Prevent selection if not allowed
+                            if (!canSelectAnswers) return;
+                            // For single answer questions, prevent unselecting or changing after selection
+                            if (!question.isAcceptMultipleAnswers && isAnswered) return;
 
-                      loadingOptionIndex.value = optionIndex;
-                      controller.selectOption(question.id, option.id);
+                            loadingOptionIndex.value = optionIndex;
+                            controller.selectOption(question.id, option.id);
 
-                      // Only submit answer via API in exam mode or for custom exams
-                      bool success = true;
-                      if (isExamMode || isCustomExam || question.isAcceptMultipleAnswers) {
-                        success = await controller.submitAnswer(
-                          question.id,
-                          contestId,
-                          controller.selectedAnswers[question.id] ?? [],
-                        );
-                        if (!success) {
-                          controller.resetSelectOption(question.id);
-                        }
-                      }
-                      // In read mode, we just store the selection locally without API call
+                            // Only submit answer via API in exam mode or for custom exams
+                            bool success = true;
+                            if (isExamMode || isCustomExam || question.isAcceptMultipleAnswers) {
+                              success = await controller.submitAnswer(
+                                question.id,
+                                contestId,
+                                controller.selectedAnswers[question.id] ?? [],
+                              );
+                              if (!success) {
+                                controller.resetSelectOption(question.id);
+                              }
+                            }
+                            // In read mode, we just store the selection locally without API call
 
-                      loadingOptionIndex.value = null;
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          bottom: 12.h,
-                          right: colIndex == 0 ? 8.w : 0,
-                          left: colIndex == 1 ? 8.w : 0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Option selector
-                          SharedQuestionCircleWidget(
-                            isCorrectAns: isCorrectAns,
-                            isSelected: isSelected,
-                            showCorrectAns: finalShowCorrectAnswers,
-                          ),
+                            loadingOptionIndex.value = null;
+                          },
+                    child: Opacity(
+                      opacity: optionDisabled ? 0.5 : 1.0,
+                      child: Container(
+                        margin: EdgeInsets.only(
+                            bottom: 12.h,
+                            right: colIndex == 0 ? 8.w : 0,
+                            left: colIndex == 1 ? 8.w : 0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Option selector
+                            SharedQuestionCircleWidget(
+                              isCorrectAns: isCorrectAns,
+                              isSelected: isSelected,
+                              showCorrectAns: finalShowCorrectAnswers,
+                            ),
 
-                          SizedBox(width: 8.w),
+                            SizedBox(width: 8.w),
 
-                          // Option content
-                          Expanded(
-                            child: isLoading
-                                ? Center(
-                                    child: CupertinoActivityIndicator(
-                                        radius: 12.r),
-                                  )
-                                : HtmlWidget(
-                                    option.title,
-                                    textStyle: TextStyle(
-                                      fontSize: 14
-                                          .sp, // Slightly smaller font for grid layout
-                                      color: Colors.black87,
+                            // Option content
+                            Expanded(
+                              child: isLoading
+                                  ? Center(
+                                      child: CupertinoActivityIndicator(
+                                          radius: 12.r),
+                                    )
+                                  : HtmlWidget(
+                                      option.title,
+                                      textStyle: TextStyle(
+                                        fontSize: 14.sp, // Slightly smaller font for grid layout
+                                        color: Colors.black87,
+                                      ),
                                     ),
-                                  ),
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -339,59 +343,68 @@ class SharedQuestionWidget extends StatelessWidget {
             final isAnswered = controller.isAnswered(
                 question.id, option.id);
 
+            final singleAnswered = !question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+            final optionDisabled = singleAnswered && !isSelected;
             return GestureDetector(
-              onTap: () async {
-                // Prevent selection if already answered or if we shouldn't allow selection
-                if (!canSelectAnswers || (isAnswered && isExamMode)) return;
+              onTap: optionDisabled
+                  ? null
+                  : () async {
+                      // Prevent selection if not allowed
+                      if (!canSelectAnswers) return;
+                      // For single answer questions, prevent unselecting or changing after selection
+                      if (!question.isAcceptMultipleAnswers && isAnswered) return;
 
-                loadingOptionIndex.value = optionIndex;
-                controller.selectOption(question.id, option.id);
+                      loadingOptionIndex.value = optionIndex;
+                      controller.selectOption(question.id, option.id);
 
-                // Only submit answer via API in exam mode or for custom exams
-                bool success = true;
-                if (isExamMode || isCustomExam) {
-                  success = await controller.submitAnswer(
-                    question.id,
-                    contestId,
-                    controller.selectedAnswers[question.id] ?? [],
-                  );
-                  if (!success) {
-                    controller.resetSelectOption(question.id);
-                  }
-                }
-                // In read mode, we just store the selection locally without API call
+                      // Only submit answer via API in exam mode or for custom exams
+                      bool success = true;
+                      if (isExamMode || isCustomExam || question.isAcceptMultipleAnswers) {
+                        success = await controller.submitAnswer(
+                          question.id,
+                          contestId,
+                          controller.selectedAnswers[question.id] ?? [],
+                        );
+                        if (!success) {
+                          controller.resetSelectOption(question.id);
+                        }
+                      }
+                      // In read mode, we just store the selection locally without API call
 
-                loadingOptionIndex.value = null;
-              },
-              child: Container(
-                margin: EdgeInsets.only(bottom: 12.h),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Option selector
-                    SharedQuestionCircleWidget(
-                      isCorrectAns: isCorrectAns,
-                      isSelected: isSelected,
-                      showCorrectAns: finalShowCorrectAnswers,
-                    ),
+                      loadingOptionIndex.value = null;
+                    },
+              child: Opacity(
+                opacity: optionDisabled ? 0.5 : 1.0,
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 12.h),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Option selector
+                      SharedQuestionCircleWidget(
+                        isCorrectAns: isCorrectAns,
+                        isSelected: isSelected,
+                        showCorrectAns: finalShowCorrectAnswers,
+                      ),
 
-                    SizedBox(width: 12.w),
+                      SizedBox(width: 12.w),
 
-                    // Option content
-                    Expanded(
-                      child: isLoading
-                          ? Center(
-                              child: CupertinoActivityIndicator(radius: 12.r),
-                            )
-                          : HtmlWidget(
-                              option.title,
-                              textStyle: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black87,
+                      // Option content
+                      Expanded(
+                        child: isLoading
+                            ? Center(
+                                child: CupertinoActivityIndicator(radius: 12.r),
+                              )
+                            : HtmlWidget(
+                                option.title,
+                                textStyle: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.black87,
+                                ),
                               ),
-                            ),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
