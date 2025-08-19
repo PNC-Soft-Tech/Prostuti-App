@@ -92,49 +92,46 @@ class SharedQuestionWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 8.h), // Correct/Incorrect indicator
                     Obx(() {
-                      final isAnswered = controller.isAnswered(question.id,
-                         'option.id');
-
-                      // Determine if we should show correct/incorrect status
-                      final shouldShowStatus = ((controller
-                                  .isModelTestSubmitted.value &&
-                              controller.selectedTestMode.value ==
-                                  'exam') || // For exam mode after submission
-                          (controller.selectedTestMode.value ==
-                              'read')); // For read mode
-
-                      // Don't show status for custom exams
-                      final isCustomExam = contestId.contains('custom') ||
-                          Get.currentRoute.contains('custom-exam');
-                      final finalShowStatus =
-                          isCustomExam ? false : shouldShowStatus;
-
-                      if (isAnswered && finalShowStatus) {
-                        final List<String> userAnswer =
-                            controller.selectedAnswers[question.id] ?? [];
-                        // final int userOptionNumber =
-                        //     int.tryParse(userAnswer) ?? 0;
-                        // final String userOptionLetter =
-                        //     controller.getOptionAns(userOptionNumber);
+                      final isAnswered = (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+                      // Show correct answers only in read mode for model test (not custom exam)
+                      final isReadMode = controller.selectedTestMode.value == 'read';
+                      final isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
+                      if (isAnswered && isReadMode && !isCustomExam) {
+                        // Show correct answers by marking options with isCorrect==true
                         List<String> correctAnswers = question.options
                             .where((option) => option.isCorrect == true)
                             .map((option) => option.id)
                             .toList();
-                        final bool isCorrectAns = correctAnswers
-                            .toSet()
-                            .intersection(userAnswer.toSet())
-                            .isNotEmpty;
-
                         return Padding(
                           padding: EdgeInsets.only(bottom: 8.h),
-                          child: Text(isCorrectAns ? "Correct" : "Incorrect",
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                                color: isCorrectAns
-                                    ? Colors.green
-                                    : Colors.red.shade300,
-                              )),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Correct Answer:',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              ...correctAnswers.map((ansId) {
+                                final option = question.options.firstWhereOrNull((o) => o.id == ansId);
+                                return option != null
+                                    ? Container(
+                                        margin: EdgeInsets.only(right: 6.w),
+                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(6.r),
+                                        ),
+                                        child: HtmlWidget(option.title,
+                                            textStyle: TextStyle(fontSize: 13.sp, color: Colors.green)),
+                                      )
+                                    : SizedBox.shrink();
+                              }).toList(),
+                            ],
+                          ),
                         );
                       }
                       return SizedBox.shrink();
@@ -241,29 +238,46 @@ class SharedQuestionWidget extends StatelessWidget {
                 final isLoading = loadingOptionIndex.value == optionIndex;
                 final optionNumber = int.tryParse(option.id) ?? 0;
                 final optionLetter = controller.getOptionAns(optionNumber);
-                final correctAnsList = [];
-                question.options.map((o) {
+                final correctAnsList = <String>[];
+                question.options.forEach((o) {
                   if (o.isCorrect == true) {
                     correctAnsList.add(o.id);
                   }
                 });
-                final isCorrectAns = correctAnsList
-                    .toSet()
-                    .intersection((controller.selectedAnswers[question.id] ?? []).toSet())
-                    .isNotEmpty;
                 final isAnswered = controller.isAnswered(question.id, option.id);
 
                 final singleAnswered = !question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
                 final optionDisabled = singleAnswered && !isSelected;
+
+                // For read mode, multiple answer, show tick for correct, cross for incorrect selected
+                final isReadMode = controller.selectedTestMode.value == 'read';
+                final showMarkLogic = isReadMode && question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+                bool showTick = false;
+                bool showCross = false;
+                if (showMarkLogic) {
+                  if (option.isCorrect == true && isSelected) {
+                    showTick = true;
+                  } else if (option.isCorrect != true && isSelected) {
+                    showCross = true;
+                  }
+                }
+
+                // Prevent reselect/re-answer for multiple-answer questions after selection
+                // Prevent re-selection for multiple-answer questions even if no option is correct
+                // Always disable option after it is selected for multiple-answer questions
+                final multiOptionDisabled = question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false);
+
                 return Expanded(
                   child: GestureDetector(
-                    onTap: optionDisabled
+                    onTap: (optionDisabled || multiOptionDisabled)
                         ? null
                         : () async {
                             // Prevent selection if not allowed
                             if (!canSelectAnswers) return;
                             // For single answer questions, prevent unselecting or changing after selection
                             if (!question.isAcceptMultipleAnswers && isAnswered) return;
+                            // For multiple answer questions, prevent reselecting already selected option
+                            if (question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false)) return;
 
                             loadingOptionIndex.value = optionIndex;
                             controller.selectOption(question.id, option.id);
@@ -285,7 +299,7 @@ class SharedQuestionWidget extends StatelessWidget {
                             loadingOptionIndex.value = null;
                           },
                     child: Opacity(
-                      opacity: optionDisabled ? 0.5 : 1.0,
+                      opacity: (optionDisabled || multiOptionDisabled) ? 0.5 : 1.0,
                       child: Container(
                         margin: EdgeInsets.only(
                             bottom: 12.h,
@@ -295,10 +309,19 @@ class SharedQuestionWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Option selector
-                            SharedQuestionCircleWidget(
-                              isCorrectAns: isCorrectAns,
-                              isSelected: isSelected,
-                              showCorrectAns: finalShowCorrectAnswers,
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SharedQuestionCircleWidget(
+                                  isCorrectAns: showTick,
+                                  isSelected: isSelected,
+                                  showCorrectAns: finalShowCorrectAnswers,
+                                ),
+                                if (showTick)
+                                  Icon(Icons.check, color: Colors.green, size: 18.sp)
+                                else if (showCross)
+                                  Icon(Icons.close, color: Colors.red, size: 18.sp)
+                              ],
                             ),
 
                             SizedBox(width: 8.w),
@@ -345,14 +368,17 @@ class SharedQuestionWidget extends StatelessWidget {
 
             final singleAnswered = !question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
             final optionDisabled = singleAnswered && !isSelected;
+            final multiOptionDisabled = question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false);
             return GestureDetector(
-              onTap: optionDisabled
+              onTap: (optionDisabled || multiOptionDisabled)
                   ? null
                   : () async {
                       // Prevent selection if not allowed
                       if (!canSelectAnswers) return;
                       // For single answer questions, prevent unselecting or changing after selection
                       if (!question.isAcceptMultipleAnswers && isAnswered) return;
+                      // For multiple answer questions, prevent reselecting already selected option
+                      if (question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false)) return;
 
                       loadingOptionIndex.value = optionIndex;
                       controller.selectOption(question.id, option.id);
@@ -374,7 +400,7 @@ class SharedQuestionWidget extends StatelessWidget {
                       loadingOptionIndex.value = null;
                     },
               child: Opacity(
-                opacity: optionDisabled ? 0.5 : 1.0,
+                opacity: (optionDisabled || multiOptionDisabled) ? 0.5 : 1.0,
                 child: Container(
                   margin: EdgeInsets.only(bottom: 12.h),
                   child: Row(
