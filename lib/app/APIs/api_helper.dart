@@ -77,7 +77,7 @@ abstract class ApiHelper {
   Future<Either<CustomError, Response>> submitContestAnswer({
     required String questionId,
     required String contestId,
-    required String selectedAnswer,
+    required List<String> selectedAnswers,
   });
   // Custom exam answer submission - uses selectedAnswers as string
   Future<Either<CustomError, Response>> submitCustomExamAnswers({

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 abstract class BaseQuestionController extends GetxController {
   // Common state properties
-  RxMap<String, String> get selectedAnswers;
+  RxMap<String, List<String>> get selectedAnswers;
   RxList<String> get markedQuestionIds;
   RxBool get isQuestionOpened;
   RxString get selectedSubject;
@@ -19,11 +19,11 @@ abstract class BaseQuestionController extends GetxController {
   // Question interaction methods
   bool isMarkedQuestion(String questionId);
   void markUnmarkQuestion(String questionId);
-  void selectOption(String questionId, String selectedOptionOrder);
-  bool isOptionSelected(String questionId, String optionOrder);
+  void selectOption(String questionId, String selectedOptionId);
+  bool isOptionSelected(String questionId, String optionId);
     bool isCorrectAnswered (String questionId, String selectedAnswer) ;
-  bool isAnswered(String questionId, List<String> optionOrderList) ;
-  Future<bool> submitAnswer(String questionId, String contestId, String selectedAnswer);
+  bool isAnswered(String questionId, String optionId) ;
+  Future<bool> submitAnswer(String questionId, String contestId, List<String> selectedAnswers);
   String getOptionAns(int index);
   void resetSelectOption(String questionId) ;
 }

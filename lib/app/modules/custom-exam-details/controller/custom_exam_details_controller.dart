@@ -20,7 +20,7 @@ class CustomExamDetailsController extends GetxController
   // Observable state
   var customExamId = ''.obs;
   var customExamDetails = Rxn<CustomExamDetailsResponse>();
-  final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
+  final RxMap<String, List<String>> selectedAnswers = <String, List<String>>{}.obs;
   final RxList<String> markedQuestionIds = <String>[].obs;
   final currentQuestionIndex = 0.obs;
   final RxBool isReadModeSelected = true.obs;
@@ -191,13 +191,15 @@ class CustomExamDetailsController extends GetxController
   }
 
   @override
-  void selectOption(String questionId, String selectedOptionOrder) {
-    selectedAnswers[questionId] = selectedOptionOrder;
+  void selectOption(String questionId, String selectedOptionId) {
+    selectedAnswers[questionId] = selectedAnswers[questionId]?.contains(selectedOptionId) ?? false
+        ? selectedAnswers[questionId]!.where((id) => id != selectedOptionId).toList()
+        : [...?selectedAnswers[questionId], selectedOptionId];
   }
 
   @override
   void resetSelectOption(String questionId) {
-    selectedAnswers[questionId] = ''; // Reset selection for the question
+    selectedAnswers[questionId] = []; // Reset selection for the question
   }
 
   @override
@@ -214,13 +216,12 @@ class CustomExamDetailsController extends GetxController
   }
 
   @override
-  bool isAnswered(String questionId, List<String> optionOrderList) {
+  bool isAnswered(String questionId, String optionId) {
     bool isOptionAnswered = false;
-    for (var optionOrder in optionOrderList) {
-      if (selectedAnswers[questionId] == optionOrder) {
+    
+      if (selectedAnswers[questionId] == optionId) {
         isOptionAnswered = true; // Answer is selected
-        break;
-      }
+      
     }
     return isOptionAnswered;
   }
@@ -259,7 +260,7 @@ class CustomExamDetailsController extends GetxController
   Future<bool> submitAnswer(
     String questionId,
     String contestId,
-    String selectedAnswer,
+    List<String> selectedAnswers,
   ) async {
     questionLoadingStatus[questionId] = true;
 
@@ -267,7 +268,7 @@ class CustomExamDetailsController extends GetxController
       final result = await _apiHelper.submitContestAnswer(
         questionId: questionId,
         contestId: contestId,
-        selectedAnswer: selectedAnswer,
+        selectedAnswers: selectedAnswers,
       );
 
       bool isSuccess = false;

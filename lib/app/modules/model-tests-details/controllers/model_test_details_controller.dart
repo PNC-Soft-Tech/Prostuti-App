@@ -12,14 +12,16 @@ import '../../questions/models/question_model.dart';
 import '../models/model_test_response_model.dart';
 import '../../../common/controllers/base_question_controller.dart';
 
-class ModelTestDetailsController extends GetxController implements BaseQuestionController {
+class ModelTestDetailsController extends GetxController
+    implements BaseQuestionController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   var contestId = ''.obs;
   var modelTestId = ''.obs;
   var contests = <Contest>[].obs;
   var contest = Rxn<Contest>();
   var modelDetails = Rxn<ModelTestDetailsResponse>();
-  final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
+  final RxMap<String, List<String>> selectedAnswers =
+      <String, List<String>>{}.obs;
   final markedQuestions = <String>[].obs;
   final currentQuestionIndex = 0.obs; // Track current question
   final RxBool isReadModeSelected = true.obs;
@@ -53,21 +55,21 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     super.onInit();
     final Map<String, dynamic> arguments = Get.arguments;
     modelTestId.value = arguments["modelTestId"]; // Retrieve model test ID
-    
+
     // Always set exam mode from arguments if provided
     if (arguments.containsKey("mode")) {
       currentSelectedModelTestMode.value = arguments["mode"];
-      
+
       // Update mode selection state
       isReadModeSelected.value = currentSelectedModelTestMode.value == 'read';
       isExamModeSelected.value = currentSelectedModelTestMode.value == 'exam';
-      
+
       // Always ensure questions are shown
       isQuestionOpened.value = true;
     }
-    
+
     fetchModelTestDetails(modelTestId.value);
-    
+
     // Set up visibleQuestions listener to ensure it's never empty
     ever(visibleQuestions, (_) {
       if (visibleQuestions.isEmpty && filteredQuestions.isNotEmpty) {
@@ -75,12 +77,12 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
         updateVisibleQuestions(filteredQuestions.map((q) => q.id).toList());
       }
     });
-    
+
     // Listen for question index changes
     ever<int>(currentQuestionIndex, (index) {
       // Don't scroll if no controller or current index invalid
       if (!scrollController.hasClients || index < 0) return;
-      
+
       scrollController.animateTo(
         index * 300.h, // Approx height per question, tune if needed
         duration: const Duration(milliseconds: 500),
@@ -93,7 +95,7 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     currentSelectedModelTestMode.value = isReadMode ? 'read' : 'exam';
     isReadModeSelected.value = isReadMode;
     isExamModeSelected.value = !isReadMode;
-    
+
     // Always ensure questions are visible
     isQuestionOpened.value = true;
 
@@ -101,11 +103,11 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     if (!isReadMode) {
       // Clear selected answers
       selectedAnswers.clear();
-      
+
       // Clear marked questions (optional, based on your requirements)
       markedQuestionIds.clear();
       markedQuestionIndexes.clear();
-      
+
       // Reset submission state
       isModelTestSubmittedLocal.value = false;
     }
@@ -120,14 +122,14 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
       questionKeys[question.id] = GlobalKey();
       questionIdToIndexMap[question.id] = i;
     }
-    
+
     // Initialize visibleQuestions with all question IDs
     updateVisibleQuestions(questions.map((q) => q.id).toList());
   }
 
   void scrollToQuestion(String questionId) {
-    final originalIndex =
-        modelDetails.value?.contest.questions.indexWhere((q) => q.id == questionId);
+    final originalIndex = modelDetails.value?.contest.questions
+        .indexWhere((q) => q.id == questionId);
 
     if (originalIndex == null || originalIndex == -1) return;
 
@@ -178,7 +180,9 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
     final index = visibleQuestions.indexOf(currentQuestionId);
     debugPrint(
         "Next Visible Question: ${index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : 'None'}");
-    return index < visibleQuestions.length - 1 ? visibleQuestions[index + 1] : null;
+    return index < visibleQuestions.length - 1
+        ? visibleQuestions[index + 1]
+        : null;
   }
 
   void fetchModelTestDetails(String modelTestId) async {
@@ -202,10 +206,10 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
 
         setUpQuestionKeysAndIndexes(
             modelDetails.value?.contest.questions ?? []);
-        
+
         // For model tests, start timer based on current time + test duration
         startModelTestTimer(data.contest.totalTime ?? 0);
-        
+
         isLoading.value = false;
       },
     );
@@ -226,37 +230,40 @@ class ModelTestDetailsController extends GetxController implements BaseQuestionC
   }
 
   @override
-  void selectOption(String questionId, String selectedOptionOrder) {
-    selectedAnswers[questionId] = selectedOptionOrder;
-  }
-  @override
-  void resetSelectOption(String questionId) {
-    selectedAnswers[questionId] = '';
+  void selectOption(String questionId, String selectedOptionId) {
+    final currentAnswers = selectedAnswers[questionId] ?? [];
+    if (!currentAnswers.contains(selectedOptionId)) {
+      selectedAnswers[questionId] = [...currentAnswers, selectedOptionId];
+    }
   }
 
   @override
-  bool isOptionSelected(String questionId, String optionOrder) {
-    return selectedAnswers[questionId] == optionOrder;
+  void resetSelectOption(String questionId) {
+    selectedAnswers[questionId] = [];
   }
+
   @override
-  bool isAnswered(String questionId, List<String> optionOrderList) {
+  bool isOptionSelected(String questionId, String optionOrderId) {
+    return selectedAnswers[questionId]?.contains(optionOrderId) ?? false;
+  }
+
+  bool isAnswered(String questionId, String optionId) {
     bool isOptionAnswered = false;
-    for (var optionOrder in optionOrderList) {
-      if (selectedAnswers[questionId] == optionOrder) {
-        isOptionAnswered= true; // Answer is selected
-        break;
-      }
+
+    if (selectedAnswers[questionId]?.contains(optionId) == true) {
+      isOptionAnswered = true; // Answer is selected
     }
     return isOptionAnswered;
   }
-@override 
-bool isCorrectAnswered(String questionId, String selectedAnswer) {
+
+  @override
+  bool isCorrectAnswered(String questionId, String selectedAnswer) {
     // Check if the selected answer is correct
     final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
     if (question == null) return false;
     return question.rightAnswer == selectedAnswer;
-   
   }
+
   @override
   void markUnmarkQuestion(String questionId) {
     final index = questionIdToIndexMap[questionId] ?? -1;
@@ -287,14 +294,15 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
       return {
         "question": entry.key,
         "contest": contestId,
-        "selectedAnswer": entry.value,
+        "selectedAnswers": entry.value,
       };
     }).toList();
   }
+
   Future<bool> submitAnswer(
     String questionId,
     String contestId,
-    String selectedAnswer,
+    List<String> selectedAnswer,
   ) async {
     // In read mode, don't make API calls - just return success
     if (currentSelectedModelTestMode.value == 'read') {
@@ -312,7 +320,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
       final result = await _apiHelper.submitContestAnswer(
         questionId: questionId,
         contestId: contestId,
-        selectedAnswer: selectedAnswer,
+        selectedAnswers: selectedAnswers[questionId] ?? [],
       );
 
       bool isSuccess = false;
@@ -399,14 +407,15 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
       remainingTime.value = const Duration(hours: 24);
       return;
     }
-    
+
     // Calculate total time based on number of questions × 30 seconds each
     const int secondsPerQuestion = 30;
     final totalQuestions = filteredQuestions.length;
     final totalSeconds = totalQuestions * secondsPerQuestion;
-    
-    print('🕐 Starting model test timer: $totalQuestions questions × $secondsPerQuestion seconds = ${totalSeconds}s total');
-    
+
+    print(
+        '🕐 Starting model test timer: $totalQuestions questions × $secondsPerQuestion seconds = ${totalSeconds}s total');
+
     // Start the total timer countdown
     _startTotalTimer(totalSeconds);
   }
@@ -414,21 +423,22 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   void _startTotalTimer(int totalSeconds) {
     // Set initial remaining time for all questions combined
     remainingTime.value = Duration(seconds: totalSeconds);
-    
+
     print('⏱️ Starting total timer: ${totalSeconds}s for entire test');
-    
+
     // Cancel any existing timer
     _timer?.cancel();
-    
+
     // Start countdown timer for entire test
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (remainingTime.value.inSeconds > 0) {
-        remainingTime.value = Duration(seconds: remainingTime.value.inSeconds - 1);
+        remainingTime.value =
+            Duration(seconds: remainingTime.value.inSeconds - 1);
       } else {
         // Time up for entire test
         timer.cancel();
         print('⏰ Total test time is up!');
-        
+
         // Auto-submit the test when time is up
         _autoSubmitTest();
       }
@@ -437,23 +447,23 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
 
   void _autoSubmitTest() {
     print('🏁 Auto-submitting test due to time limit');
-    
+
     // Set the same flag that manual submit sets to show results
     isModelTestSubmittedLocal.value = true;
-    
+
     // Stop the timer
     _timer?.cancel();
-    
+
     // Show completion message
     Get.snackbar(
-      'Time Up!', 
+      'Time Up!',
       'Test completed automatically. Check your results below.',
       duration: Duration(seconds: 3),
       backgroundColor: Colors.orange.withOpacity(0.1),
       colorText: Colors.orange.shade700,
       icon: Icon(Icons.timer_off, color: Colors.orange),
     );
-    
+
     // Optional: Also call the API submit if needed
     // final contestId = modelDetails.value?.contest.id;
     // if (contestId != null) {
@@ -465,7 +475,8 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   // No longer need per-question timer reset since we're using total time
   void onQuestionChanged(int newQuestionIndex) {
     // Timer continues running for total time, no reset needed
-    print('📋 Question changed to ${newQuestionIndex + 1}, timer continues counting total time');
+    print(
+        '📋 Question changed to ${newQuestionIndex + 1}, timer continues counting total time');
   }
 
   void _updateRemainingTime(DateTime startTime, DateTime endTime) {
@@ -480,7 +491,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     }
   }
 
-@override
+  @override
   void onClose() {
     _timer?.cancel();
     super.onClose();
@@ -506,8 +517,10 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
     final parts = <String>[];
     if (days > 0) parts.add('$days day${days != 1 ? 's' : ''}');
     if (hours > 0) parts.add('$hours hour${hours != 1 ? 's' : ''}');
-    if (minutes > 0 && parts.length < 2) parts.add('$minutes minute${minutes != 1 ? 's' : ''}');
-    if (seconds > 0 && parts.isEmpty) parts.add('$seconds second${seconds != 1 ? 's' : ''}');
+    if (minutes > 0 && parts.length < 2)
+      parts.add('$minutes minute${minutes != 1 ? 's' : ''}');
+    if (seconds > 0 && parts.isEmpty)
+      parts.add('$seconds second${seconds != 1 ? 's' : ''}');
 
     // Take up to two most significant units
     final displayParts = parts.take(2).toList();
@@ -518,5 +531,4 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   RxString get selectedTestMode => currentSelectedModelTestMode;
   @override
   RxBool get isModelTestSubmitted => isModelTestSubmittedLocal;
-  
 }

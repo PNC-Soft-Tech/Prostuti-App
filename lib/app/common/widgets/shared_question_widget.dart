@@ -90,33 +90,40 @@ class SharedQuestionWidget extends StatelessWidget {
                         height: 1.5,
                       ),
                     ),
-                    SizedBox(height: 8.h),                    // Correct/Incorrect indicator
+                    SizedBox(height: 8.h), // Correct/Incorrect indicator
                     Obx(() {
                       final isAnswered = controller.isAnswered(question.id,
-                          question.options.map((e) => e.order).toList());
+                         'option.id');
 
                       // Determine if we should show correct/incorrect status
-                      final shouldShowStatus =
-                          ((controller.isModelTestSubmitted.value &&
-                                  controller.selectedTestMode.value ==
-                                      'exam') || // For exam mode after submission
-                              (controller.selectedTestMode.value ==
-                                  'read')); // For read mode
-                      
+                      final shouldShowStatus = ((controller
+                                  .isModelTestSubmitted.value &&
+                              controller.selectedTestMode.value ==
+                                  'exam') || // For exam mode after submission
+                          (controller.selectedTestMode.value ==
+                              'read')); // For read mode
+
                       // Don't show status for custom exams
-                      final isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
-                      final finalShowStatus = isCustomExam ? false : shouldShowStatus;
+                      final isCustomExam = contestId.contains('custom') ||
+                          Get.currentRoute.contains('custom-exam');
+                      final finalShowStatus =
+                          isCustomExam ? false : shouldShowStatus;
 
                       if (isAnswered && finalShowStatus) {
-                        final String userAnswer =
-                            controller.selectedAnswers[question.id] ?? '';
-                        final int userOptionNumber =
-                            int.tryParse(userAnswer) ?? 0;
-                        final String userOptionLetter =
-                            controller.getOptionAns(userOptionNumber);
-                        final bool isCorrectAns =
-                            question.rightAnswer?.toLowerCase() ==
-                                userOptionLetter.toLowerCase();
+                        final List<String> userAnswer =
+                            controller.selectedAnswers[question.id] ?? [];
+                        // final int userOptionNumber =
+                        //     int.tryParse(userAnswer) ?? 0;
+                        // final String userOptionLetter =
+                        //     controller.getOptionAns(userOptionNumber);
+                        List<String> correctAnswers = question.options
+                            .where((option) => option.isCorrect == true)
+                            .map((option) => option.id)
+                            .toList();
+                        final bool isCorrectAns = correctAnswers
+                            .toSet()
+                            .intersection(userAnswer.toSet())
+                            .isNotEmpty;
 
                         return Padding(
                           padding: EdgeInsets.only(bottom: 8.h),
@@ -161,7 +168,7 @@ class SharedQuestionWidget extends StatelessWidget {
                             ],
                           )),
                     ),
-                    SizedBox(height: 16.h),                    // Options
+                    SizedBox(height: 16.h), // Options
                     if (question.options.isNotEmpty)
                       _buildOptions()
                     else
@@ -194,21 +201,26 @@ class SharedQuestionWidget extends StatelessWidget {
       final bool isExamMode = controller.selectedTestMode.value == 'exam';
       final bool isReadMode = controller.selectedTestMode.value == 'read';
       final bool isSubmitted = controller.isModelTestSubmitted.value;
-      
+
       // Allow selection in custom exams
-      final bool isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');      final bool canSelectAnswers = showExplanation ||
+      final bool isCustomExam = contestId.contains('custom') ||
+          Get.currentRoute.contains('custom-exam');
+      final bool canSelectAnswers = showExplanation ||
           isCustomExam || // Always allow selection in custom exams
           (isExamMode && !isSubmitted) ||
           (!isExamMode); // Can select in read mode and in exam mode before submission
-      
+
       // Determine if correct answers should be shown
-      final bool shouldShowCorrectAnswers = 
-          (isSubmitted && isExamMode) || // Only after submission in exam mode
-          (isReadMode && controller.isAnswered(question.id, question.options.map((e) => e.order).toList())) || // Show in read mode only after user selects an option
-          showCorrectAns; // Explicit parameter override
-      
+      final bool shouldShowCorrectAnswers = (isSubmitted &&
+              isExamMode) || // Only after submission in exam mode
+          (isReadMode &&
+            !question.isAcceptMultipleAnswers ||
+          showCorrectAns); // Explicit parameter override
+
       // For custom exams, never show correct answers during the exam
-      final bool finalShowCorrectAnswers = isCustomExam ? showCorrectAns : shouldShowCorrectAnswers;      if (question.isGrid == true) {
+      final bool finalShowCorrectAnswers =
+          isCustomExam ? showCorrectAns : shouldShowCorrectAnswers;
+      if (question.isGrid == true) {
         // GRID LAYOUT - 2 options per row
         final int rowCount = (question.options.length + 1) ~/ 2;
 
@@ -226,31 +238,41 @@ class SharedQuestionWidget extends StatelessWidget {
 
                 final option = question.options[optionIndex];
                 final isSelected =
-                    controller.isOptionSelected(question.id, option.order);
+                    controller.isOptionSelected(question.id, option.id);
                 final isLoading = loadingOptionIndex.value == optionIndex;
-                final optionNumber = int.tryParse(option.order) ?? 0;
+                final optionNumber = int.tryParse(option.id) ?? 0;
                 final optionLetter = controller.getOptionAns(optionNumber);
-                final isCorrectAns = question.rightAnswer?.toLowerCase() ==
-                    optionLetter.toLowerCase();
-                final isAnswered = controller.isAnswered(question.id,
-                    question.options.map((e) => e.order).toList());
+                final correctAnsList = [];
+                question.options.map((o) {
+                  if (o.isCorrect == true) {
+                    correctAnsList.add(o.id);
+                  }
+                });
+                final isCorrectAns = correctAnsList
+                    .toSet()
+                    .intersection(
+                        (controller.selectedAnswers[question.id] ?? []).toSet())
+                    .isNotEmpty;
+                final isAnswered = controller.isAnswered(
+                    question.id, option.id);
 
                 return Expanded(
                   child: GestureDetector(
-                    onTap: () async {                      // Prevent selection if already answered or if we shouldn't allow selection
-                      if (!canSelectAnswers || (isAnswered && isExamMode))
+                    onTap: () async {
+                      // Prevent selection if already answered or if we shouldn't allow selection
+                      if (!canSelectAnswers || (!question.isAcceptMultipleAnswers && isExamMode))
                         return;
 
                       loadingOptionIndex.value = optionIndex;
-                      controller.selectOption(question.id, option.order);
+                      controller.selectOption(question.id, option.id);
 
                       // Only submit answer via API in exam mode or for custom exams
                       bool success = true;
-                      if (isExamMode || isCustomExam) {
+                      if (isExamMode || isCustomExam || question.isAcceptMultipleAnswers) {
                         success = await controller.submitAnswer(
                           question.id,
                           contestId,
-                          controller.getOptionAns(optionIndex + 1),
+                          controller.selectedAnswers[question.id] ?? [],
                         );
                         if (!success) {
                           controller.resetSelectOption(question.id);
@@ -301,27 +323,29 @@ class SharedQuestionWidget extends StatelessWidget {
               }),
             );
           }),
-        );      } else {
+        );
+      } else {
         // SINGLE COLUMN LAYOUT - Original implementation
         return Column(
           children: List.generate(question.options.length, (optionIndex) {
             final option = question.options[optionIndex];
             final isSelected =
-                controller.isOptionSelected(question.id, option.order);
+                controller.isOptionSelected(question.id,option.id);
             final isLoading = loadingOptionIndex.value == optionIndex;
-            final optionNumber = int.tryParse(option.order) ?? 0;
+            final optionNumber = int.tryParse(option.id) ?? 0;
             final optionLetter = controller.getOptionAns(optionNumber);
             final isCorrectAns = question.rightAnswer?.toLowerCase() ==
                 optionLetter.toLowerCase();
             final isAnswered = controller.isAnswered(
-                question.id, question.options.map((e) => e.order).toList());
+                question.id, option.id);
 
-            return GestureDetector(              onTap: () async {
+            return GestureDetector(
+              onTap: () async {
                 // Prevent selection if already answered or if we shouldn't allow selection
                 if (!canSelectAnswers || (isAnswered && isExamMode)) return;
 
                 loadingOptionIndex.value = optionIndex;
-                controller.selectOption(question.id, option.order);
+                controller.selectOption(question.id, option.id);
 
                 // Only submit answer via API in exam mode or for custom exams
                 bool success = true;
@@ -329,7 +353,7 @@ class SharedQuestionWidget extends StatelessWidget {
                   success = await controller.submitAnswer(
                     question.id,
                     contestId,
-                    controller.getOptionAns(optionIndex + 1),
+                    controller.selectedAnswers[question.id] ?? [],
                   );
                   if (!success) {
                     controller.resetSelectOption(question.id);

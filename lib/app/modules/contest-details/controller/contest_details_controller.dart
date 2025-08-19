@@ -20,7 +20,8 @@ class ContestDetailsController extends GetxController
   var contests = <Contest>[].obs;
   var contest = Rxn<Contest>();
   var contestDetails = Rxn<ContestDetailsResponse>();
-  final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
+  final RxMap<String, List<String>> selectedAnswers =
+      <String, List<String>>{}.obs;
   final markedQuestions = <String>[].obs;
   // final markedQuestions = <int>[].obs; // Store **question indexes**
   final currentQuestionIndex = 0.obs; // Track current question
@@ -174,29 +175,39 @@ class ContestDetailsController extends GetxController
   }
 
   @override
-  void selectOption(String questionId, String selectedOptionOrder) {
-    selectedAnswers[questionId] =
-        selectedOptionOrder; // ✅ Track selection per question
+  void selectOption(String questionId, String selectedOptionId) {
+    debugPrint("selected Option  ID:$selectedOptionId");
+    // If question is already answered, do not allow re-selection
+    if (selectedAnswers[questionId] != null &&
+        selectedAnswers[questionId]!.contains(selectedOptionId)) {
+      // selectedAnswers[questionId] = [];
+      return; // Already selected, do nothing
+    } else {
+      selectedAnswers[questionId] = [
+        ...?selectedAnswers[questionId],
+        selectedOptionId
+      ];
+    } // ✅ Track selection per question
   }
 
   @override
   void resetSelectOption(String questionId) {
-    selectedAnswers[questionId] = ''; // Reset selection for the question
+    selectedAnswers[questionId] = []; // Reset selection for the question
   }
 
   @override
-  bool isOptionSelected(String questionId, String optionOrder) {
-    return selectedAnswers[questionId] == optionOrder;
+  bool isOptionSelected(String questionId, String optionId) {
+    return selectedAnswers[questionId]?.contains(optionId)??false;
   }
 
   @override
-  bool isAnswered(String questionId, List<String> optionOrderList) {
+  bool isAnswered(String questionId, String optionId) {
     bool isOptionAnswered = false;
-    for (var optionOrder in optionOrderList) {
-      if (selectedAnswers[questionId] == optionOrder) {
+ 
+      if (selectedAnswers[questionId]?.contains(optionId) ?? false) {
         isOptionAnswered = true; // Answer is selected
-        break;
-      }
+       
+      
     }
     return isOptionAnswered;
   }
@@ -206,7 +217,7 @@ class ContestDetailsController extends GetxController
     // Check if the selected answer is correct
     final question = questionAtIndex(questionIdToIndexMap[questionId] ?? -1);
     if (question == null) return false;
-    return question.rightAnswer == selectedAnswer;
+    return question.options == selectedAnswer;
   }
 
   @override
@@ -237,21 +248,21 @@ class ContestDetailsController extends GetxController
       return {
         "question": entry.key,
         "contest": contestId,
-        "selectedAnswer": entry.value,
+        "selectedAnswers": entry.value,
       };
     }).toList();
   }
 
   @override
   Future<bool> submitAnswer(
-      String questionId, String contestId, String selectedAnswer) async {
+      String questionId, String contestId, List<String> selectedAnswers) async {
     questionLoadingStatus[questionId] = true;
-
+    debugPrint("Submitting  selected ans:" + selectedAnswers.toString());
     try {
       final result = await _apiHelper.submitContestAnswer(
         questionId: questionId,
         contestId: contestId,
-        selectedAnswer: selectedAnswer,
+        selectedAnswers: selectedAnswers,
       );
 
       bool isSuccess = false;

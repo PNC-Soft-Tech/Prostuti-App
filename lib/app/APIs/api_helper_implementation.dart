@@ -786,14 +786,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, Response>> submitContestAnswer({
     required String questionId,
     required String contestId,
-    required String selectedAnswer,
+    required List<String> selectedAnswers,
   }) async {
     try {
       // Prepare the payload
       final payload = {
         "question": questionId,
         "contest": contestId,
-        "selectedAnswer": selectedAnswer,
+        "selectedAnswers": selectedAnswers,
       };
       log("payload $payload");
       // Fetch the Bearer token from storage

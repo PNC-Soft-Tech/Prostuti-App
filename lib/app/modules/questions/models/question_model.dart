@@ -12,6 +12,9 @@ class Question {
   final String? explanation;
   final String? subCategory;
   final String? rightAnswer;
+  final String? status;
+  final String? category;
+  final bool isAcceptMultipleAnswers;
 
   Question({
     required this.id,
@@ -24,15 +27,21 @@ class Question {
     this.explanation,
     this.subCategory,
     this.rightAnswer,
+    this.status = 'active',
+    this.category='hsc',
+    this.isAcceptMultipleAnswers=false
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       id: json['_id'] ?? '',
       title: json['title'] ?? '',
+      status: json['status'] ?? 'active',
+      category: json['category'] ?? 'hsc',
       marks: json['marks'] ?? 1,
       isGrid: json['isGrid'] ?? true,
       isFlagged: json['isFlagged'] ?? false,
+      isAcceptMultipleAnswers: json['isAcceptMultipleAnswers'] ?? false,
       options: (json['options'] as List?)
               ?.map((option) {
                 if (option is Map<String, dynamic>) {

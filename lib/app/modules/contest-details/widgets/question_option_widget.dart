@@ -44,12 +44,13 @@ class QuestionOptionsWidget extends GetWidget<ContestDetailsController> {
                       2, // 2 items per row
                   child: GestureDetector(
                     onTap: () async {
-                      controller.selectOption(question.id, option.order);
+                      controller.selectOption(question.id, option.id);
+                      debugPrint("optionId: ${option.id}");
                       bool isDone = await controller.submitAnswer(
                         question.id,
                         controller.contestDetails.value?.contest.id ?? '',
                         controller
-                            .getOptionAns(question.options.indexOf(option) + 1),
+                            .selectedAnswers[question.id] ?? [],
                       );
                       if (!isDone) {
                         controller.selectedAnswers.remove(
@@ -119,12 +120,12 @@ class QuestionOptionsWidget extends GetWidget<ContestDetailsController> {
               children: question.options.map((option) {
                 return GestureDetector(
                   onTap: () async {
-                    controller.selectOption(question.id, option.order);
+                    controller.selectOption(question.id, option.id);
+                  debugPrint("optionId: ${option.id}");
                     bool isDone = await controller.submitAnswer(
                       question.id,
                       controller.contestDetails.value?.contest.id ?? '',
-                      controller
-                          .getOptionAns(question.options.indexOf(option) + 1),
+                      controller.selectedAnswers[question.id]??[],
                     );
                     if (!isDone) {
                       controller.selectedAnswers.remove(

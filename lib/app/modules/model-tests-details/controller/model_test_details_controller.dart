@@ -21,7 +21,7 @@ class ModelTestDetailsController extends GetxController
   // Observable state
   var modelTestId = ''.obs;
   var modelDetails = Rxn<ModelTestDetailsResponse>();
-  final RxMap<String, String> selectedAnswers = <String, String>{}.obs;
+  final RxMap<String, List<String>> selectedAnswers = <String, List<String>>{}.obs;
   final RxList<String> markedQuestionIds = <String>[].obs;
   final currentQuestionIndex = 0.obs;
   final RxBool isReadModeSelected = true.obs;
@@ -204,13 +204,15 @@ RxBool isModelTestSubmittedLocal=false.obs;
   }
 
   @override
-  void selectOption(String questionId, String selectedOptionOrder) {
-    selectedAnswers[questionId] = selectedOptionOrder;
+  void selectOption(String questionId, String selectedOptionId) {
+    selectedAnswers[questionId] = (selectedAnswers[questionId] ?? []).contains(selectedOptionId)
+        ? (selectedAnswers[questionId] ?? [])
+        : [...(selectedAnswers[questionId] ?? []), selectedOptionId];
   }
 
   @override
   void resetSelectOption(String questionId) {
-    selectedAnswers[questionId] = ''; // Reset selection for the question
+    selectedAnswers[questionId] = []; // Reset selection for the question
   }
 @override 
 
@@ -222,17 +224,16 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
    
   }
   @override
-  bool isOptionSelected(String questionId, String optionOrder) {
-    return selectedAnswers[questionId] == optionOrder;
+  bool isOptionSelected(String questionId, String optionOrderId) {
+    return selectedAnswers[questionId]?.contains(optionOrderId)??false;
   }
   @override
-  bool isAnswered(String questionId, List<String> optionOrderList) {
+  bool isAnswered(String questionId, String optionId) {
     bool isOptionAnswered = false;
-    for (var optionOrder in optionOrderList) {
-      if (selectedAnswers[questionId] == optionOrder) {
-        isOptionAnswered= true; // Answer is selected
-        break;
-      }
+
+      if (selectedAnswers[questionId]?.contains(optionId) == true) {
+        isOptionAnswered = true; // Answer is selected
+      
     }
     return isOptionAnswered;
   }
@@ -261,7 +262,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
       return {
         "question": entry.key,
         "contest": contestId,
-        "selectedAnswer": entry.value,
+        "selectedAnswers": entry.value,
       };
     }).toList();
   }
@@ -269,7 +270,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
   Future<bool> submitAnswer(
     String questionId,
     String contestId,
-    String selectedAnswer,
+    List<String> selectedAnswers,
   ) async {
     // In read mode, don't make API calls - just return success
     if (currentSelectedModelTestMode.value == 'read') {
@@ -287,7 +288,7 @@ bool isCorrectAnswered(String questionId, String selectedAnswer) {
       final result = await _apiHelper.submitContestAnswer(
         questionId: questionId,
         contestId: contestId,
-        selectedAnswer: selectedAnswer,
+        selectedAnswers: selectedAnswers,
       );
 
       bool isSuccess = false;

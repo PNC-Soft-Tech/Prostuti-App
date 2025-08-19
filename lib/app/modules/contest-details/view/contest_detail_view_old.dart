@@ -352,12 +352,11 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
                     2, // 2 items per row
                 child: GestureDetector(
                   onTap: () async {
-                    controller.selectOption(question.id, option.order);
+                    controller.selectOption(question.id, option.id);
                     bool isDone = await controller.submitAnswer(
                         question.id,
                         controller.contestDetails.value?.contest.id ?? '',
-                        controller.getOptionAns(
-                            question.options.indexOf(option) + 1));
+                        controller.selectedAnswers[question.id] ?? []);
                     if (!isDone) {
                       // 3️⃣ If failed, revert selection
 
@@ -421,11 +420,11 @@ class ContestDetailsViewOld extends GetView<ContestDetailsController> {
                 GestureDetector(
                   onTap: () async {
                     controller.selectOption(
-                        question.id, question.options[i].order);
+                        question.id, question.options[i].id);
                     bool isDone = await controller.submitAnswer(
                         question.id,
                         controller.contestDetails.value?.contest.id ?? '',
-                        controller.getOptionAns(i + 1));
+                        controller.selectedAnswers[question.id]??[]);
                     if (!isDone) {
                       // 3️⃣ If failed, revert selection
 
