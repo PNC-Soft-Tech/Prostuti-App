@@ -37,7 +37,7 @@ class CornerController extends GetxController {
       cornerType.value = args['cornerType'] ?? '';
       originalCornerType.value = args['cornerType'] ?? ''; // Store original for display
       admissionType.value = args['admissionType'] ?? '';
-      examTypeId.value = args['examType'] ?? ''; // Use 'examType' parameter directly
+      examTypeId.value = args['examTypeId'] ?? ''; // Use 'examType' parameter directly
       examTypeTitle.value = args['examTypeTitle'] ?? ''; // Get exam type title
       contestTypeFilter.value = args['contestType'] ?? '';
       modelTypeFilter.value = args['modelType'] ?? '';
@@ -103,22 +103,22 @@ class CornerController extends GetxController {
     
     // Determine category and examType based on corner configuration
     String category = _getCategoryFromCornerType();
-    String examType = _getExamTypeFromCornerType();
+    String examTypeId = _getExamTypeFromCornerType();
     
     final result = await _apiHelper.fetchContestsByCategory(
       category: category,
-      examType: examType,
+      examType: examTypeId,
     );
 
     result.fold(
       (error) {
-        log('Error fetching $category contests with examType $examType: ${error.message}');
+        log('Error fetching $category contests with examTypeId $examTypeId: ${error.message}');
         isLoading.value = false;
       },
       (contestsData) {
         contests.value = contestsData;
         isLoading.value = false;
-        log('Fetched ${contests.length} contests for category: $category, examType: $examType');
+        log('Fetched ${contests.length} contests for category: $category, examTypeId: $examTypeId');
       },
     );
   }
@@ -127,22 +127,22 @@ class CornerController extends GetxController {
     
     // Determine category and examType based on corner configuration
     String category = _getCategoryFromCornerType();
-    String examType = _getExamTypeFromCornerType();
+    String examTypeId = _getExamTypeFromCornerType();
     
     final result = await _apiHelper.fetchModelTestsByCategory(
       category: category,
-      examType: examType,
+      examType: examTypeId,
     );
 
     result.fold(
       (error) {
-        log('Error fetching $category model tests with examType $examType: ${error.message}');
+        log('Error fetching $category model tests with examTypeId $examTypeId: ${error.message}');
         isLoading.value = false;
       },
       (modelTestsData) {
         modelTests.value = modelTestsData;
         isLoading.value = false;
-        log('Fetched ${modelTests.length} model tests for category: $category, examType: $examType');
+        log('Fetched ${modelTests.length} model tests for category: $category, examTypeId: $examTypeId');
       },
     );
   }
@@ -151,18 +151,18 @@ class CornerController extends GetxController {
 
     // Determine category and examType based on corner configuration
     String category = _getCategoryFromCornerType();
-    String examType = _getExamTypeFromCornerType();
+    String examTypeId = _getExamTypeFromCornerType();
     
     final result = await _apiHelper.fetchCustomExamsByCategory(
       category: category,
-      examType: examType,
+      examType: examTypeId,
       page: customExamsPage.value,
       limit: 10,
     );
 
     result.fold(
       (error) {
-        log('Error fetching $category custom exams with examType $examType: ${error.message}');
+        log('Error fetching $category custom exams with examTypeId $examTypeId: ${error.message}');
         isLoading.value = false;
       },
       (data) {
@@ -176,7 +176,7 @@ class CornerController extends GetxController {
         customExamsHasMore.value = data.length == 10;
 
         isLoading.value = false;
-        log('Fetched ${data.length} custom exams for category: $category, examType: $examType. Total: ${customExams.length}');
+        log('Fetched ${data.length} custom exams for category: $category, examTypeId: $examTypeId. Total: ${customExams.length}');
       },
     );
   }
@@ -213,13 +213,13 @@ class CornerController extends GetxController {
         return ''; // Empty examType for SSC and HSC
       case 'admission':
         // For admission, use the specific admission type or default to 'mbbs'
-        return admissionType.value.isNotEmpty ? admissionType.value.toLowerCase() : 'mbbs';
+        return examTypeId.value.isNotEmpty ? examTypeId.value.toLowerCase() : '';
       case 'jobs':
       case 'job preparation':
         // For jobs, use the specific exam type ID or default to 'bcs'
-        return examTypeId.value.isNotEmpty ? examTypeId.value : 'bcs';
+        return examTypeId.value.isNotEmpty ? examTypeId.value : '';
       default:
-        return 'bcs'; // Default to bcs for job category
+        return ''; // Default to bcs for job category
     }
   }  String get cornerTitle {
     // Use original corner type for display if available

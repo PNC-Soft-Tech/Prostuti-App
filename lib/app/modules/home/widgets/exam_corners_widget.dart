@@ -789,7 +789,7 @@ class _JobsCornerBottomSheetState extends State<JobsCornerBottomSheet> {
       filterParams = {
         'cornerType': 'Jobs',
         'cornerName': 'Jobs Corner',
-        'examType': examTypeSlug, // Use slug instead of ID for API compatibility
+        'examTypeId': examTypeId, // Use slug instead of ID for API compatibility
         'examTypeTitle': examTypeTitle ?? 'Job Preparation',
         'contestType': examTypeSlug,
         'modelType': examTypeSlug,
@@ -1307,8 +1307,9 @@ class _AdmissionCornerBottomSheetState extends State<AdmissionCornerBottomSheet>
       filterParams = {
         'cornerType': 'Admission',
         'cornerName': 'Admission Test Corner',
-        'examType': examTypeSlug, // Use slug instead of ID for API compatibility
+        'examTypeId': examTypeId, // Use slug instead of ID for API compatibility
         'examTypeTitle': examTypeTitle ?? 'Admission Test',
+        'examTypeSlug': examTypeSlug,
         'admissionType': examTypeTitle ?? 'Admission Test',
         'contestType': examTypeSlug,
         'modelType': examTypeSlug,
