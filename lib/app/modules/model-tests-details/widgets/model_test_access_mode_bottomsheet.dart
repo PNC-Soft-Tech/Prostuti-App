@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../constant/app_color.dart';
+import 'model_test_stat_widget.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/model_test_details_controller.dart';
 
@@ -9,6 +10,8 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
   final String modelTestId;
 
   const ModelTestAccessBottomSheet({super.key, required this.modelTestId});
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,6 +22,37 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
+            // --- Statistics Bar ---
+            Obx(() {
+              final details = controller.modelDetails.value;
+              final contest = details?.contest;
+              final totalQuestions = contest?.questions.length ?? 0;
+              final totalMarks = contest?.totalMarks ?? 0;
+              final totalTime = contest?.totalTime ?? 0;
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.08),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    statItem(Icons.help_outline, '$totalQuestions', 'Questions'),
+                    statItem(Icons.score, '$totalMarks', 'Marks'),
+                    statItem(Icons.timer, formatTime(totalTime), 'Time'),
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: 24),
             Text(
               'Choose Access Mode',
               style: Get.textTheme.titleLarge?.copyWith(
@@ -36,10 +70,7 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
                     title: 'Read Mode',
                     description: 'Detailed learning',
                     color: AppColors.primary,
-                    // onTap: () => _navigateToReadMode(),
                     onTap: () {
-                      // Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
-                      //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'read';
                       Get.toNamed(Routes.modelTestDetails, arguments: {
                         'modelTestId': modelTestId,
                         'mode': 'read',
@@ -54,10 +85,7 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
                     title: 'Exam Mode',
                     description: 'Timed practice test',
                     color: AppColors.primary,
-                    // onTap: () => _navigateToExamMode(),
                     onTap: () {
-                      //    Get.find<ModelTestDetailsController>().currentSelectedModelTestId.value = modelTestId;
-                      //  Get.find<ModelTestDetailsController>().currentSelectedModelTestMode.value = 'exam';
                       Get.toNamed(Routes.modelTestDetails, arguments: {
                         'modelTestId': modelTestId,
                         'mode': 'exam',
@@ -71,6 +99,51 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
         ),
       ),
     );
+  // Professional statistics item widget
+  Widget _statItem(IconData icon, String value, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.08),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: AppColors.primary, size: 28),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            color: Colors.grey,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Format time in minutes to "HH:mm" or "mm min"
+  String _formatTime(dynamic totalTime) {
+    if (totalTime == null || totalTime == 0) return '—';
+    final minutes = int.tryParse(totalTime.toString()) ?? 0;
+    if (minutes >= 60) {
+      final h = minutes ~/ 60;
+      final m = minutes % 60;
+      return m > 0 ? '${h}h ${m}m' : '${h}h';
+    }
+    return '${minutes}m';
+  }
   }
 
   Widget _buildTestModeCard({
@@ -141,14 +214,7 @@ class ModelTestAccessBottomSheet extends GetWidget<ModelTestDetailsController> {
     );
   }
 
-  // Navigation methods for each mode
-  void _navigateToReadMode() {
-    Get.to(() => const ReadModeDetailScreen());
-  }
-
-  void _navigateToExamMode() {
-    Get.to(() => const ExamModeDetailScreen());
-  }
+  // ...existing code...
 }
 
 // Read Mode Detail Screen

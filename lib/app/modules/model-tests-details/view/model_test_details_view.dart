@@ -12,6 +12,7 @@ import '../../contest-details/widgets/subject_tabs_widget.dart';
 import '../controllers/model_test_details_controller.dart';
 import '../widgets/question_navigator_widget.dart';
 import '../widgets/test_action_widget.dart';
+import '../widgets/model_test_stat_widget.dart';
 
 class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
   const ModelTestDetailsView({Key? key}) : super(key: key);
@@ -40,7 +41,56 @@ class ModelTestDetailsView extends GetView<ModelTestDetailsController> {
 
             return Column(
               children: [
-          
+                // --- Statistics Bar ---
+                Obx(() {
+                  // Only show in exam mode and after submission
+                  if (controller.currentSelectedModelTestMode.value != 'exam' ||
+                      !controller.isModelTestSubmittedLocal.value) {
+                    return const SizedBox.shrink();
+                  }
+                  final details = controller.modelDetails.value;
+                  final contest = details?.contest;
+                  final totalQuestions = contest?.questions.length ?? 0;
+                  final totalMarks = contest?.totalMarks ?? 0;
+                  final totalTime = contest?.totalTime ?? 0;
+
+                  // Get right/wrong answer counts from controller
+                  final rw = controller.getRightWrongCount();
+                  final rightAns = rw['right'] ?? 0;
+                  final wrongAns = rw['wrong'] ?? 0;
+                  final unanswered = rw['unanswered'] ?? 0;
+final marks = rw['marks'] ?? 0.0;
+                  // Time taken: show total time minus remaining time
+                  final timeTaken = controller.getTimeTaken();
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.08),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        statItem(Icons.help_outline, '$totalQuestions', 'Questions'),
+                        statItem(Icons.score, marks.toStringAsFixed(2), 'Marks'),
+                        statItem(Icons.timer, formatTime(timeTaken), 'Time Taken'),
+                        statItem(Icons.check_circle, '$rightAns', 'Right Ans'),
+                        statItem(Icons.cancel, '$wrongAns', 'Wrong Ans'),
+                        statItem(Icons.help, '$unanswered', 'Unanswered'),
+                      ],
+                    ),
+                  );
+                }),
+
                 // Subject Tabs
                 Obx(() => SubjectTabsWidget(
                       subjects: controller.subjectLists,

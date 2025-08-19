@@ -14,6 +14,81 @@ import '../../../common/controllers/base_question_controller.dart';
 
 class ModelTestDetailsController extends GetxController
     implements BaseQuestionController {
+  /// Returns a map with right and wrong answer counts
+  Map<String, num> getRightWrongCount() {
+    final contest = modelDetails.value?.contest;
+    if (contest == null) return {'right': 0, 'wrong': 0, 'unanswered': 0,'marks':0};
+    final questions = contest.questions;
+    int rightAns = 0;
+    int wrongAns = 0;
+    int unanswered = 0;
+    double marks=0.0;
+    final selectedAnswers = this.selectedAnswers;
+    for (final q in questions) {
+      final correctOptionIds =
+          q.options.where((o) => o.isCorrect == true).map((o) => o.id).toSet();
+
+      final userAns = selectedAnswers[q.id] ?? [];
+      if (userAns.isEmpty) {
+        unanswered++;
+        continue;
+      }
+      if (userAns.toSet().difference(correctOptionIds).isEmpty &&
+          correctOptionIds.difference(userAns.toSet()).isEmpty) {
+        rightAns++;
+      } else {
+        wrongAns++;
+      }
+    }
+    return {'right': rightAns, 'wrong': wrongAns, 'unanswered': unanswered,"marks":rightAns.toDouble() - (wrongAns * 0.25)};
+  }
+
+  DateTime? submissionTime;
+
+  // Returns time taken in minutes (difference between contest start and submission)
+  int getTimeTaken() {
+    final contest = modelDetails.value?.contest;
+    if (contest == null || submissionTime == null) return 0;
+    final start = contest.startContest;
+    final end = submissionTime!;
+    return end.difference(start).inMinutes;
+  }
+
+  // Returns marks with negative marking (-0.25 for each wrong answer)
+  double getFinalMarks() {
+    final contest = modelDetails.value?.contest;
+    if (contest == null) return 0;
+    final questions = contest.questions;
+    int rightAns = 0;
+    int wrongAns = 0;
+    final selectedAnswers = this.selectedAnswers;
+
+    for (final q in questions) {
+      final userAns = selectedAnswers[q.id] ?? [];
+      if (userAns.isEmpty) continue;
+
+      // Get the exact set of correct options
+      final correctOptionIds =
+          q.options.where((o) => o.isCorrect == true).map((o) => o.id).toSet();
+      log("test22 correctOptionIds: ${correctOptionIds.toString()}");
+      log("test22 userAns: ${userAns.toString()}");
+      // Check for an exact match (not just an intersection)
+      if (userAns.toSet().difference(correctOptionIds).isEmpty &&
+          correctOptionIds.difference(userAns.toSet()).isEmpty) {
+        rightAns++;
+        rightAns.clamp(0, questions.length);
+        log("correct test22");
+      } else {
+        wrongAns++;
+        wrongAns.clamp(0, questions.length);
+        // wrongAns=89;
+      }
+    }
+
+    double marks = rightAns.toDouble() - (wrongAns * 0.25);
+    return marks;
+  }
+
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
   var contestId = ''.obs;
   var modelTestId = ''.obs;
@@ -241,7 +316,8 @@ class ModelTestDetailsController extends GetxController
         selectedAnswers[questionId] = [...currentAnswers, selectedOptionId];
       } else {
         // Allow unselecting only if multiple answers are allowed
-        selectedAnswers[questionId] = currentAnswers.where((id) => id != selectedOptionId).toList();
+        selectedAnswers[questionId] =
+            currentAnswers.where((id) => id != selectedOptionId).toList();
       }
     } else {
       // Only allow one answer, and never allow unselecting once selected
@@ -345,7 +421,7 @@ class ModelTestDetailsController extends GetxController
           isSuccess = false;
         },
         (response) {
-          Get.snackbar('Success', 'Answer submitted successfully');
+          // Get.snackbar('Success', 'Answer submitted successfully');
           isSuccess = true;
         },
       );

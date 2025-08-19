@@ -93,45 +93,80 @@ class SharedQuestionWidget extends StatelessWidget {
                     SizedBox(height: 8.h), // Correct/Incorrect indicator
                     Obx(() {
                       final isAnswered = (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
-                      // Show correct answers only in read mode for model test (not custom exam)
                       final isReadMode = controller.selectedTestMode.value == 'read';
+                      final isExamMode = controller.selectedTestMode.value == 'exam';
+                      final isSubmitted = controller.isModelTestSubmitted.value;
                       final isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
-                      if (isAnswered && isReadMode && !isCustomExam) {
-                        // Show correct answers by marking options with isCorrect==true
+                      // Show correct answers after submission in exam mode, or in read mode for model test (not custom exam)
+                      if ((isExamMode && isSubmitted) || (isAnswered && isReadMode && !isCustomExam)) {
                         List<String> correctAnswers = question.options
                             .where((option) => option.isCorrect == true)
                             .map((option) => option.id)
                             .toList();
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 8.h),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Correct Answer:',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.green,
+                        List<String> userAnswers = controller.selectedAnswers[question.id] ?? [];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Correct Answer:',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.green,
+                                  ),
                                 ),
+                                SizedBox(width: 8.w),
+                                ...correctAnswers.map((ansId) {
+                                  final option = question.options.firstWhereOrNull((o) => o.id == ansId);
+                                  return option != null
+                                      ? Container(
+                                          margin: EdgeInsets.only(right: 6.w),
+                                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.withOpacity(0.15),
+                                            borderRadius: BorderRadius.circular(6.r),
+                                          ),
+                                          child: HtmlWidget(option.title,
+                                              textStyle: TextStyle(fontSize: 13.sp, color: Colors.green)),
+                                        )
+                                      : SizedBox.shrink();
+                                }).toList(),
+                              ],
+                            ),
+                            SizedBox(height: 4.h),
+                            if (userAnswers.isNotEmpty)
+                              Row(
+                                children: [
+                                  Text(
+                                    'Your Answer:',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8.w),
+                                  ...userAnswers.map((ansId) {
+                                    final option = question.options.firstWhereOrNull((o) => o.id == ansId);
+                                    final isCorrect = correctAnswers.contains(ansId);
+                                    return option != null
+                                        ? Container(
+                                            margin: EdgeInsets.only(right: 6.w),
+                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            decoration: BoxDecoration(
+                                              color: isCorrect ? Colors.green.withOpacity(0.15) : Colors.red.withOpacity(0.15),
+                                              borderRadius: BorderRadius.circular(6.r),
+                                            ),
+                                            child: HtmlWidget(option.title,
+                                                textStyle: TextStyle(fontSize: 13.sp, color: isCorrect ? Colors.green : Colors.red)),
+                                          )
+                                        : SizedBox.shrink();
+                                  }).toList(),
+                                ],
                               ),
-                              SizedBox(width: 8.w),
-                              ...correctAnswers.map((ansId) {
-                                final option = question.options.firstWhereOrNull((o) => o.id == ansId);
-                                return option != null
-                                    ? Container(
-                                        margin: EdgeInsets.only(right: 6.w),
-                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.withOpacity(0.15),
-                                          borderRadius: BorderRadius.circular(6.r),
-                                        ),
-                                        child: HtmlWidget(option.title,
-                                            textStyle: TextStyle(fontSize: 13.sp, color: Colors.green)),
-                                      )
-                                    : SizedBox.shrink();
-                              }).toList(),
-                            ],
-                          ),
+                          ],
                         );
                       }
                       return SizedBox.shrink();
