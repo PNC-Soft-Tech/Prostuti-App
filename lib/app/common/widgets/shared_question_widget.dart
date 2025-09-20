@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
+// import 'package:flutter_math_fork/flutter_math.dart';  // Temporarily disabled
 import 'package:get/get.dart';
 import '../../common/controllers/base_question_controller.dart';
 import '../../modules/questions/models/question_model.dart';
@@ -77,9 +77,9 @@ class SharedQuestionWidget extends StatelessWidget {
                       customWidgetBuilder: (element) {
                         if (element.classes.contains('latex') ||
                             element.classes.contains('ql-syntax')) {
-                          return Math.tex(
+                          return Text(
                             element.text,
-                            textStyle: TextStyle(fontSize: 16.sp),
+                            style: TextStyle(fontSize: 16.sp),
                           );
                         }
                         return null;
@@ -517,10 +517,10 @@ class SharedQuestionWidget extends StatelessWidget {
                   customWidgetBuilder: (element) {
                     if (element.classes.contains('latex') ||
                         element.classes.contains('ql-syntax')) {
-                      // Render LaTeX content
-                      return Math.tex(
+                      // Render LaTeX content (temporarily using Text widget)
+                      return Text(
                         element.text,
-                        textStyle: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 20),
                       );
                     }
                     return null; // Fallback to default rendering

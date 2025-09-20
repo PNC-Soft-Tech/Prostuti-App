@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
+// import 'package:flutter_math_fork/flutter_math.dart';  // Temporarily disabled due to compatibility issues
 
 class MixedLaTeXText extends StatelessWidget {
   final String input;
@@ -25,9 +25,9 @@ class MixedLaTeXText extends StatelessWidget {
       final latex = match.group(0)!.replaceAll(r'$', '');
       spans.add(WidgetSpan(
         alignment: PlaceholderAlignment.middle,
-        child: Math.tex(
+        child: Text(
           latex.trim(),
-          textStyle: textStyle,
+          style: textStyle,
         ),
       ));
 
