@@ -16,21 +16,16 @@ class CustomBottomFixedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.r),
-            color: Colors.grey.withOpacity(.01),
-          ),
-          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
-          child: CustomButton.button(
-            mainAxisSize: MainAxisSize.max,
-            text: buttonText,
-            onPressed: isDisabled ? () {} : onPressed,
-          ),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+        color: Colors.grey.withOpacity(.01),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 19.w),
+      child: CustomButton.button(
+        mainAxisSize: MainAxisSize.max,
+        text: buttonText,
+        onPressed: isDisabled ? () {} : onPressed,
       ),
     );
   }

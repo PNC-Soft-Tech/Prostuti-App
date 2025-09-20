@@ -11,7 +11,7 @@ class ExamCornersWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 19.w),
+      // margin: EdgeInsets.symmetric(horizontal: 19.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

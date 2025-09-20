@@ -13,7 +13,8 @@ import '../controller/contest_details_controller.dart';
 import '../widgets/contest_action_widget.dart';
 import '../widgets/contest_details_widget.dart';
 import '../widgets/contest_status_widget.dart';
-import '../widgets/question_navigator.dart';
+import '../widgets/question_navigator_floating_widget.dart';
+import '../widgets/show_flagged_questions_bottomsheet_widget.dart';
 import '../widgets/subject_tabs_widget.dart';
 
 class ContestDetailsView extends GetView<ContestDetailsController> {
@@ -245,11 +246,15 @@ class ContestDetailsView extends GetView<ContestDetailsController> {
                             },
                           ),
                           // Question navigator widget - only visible when questions are open
-                          Positioned(
-                            right: 16.w,
-                            bottom: 16.h,
-                            child:                          const QuestionNavigatorWidget(),
-                          ),
+                          Obx(() => controller.isQuestionOpened.value
+                              ? Positioned(
+                                  right: 16.w,
+                                  bottom: 16.h,
+                                  child: QuestionNavigatorFloating(
+                                    onOpenFlaggedSheet: () => showFlaggedQuestionsBottomSheet(controller.markedQuestionIds),
+                                  ),
+                                )
+                              : const SizedBox.shrink()),
                         ],
                       ),
                     ),

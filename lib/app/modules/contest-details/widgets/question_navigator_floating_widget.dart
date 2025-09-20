@@ -18,8 +18,6 @@ class QuestionNavigatorFloating extends StatelessWidget {
       // Null safety checks
       final contestDetails = controller.contestDetails.value;
       if (contestDetails == null ||
-          contestDetails.contest == null ||
-          contestDetails.contest.questions == null ||
           contestDetails.contest.questions.isEmpty) {
         return const SizedBox.shrink();
       }

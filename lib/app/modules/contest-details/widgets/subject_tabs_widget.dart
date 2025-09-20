@@ -5,27 +5,27 @@ import 'package:get/get.dart';
 import '../../../constant/app_color.dart';
 
 class SubjectTabsWidget extends StatelessWidget {
-  List<String> subjects;
-  String selectedSubject;
-  bool isQuestionOpened;
-  Function(String subject) onSubjectSelected;
-  SubjectTabsWidget({
+  final List<String> subjects;
+  final String selectedSubject;
+  final bool isQuestionOpened;
+  final Function(String subject) onSubjectSelected;
+  
+  const SubjectTabsWidget({
     super.key,
     required this.subjects,
     required this.selectedSubject,
     required this.onSubjectSelected,
-    this.isQuestionOpened=false,
+    this.isQuestionOpened = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      if (subjects.isEmpty) {
-        return const Text('No subjects available');
-      }
+    if (subjects.isEmpty) {
+      return const Text('No subjects available');
+    }
 
-      return isQuestionOpened == true
-          ? SizedBox(
+    return isQuestionOpened == true
+        ? SizedBox(
             width: Get.width,
             child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -112,6 +112,5 @@ class SubjectTabsWidget extends StatelessWidget {
               ),
           )
           : const SizedBox.shrink();
-    });
   }
 }
