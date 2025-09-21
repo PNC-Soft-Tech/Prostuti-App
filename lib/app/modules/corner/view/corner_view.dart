@@ -235,7 +235,7 @@ class CornerView extends GetWidget<CornerController> {
               Text(
                 '${controller.cornerTitle} Contests',
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 13.sp,
                   color: AppColors.textPrimaryColor,
                   fontWeight: FontWeight.w500,
                 ),
@@ -295,7 +295,7 @@ class CornerView extends GetWidget<CornerController> {
               Text(
                 '${controller.cornerTitle} Model Tests',
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 13.sp,
                   color: AppColors.textPrimaryColor,
                   fontWeight: FontWeight.w500,
                 ),
@@ -355,7 +355,7 @@ class CornerView extends GetWidget<CornerController> {
               Text(
                 '${controller.cornerTitle} Custom Exams',
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 13.sp,
                   color: AppColors.textPrimaryColor,
                   fontWeight: FontWeight.w500,
                 ),

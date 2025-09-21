@@ -1018,15 +1018,17 @@ class CustomExamCard extends StatelessWidget {
               //   ),
               // ),
               // SizedBox(width: 12.w),
-              Text(
-                examName,
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimaryColor,
+              Flexible(
+                child: Text(
+                  examName,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimaryColor,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
