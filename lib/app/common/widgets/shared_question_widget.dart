@@ -337,8 +337,7 @@ class SharedQuestionWidget extends StatelessWidget {
                 final isSelected =
                     controller.isOptionSelected(question.id, option.id);
                 final isLoading = loadingOptionIndex.value == optionIndex;
-                final optionNumber = int.tryParse(option.id) ?? 0;
-                final optionLetter = controller.getOptionAns(optionNumber);
+
                 final correctAnsList = <String>[];
                 question.options.forEach((o) {
                   if (o.isCorrect == true) {
@@ -353,10 +352,9 @@ class SharedQuestionWidget extends StatelessWidget {
                         false);
                 final optionDisabled = singleAnswered && !isSelected;
 
-                // For read mode, multiple answer, show tick for correct, cross for incorrect selected
+                // For read mode, show tick for correct, cross for incorrect selected
                 final isReadMode = controller.selectedTestMode.value == 'read';
                 final showMarkLogic = isReadMode &&
-                    question.isAcceptMultipleAnswers &&
                     (controller.selectedAnswers[question.id]?.isNotEmpty ??
                         false);
                 bool showTick = false;
@@ -430,7 +428,7 @@ class SharedQuestionWidget extends StatelessWidget {
                               alignment: Alignment.center,
                               children: [
                                 SharedQuestionCircleWidget(
-                                  isCorrectAns: showTick,
+                                  isCorrectAns: option.isCorrect == true,
                                   isSelected: isSelected,
                                   showCorrectAns: finalShowCorrectAnswers,
                                 ),
@@ -479,10 +477,7 @@ class SharedQuestionWidget extends StatelessWidget {
             final isSelected =
                 controller.isOptionSelected(question.id, option.id);
             final isLoading = loadingOptionIndex.value == optionIndex;
-            final optionNumber = int.tryParse(option.id) ?? 0;
-            final optionLetter = controller.getOptionAns(optionNumber);
-            final isCorrectAns = question.rightAnswer?.toLowerCase() ==
-                optionLetter.toLowerCase();
+            final isCorrectAns = option.isCorrect == true;
             final isAnswered = controller.isAnswered(question.id, option.id);
 
             final singleAnswered = !question.isAcceptMultipleAnswers &&
