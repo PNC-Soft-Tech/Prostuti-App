@@ -3,6 +3,7 @@
 import 'package:blur/blur.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 // import 'package:flutter_math_fork/flutter_math.dart';  // Temporarily disabled
@@ -92,18 +93,25 @@ class SharedQuestionWidget extends StatelessWidget {
                     ),
                     SizedBox(height: 8.h), // Correct/Incorrect indicator
                     Obx(() {
-                      final isAnswered = (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
-                      final isReadMode = controller.selectedTestMode.value == 'read';
-                      final isExamMode = controller.selectedTestMode.value == 'exam';
+                      final isAnswered = (controller
+                              .selectedAnswers[question.id]?.isNotEmpty ??
+                          false);
+                      final isReadMode =
+                          controller.selectedTestMode.value == 'read';
+                      final isExamMode =
+                          controller.selectedTestMode.value == 'exam';
                       final isSubmitted = controller.isModelTestSubmitted.value;
-                      final isCustomExam = contestId.contains('custom') || Get.currentRoute.contains('custom-exam');
+                      final isCustomExam = contestId.contains('custom') ||
+                          Get.currentRoute.contains('custom-exam');
                       // Show correct answers after submission in exam mode, or in read mode for model test (not custom exam)
-                      if ((isExamMode && isSubmitted) || (isAnswered && isReadMode && !isCustomExam)) {
+                      if ((isExamMode && isSubmitted) ||
+                          (isAnswered && isReadMode && !isCustomExam)) {
                         List<String> correctAnswers = question.options
                             .where((option) => option.isCorrect == true)
                             .map((option) => option.id)
                             .toList();
-                        List<String> userAnswers = controller.selectedAnswers[question.id] ?? [];
+                        List<String> userAnswers =
+                            controller.selectedAnswers[question.id] ?? [];
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -119,17 +127,44 @@ class SharedQuestionWidget extends StatelessWidget {
                                 ),
                                 SizedBox(width: 8.w),
                                 ...correctAnswers.map((ansId) {
-                                  final option = question.options.firstWhereOrNull((o) => o.id == ansId);
+                                  final option = question.options
+                                      .firstWhereOrNull((o) => o.id == ansId);
                                   return option != null
                                       ? Container(
                                           margin: EdgeInsets.only(right: 6.w),
-                                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8.w, vertical: 4.h),
                                           decoration: BoxDecoration(
-                                            color: Colors.green.withOpacity(0.15),
-                                            borderRadius: BorderRadius.circular(6.r),
+                                            color:
+                                                Colors.green.withOpacity(0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(6.r),
                                           ),
-                                          child: HtmlWidget(option.title,
-                                              textStyle: TextStyle(fontSize: 13.sp, color: Colors.green)),
+                                          child: HtmlWidget(
+                                            '${option.title.replaceAll('<pre>', '').replaceAll('</pre>', '')}',
+                                            customWidgetBuilder: (element) {
+                                              if (element.classes
+                                                      .contains('latex') ||
+                                                  element.classes
+                                                      .contains('ql-syntax')) {
+                                                return Math.tex(
+                                                  element.text,
+                                                  textStyle: TextStyle(
+                                                      fontSize: 16.sp),
+                                                );
+                                              }
+                                              return null;
+                                            },
+                                            textStyle: TextStyle(
+                                              fontSize: 13.sp,
+                                              color: Colors.green,
+                                              height: 1.5,
+                                            ),
+                                          ),
+                                          // HtmlWidget(option.title,
+                                          //     textStyle: TextStyle(
+                                          //         fontSize: 13.sp,
+                                          //         color: Colors.green)),
                                         )
                                       : SizedBox.shrink();
                                 }).toList(),
@@ -149,18 +184,49 @@ class SharedQuestionWidget extends StatelessWidget {
                                   ),
                                   SizedBox(width: 8.w),
                                   ...userAnswers.map((ansId) {
-                                    final option = question.options.firstWhereOrNull((o) => o.id == ansId);
-                                    final isCorrect = correctAnswers.contains(ansId);
+                                    final option = question.options
+                                        .firstWhereOrNull((o) => o.id == ansId);
+                                    final isCorrect =
+                                        correctAnswers.contains(ansId);
                                     return option != null
                                         ? Container(
                                             margin: EdgeInsets.only(right: 6.w),
-                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 8.w, vertical: 4.h),
                                             decoration: BoxDecoration(
-                                              color: isCorrect ? Colors.green.withOpacity(0.15) : Colors.red.withOpacity(0.15),
-                                              borderRadius: BorderRadius.circular(6.r),
+                                              color: isCorrect
+                                                  ? Colors.green
+                                                      .withOpacity(0.15)
+                                                  : Colors.red
+                                                      .withOpacity(0.15),
+                                              borderRadius:
+                                                  BorderRadius.circular(6.r),
                                             ),
-                                            child: HtmlWidget(option.title,
-                                                textStyle: TextStyle(fontSize: 13.sp, color: isCorrect ? Colors.green : Colors.red)),
+                                            child: HtmlWidget(
+                                              '${option.title.replaceAll('<pre>', '').replaceAll('</pre>', '')}',
+                                              customWidgetBuilder: (element) {
+                                                if (element.classes
+                                                        .contains('latex') ||
+                                                    element.classes.contains(
+                                                        'ql-syntax')) {
+                                                  return Math.tex(
+                                                    element.text,
+                                                    textStyle: TextStyle(
+                                                        fontSize: 13.sp),
+                                                  );
+                                                }
+                                                return null;
+                                              },
+                                              textStyle: TextStyle(
+                                                fontSize: 13.sp,
+                                                color: isCorrect
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                            // HtmlWidget(option.title,
+                                            //     textStyle: TextStyle(fontSize: 13.sp, color: isCorrect ? Colors.green : Colors.red)),
                                           )
                                         : SizedBox.shrink();
                                   }).toList(),
@@ -237,17 +303,16 @@ class SharedQuestionWidget extends StatelessWidget {
       // Allow selection in custom exams
       final bool isCustomExam = contestId.contains('custom') ||
           Get.currentRoute.contains('custom-exam');
-    final bool canSelectAnswers = showExplanation ||
-      isCustomExam || // Always allow selection in custom exams
-      (isExamMode && !isSubmitted) ||
-      (!isExamMode); // Can select in read mode and in exam mode before submission
+      final bool canSelectAnswers = showExplanation ||
+          isCustomExam || // Always allow selection in custom exams
+          (isExamMode && !isSubmitted) ||
+          (!isExamMode); // Can select in read mode and in exam mode before submission
 
       // Determine if correct answers should be shown
-      final bool shouldShowCorrectAnswers = (isSubmitted &&
-              isExamMode) || // Only after submission in exam mode
-          (isReadMode &&
-            !question.isAcceptMultipleAnswers ||
-          showCorrectAns); // Explicit parameter override
+      final bool shouldShowCorrectAnswers =
+          (isSubmitted && isExamMode) || // Only after submission in exam mode
+              (isReadMode && !question.isAcceptMultipleAnswers ||
+                  showCorrectAns); // Explicit parameter override
 
       // For custom exams, never show correct answers during the exam
       final bool finalShowCorrectAnswers =
@@ -269,7 +334,8 @@ class SharedQuestionWidget extends StatelessWidget {
                 }
 
                 final option = question.options[optionIndex];
-                final isSelected = controller.isOptionSelected(question.id, option.id);
+                final isSelected =
+                    controller.isOptionSelected(question.id, option.id);
                 final isLoading = loadingOptionIndex.value == optionIndex;
                 final optionNumber = int.tryParse(option.id) ?? 0;
                 final optionLetter = controller.getOptionAns(optionNumber);
@@ -279,14 +345,20 @@ class SharedQuestionWidget extends StatelessWidget {
                     correctAnsList.add(o.id);
                   }
                 });
-                final isAnswered = controller.isAnswered(question.id, option.id);
+                final isAnswered =
+                    controller.isAnswered(question.id, option.id);
 
-                final singleAnswered = !question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+                final singleAnswered = !question.isAcceptMultipleAnswers &&
+                    (controller.selectedAnswers[question.id]?.isNotEmpty ??
+                        false);
                 final optionDisabled = singleAnswered && !isSelected;
 
                 // For read mode, multiple answer, show tick for correct, cross for incorrect selected
                 final isReadMode = controller.selectedTestMode.value == 'read';
-                final showMarkLogic = isReadMode && question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+                final showMarkLogic = isReadMode &&
+                    question.isAcceptMultipleAnswers &&
+                    (controller.selectedAnswers[question.id]?.isNotEmpty ??
+                        false);
                 bool showTick = false;
                 bool showCross = false;
                 if (showMarkLogic) {
@@ -300,7 +372,10 @@ class SharedQuestionWidget extends StatelessWidget {
                 // Prevent reselect/re-answer for multiple-answer questions after selection
                 // Prevent re-selection for multiple-answer questions even if no option is correct
                 // Always disable option after it is selected for multiple-answer questions
-                final multiOptionDisabled = question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false);
+                final multiOptionDisabled = question.isAcceptMultipleAnswers &&
+                    (controller.selectedAnswers[question.id]
+                            ?.contains(option.id) ??
+                        false);
 
                 return Expanded(
                   child: GestureDetector(
@@ -310,16 +385,22 @@ class SharedQuestionWidget extends StatelessWidget {
                             // Prevent selection if not allowed
                             if (!canSelectAnswers) return;
                             // For single answer questions, prevent unselecting or changing after selection
-                            if (!question.isAcceptMultipleAnswers && isAnswered) return;
+                            if (!question.isAcceptMultipleAnswers && isAnswered)
+                              return;
                             // For multiple answer questions, prevent reselecting already selected option
-                            if (question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false)) return;
+                            if (question.isAcceptMultipleAnswers &&
+                                (controller.selectedAnswers[question.id]
+                                        ?.contains(option.id) ??
+                                    false)) return;
 
                             loadingOptionIndex.value = optionIndex;
                             controller.selectOption(question.id, option.id);
 
                             // Only submit answer via API in exam mode or for custom exams
                             bool success = true;
-                            if (isExamMode || isCustomExam || question.isAcceptMultipleAnswers) {
+                            if (isExamMode ||
+                                isCustomExam ||
+                                question.isAcceptMultipleAnswers) {
                               success = await controller.submitAnswer(
                                 question.id,
                                 contestId,
@@ -334,7 +415,8 @@ class SharedQuestionWidget extends StatelessWidget {
                             loadingOptionIndex.value = null;
                           },
                     child: Opacity(
-                      opacity: (optionDisabled || multiOptionDisabled) ? 0.5 : 1.0,
+                      opacity:
+                          (optionDisabled || multiOptionDisabled) ? 0.5 : 1.0,
                       child: Container(
                         margin: EdgeInsets.only(
                             bottom: 12.h,
@@ -353,9 +435,11 @@ class SharedQuestionWidget extends StatelessWidget {
                                   showCorrectAns: finalShowCorrectAnswers,
                                 ),
                                 if (showTick)
-                                  Icon(Icons.check, color: Colors.green, size: 18.sp)
+                                  Icon(Icons.check,
+                                      color: Colors.green, size: 18.sp)
                                 else if (showCross)
-                                  Icon(Icons.close, color: Colors.red, size: 18.sp)
+                                  Icon(Icons.close,
+                                      color: Colors.red, size: 18.sp)
                               ],
                             ),
 
@@ -371,7 +455,8 @@ class SharedQuestionWidget extends StatelessWidget {
                                   : HtmlWidget(
                                       option.title,
                                       textStyle: TextStyle(
-                                        fontSize: 14.sp, // Slightly smaller font for grid layout
+                                        fontSize: 14
+                                            .sp, // Slightly smaller font for grid layout
                                         color: Colors.black87,
                                       ),
                                     ),
@@ -392,18 +477,20 @@ class SharedQuestionWidget extends StatelessWidget {
           children: List.generate(question.options.length, (optionIndex) {
             final option = question.options[optionIndex];
             final isSelected =
-                controller.isOptionSelected(question.id,option.id);
+                controller.isOptionSelected(question.id, option.id);
             final isLoading = loadingOptionIndex.value == optionIndex;
             final optionNumber = int.tryParse(option.id) ?? 0;
             final optionLetter = controller.getOptionAns(optionNumber);
             final isCorrectAns = question.rightAnswer?.toLowerCase() ==
                 optionLetter.toLowerCase();
-            final isAnswered = controller.isAnswered(
-                question.id, option.id);
+            final isAnswered = controller.isAnswered(question.id, option.id);
 
-            final singleAnswered = !question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
+            final singleAnswered = !question.isAcceptMultipleAnswers &&
+                (controller.selectedAnswers[question.id]?.isNotEmpty ?? false);
             final optionDisabled = singleAnswered && !isSelected;
-            final multiOptionDisabled = question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false);
+            final multiOptionDisabled = question.isAcceptMultipleAnswers &&
+                (controller.selectedAnswers[question.id]?.contains(option.id) ??
+                    false);
             return GestureDetector(
               onTap: (optionDisabled || multiOptionDisabled)
                   ? null
@@ -411,16 +498,22 @@ class SharedQuestionWidget extends StatelessWidget {
                       // Prevent selection if not allowed
                       if (!canSelectAnswers) return;
                       // For single answer questions, prevent unselecting or changing after selection
-                      if (!question.isAcceptMultipleAnswers && isAnswered) return;
+                      if (!question.isAcceptMultipleAnswers && isAnswered)
+                        return;
                       // For multiple answer questions, prevent reselecting already selected option
-                      if (question.isAcceptMultipleAnswers && (controller.selectedAnswers[question.id]?.contains(option.id) ?? false)) return;
+                      if (question.isAcceptMultipleAnswers &&
+                          (controller.selectedAnswers[question.id]
+                                  ?.contains(option.id) ??
+                              false)) return;
 
                       loadingOptionIndex.value = optionIndex;
                       controller.selectOption(question.id, option.id);
 
                       // Only submit answer via API in exam mode or for custom exams
                       bool success = true;
-                      if (isExamMode || isCustomExam || question.isAcceptMultipleAnswers) {
+                      if (isExamMode ||
+                          isCustomExam ||
+                          question.isAcceptMultipleAnswers) {
                         success = await controller.submitAnswer(
                           question.id,
                           contestId,
@@ -457,12 +550,30 @@ class SharedQuestionWidget extends StatelessWidget {
                                 child: CupertinoActivityIndicator(radius: 12.r),
                               )
                             : HtmlWidget(
-                                option.title,
+                                '${option.title.replaceAll('<pre>', '').replaceAll('</pre>', '')}',
+                                customWidgetBuilder: (element) {
+                                  if (element.classes.contains('latex') ||
+                                      element.classes.contains('ql-syntax')) {
+                                    return Math.tex(
+                                      element.text,
+                                      textStyle: TextStyle(fontSize: 16.sp),
+                                    );
+                                  }
+                                  return null;
+                                },
                                 textStyle: TextStyle(
                                   fontSize: 16.sp,
                                   color: Colors.black87,
+                                  height: 1.5,
                                 ),
                               ),
+                        // HtmlWidget(
+                        //     option.title,
+                        //     textStyle: TextStyle(
+                        //       fontSize: 16.sp,
+                        //       color: Colors.black87,
+                        //     ),
+                        //   ),
                       ),
                     ],
                   ),
