@@ -43,17 +43,51 @@ class CustomAppBar {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                    decoration: const ShapeDecoration(
-                        shape: CircleBorder(
-                            side: BorderSide(
-                      color: Colors.grey,
-                    ))),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.transparent,
-                      child: SvgPicture.asset("assets/notification.svg"),
-                    )),
+                GestureDetector(
+                  onTap: () {
+                    Get.toNamed(Routes.notifications);
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                          decoration: const ShapeDecoration(
+                              shape: CircleBorder(
+                                  side: BorderSide(
+                            color: Colors.grey,
+                          ))),
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: Colors.transparent,
+                            child: SvgPicture.asset("assets/notification.svg"),
+                          )),
+                      // Notification badge
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: const Text(
+                            '3', // This will be dynamic in real implementation
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
                     Get.offAllNamed(Routes.profile);

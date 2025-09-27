@@ -47,6 +47,8 @@ import '../modules/history/binding/history_binding.dart';
 import '../modules/history/view/history_view.dart';
 import '../modules/corner/binding/corner_binding.dart';
 import '../modules/corner/view/corner_view.dart';
+import '../modules/notifications/bindings/notification_binding.dart';
+import '../modules/notifications/views/notification_view.dart';
 
 class Routes {
   static const splash = '/splash';
@@ -72,6 +74,7 @@ class Routes {
   static const tex = '/tex/';
   static const history = '/history';
   static const corner = '/corner';
+  static const notifications = '/notifications';
   // Dynamic route generator for single contest
   static String singleContest(String id) => '/contest/$id';
   static String singleModelTest(String id) => '/model-test/$id';
@@ -207,6 +210,11 @@ class AppPages {
       name: Routes.corner,
       page: () => const CornerView(),
       binding: CornerBinding(),
+    ),
+    GetPage(
+      name: Routes.notifications,
+      page: () => const NotificationView(),
+      binding: NotificationBinding(),
     ),
   ];
 }
