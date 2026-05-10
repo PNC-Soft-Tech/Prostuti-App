@@ -8,7 +8,6 @@ import 'package:prostuti/app/models/institution.dart';
 import 'package:prostuti/app/models/institution_type.dart';
 import 'package:prostuti/app/models/user_model.dart';
 import 'package:prostuti/app/modules/ranking/models/ranking_info.dart';
-import 'package:prostuti/app/routes/app_pages.dart';
 
 import '../constant/app_config.dart';
 import '../modules/contest-details/models/contest_details_model.dart';
@@ -39,12 +38,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     log("ApiHelperImpl initialized with baseUrl: ${httpClient.baseUrl}");
     httpClient.defaultContentType = 'application/json';
     httpClient.addRequestModifier<Object?>((request) async {
-      final token = await StorageHelper.getToken(); // Fetch token
+      final token = await StorageHelper.getToken();
       if (token != null) {
-        request.headers['Authorization'] = 'Bearer $token'; // Add Bearer token
-      } else {
-        Get.toNamed(Routes.login);
+        request.headers['Authorization'] = 'Bearer $token';
       }
+      // Don't redirect to /login when token is missing — public endpoints
+      // (register, login, forgot-password, OTP verify) legitimately have no
+      // token. Protected endpoints that hit a 401 are handled by their
+      // controllers or by AuthService.checkFeatureAccess.
       log('Request: ${request.method} ${request.url}');
       log('Headers: ${request.headers}');
       log('Body: ${request.bodyBytes}');

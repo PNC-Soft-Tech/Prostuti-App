@@ -16,6 +16,7 @@ class ContestController extends GetxController {
   var isLoading = false.obs;
   var isLoadingUpcomingContest = false.obs;
   final registeredContests = <String, bool>{}.obs; // Contest ID => isRegistered
+  final registeringContests = <String>{}.obs; // Contest IDs with in-flight register call
   @override
   void onInit() {
     super.onInit();
@@ -99,25 +100,74 @@ class ContestController extends GetxController {
   }
 
   Future<void> registerForContest(String contestId) async {
-    final result = await _apiHelper.registerContest(contestId);
+    // Guard against double-submit
+    if (registeringContests.contains(contestId)) return;
 
-    result.fold(
-      (error) {
-        log('Failed to register contest: ${error.message}');
-        Utils.showSnackbar(
-            message: "Failed to register contest", isSuccess: false);
-      },
-      (response) {
-        // ✅ Mark this contest as registered
-        registeredContests[contestId] = true;
-        // Utils.showSnackbar(
-        //     message: "Successfully registered for contest: ${response.body}",
-        //     isSuccess: true);
-        Utils.showSnackbar(
-            message: "Successfully registered for contest", isSuccess: true);
-        log('Successfully registered for contest: ${response.body}');
-      },
+    // Already registered? Surface a friendly notice instead of hitting the API.
+    if (registeredContests[contestId] == true) {
+      Utils.showSnackbar(
+        message: "You're already registered for this contest.",
+        isSuccess: true,
+      );
+      return;
+    }
+
+    // Auth gate — auth service shows its own login prompt if needed.
+    final hasAccess = await _authService.checkFeatureAccess(
+      featureName: 'contests',
+      customMessage: 'Please login to register for contests.',
     );
+    if (!hasAccess) return;
+
+    registeringContests.add(contestId);
+    try {
+      final result = await _apiHelper.registerContest(contestId);
+
+      result.fold(
+        (error) {
+          log('Failed to register contest [${error.code}]: ${error.message}');
+
+          // Auth expired mid-session — re-prompt login.
+          if (error.code == 401) {
+            _authService.checkFeatureAccess(
+              featureName: 'contests',
+              customMessage: 'Your session expired. Please login again.',
+            );
+            return;
+          }
+
+          // Surface the actual server message (e.g. "Already registered",
+          // "Contest is full", "Registration closed") instead of a generic toast.
+          final friendly = (error.message.isNotEmpty)
+              ? error.message
+              : "Couldn't register for this contest. Please try again.";
+          Utils.showSnackbar(
+            title: 'Registration failed',
+            message: friendly,
+            isSuccess: false,
+          );
+        },
+        (response) {
+          registeredContests[contestId] = true;
+
+          // Keep the in-memory contest model in sync so any widget reading
+          // contest.isRegistered also reflects the new state.
+          for (final c in upcomingContests) {
+            if (c.id == contestId) c.isRegistered = true;
+          }
+          upcomingContests.refresh();
+
+          Utils.showSnackbar(
+            title: 'Registered',
+            message: "You're in! We'll notify you when the contest starts.",
+            isSuccess: true,
+          );
+          log('Successfully registered for contest: ${response.body}');
+        },
+      );
+    } finally {
+      registeringContests.remove(contestId);
+    }
   }
 
   Future<void> fetchContests() async {

@@ -256,6 +256,7 @@ class ContestCardHome extends StatelessWidget {
   Widget _buildActionRow(ContestStatus status) {
     return Obx(() {
       final isRegistered = controller.registeredContests[contest.id] ?? false;
+      final isRegistering = controller.registeringContests.contains(contest.id);
 
       if (status.isDone) {
         return Text(
@@ -266,24 +267,40 @@ class ContestCardHome extends StatelessWidget {
             color: Colors.grey,
           ),
         );
-      } else if (status.isRunning && isRegistered) {
-        return _buildCountdownRow("Enter Now", () => _navigateToDetails());
-      } else {
-        return _buildCountdownRow(
-            "Register Now", () => controller.registerForContest(contest.id));
       }
+
+      if (status.isRunning && isRegistered) {
+        return _buildCountdownRow(
+          buttonText: 'Enter Now',
+          onPressed: _navigateToDetails,
+        );
+      }
+
+      if (status.isScheduled && isRegistered) {
+        return _buildCountdownRow(
+          buttonText: 'Registered',
+          onPressed: null,
+          isPrimary: false,
+        );
+      }
+
+      return _buildCountdownRow(
+        buttonText: isRegistering ? 'Registering…' : 'Register Now',
+        onPressed: isRegistering
+            ? null
+            : () => controller.registerForContest(contest.id),
+      );
     });
   }
 
-  Widget _buildCountdownRow(String buttonText, VoidCallback onPressed) {
+  Widget _buildCountdownRow({
+    required String buttonText,
+    required VoidCallback? onPressed,
+    bool isPrimary = true,
+  }) {
     return Row(
       children: [
-        // Image.asset('assets/countdown.png', height: 24.h, width: 24.h),
-        SvgPicture.asset(
-          'assets/icons/clock.svg',
-          width: 24.w,
-          height: 24.h,
-        ),
+        SvgPicture.asset('assets/icons/clock.svg', width: 24.w, height: 24.h),
         SizedBox(width: 6.w),
         Expanded(
           child: CountdownTimer(
@@ -292,32 +309,27 @@ class ContestCardHome extends StatelessWidget {
             fontSize: 18.sp,
           ),
         ),
-        // const Spacer(),
-        CustomButton.button(
+        Opacity(
+          opacity: onPressed == null ? 0.6 : 1.0,
+          child: CustomButton.button(
             text: buttonText,
             fontSize: 14.sp,
             paddingY: 0,
             paddingX: 16,
             fontWeight: FontWeight.w600,
-            onPressed: onPressed,
+            onPressed: onPressed ?? () {},
             borderRadius: 50.r,
-            isPrimary: true,
+            isPrimary: isPrimary,
             icon: null,
             image: null,
-            imageSpaing: null),
+            imageSpaing: null,
+          ),
+        ),
       ],
     );
   }
 
   void _navigateToDetails() {
     Get.toNamed(Routes.contestDetails, arguments: {"contestId": contest.id});
-  }
-
-  void _registerForContest() async {
-    await controller.registerForContest(contest.id);
-    contest.isRegistered =
-        true; // 👈 After successful registration, update the contest itself
-    controller.upcomingContests
-        .refresh(); // 👈 Ensure list updates with new isRegistered state
   }
 }

@@ -23,9 +23,16 @@ class GlobalLoadingManager {
       builder: (context) => _buildLoadingOverlay(),
     );
 
+    // Use maybeOf so we no-op (instead of crashing) when the current route
+    // doesn't sit under an Overlay ancestor. Callers should provide their own
+    // inline loading state in that case.
     final overlayContext = Get.overlayContext;
-    if (overlayContext != null) {
-      Overlay.of(overlayContext).insert(_overlayEntry!);
+    final overlay =
+        overlayContext != null ? Overlay.maybeOf(overlayContext) : null;
+    if (overlay != null) {
+      overlay.insert(_overlayEntry!);
+    } else {
+      _overlayEntry = null;
     }
   }
 

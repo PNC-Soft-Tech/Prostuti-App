@@ -1,30 +1,76 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
+
 import '../../../APIs/api_helper.dart';
-import '../../../common/widgets/breathing_animation/global_loading_manager.dart';
 import '../../../routes/app_pages.dart';
 import '../models/register_model.dart';
+
+/// Outcome of a registration attempt — returned to the form so it can show
+/// a SnackBar via ScaffoldMessenger (more reliable than Get.snackbar in this
+/// codebase, which has been observed to silently no-op when overlay context
+/// resolution flakes).
+class RegisterResult {
+  final bool success;
+  final String message;
+  final int? statusCode;
+
+  const RegisterResult.success(this.message)
+      : success = true,
+        statusCode = 200;
+
+  const RegisterResult.failure(this.message, this.statusCode) : success = false;
+}
 
 class RegisterController extends GetxController {
   final ApiHelper _apiHelper = Get.find<ApiHelper>();
 
-  Future<void> registerUser(RegisterRequestModel model) async {
+  final isRegistering = false.obs;
+
+  Future<RegisterResult> registerUser(RegisterRequestModel model) async {
+    if (isRegistering.value) {
+      return const RegisterResult.failure(
+        'Registration already in progress…',
+        null,
+      );
+    }
+
+    isRegistering.value = true;
     try {
-      final response = await GlobalLoadingManager.instance.showDuring(
-        _apiHelper.register(model),
-        message: 'Creating your account...',
+      final response = await _apiHelper.register(model);
+
+      return response.fold(
+        (error) {
+          log('Register failed [${error.code}]: ${error.message}');
+
+          // Backend sometimes returns the literal string "null" if the message
+          // field is missing — don't surface that to the user.
+          final raw = error.message.trim();
+          final friendly = (raw.isEmpty || raw.toLowerCase() == 'null')
+              ? "We couldn't create your account. Please try again."
+              : raw;
+          return RegisterResult.failure(friendly, error.code);
+        },
+        (_) {
+          // Navigation happens here; the form shows the success snackbar so
+          // it stays anchored to the verification screen the user lands on.
+          Get.toNamed(
+            Routes.emailVarification,
+            arguments: {"email": model.email},
+          );
+          return RegisterResult.success(
+            'Verify the OTP we sent to ${model.email}.',
+          );
+        },
       );
-      
-      response.fold(
-        (error) => Get.snackbar('Error', error.message), // Error handling
-        (data) {
-          Get.toNamed(Routes.emailVarification,
-              arguments: {"email": model.email});
-          Get.snackbar('Success',
-              'Registration successful! Now Verify OTP sent to your email'); // Success handling
-        }
+    } catch (e, st) {
+      log('Register unexpected error: $e\n$st');
+      return const RegisterResult.failure(
+        'Please check your connection and try again.',
+        null,
       );
-    } catch (e) {
-      Get.snackbar('Error', 'An unexpected error occurred.');
+    } finally {
+      isRegistering.value = false;
     }
   }
 }
