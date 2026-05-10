@@ -4,18 +4,47 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../common/custom_buttons.dart';
+import '../../../common/utils/prostuti_utils.dart';
 import '../../../constant/app_color.dart';
 import '../../../routes/app_pages.dart';
 
 class HomeBottomNavMoreBottomSheet extends StatelessWidget {
   const HomeBottomNavMoreBottomSheet({super.key});
 
-  static const _items = <_MoreItem>[
-    _MoreItem(name: 'All Contests', image: 'assets/all-contests.png'),
-    _MoreItem(name: 'Model Tests', image: 'assets/model-tests.png'),
-    _MoreItem(name: 'Job Alerts', image: 'assets/job-alerts.png'),
-    _MoreItem(name: 'Question Bank', image: 'assets/question-banks.png'),
+  static final _items = <_MoreItem>[
+    _MoreItem(
+      name: 'All Contests',
+      image: 'assets/all-contests.png',
+      onTap: () => _go(Routes.contests),
+    ),
+    _MoreItem(
+      name: 'Model Tests',
+      image: 'assets/model-tests.png',
+      onTap: () => _go(Routes.modelTestsList),
+    ),
+    _MoreItem(
+      name: 'Job Alerts',
+      image: 'assets/job-alerts.png',
+      onTap: () => _go(Routes.jobCircular),
+    ),
+    _MoreItem(
+      name: 'Question Bank',
+      image: 'assets/question-banks.png',
+      onTap: () {
+        Get.back();
+        Utils.showSnackbar(
+          title: 'Coming soon',
+          message: 'Question Bank is on the way.',
+          isSuccess: true,
+        );
+      },
+    ),
   ];
+
+  static void _go(String route) {
+    Get.back();
+    Get.toNamed(route);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +107,12 @@ class HomeBottomNavMoreBottomSheet extends StatelessWidget {
 class _MoreItem {
   final String name;
   final String image;
-  const _MoreItem({required this.name, required this.image});
+  final VoidCallback onTap;
+  const _MoreItem({
+    required this.name,
+    required this.image,
+    required this.onTap,
+  });
 }
 
 class _MoreTile extends StatelessWidget {
@@ -91,7 +125,7 @@ class _MoreTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: item.onTap,
         borderRadius: BorderRadius.circular(14.r),
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
