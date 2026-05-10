@@ -42,17 +42,7 @@ class JobCircularHomeCard extends GetWidget<JobCircularController> {
             children: [
               Row(
                 children: [
-                  image != null && image!.contains('http')
-                      ? Image.network(
-                          image ?? '',
-                          width: 28.w,
-                          height: 28.w,
-                        )
-                      : Image.asset(
-                          image ?? '',
-                          width: 28.w,
-                          height: 28.w,
-                        ),
+                  _buildLogo(image, 28.w),
                   SizedBox(
                     width: 8.w,
                   ),
@@ -160,6 +150,38 @@ class JobCircularHomeCard extends GetWidget<JobCircularController> {
           ),
         ),
       ],
+    );
+  }
+
+  // Some job circulars carry remote logo URLs that 404 (e.g. dead university
+  // CDN links). Without an errorBuilder, a 404 throws an unhandled
+  // NetworkImageLoadException. Always fall back to the default govt asset.
+  Widget _buildLogo(String? src, double size) {
+    final fallback = Image.asset(
+      'assets/govt-bd.png',
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+    );
+
+    if (src == null || src.isEmpty) return fallback;
+
+    if (src.contains('http')) {
+      return Image.network(
+        src,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => fallback,
+      );
+    }
+
+    return Image.asset(
+      src,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => fallback,
     );
   }
 }

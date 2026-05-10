@@ -237,20 +237,20 @@ class ContestCardHome extends StatelessWidget {
   }
 
   Widget _buildContestImage() {
-    if (contest.imageUrl != null && contest.imageUrl!.contains('http')) {
-      return Image.network(
-        contest.imageUrl!,
-        height: 28.h,
-        width: 28.h,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Image.asset(
-        'assets/govt-bd.png',
-        height: 28.h,
-        width: 28.h,
-      );
-    }
+    final fallback = Image.asset(
+      'assets/govt-bd.png',
+      height: 28.h,
+      width: 28.h,
+    );
+    final url = contest.imageUrl;
+    if (url == null || !url.contains('http')) return fallback;
+    return Image.network(
+      url,
+      height: 28.h,
+      width: 28.h,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => fallback,
+    );
   }
 
   Widget _buildActionRow(ContestStatus status) {

@@ -59,6 +59,20 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     });
   }
 
+  /// Safely pull a `message` string out of a Response body. When the network
+  /// call fails at the transport layer (timeout, DNS, TLS, connection reset,
+  /// cold-start hang) GetConnect returns a Response with a `null` body — and
+  /// the common pattern `response.body['message'] ?? fallback` crashes because
+  /// `[]` runs on null before `??` can fire. Always go through this helper.
+  String _safeMsg(Response response, String fallback) {
+    final body = response.body;
+    if (body is Map) {
+      final m = body['message'];
+      if (m is String && m.isNotEmpty) return m;
+    }
+    return fallback;
+  }
+
   Future<Either<CustomError, T>> _convert<T>(
       Response response, T Function(Map<String, dynamic>) fromJson) async {
     if (response.statusCode == 200) {
@@ -83,7 +97,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       return Right(response);
     } else {
       return Left(CustomError(response.statusCode,
-          message: '${response.body['message']}'));
+          message: _safeMsg(response, 'Registration failed')));
     }
   }
 
@@ -91,8 +105,9 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, LoginResponseModel>> login(
       LoginRequestModel payload) async {
     final response = await post('users/login', payload.toJson());
+    final body = response.body;
 
-    if (response.statusCode == 200 && response.body['success'] == true) {
+    if (response.statusCode == 200 && body is Map && body['success'] == true) {
       try {
         return Right(LoginResponseModel.fromJson(response.body));
       } catch (e) {
@@ -104,7 +119,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     } else {
       return Left(CustomError(
         response.statusCode,
-        message: response.body['message'] ?? 'Unknown error occurred',
+        message: _safeMsg(response, 'Unknown error occurred'),
       ));
     }
   }
@@ -114,13 +129,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     try {
       final payload = {"email": email};
       final response = await post('users/forgot-password/', payload);
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         return Right(response);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to send reset code',
+          message: _safeMsg(response, 'Failed to send reset code'),
         ));
       }
     } catch (e) {
@@ -142,13 +158,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         "newPassword": newPassword,
       };
       final response = await post('users/reset-password/', payload);
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         return Right(response);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to reset password',
+          message: _safeMsg(response, 'Failed to reset password'),
         ));
       }
     } catch (e) {
@@ -180,13 +197,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<Contest>>> fetchAllContests() async {
     try {
       final response = await get('contests');
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
+      final body = response.body;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final contests = data.map((json) => Contest.fromJson(json)).toList();
         return Right(contests);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ?? 'Failed to fetch contests'));
+            message: _safeMsg(response, 'Failed to fetch contests')));
       }
     } catch (e) {
       log('Error fetching contests: $e');
@@ -198,15 +216,15 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<Contest>>> fetchContestHistory() async {
     try {
       final response = await get('contest-points/history');
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
+      final body = response.body;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final contests =
             data.map((json) => Contest.fromJson(json['contest'])).toList();
         return Right(contests);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ??
-                'Failed to fetch contests history'));
+            message: _safeMsg(response, 'Failed to fetch contests history')));
       }
     } catch (e) {
       log('Error fetching contests history: $e');
@@ -218,14 +236,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<ModelTest>>> fetchAllModelTests() async {
     try {
       final response = await get('models');
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
-        // log("model dataaa: ${data?.length}");
+      final body = response.body;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final contests = data.map((json) => ModelTest.fromJson(json)).toList();
         return Right(contests);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ?? 'Failed to fetch models'));
+            message: _safeMsg(response, 'Failed to fetch models')));
       }
     } catch (e) {
       log('Error fetching models: $e');
@@ -237,13 +255,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<Question>>> fetchAllQuestions() async {
     try {
       final response = await get('questions');
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
+      final body = response.body;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final questions = data.map((json) => Question.fromJson(json)).toList();
         return Right(questions);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ?? 'Failed to fetch questions'));
+            message: _safeMsg(response, 'Failed to fetch questions')));
       }
     } catch (e) {
       log('Error fetching questions: $e');
@@ -268,7 +287,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         return Left(
           CustomError(
             response.statusCode ?? 500,
-            message: response.body['message'] ?? 'Error verifying OTP',
+            message: _safeMsg(response, 'Error verifying OTP'),
           ),
         );
       }
@@ -341,8 +360,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         print(
             "ERROR: ApiHelper.getUserProfile - Error response: ${response.body}");
         return Left(CustomError(response.statusCode,
-            message:
-                response.body['message'] ?? 'Failed to fetch user profile'));
+            message: _safeMsg(response, 'Failed to fetch user profile')));
       }
     } catch (error) {
       print("ERROR: ApiHelper.getUserProfile - Exception caught: $error");
@@ -370,9 +388,10 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       }
 
       final response = await put('users/', data);
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final updatedData = response.body['data'] as Map<String, dynamic>;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final updatedData = body['data'] as Map<String, dynamic>;
         try {
           final userProfile = UserProfile.fromJson(updatedData);
 
@@ -389,8 +408,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         }
       } else {
         return Left(CustomError(response.statusCode,
-            message:
-                response.body['message'] ?? 'Failed to update user profile'));
+            message: _safeMsg(response, 'Failed to update user profile')));
       }
     } catch (error) {
       log('updateUserProfile error: $error');
@@ -428,7 +446,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       } else {
         return Left(CustomError(
           response.statusCode ?? 500,
-          message: response.body['message'] ?? 'Error registering contest',
+          message: _safeMsg(response, 'Error registering contest'),
         ));
       }
     } catch (e) {
@@ -444,23 +462,22 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     try {
       // Make the GET request to fetch recent contests
       final response = await get('contests/?contestType=$contestType');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         // Parse the response data into a list of Contest models
-        final List<dynamic> data = response.body['data'];
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         log('Raw API Response - Total contests: ${data.length}');
-        // Log first contest for debugging
         if (data.isNotEmpty) {
           log('Sample contest data: ${data.first}');
         }
         final contests = data.map((json) => Contest.fromJson(json)).toList();
-        return Right(contests); // Return the list of contests
+        return Right(contests);
       } else {
         // Handle API errors
         return Left(CustomError(
           response.statusCode,
-          message:
-              response.body['message'] ?? 'Failed to fetch recent contests',
+          message: _safeMsg(response, 'Failed to fetch recent contests'),
         ));
       }
     } catch (e) {
@@ -501,15 +518,15 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       String contestId) async {
     try {
       final response = await get('contests/$contestId');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final data = ContestDetailsResponse.fromJson(response.body['data']);
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final data = ContestDetailsResponse.fromJson(body['data']);
         return Right(data);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message:
-              response.body['message'] ?? 'Failed to fetch contest details',
+          message: _safeMsg(response, 'Failed to fetch contest details'),
         ));
       }
     } catch (e) {
@@ -522,18 +539,15 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, CustomExamDetailsResponse>> fetchSingleCustomExam(
       String customExamId) async {
     try {
-      // Make GET request
       log('Request: get custom-exams/$customExamId');
-      // log('token: ${_storageService.getToken()}');
       final response = await get('custom-exams/$customExamId');
+      final body = response.body;
 
       log('Response: ${response.statusCode}, Body: ${response.body}');
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         try {
-          // Parse the response into CustomExamDetailsResponse
-          final data =
-              CustomExamDetailsResponse.fromJson(response.body['data']);
+          final data = CustomExamDetailsResponse.fromJson(body['data']);
           return Right(data);
         } catch (parseError) {
           log('Error parsing custom exam response: $parseError');
@@ -543,15 +557,12 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
           ));
         }
       } else {
-        // Handle API error
         return Left(CustomError(
           response.statusCode,
-          message:
-              response.body['message'] ?? 'Failed to fetch custom exam details',
+          message: _safeMsg(response, 'Failed to fetch custom exam details'),
         ));
       }
     } catch (e) {
-      // Handle network or parsing errors
       log('Error fetching single custom exam: $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
@@ -561,22 +572,19 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, ModelTestDetailsResponse>> fetchSingleModelTest(
       String modelTestId) async {
     try {
-      // Make GET request
       final response = await get('models/$modelTestId');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        // Parse the response into SingleContestResponse
-        final data = ModelTestDetailsResponse.fromJson(response.body['data']);
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final data = ModelTestDetailsResponse.fromJson(body['data']);
         return Right(data);
       } else {
-        // Handle API error
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch model details',
+          message: _safeMsg(response, 'Failed to fetch model details'),
         ));
       }
     } catch (e) {
-      // Handle network or parsing errors
       log('Error fetching model : $e');
       return Left(CustomError(500, message: 'Network error: $e'));
     }
@@ -586,16 +594,17 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<JobCircular>>> fetchJobCirculars() async {
     try {
       final response = await get('job-circulars');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final jobCirculars =
             data.map((json) => JobCircular.fromJson(json)).toList();
         return Right(jobCirculars);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch job circulars',
+          message: _safeMsg(response, 'Failed to fetch job circulars'),
         ));
       }
     } catch (e) {
@@ -608,15 +617,16 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
   Future<Either<CustomError, List<Subjects>>> fetchSubjects() async {
     try {
       final response = await get('subjects');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final categories = data.map((json) => Subjects.fromJson(json)).toList();
         return Right(categories);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch categories',
+          message: _safeMsg(response, 'Failed to fetch categories'),
         ));
       }
     } catch (e) {
@@ -630,16 +640,17 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       fetchSubCategoriesByCategoryId(String categoryId) async {
     try {
       final response = await get('topics/all-topics-by-id/$categoryId');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'];
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final subCategories =
             data.map((json) => SubjectTopics.fromJson(json)).toList();
         return Right(subCategories);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch subcategories',
+          message: _safeMsg(response, 'Failed to fetch subcategories'),
         ));
       }
     } catch (e) {
@@ -671,14 +682,18 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       final response = await get('leaderboard?$qs');
       inspect(response);
 
-      if (response.statusCode == 200 && !response.hasError) {
-        final Map<String, dynamic> data = response.body['data'];
+      final body = response.body;
+      if (response.statusCode == 200 &&
+          !response.hasError &&
+          body is Map &&
+          body['data'] is Map<String, dynamic>) {
+        final Map<String, dynamic> data = body['data'] as Map<String, dynamic>;
         final rankingData = ContestData.fromJson(data);
         return Right(rankingData);
       } else {
         return Left(CustomError(
           response.statusCode,
-          message: response.body['message'] ?? 'Failed to fetch leaderboard',
+          message: _safeMsg(response, 'Failed to fetch leaderboard'),
         ));
       }
     } catch (e) {
@@ -691,9 +706,10 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       getInstitutionTypes() async {
     try {
       final response = await get('institution-types/');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'] as List<dynamic>;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final List<InstitutionType> institutionTypes = data
             .map((item) =>
                 InstitutionType.fromJson(item as Map<String, dynamic>))
@@ -702,8 +718,7 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
         return Right(institutionTypes);
       } else {
         return Left(CustomError(response.statusCode,
-            message: response.body['message'] ??
-                'Failed to fetch institution types'));
+            message: _safeMsg(response, 'Failed to fetch institution types')));
       }
     } catch (error) {
       log('getInstitutionTypes error: $error');
@@ -721,9 +736,10 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
           : 'institutions';
 
       final response = await get(url);
+      final body = response.body;
 
-      if (response.statusCode == 200 && !response.hasError) {
-        final List<dynamic> dataList = response.body['data'] as List<dynamic>;
+      if (response.statusCode == 200 && !response.hasError && body is Map) {
+        final List<dynamic> dataList = (body['data'] as List?) ?? [];
 
         final List<Institution> institutions = dataList
             .map((json) => Institution.fromJson(json as Map<String, dynamic>))
@@ -731,9 +747,8 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
         return Right(institutions);
       } else {
-        final message =
-            response.body['message'] ?? 'Failed to fetch institutions';
-        return Left(CustomError(response.statusCode, message: message));
+        return Left(CustomError(response.statusCode,
+            message: _safeMsg(response, 'Failed to fetch institutions')));
       }
     } catch (e, st) {
       log('Error fetching institutions: $e\n$st');
@@ -779,12 +794,13 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       log('Submit Contest Answer Response: ${response.statusCode}, Body: ${response.body}');
 
       // Handle response
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      final body = response.body;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         return Right(response); // Successful response
       } else {
         return Left(CustomError(
           response.statusCode ?? 500,
-          message: response.body['message'] ?? 'Failed to submit answer',
+          message: _safeMsg(response, 'Failed to submit answer'),
         ));
       }
     } catch (e) {
@@ -808,13 +824,14 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
 
       final response =
           await get('contests/submit-contest/$contestId', headers: headers);
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         return Right(response);
       } else {
         return Left(CustomError(
           response.statusCode ?? 500,
-          message: response.body['message'] ?? 'Failed to submit contest',
+          message: _safeMsg(response, 'Failed to submit contest'),
         ));
       }
     } catch (e) {
@@ -829,12 +846,12 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     try {
       final response =
           await post('custom-exams/generate-contest', payload.toJson());
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      final body = response.body;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         return Right(response);
       } else {
         return Left(CustomError(response.statusCode,
-            message:
-                response.body['message'] ?? 'Failed to generate custom exam'));
+            message: _safeMsg(response, 'Failed to generate custom exam')));
       }
     } catch (e) {
       log('Error generating custom exam: $e');
@@ -848,15 +865,15 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     try {
       final response = await get('questions/topics/num-of-question/$topicId');
       log('Response for topic count: ${response.body}');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
         // The API returns count in the 'count' field, not 'data'
-        final count = response.body['count'] as int? ?? 0;
+        final count = body['count'] as int? ?? 0;
         return Right(count);
       } else {
         return Left(CustomError(response.statusCode,
-            message:
-                response.body['message'] ?? 'Failed to fetch question count'));
+            message: _safeMsg(response, 'Failed to fetch question count')));
       }
     } catch (e) {
       log('Error fetching question count: $e');
@@ -869,17 +886,17 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
       {int page = 1, int limit = 10}) async {
     try {
       final response = await get('custom-exams/?page=$page&limit=$limit');
+      final body = response.body;
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final List<dynamic> data = response.body['data'] as List<dynamic>;
+      if (response.statusCode == 200 && body is Map && body['success'] == true) {
+        final List<dynamic> data = (body['data'] as List?) ?? [];
         final List<Map<String, dynamic>> customExams =
             data.map((item) => item as Map<String, dynamic>).toList();
 
         return Right(customExams);
       } else {
         return Left(CustomError(response.statusCode,
-            message:
-                response.body['message'] ?? 'Failed to fetch custom exams'));
+            message: _safeMsg(response, 'Failed to fetch custom exams')));
       }
     } catch (error) {
       log('fetchCustomExams error: $error');

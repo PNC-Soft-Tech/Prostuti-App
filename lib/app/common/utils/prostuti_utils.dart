@@ -39,30 +39,46 @@ class Utils {
   static void showSnackbar({
     required String message,
     String title = 'Notice',
-    Color backgroundColor = AppColors.primary, // Default color
-    Color textColor = Colors.white, // Default color
-    SnackPosition position = SnackPosition.BOTTOM, // Default position
-    bool isSuccess = true, // Default icon state
-    Duration duration = const Duration(seconds: 3), // Default duration
-    IconData? icon, // Optional custom icon
+    Color backgroundColor = AppColors.primary,
+    Color textColor = Colors.white,
+    SnackPosition position = SnackPosition.BOTTOM,
+    bool isSuccess = true,
+    Duration duration = const Duration(seconds: 3),
+    IconData? icon,
   }) {
-    Get.snackbar(
-      title, // Title of the Snackbar
-      message, // Message content
-      backgroundColor: backgroundColor,
-      colorText: textColor, // Text color
-      snackPosition: position,
-      icon: Icon(
-        icon ??
-            (isSuccess
-                ? Icons.check_circle
-                : Icons.error), // Default icon based on `isSuccess`
-        color: Colors.white,
-      ),
-      duration: duration, // Duration of the Snackbar
-      margin: const EdgeInsets.all(10), // Margin around the Snackbar
-      borderRadius: 8, // Rounded corners
-    );
+    // Defer to the next frame so Get's overlay context has a chance to
+    // settle. Then check the overlay is actually mounted BEFORE calling
+    // Get.snackbar — because Get.snackbar enqueues the job asynchronously
+    // and the overlay lookup happens later in a microtask, a synchronous
+    // try/catch around Get.snackbar can't catch that throw. The cleanest
+    // way to avoid the crash is to skip when no overlay is available.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = Get.overlayContext;
+      if (ctx == null || Overlay.maybeOf(ctx) == null) {
+        // ignore: avoid_print
+        print('showSnackbar skipped (no overlay): $title - $message');
+        return;
+      }
+      try {
+        Get.snackbar(
+          title,
+          message,
+          backgroundColor: backgroundColor,
+          colorText: textColor,
+          snackPosition: position,
+          icon: Icon(
+            icon ?? (isSuccess ? Icons.check_circle : Icons.error),
+            color: Colors.white,
+          ),
+          duration: duration,
+          margin: const EdgeInsets.all(10),
+          borderRadius: 8,
+        );
+      } catch (e) {
+        // ignore: avoid_print
+        print('showSnackbar suppressed: $e | $title - $message');
+      }
+    });
   }
 
   static AppController getAppController() {
