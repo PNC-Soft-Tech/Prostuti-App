@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:get/get.dart';
@@ -37,7 +38,13 @@ class RegisterController extends GetxController {
 
     isRegistering.value = true;
     try {
-      final response = await _apiHelper.register(model);
+      // The global GetConnect timeout is 5 minutes (AppConfig.timeoutDuration).
+      // A signup that doesn't respond within ~25s isn't going to — Vercel cold
+      // starts top out around 10s, so 25s gives a generous margin while still
+      // failing fast enough to keep the UI responsive.
+      final response = await _apiHelper
+          .register(model)
+          .timeout(const Duration(seconds: 25));
 
       return response.fold(
         (error) {
@@ -62,6 +69,12 @@ class RegisterController extends GetxController {
             'Verify the OTP we sent to ${model.email}.',
           );
         },
+      );
+    } on TimeoutException catch (_) {
+      log('Register timed out after 25s');
+      return const RegisterResult.failure(
+        'The server is taking too long to respond. Please try again.',
+        null,
       );
     } catch (e, st) {
       log('Register unexpected error: $e\n$st');

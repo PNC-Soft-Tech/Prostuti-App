@@ -1,160 +1,64 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:prostuti/app/common/custom_buttons.dart';
-import 'package:prostuti/app/common/custom_styles.dart';
-import 'package:prostuti/app/constant/app_color.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../../../common/widgets/header_curve_logo_widget.dart';
 import '../../../common/widgets/otp_input_widget.dart';
+import '../../../constant/app_color.dart';
+import '../../../routes/app_pages.dart';
 import '../controller/email_varification_controller.dart';
 
 class EmailVarificationView extends GetView<EmailVarificationController> {
-  const EmailVarificationView({super.key});  @override
+  const EmailVarificationView({super.key});
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 40, horizontal: 10.w),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          padding: EdgeInsets.zero,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const HeaderCurveLogoWidget(),
-              const SizedBox(height: 20),
-              Center(
-                child: Text(
-                  'Enter the 4 Digit Code we sent to',
-                  style: CustomStyles.textStyle.copyWith(
-                    fontSize: 18.sp, 
-                    fontWeight: FontWeight.w600,
+              const _BlueBanner(),
+              SizedBox(height: 28.h),
+              _Heading(controller: controller),
+              SizedBox(height: 28.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Obx(
+                  () => OTPInputWidget(
+                    length: 4,
+                    fieldWidth: 64,
+                    fieldHeight: 68,
+                    spacing: 12,
+                    autoFocus: true,
+                    hasError: controller.otpError.value.isNotEmpty,
+                    errorText: controller.otpError.value.isNotEmpty
+                        ? controller.otpError.value
+                        : null,
+                    enableHapticFeedback: true,
+                    onChanged: controller.onOTPChanged,
+                    onCompleted: controller.onOTPCompleted,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),              Center(
-                child: Text(
-                  '${controller.email}',
-                  style: CustomStyles.textStyle.copyWith(
-                    color: AppColors.midnightBlue.withOpacity(0.7),
-                  ),
-                ),
-              ),              SizedBox(height: 60.h),
-                // OTP Input Widget
+              SizedBox(height: 32.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Obx(() => OTPInputWidget(
-                  length: 4,
-                  fieldWidth: 65,
-                  fieldHeight: 65,
-                  spacing: 16,
-                  autoFocus: true,
-                  hasError: controller.otpError.value.isNotEmpty,
-                  errorText: controller.otpError.value.isNotEmpty 
-                      ? controller.otpError.value 
-                      : null,
-                  enableHapticFeedback: true,
-                  onChanged: controller.onOTPChanged,
-                  onCompleted: controller.onOTPCompleted,
-                )),              ),
-              
-              SizedBox(height: 40.h),SizedBox(height: 40.h),
-              
-              // Submit Button
-              Obx(() => Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: CustomButton.button(
-                  text: controller.isSubmitEnable.value 
-                      ? "Verify OTP" 
-                      : "Enter 4-digit OTP",
-                  onPressed: controller.isSubmitEnable.value 
-                      ? controller.verifyOtpAndHandleResponse
-                      : () {}, // Empty callback for disabled state
-                  backgroundColor: controller.isSubmitEnable.value 
-                      ? null // Use default primary color
-                      : Colors.grey[400], // Gray for disabled
-                  textColor: Colors.white,
-                ),
-              )),
-              
-              SizedBox(height: 30.h),
-              
-              // Resend OTP Section
-              Obx(() => Column(
-                children: [
-                  if (!controller.canResend.value)
-                    Text(
-                      'Resend OTP in ${controller.resendTimer.value}s',
-                      style: CustomStyles.textStyle.copyWith(
-                        fontSize: 16.sp,
-                        color: AppColors.midnightBlue.withOpacity(0.6),
-                      ),
-                    ),
-                  
-                  SizedBox(height: 10.h),
-                  
-                  GestureDetector(
-                    onTap: controller.canResend.value ? controller.resendOTP : null,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12.h,
-                        horizontal: 24.w,
-                      ),
-                      decoration: BoxDecoration(
-                        color: controller.canResend.value 
-                            ? AppColors.primary.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8.r),
-                        border: Border.all(
-                          color: controller.canResend.value 
-                              ? AppColors.primary
-                              : Colors.grey.withOpacity(0.5),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (controller.isResendingOTP.value)
-                            SizedBox(
-                              width: 16.w,
-                              height: 16.h,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.primary,
-                                ),
-                              ),
-                            )
-                          else
-                            Icon(
-                              Icons.refresh,
-                              size: 18.sp,
-                              color: controller.canResend.value 
-                                  ? AppColors.primary
-                                  : Colors.grey,
-                            ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            controller.isResendingOTP.value 
-                                ? 'Sending...'
-                                : 'Resend OTP',
-                            style: CustomStyles.textStyle.copyWith(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: controller.canResend.value 
-                                  ? AppColors.primary
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              )),
-              
-              SizedBox(height: 30.h),
+                child: _VerifyButton(controller: controller),
+              ),
+              SizedBox(height: 20.h),
+              _ResendRow(controller: controller),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -163,33 +67,286 @@ class EmailVarificationView extends GetView<EmailVarificationController> {
   }
 }
 
-class SocialButton extends StatelessWidget {
-  final String icon;
-  final VoidCallback onPressed;
-
-  const SocialButton({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-  });
+class _BlueBanner extends StatelessWidget {
+  const _BlueBanner();
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: const EdgeInsets.all(16),
-        backgroundColor: Colors.white,
-        side: const BorderSide(color: AppColors.midnightBlue, width: 0.5),
-      ),
-      child: Image.asset(
-        icon,
-        width: 30.w,
-        height: 30.h,
+    final screenWidth = MediaQuery.of(context).size.width;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final contentHeight = 150.h;
+
+    return SizedBox(
+      width: screenWidth,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: screenWidth,
+            height: topPadding + contentHeight,
+            color: AppColors.primary,
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -1,
+            child: SvgPicture.asset(
+              'assets/blue-banner.svg',
+              width: screenWidth,
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+          Positioned(
+            top: topPadding + 8.h,
+            left: 12.w,
+            child: Material(
+              color: Colors.white.withValues(alpha: 0.18),
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => Get.back(),
+                child: SizedBox(
+                  width: 40.w,
+                  height: 40.w,
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    color: Colors.white,
+                    size: 20.sp,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            top: topPadding,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 24.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 64.w,
+                    height: 64.w,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(18.r),
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.mark_email_read_outlined,
+                      size: 30.sp,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Text(
+                    'Check your email',
+                    style: GoogleFonts.inter(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class _Heading extends StatelessWidget {
+  final EmailVarificationController controller;
+
+  const _Heading({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: Column(
+        children: [
+          Text(
+            'Enter verification code',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 22.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimaryColor,
+              letterSpacing: -0.4,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text.rich(
+            TextSpan(
+              style: GoogleFonts.inter(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w400,
+                color: AppColors.gray,
+                height: 1.5,
+              ),
+              children: [
+                const TextSpan(text: 'We sent a 4-digit code to '),
+                TextSpan(
+                  text: controller.email.value,
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimaryColor,
+                  ),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 6.h),
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                // offNamed replaces the current screen, so the back-stack
+                // doesn't have to contain register for this to work — robust
+                // whether the user got here via deep link, restart, or normal
+                // signup flow.
+                Get.offNamed(Routes.register);
+              },
+              borderRadius: BorderRadius.circular(8.r),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 12.w),
+                child: Text(
+                  'Wrong email? Edit',
+                  style: GoogleFonts.inter(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VerifyButton extends StatelessWidget {
+  final EmailVarificationController controller;
+
+  const _VerifyButton({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final enabled = controller.isSubmitEnable.value;
+      return SizedBox(
+        width: double.infinity,
+        height: 54.h,
+        child: ElevatedButton(
+          onPressed: enabled ? controller.verifyOtpAndHandleResponse : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            disabledBackgroundColor:
+                AppColors.primary.withValues(alpha: 0.45),
+            foregroundColor: Colors.white,
+            disabledForegroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14.r),
+            ),
+          ),
+          child: Text(
+            'Verify',
+            style: GoogleFonts.inter(
+              fontSize: 15.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              letterSpacing: 0.1,
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class _ResendRow extends StatelessWidget {
+  final EmailVarificationController controller;
+
+  const _ResendRow({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final canResend = controller.canResend.value;
+      final isResending = controller.isResendingOTP.value;
+      final secondsLeft = controller.resendTimer.value;
+
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "Didn't receive the code? ",
+            style: GoogleFonts.inter(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w400,
+              color: AppColors.gray,
+            ),
+          ),
+          if (isResending)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 14.w,
+                  height: 14.w,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                Text(
+                  'Sending…',
+                  style: GoogleFonts.inter(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            )
+          else if (canResend)
+            GestureDetector(
+              onTap: controller.resendOTP,
+              behavior: HitTestBehavior.opaque,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 4.w),
+                child: Text(
+                  'Resend',
+                  style: GoogleFonts.inter(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            )
+          else
+            Text(
+              'Resend in ${secondsLeft}s',
+              style: GoogleFonts.inter(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.lightGray,
+              ),
+            ),
+        ],
+      );
+    });
   }
 }

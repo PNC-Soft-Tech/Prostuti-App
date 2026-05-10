@@ -43,9 +43,7 @@ class Question {
               })
               .toList() ??
           [],
-      topic: json['topic'] != null
-          ? Topic.fromJson(json['topic'] as Map<String, dynamic>)
-          : null,
+      topic: _parseTopic(json['topic']),
       explanation: json['explanation'],
       subCategory: json['subCategory'],
       rightAnswer: json['rightAnswer'],
@@ -59,5 +57,19 @@ class Question {
       title: '',
       options: [],
     );
+  }
+
+  // The API returns `topic` as either a string ID (e.g. on `questions[].topic`
+  // in custom exam responses) or a fully populated nested object (e.g. on
+  // `questions[].topics[]`). Accept both shapes.
+  static Topic? _parseTopic(dynamic value) {
+    if (value == null) return null;
+    if (value is String) {
+      return Topic(id: value, name: '');
+    }
+    if (value is Map<String, dynamic>) {
+      return Topic.fromJson(value);
+    }
+    return null;
   }
 }

@@ -9,12 +9,18 @@ import '../api_helper_implementation.dart';
 class GlobalBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AppController>(() => AppController());
-    // Ensure only one instance of ApiHelperImpl is created and globally accessible.
-    Get.lazyPut<ApiHelper>(() => ApiHelperImpl());
-    // Global AuthService for authentication checks
-    Get.lazyPut<AuthService>(() => AuthService());
-    // Global Loading Manager for consistent loading states
-    Get.put<GlobalLoadingManager>(GlobalLoadingManager.instance);
+    // These services must outlive any single route. Without `permanent: true`
+    // (or `fenix: true` on lazyPut), GetX disposes them when the last route
+    // using them is removed — which is exactly what `Get.offAllNamed(...)`
+    // does on login/logout. Disposing ApiHelper mid-session means the next
+    // `Get.find<ApiHelper>()` throws, and every controller that depends on
+    // it (HomeController, ContestController, etc.) breaks.
+    Get.put<AppController>(AppController(), permanent: true);
+    Get.put<ApiHelper>(ApiHelperImpl(), permanent: true);
+    Get.put<AuthService>(AuthService(), permanent: true);
+    Get.put<GlobalLoadingManager>(
+      GlobalLoadingManager.instance,
+      permanent: true,
+    );
   }
 }

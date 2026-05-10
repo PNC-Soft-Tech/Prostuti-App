@@ -89,7 +89,12 @@ class Contest {
       questions: (json['questions'] as List?)
               ?.map((question) {
                 if (question is Map<String, dynamic>) {
-                  return Question.fromJson(question);
+                  try {
+                    return Question.fromJson(question);
+                  } catch (e) {
+                    log('Failed to parse question ${question['_id']}: $e');
+                    return Question.empty();
+                  }
                 } else {
                   log('Invalid question format: $question');
                   return Question.empty();

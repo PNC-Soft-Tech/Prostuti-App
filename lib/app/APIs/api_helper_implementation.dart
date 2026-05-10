@@ -748,11 +748,15 @@ class ApiHelperImpl extends GetConnect implements ApiHelper {
     required String selectedAnswer,
   }) async {
     try {
-      // Prepare the payload
+      // Server schema validates `selectedAnswers` (plural) as an array of
+      // option keys — supports multi-answer questions, but also the common
+      // single-answer case via a 1-element list. The client API still takes a
+      // single string; we wrap it here so every caller stays simple.
       final payload = {
         "question": questionId,
         "contest": contestId,
-        "selectedAnswer": selectedAnswer,
+        "selectedAnswers":
+            selectedAnswer.isEmpty ? <String>[] : <String>[selectedAnswer],
       };
       log("payload $payload");
       // Fetch the Bearer token from storage
