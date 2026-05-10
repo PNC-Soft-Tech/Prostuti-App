@@ -2,81 +2,128 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:prostuti/app/constant/app_color.dart';
 
 import '../../../common/custom_buttons.dart';
+import '../../../constant/app_color.dart';
 import '../../../routes/app_pages.dart';
 
 class HomeBottomNavMoreBottomSheet extends StatelessWidget {
   const HomeBottomNavMoreBottomSheet({super.key});
 
+  static const _items = <_MoreItem>[
+    _MoreItem(name: 'All Contests', image: 'assets/all-contests.png'),
+    _MoreItem(name: 'Model Tests', image: 'assets/model-tests.png'),
+    _MoreItem(name: 'Job Alerts', image: 'assets/job-alerts.png'),
+    _MoreItem(name: 'Question Bank', image: 'assets/question-banks.png'),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 25.h),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _item(name: "All Contests", image: "assets/all-contests.png"),
-                _item(name: "Model Tests", image: "assets/model-tests.png"),
-                _item(name: "Job Alerts", image: "assets/job-alerts.png"),
-                _item(name: "Question Bank", image: "assets/question-banks.png"),
-              ],
+          Center(
+            child: Container(
+              width: 44.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: AppColors.lightGray.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(4.r),
+              ),
             ),
           ),
-          SizedBox(
-            height: 26.h,
+          SizedBox(height: 18.h),
+          Text(
+            'More',
+            style: GoogleFonts.inter(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimaryColor,
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          SizedBox(height: 16.h),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            mainAxisSpacing: 12.h,
+            crossAxisSpacing: 12.w,
+            childAspectRatio: 0.85,
             children: [
-              CustomButton.button(
-                  image: 'assets/give-custom-exam-button.svg',
-                  isSvgImage: true,
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w500,
-                  text: "Give A Custom Exam Now",
-                  onPressed: () => Get.toNamed(Routes.customExam)),
+              for (final item in _items) _MoreTile(item: item),
             ],
-          ), SizedBox(height: 30.h,),
+          ),
+          SizedBox(height: 20.h),
+          CustomButton.button(
+            image: 'assets/give-custom-exam-button.svg',
+            isSvgImage: true,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            text: 'Give A Custom Exam Now',
+            mainAxisSize: MainAxisSize.max,
+            onPressed: () {
+              Get.back();
+              Get.toNamed(Routes.customExam);
+            },
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _item(
-          {required String name,
-          required String image,
-          VoidCallbackAction? onClick}) =>
-      Container(
-        margin: EdgeInsets.symmetric(horizontal: 17.5.w),
-        child: GestureDetector(
-          onTap: () => onClick,
+class _MoreItem {
+  final String name;
+  final String image;
+  const _MoreItem({required this.name, required this.image});
+}
+
+class _MoreTile extends StatelessWidget {
+  final _MoreItem item;
+
+  const _MoreTile({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {},
+        borderRadius: BorderRadius.circular(14.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
+          decoration: BoxDecoration(
+            color: AppColors.primaryOpacity,
+            borderRadius: BorderRadius.circular(14.r),
+          ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                image,
-                width: 28.w,
-                height: 28.h,
+                item.image,
+                width: 32.w,
+                height: 32.w,
               ),
-              SizedBox(
-                height: 8.h,
-              ),
+              SizedBox(height: 8.h),
               Text(
-                name,
+                item.name,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.inter(
-                    textStyle: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.textPrimaryColor
-                )),
-              )
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimaryColor,
+                  height: 1.2,
+                ),
+              ),
             ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
