@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:prostuti/app/constant/app_color.dart';
 
+import '../../../common/services/auth_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../../storage/storage_helper.dart';
 
@@ -15,13 +16,17 @@ class SplashView extends GetView {
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () async {
       // await StorageHelper.removeToken();
-      var isLogged = await StorageHelper.hasToken();
+      final isLogged = await StorageHelper.hasToken();
       if (isLogged) {
+        // Rehydrate AppController from persisted storage BEFORE routing to
+        // home. Without this, screens that read `appController.userId` find
+        // an empty value on cold start and AuthService bounces the user to
+        // login despite a valid session.
+        await Get.find<AuthService>().updateAuthenticationState();
         Get.offAllNamed(Routes.home);
       } else {
         Get.offAllNamed(Routes.login);
       }
-      // Get.offAllNamed(Routes.customExam);
     });
     double screenWidth = ScreenUtil().screenWidth;
     double screenHeight = ScreenUtil().screenHeight;

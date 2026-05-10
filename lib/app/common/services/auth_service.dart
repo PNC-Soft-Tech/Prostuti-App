@@ -55,13 +55,12 @@ class AuthService extends GetxService {
         print("AuthService: No userId found");
         return false;
       }
-      
-      // Additional check: verify AppController has valid data
-      if (_appController.userId.value.isEmpty) {
-        print("AuthService: AppController userId is empty");
-        return false;
-      }
-      
+
+      // Storage is the source of truth. We deliberately do NOT check
+      // _appController.userId.value here — on a cold start AppController is
+      // empty until the splash hydrates it, and gating *that hydration* on the
+      // controller already being hydrated created a chicken-and-egg loop that
+      // booted authenticated users straight to /login.
       print("AuthService: User is authenticated");
       return true;
     } catch (e) {
