@@ -250,7 +250,7 @@ class SharedQuestionWidget extends StatelessWidget {
                         success = await controller.submitAnswer(
                           question.id,
                           contestId,
-                          controller.getOptionAns(optionIndex + 1),
+                          option.id,
                         );
                         if (!success) {
                           controller.resetSelectOption(question.id);
@@ -329,7 +329,7 @@ class SharedQuestionWidget extends StatelessWidget {
                   success = await controller.submitAnswer(
                     question.id,
                     contestId,
-                    controller.getOptionAns(optionIndex + 1),
+                    option.id,
                   );
                   if (!success) {
                     controller.resetSelectOption(question.id);
